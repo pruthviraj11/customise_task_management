@@ -17,13 +17,13 @@ class PriorityRepository
 
     public function update($id, array $data)
     {
-        return Priority::where('id', $id)->update($data);
+        return Priority::findOrFail($id)->update($data);
     }
 
     public function delete($id)
     {
         Priority::Where('id', $id)->update(['deleted_by' => auth()->user()->id]);
-        return Priority::where('id', $id)->delete();
+        return Priority::findOrFail($id)->delete();
     }
     public function getAll()
     {

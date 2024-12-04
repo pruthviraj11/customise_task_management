@@ -17,16 +17,18 @@ class UserRepository
 
     public function update($id, array $data)
     {
-        return User::where('id', $id)->update($data);
+        $user = User::findOrFail($id);
+        return $user->update($data);
     }
 
     public function delete($id)
     {
         User::Where('id', $id)->update(['deleted_by' => auth()->user()->id]);
-        return User::where('id', $id)->delete();
+        return User::findOrFail($id)->delete();
 
     }
-    public function getAll(){
+    public function getAll()
+    {
         return User::query();
     }
 }

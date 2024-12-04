@@ -37,7 +37,7 @@
                     <table class="user-list-table table dt-responsive" id="departments-table">
                         <thead>
                             <tr>
-                                
+
                                 <th>Actions</th>
                                 <th>Status Name</th>
                                 {{-- <th>Department Code</th> --}}
@@ -81,31 +81,28 @@
                 dom: 'lBfrtip',
                 processing: true,
                 serverSide: true,
-                buttons: [
-                    {
-                        extend: 'excel',
-                        text: '<i class="ficon" data-feather="file-text"></i> Excel',
-                        title: '',
-                        action: newexportaction,
-                        filename: 'Status',
-                        className: 'btn btn-primary btn-sm',
-                        exportOptions: {
-                            modifier: {
-                                length: -1
-                            },
-                            columns: [1, 2,3]
-                        }
-                    },
-                ],
+                buttons: [{
+                    extend: 'excel',
+                    text: '<i class="ficon" data-feather="file-text"></i> Excel',
+                    title: '',
+                    action: newexportaction,
+                    filename: 'Status',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        modifier: {
+                            length: -1
+                        },
+                        columns: [1, 2, 3]
+                    }
+                }, ],
                 ajax: "{{ route('app-status-get-all') }}",
-                columns: [
-                 {
+                columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
                         searchable: false
-                    },    
-                {
+                    },
+                    {
                         data: 'status_name',
                         name: 'status_name',
                     },
@@ -125,7 +122,7 @@
                             }
                         }
                     },
-                   
+
                 ],
                 drawCallback: function() {
                     feather.replace();
@@ -134,7 +131,7 @@
             });
         });
 
-         function newexportaction(e, dt, button, config) {
+        function newexportaction(e, dt, button, config) {
             var self = this;
             var oldStart = dt.settings()[0]._iDisplayStart;
             dt.one('preXhr', function(e, s, data) {

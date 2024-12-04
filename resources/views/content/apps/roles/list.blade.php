@@ -26,12 +26,12 @@
                 <div class="card-datatable table-responsive pt-0">
                     <table class="user-list-table table dt-responsive" id="role-table">
                         <thead>
-                        <tr>
-                            
-                            <th>Actions</th>
-                            <th>Name</th>
-                            <th>Display Name</th>
-                        </tr>
+                            <tr>
+
+                                <th>Actions</th>
+                                <th>Name</th>
+                                <th>Display Name</th>
+                            </tr>
                         </thead>
                     </table>
                 </div>
@@ -49,27 +49,27 @@
                         <div class="mb-1">
                             <label class="form-label" for="basic-icon-default-fullname">Full Name</label>
                             <input type="text" class="form-control dt-full-name" id="basic-icon-default-fullname"
-                                   placeholder="John Doe" name="user-fullname"/>
+                                placeholder="John Doe" name="user-fullname" />
                         </div>
                         <div class="mb-1">
                             <label class="form-label" for="basic-icon-default-uname">Username</label>
                             <input type="text" id="basic-icon-default-uname" class="form-control dt-uname"
-                                   placeholder="Web Developer" name="user-name"/>
+                                placeholder="Web Developer" name="user-name" />
                         </div>
                         <div class="mb-1">
                             <label class="form-label" for="basic-icon-default-email">Email</label>
                             <input type="text" id="basic-icon-default-email" class="form-control dt-email"
-                                   placeholder="john.doe@example.com" name="user-email"/>
+                                placeholder="john.doe@example.com" name="user-email" />
                         </div>
                         <div class="mb-1">
                             <label class="form-label" for="basic-icon-default-contact">Contact</label>
                             <input type="text" id="basic-icon-default-contact" class="form-control dt-contact"
-                                   placeholder="+1 (609) 933-44-22" name="user-contact"/>
+                                placeholder="+1 (609) 933-44-22" name="user-contact" />
                         </div>
                         <div class="mb-1">
                             <label class="form-label" for="country-floating">Country</label>
                             <input type="text" id="country-floating" class="form-control" name="country"
-                                   placeholder="Country"/>
+                                placeholder="Country" />
                         </div>
                         <button type="submit" class="btn btn-primary me-1 data-submit">Submit</button>
                         <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -92,42 +92,39 @@
 
 @section('page-script')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#role-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('app-roles-get-all') }}",
-                 dom: 'lBfrtip',
-                 buttons: [
-                    {
-                        extend: 'excel',
-                        text: '<i class="ficon" data-feather="file-text"></i> Excel',
-                         title: '',
-                        filename: 'Project Status',
-                        className: 'btn btn-primary  btn-sm',
-                        exportOptions: {
-                            columns: [1,2]
-                        }
-                    },
-                ],
-                columns: [
-                  {
+                dom: 'lBfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    text: '<i class="ficon" data-feather="file-text"></i> Excel',
+                    title: '',
+                    filename: 'Project Status',
+                    className: 'btn btn-success  btn-sm',
+                    exportOptions: {
+                        columns: [1, 2]
+                    }
+                }, ],
+                columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
                         searchable: false
-                    },    
-                {
-                    data: 'name',
-                    name: 'name',
-                    searchable: true
-                },
+                    },
+                    {
+                        data: 'name',
+                        name: 'name',
+                        searchable: true
+                    },
                     {
                         data: 'display_name',
                         name: 'display_name',
                         searchable: true
                     },
-                  
+
                 ],
                 drawCallback: function() {
                     feather.replace();

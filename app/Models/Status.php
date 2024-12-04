@@ -13,4 +13,8 @@ class Status extends Model
     protected $table = 'status';
     protected $fillable = ['status_name', 'displayname', 'created_by', 'updated_by', 'status'];
     protected $guarded = [];
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'task_status');
+    }
 }

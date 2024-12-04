@@ -43,7 +43,7 @@
                         <div class="row">
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="username">
-                                    Username</label>
+                                    Username </label>
                                 <input type="text" id="username" class="form-control" placeholder="Username"
                                     name="username" value="{{ old('username') ?? ($user != '' ? $user->username : '') }}">
                                 <span class="text-danger">
@@ -54,7 +54,7 @@
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="first_name">
-                                    First Name</label>
+                                    First Name </label>
                                 <input type="text" id="first_name" class="form-control" placeholder="First Name"
                                     name="first_name"
                                     value="{{ old('first_name') ?? ($user != '' ? $user->first_name : '') }}">
@@ -66,7 +66,7 @@
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="last_name">
-                                    Last Name</label>
+                                    Last Name </label>
                                 <input type="text" id="last_name" class="form-control" placeholder="Last Name"
                                     name="last_name"
                                     value="{{ old('last_name') ?? ($user != '' ? $user->last_name : '') }}">
@@ -77,8 +77,20 @@
                                 </span>
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="designation">
+                                    Designation </label>
+                                <input type="text" id="designation" class="form-control" placeholder="Designation"
+                                    name="designation"
+                                    value="{{ old('designation') ?? ($user != '' ? $user->designation : '') }}">
+                                <span class="text-danger">
+                                    @error('designation')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="phone_no">
-                                    Phone No</label>
+                                    Phone No </label>
                                 <input type="text" id="phone_no" class="form-control" placeholder="Phone No"
                                     name="phone_no" value="{{ old('phone_no') ?? ($user != '' ? $user->phone_no : '') }}">
                                 <span class="text-danger">
@@ -89,7 +101,7 @@
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="email">
-                                    Email</label>
+                                    Email </label>
                                 <input type="email" id="email" class="form-control" placeholder="Email" name="email"
                                     value="{{ old('email') ?? ($user != '' ? $user->email : '') }}">
                                 <span class="text-danger">
@@ -102,13 +114,13 @@
                                 <div class="row align-items-md-end">
                                     <div class="col-md-9 col-sm-12">
                                         <label class="form-label" for="password">
-                                            Password</label>
+                                            Password </label>
                                         {{-- <div class="input-group input-group-merge form-password-toggle">
                                                             <input
                                                                 type="password"
                                                                 class="form-control form-control-merge"
                                                                 id="password"
-                                                                name="password"
+                                                                 name="password"
                                                                 value=""
                                                             />
                                                             <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
@@ -131,7 +143,7 @@
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="dob">
-                                    Date of Birth</label>
+                                    Date of Birth </label>
                                 <input type="date" name="dob" id="dob" class="form-control"
                                     value="{{ old('dob') ?? ($user != '' ? $user->dob : '') }}">
                                 <span class="text-danger">
@@ -142,8 +154,8 @@
                             </div>
                             {{-- <div class="col-md-6 col-sm-12 mb-1">
                                                 <label class="form-label" for="branch">
-                                                    Branch</label>
-                                                <select class="select2 form-select" name="branch" id="branch">
+                                                    Branch </label>
+                                                <select class="select2 form-select"  name="branch" id="branch">
                                                     <option value="" >Select Branch</option>
                                                     @foreach ($data['branches'] as $branch)
                                                         <option value="{{ $branch->id }}" {{ old('branch') ? (old('branch') == $branch->id ? 'selected' : '') : ($user ? ($user->branch == $branch->id ? 'selected' : '') : '') }}>{{ $branch->name }}</option>
@@ -157,8 +169,8 @@
                                             </div> --}}
                             {{-- <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="form_group">
-                                    Form Group</label>
-                                <select class="select2 form-select" id="form_group" name="form_group">
+                                    Form Group </label>
+                                <select class="select2 form-select" id="form_group"  name="form_group">
                                     <option value="">Select Form Group</option>
                                     @foreach ($data['form_groups'] as $form_group)
                                         <option value="{{ $form_group->id }}"
@@ -174,7 +186,7 @@
                             </div> --}}
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="report_to">
-                                    Report To</label>
+                                    Report To </label>
                                 <select class="select2 form-select" name="report_to">
                                     <option value="" hidden>Select Report To</option>
                                     @foreach ($data['reports_to'] as $report_to)
@@ -191,7 +203,7 @@
                             </div>
                             <div class="col-md-12 col-sm-12 mb-1">
                                 <label class="form-label" for="address">
-                                    Address</label>
+                                    Address </label>
                                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="address"
                                     placeholder="Address">{{ old('address') ?? ($user != '' ? $user->address : '') }}</textarea>
                                 <span class="text-danger">
@@ -201,7 +213,7 @@
                                 </span>
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
-                                <label class="form-label" for="department_id">Department</label>
+                                <label class="form-label" for="department_id">Department </label>
                                 <select id="department_id" class="form-select select2" name="department_id">
                                     <option value="">Select Department</option>
                                     @foreach ($departments as $department)
@@ -219,7 +231,7 @@
                             </div>
 
                             <div class="col-md-6 col-sm-12 mb-1">
-                                <label class="form-label" for="sub_department_id">Sub Department</label>
+                                <label class="form-label" for="sub_department_id">Sub Department </label>
                                 <select id="sub_department_id" class="form-select select2" name="subdepartment">
                                     <option value="">Select Sub Department</option>
                                     @if ($user)
@@ -240,12 +252,12 @@
                             </div>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="role">
-                                    Select Role</label>
+                                    Select Role </label>
                                 <select class="select2 form-select" name="role" id="role">
                                     <option value="" selected disabled>Select Role</option>
                                     @forelse($roles as $role)
                                         <option value="{{ $role->id }}"
-                                            {{ $user != '' ? ($role->display_name == $user->role ? 'selected' : '') : '' }}>
+                                            {{ $user != '' ? ($role->name == $user->role ? 'selected' : '') : '' }}>
                                             {{ $role->display_name }}</option>
                                     @empty
                                         <option value="" selected disabled>No Roles Found</option>
@@ -259,16 +271,16 @@
                             </div>
                             {{-- {{ dd($user->profile_img); }} --}}
                             <div class="col-md-6 col-sm-12 mb-1">
-                                <label class="form-label" for="profile_img">Profile Photo</label>
+                                <label class="form-label" for="profile_img">Profile Photo </label>
                                 <input type="file" id="profile_img" class="form-control" name="profile_img">
 
 
                                 @if (!empty($user->profile_img))
-                                    <img src="{{ Storage::url($user->profile_img) }}" class="mt-2"
+                                    <img width="150" src="{{ Storage::url($user->profile_img) }}" class="mt-2 "
                                         alt="Profile Photo">
                                 @else
-                                    <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png" class="mt-2"
-                                        alt="Default Avatar" style="height: auto;width: 100px;">
+                                    <img src="{{ asset('images/avatars/10.png') }}" class="mt-2" alt="Default Avatar"
+                                        style="height: auto;width: 100px;">
                                 @endif
 
                                 <span class="text-danger">
@@ -280,11 +292,12 @@
                             {{-- {{ dd($user); }} --}}
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="status">
-                                    Status</label>
+                                    Status </label>
                                 <div class="form-check form-check-success form-switch">
                                     <input type="checkbox" name="status"
                                         {{ $user != '' && $user->status == '1' ? 'checked' : '' }}
-                                        class="form-check-input" id="customSwitch4" @if(empty($user)) checked  @endif />
+                                        class="form-check-input" id="customSwitch4"
+                                        @if (empty($user)) checked @endif />
                                 </div>
                                 <span class="text-danger">
                                     @error('status')
@@ -349,6 +362,24 @@
         $(document).ready(function() {
             $('#department_id').change(function() {
                 var departmentId = $(this).val();
+                $('#sub_department_id').prop("disabled", true);
+                // if (departmentId) {
+                //     $.ajax({
+                //         url: '{{ route('app-sub-departments', ':department_id') }}'.replace(
+                //             ':department_id', departmentId),
+                //         type: 'GET',
+                //         dataType: 'json',
+                //         success: function(data) {
+                //             $('#sub_department_id').empty();
+                //             // $('#sub_department_id').append(
+                //             //     '<option value="">Select Sub Department</option>');
+                //             // $.each(data, function(key, value) {
+                //             //     $('#sub_department_id').append('<option value="' + value
+                //             //         .id + '">' + value.sub_department_name +
+                //             //         '</option>');
+                //             // });
+                //         }
+                //     });
                 if (departmentId) {
                     $.ajax({
                         url: '{{ route('app-sub-departments', ':department_id') }}'.replace(
@@ -356,14 +387,24 @@
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
+
                             $('#sub_department_id').empty();
-                            $('#sub_department_id').append(
-                                '<option value="">Select Sub Department</option>');
-                            $.each(data, function(key, value) {
-                                $('#sub_department_id').append('<option value="' + value
-                                    .id + '">' + value.sub_department_name +
-                                    '</option>');
+                            // $('#sub_department_id').append(
+                            // '<option value="">Select Sub Department</option>');
+                            // $.each(data, function(key, value) {
+                            //     $('#sub_department_id').append('<option value="' + value
+                            //         .id + '">' + value.sub_department_name +
+                            //         '</option>');
+                            // });
+                            var data_load = '<option value="">Select Sub Department</option>';
+                            $.map(data, function(item) {
+                                data_load += '<option value="' + item
+                                    .id + '">' + item.sub_department_name +
+                                    '</option>';
                             });
+                            $('#sub_department_id').append(data_load);
+                            $('#sub_department_id').select2();
+                            $('#sub_department_id').prop("disabled", false);
                         }
                     });
                 } else {

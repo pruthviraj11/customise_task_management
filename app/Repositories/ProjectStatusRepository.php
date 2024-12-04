@@ -17,13 +17,13 @@ class ProjectStatusRepository
 
     public function update($id, array $data)
     {
-        return ProjectStatus::where('id', $id)->update($data);
+        return ProjectStatus::findOrFail($id)->update($data);
     }
 
     public function delete($id)
     {
         ProjectStatus::Where('id', $id)->update(['deleted_by' => auth()->user()->id]);
-        return ProjectStatus::where('id', $id)->delete();
+        return ProjectStatus::findOrFail($id)->delete();
     }
     public function getAll()
     {

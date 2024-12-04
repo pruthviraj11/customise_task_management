@@ -27,8 +27,6 @@
   <component name="ChangeListManager">
     <list default="true" id="02d65e57-72b4-451c-a799-8552a83805c9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Helpers/CustomHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Helpers/CustomHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/UsersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/UsersController.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,18 +193,29 @@
       <path value="$PROJECT_DIR$/vendor/phenx/php-svg-lib" />
     </include_path>
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2aLluo8Ol5u7W1cw4o1IpIOabwz" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../rao_task_management" />
-    <property name="settings.editor.selected.configurable" value="web-ide.project.structure" />
-    <property name="vue.rearranger.settings.migration" value="true" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/var/www/html/brenda_arnold_scott&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Decent Infoways\new_rao_task_management\app\Models" />
@@ -225,7 +234,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-php-predefined-ba97393d7c68-6f8e3395a2b4-com.jetbrains.php.sharedIndexes-PS-233.14475.35" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.23726.107" />
+        <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.23726.107" />
       </set>
     </attachedChunks>
   </component>
@@ -255,6 +265,25 @@
       <workItem from="1709260570935" duration="3236000" />
       <workItem from="1713084536846" duration="5787000" />
       <workItem from="1713508064928" duration="1687000" />
+      <workItem from="1715239769167" duration="10542000" />
+      <workItem from="1724926308990" duration="88000" />
+      <workItem from="1724926418079" duration="20000" />
+      <workItem from="1724926440836" duration="23000" />
+      <workItem from="1724926825335" duration="21000" />
+      <workItem from="1724927195827" duration="3262000" />
+      <workItem from="1724934425732" duration="430000" />
+      <workItem from="1724995092795" duration="6090000" />
+      <workItem from="1725082210615" duration="480000" />
+      <workItem from="1725085922779" duration="17000" />
+      <workItem from="1725325183135" duration="13964000" />
+      <workItem from="1726666555003" duration="18000" />
+      <workItem from="1727698275522" duration="2153000" />
+      <workItem from="1727916975743" duration="43000" />
+      <workItem from="1728387936578" duration="785000" />
+      <workItem from="1729772461593" duration="1406000" />
+      <workItem from="1729774028518" duration="2993000" />
+      <workItem from="1729833156758" duration="10344000" />
+      <workItem from="1729919587876" duration="2324000" />
     </task>
     <servers />
   </component>
@@ -272,7 +301,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/main" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -283,36 +312,26 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="147" y="64" width="1228" height="680" key="DiffContextDialog" timestamp="1713501536349">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="147" y="64" width="1228" height="680" key="DiffContextDialog/0.0.1536.816@0.0.1536.816" timestamp="1713501536349" />
-    <state x="549" y="163" key="FileChooserDialogImpl" timestamp="1713324811063">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="549" y="163" key="FileChooserDialogImpl/0.0.1536.816@0.0.1536.816" timestamp="1713324811063" />
-    <state x="147" y="64" key="MergeDialog" timestamp="1713363224369">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="147" y="64" key="MergeDialog/0.0.1536.816@0.0.1536.816" timestamp="1713363224369" />
-    <state x="277" y="53" key="SettingsEditor" timestamp="1713085127172">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="277" y="53" key="SettingsEditor/0.0.1536.816@0.0.1536.816" timestamp="1713085127172" />
-    <state x="479" y="96" width="577" height="624" key="find.popup" timestamp="1713087304267">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="479" y="96" width="577" height="624" key="find.popup/0.0.1536.816@0.0.1536.816" timestamp="1713087304267" />
-    <state x="523" y="39" key="git4idea.branch.GitSmartOperationDialog" timestamp="1713362933641">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="523" y="39" key="git4idea.branch.GitSmartOperationDialog/0.0.1536.816@0.0.1536.816" timestamp="1713362933641" />
-    <state x="431" y="137" width="672" height="678" key="search.everywhere.popup" timestamp="1713416121355">
-      <screen x="0" y="0" width="1536" height="816" />
-    </state>
-    <state x="431" y="137" width="672" height="678" key="search.everywhere.popup/0.0.1536.816@0.0.1536.816" timestamp="1713416121355" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php</url>
+          <line>2711</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php</url>
+          <line>2726</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php</url>
+          <line>256</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -93,7 +93,7 @@ class PriorityController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Priority');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-priority-list")->with('error', 'Error while adding Priority');
         }
     }
@@ -112,7 +112,7 @@ class PriorityController extends Controller
 
             return view('.content.apps.priority.create-edit', compact('page_data', 'department', 'data', 'departmentslist'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-priority-list")->with('error', 'Error while editing Priority');
         }
     }

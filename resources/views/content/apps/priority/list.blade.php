@@ -37,7 +37,7 @@
                     <table class="user-list-table table dt-responsive" id="priority-table">
                         <thead>
                             <tr>
-                                
+
                                 <th>Actions</th>
                                 <th>Priority Name</th>
                                 {{-- <th>Department Code</th> --}}
@@ -78,28 +78,25 @@
     <script>
         $(document).ready(function() {
             $('#priority-table').DataTable({
-                 dom: 'lBfrtip',
+                dom: 'lBfrtip',
                 processing: true,
                 serverSide: true,
-                buttons: [
-                    {
-                        extend: 'excel',
-                        text: '<i class="ficon" data-feather="file-text"></i> Excel',
-                        action: newexportaction,
-                        title: '',
-                        filename: 'Priority',
-                        className: 'btn btn-primary btn-sm',
-                        exportOptions: {
-                            modifier: {
-                                length: -1
-                            },
-                            columns: [1, 2,3]
-                        }
-                    },
-                ],
+                buttons: [{
+                    extend: 'excel',
+                    text: '<i class="ficon" data-feather="file-text"></i> Excel',
+                    action: newexportaction,
+                    title: '',
+                    filename: 'Priority',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        modifier: {
+                            length: -1
+                        },
+                        columns: [1, 2, 3]
+                    }
+                }, ],
                 ajax: "{{ route('app-priority-get-all') }}",
-                columns: [
-                      {
+                columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
@@ -126,7 +123,7 @@
                             }
                         }
                     },
-                  
+
                 ],
                 drawCallback: function() {
                     feather.replace();
@@ -135,7 +132,7 @@
             });
         });
 
-         function newexportaction(e, dt, button, config) {
+        function newexportaction(e, dt, button, config) {
             var self = this;
             var oldStart = dt.settings()[0]._iDisplayStart;
             dt.one('preXhr', function(e, s, data) {

@@ -10,15 +10,22 @@ use App\Models\Loggs;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Comments extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $table = 'comments';
     protected $fillable = ['comment', 'task_id', 'created_by', 'created_at', 'updated_at', 'deleted_at'];
     protected $guarded = [];
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->useLogName('Comment')
+            ->logOnly(['comment', 'task_id',])
+            ->logOnlyDirty();
+    }
 
     public function task(): BelongsTo
     {

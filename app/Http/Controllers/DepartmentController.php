@@ -6,7 +6,8 @@ use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
 use App\Models\Department;
 use App\Models\User;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\DepartmentsImport;
 
 use App\Services\RoleService;
 use App\Services\DepartmentService;
@@ -64,7 +65,7 @@ class DepartmentController extends Controller
                 return "-";
             }
 
-        })->rawColumns(['actions'])->make(true);
+        })->rawColumns(['actions', 'hod_username'])->make(true);
     }
 
     public function create()
@@ -96,7 +97,7 @@ class DepartmentController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Department');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-department-list")->with('error', 'Error while adding Department');
         }
     }
@@ -115,7 +116,7 @@ class DepartmentController extends Controller
 
             return view('.content.apps.department.create-edit', compact('page_data', 'department', 'data', 'departmentslist', 'users'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-department-list")->with('error', 'Error while editing Department');
         }
     }
@@ -157,5 +158,15 @@ class DepartmentController extends Controller
         } catch (\Exception $error) {
             return redirect()->route("app-department-list")->with('error', 'Error while editing Departments');
         }
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new DepartmentsImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Departments Imported Successfully!');
     }
 }

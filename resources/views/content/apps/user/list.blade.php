@@ -98,10 +98,18 @@
                             <tr>
 
                                 <th>Actions</th>
+                                <th>User Name</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Date of birth</th>
+                                <th>First Name</th>
                                 <th>Phone No</th>
                                 <th>Role</th>
+                                <th>Department</th>
+                                <th>Sub Department</th>
+                                <th>Report To</th>
+                                <th>Designation</th>
+
                             </tr>
                         </thead>
                     </table>
@@ -185,23 +193,51 @@
             }
 
             $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                "lengthMenu": [10, 25, 50, 100, 200],
+                // processing: true,
+                // serverSide: true,
+                "lengthMenu": [10, 25, 50, 100, 200, 500],
                 ajax: "{{ route('app-users-get-all') }}",
+                order: [
+                    [1, 'asc']
+                ],
                 columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
-                        searchable: false
+                        // searchable: false
+                    },
+                    {
+                        data: 'username',
+                        data: 'username',
+                        orderable: true,
+
+                        // visible: false,
+
                     },
                     {
                         data: 'full_name',
-                        name: 'full_name'
+                        name: 'full_name',
+                        orderable: true,
+                        // searchable: true
                     },
+
                     {
                         data: 'email',
-                        name: 'email'
+                        name: 'email',
+                        orderable: true,
+                        // searchable: true
+                    },
+                    {
+                        data: 'dob',
+                        name: 'dob',
+                        orderable: true,
+                        // searchable: true
+                    },
+                    {
+                        data: 'first_name',
+                        name: 'first_name',
+                        visible: false,
+                        // export: true
                     },
                     {
                         data: 'phone_no',
@@ -210,6 +246,19 @@
                     {
                         data: 'role_name',
                         name: 'role_name'
+                    },
+                    {
+                        data: 'department',
+                        name: 'department'
+                    }, {
+                        data: 'subdepartment',
+                        name: 'subdepartment'
+                    }, {
+                        data: 'report_to',
+                        name: 'report_to'
+                    }, {
+                        data: 'designation',
+                        name: 'designation'
                     },
 
                 ],
@@ -233,12 +282,12 @@
                     title: 'Users',
                     filename: 'Users',
                     action: newexportaction,
-                    className: 'btn btn-primary btn-sm',
+                    className: 'btn btn-success btn-sm',
                     exportOptions: {
                         modifier: {
                             length: -1
                         },
-                        columns: [1, 2, 3.4]
+                        columns: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11]
 
                     }
                 }],

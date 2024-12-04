@@ -130,7 +130,7 @@ class RoleController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Role');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-roles-list")->with('error', 'Error while editing Role');
         }
 

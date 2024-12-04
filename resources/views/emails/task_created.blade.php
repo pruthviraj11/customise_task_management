@@ -8,6 +8,7 @@
 
 <body>
     <h1>New Task Created</h1>
+    <p>Task Number: {{ $task->id }}</p>
     <p>A new task has been created:</p>
     <p>Title: {{ $task->title }}</p>
     <p>Description: {{ $task->description }}</p>

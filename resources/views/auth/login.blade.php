@@ -121,6 +121,17 @@
                 <!-- /Login basic -->
             </div>
         </div>
+<div class="d-none">
+        <form action="{{ route('tasks.import') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div class="form-group">
+        <label for="file">Import Excel File</label>
+        <input type="file" name="file" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Import</button>
+</form>
+</div>
+
     @endsection
 
     @section('vendor-script')

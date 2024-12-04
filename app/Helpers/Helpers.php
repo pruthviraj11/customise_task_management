@@ -140,7 +140,24 @@ class Helpers
             }
         }
     }
+    public function parseDateRange($dateRange)
+    {
+        if (!$dateRange) {
+            return null;
+        }
+
+        // Split the date range into start and end dates
+        $dates = explode(' to ', $dateRange);
+
+        if (count($dates) !== 2) {
+            return null; // Invalid format
+        }
+
+        // Convert each date from "dd/mm/yyyy" to "Y-m-d"
+        $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[0]))->format('Y-m-d');
+        $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[1]))->format('Y-m-d');
+
+        return [$startDate, $endDate];
+    }
 
 }
-
-

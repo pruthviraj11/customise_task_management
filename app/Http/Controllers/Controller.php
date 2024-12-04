@@ -17,38 +17,52 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function gst(){
+    public function gst()
+    {
         return Setting::pluck('gst')->first();
     }
-    public function tds(){
+
+    public function tds()
+    {
         return Setting::pluck('tds')->first();
     }
 
-    public function sendDynamicEmail($type = '', $inquiry_ids = [],  $other = [] ){
+    public function logActivity($description, $subject, $causerType = null, $causerId = null, $properties = null)
+    {
+        activity()
+            ->causedBy($causerId, $causerType) // The user who caused the activity
+            ->event('updated')
+            ->performedOn($subject) // The subject of the activity
+            ->withProperties($properties) // Additional properties
+            ->log($description); // The description of the activity
+    }
+
+    public function sendDynamicEmail($type = '', $inquiry_ids = [], $other = [])
+    {
         $documentList = '';
-        if ($type == 'document_reminder' || $type == 'document_list'){
+        if ($type == 'document_reminder' || $type == 'document_list') {
             $documentList = '<ul>';
-            foreach ($other['document'] as $doc){
-                $documentList .= '<li>'.$doc->name.'</li>';
+            foreach ($other['document'] as $doc) {
+                $documentList .= '<li>' . $doc->name . '</li>';
             }
             $documentList = '</ul>';
         }
         $file = '';
         $amount_paid = '';
-        if ($type == 'send_receipt'){
+        if ($type == 'send_receipt') {
             $receiptData = $other['paymentReceipt'];
             $amount_paid = $receiptData->amount_paid;
-            $file = storage_path('app/public/'.$receiptData->receipt_name);
+            $file = storage_path('app/public/' . $receiptData->receipt_name);
         }
-            $setting = Setting::pluck($type)->first();
-        if ($setting){
-            foreach ($inquiry_ids as $inquiry_id){
+        $setting = Setting::pluck($type)->first();
+        if ($setting) {
+            foreach ($inquiry_ids as $inquiry_id) {
                 $inquiry = Inquiry::where('id', $inquiry_id)->first();
                 $emailTemplate = EmailTemplate::where('id', $setting)->first();
                 $template = $emailTemplate->html;
                 $template = str_replace('{first_name}', $inquiry->first_name, $template);
                 $template = str_replace('{last_name}', $inquiry->last_name, $template);
-                $template = str_replace('{full_name}', $inquiry->first_name.' '.$inquiry->last_name, $template);
+                $template = str_replace('{full_name}', $inquiry->first_name . ' ' . $inquiry->last_name, $template);
                 $template = str_replace('{email}', $inquiry->email, $template);
                 $template = str_replace('{mobile_no}', $inquiry->mobile_one, $template);
                 $template = str_replace('{inquiry_no}', $inquiry->inquiry_no, $template);
@@ -61,24 +75,25 @@ class Controller extends BaseController
         }
     }
 
-    public function sendDynamicSMS($type = '', $inquiry_id = '',  $other = [] ){
+    public function sendDynamicSMS($type = '', $inquiry_id = '', $other = [])
+    {
 
         try {
             $amount_paid = '';
-            if ($type == 'send_receipt'){
+            if ($type == 'send_receipt') {
                 $receiptData = $other['paymentReceipt'];
                 $amount_paid = $receiptData->amount_paid;
             }
             $setting = Setting::pluck($type)->first();
 
-            if ($setting){
+            if ($setting) {
 
                 $inquiry = Inquiry::where('id', $inquiry_id)->first();
                 $emailTemplate = SMSTemplate::where('id', $setting)->first();
                 $template = $emailTemplate->message;
                 $template = str_replace('{first_name}', $inquiry->first_name, $template);
                 $template = str_replace('{last_name}', $inquiry->last_name, $template);
-                $template = str_replace('{full_name}', $inquiry->first_name.' '.$inquiry->last_name, $template);
+                $template = str_replace('{full_name}', $inquiry->first_name . ' ' . $inquiry->last_name, $template);
                 $template = str_replace('{email}', $inquiry->email, $template);
                 $template = str_replace('{mobile_no}', $inquiry->mobile_one, $template);
                 $template = str_replace('{inquiry_no}', $inquiry->inquiry_no, $template);
@@ -87,8 +102,8 @@ class Controller extends BaseController
 
                 sendSMS($template, $inquiry->mobile_one);
             }
-        }catch (\Exception $error){
-            dd($error->getMessage());
+        } catch (\Exception $error) {
+            // dd($error->getMessage());
         }
     }
 }

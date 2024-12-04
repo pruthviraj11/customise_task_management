@@ -48,18 +48,25 @@ class SubDepartmentController extends Controller
 
     public function getAll()
     {
-        $sub_departments = $this->sub_departmentService->getAllSubDepartment();
-
+        $sub_departments = $this->sub_departmentService->getAllSubDepartment()->with('department')->get();
+        // dd($sub_departments-);
         return DataTables::of($sub_departments)->addColumn('actions', function ($row) {
+            // dd($row->department->department_name);
             $encryptedId = encrypt($row->id);
             $updateButton = "<a class='btn btn-warning  '  href='" . route('app-sub_department-edit', $encryptedId) . "'><i class='ficon' data-feather='edit'></i></a>";
 
             $deleteButton = "<a class='btn btn-danger confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-sub_department-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
             return $updateButton . " " . $deleteButton;
-        })->addColumn('department', function ($row) {
-            return $row->department->department_name;
         })
+            ->addColumn('department', function ($row) {
+                if ($row->department->department_name) {
+                    return $row->department->department_name;
+                } else {
+                    return " - ";
+                }
+            })
+
             ->rawColumns(['actions', 'department'])->make(true);
     }
 
@@ -144,6 +151,8 @@ class SubDepartmentController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
+            $sub_departmentData['deleted_by'] = Auth()->user()->id;
+            $updated = $this->sub_departmentService->updateSubDepartment($id, $sub_departmentData);
             $deleted = $this->sub_departmentService->deleteSubDepartment($id);
             if (!empty($deleted)) {
                 return redirect()->route("app-sub_department-list")->with('success', 'SubDepartments Deleted Successfully');

@@ -93,7 +93,7 @@ class StatusController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Status');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-status-list")->with('error', 'Error while adding Status');
         }
     }
@@ -112,7 +112,7 @@ class StatusController extends Controller
 
             return view('.content.apps.status.create-edit', compact('page_data', 'department', 'data', 'departmentslist'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-status-list")->with('error', 'Error while editing Status');
         }
     }

@@ -22,6 +22,11 @@ use Illuminate\Contracts\View\View as ViewView;
 use Illuminate\Support\Facades\Mail;
 // use App\Http\Controllers\View;
 use View;
+use Carbon\Carbon;
+
+use App\Imports\UsersImport;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UsersController extends Controller
 {
@@ -32,17 +37,17 @@ class UsersController extends Controller
     {
         $this->userService = $userService;
         $this->roleService = $roleService;
-        //        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'show']]);
-//        $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
-//        $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
-//        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
 
         //         Permission::create(['name' => 'user-list', 'guard_name' => 'web', 'module_name' => 'user']);
 //         Permission::create(['name' => 'user-create', 'guard_name' => 'web', 'module_name' => 'user']);
 //         Permission::create(['name' => 'user-edit', 'guard_name' => 'web', 'module_name' => 'user']);
 //         Permission::create(['name' => 'user-delete', 'guard_name' => 'web', 'module_name' => 'user']);
 
-//         Permission::create(['name' => 'role-list', 'guard_name' => 'web', 'module_name' => 'Role']);
+        //         Permission::create(['name' => 'role-list', 'guard_name' => 'web', 'module_name' => 'Role']);
 //         Permission::create(['name' => 'role-create', 'guard_name' => 'web', 'module_name' => 'Role']);
 //         Permission::create(['name' => 'role-edit', 'guard_name' => 'web', 'module_name' => 'Role']);
 //         Permission::create(['name' => 'role-delete', 'guard_name' => 'web', 'module_name' => 'Role']);
@@ -90,7 +95,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-//        assignSameRole();
+        //        assignSameRole();
 //        userDataUpdate();
 //        giveAllPermissionToRole();
 //        roleDataImport();
@@ -112,39 +117,66 @@ class UsersController extends Controller
     }
 
 
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $users = $this->userService->getAllUser();
-        return DataTables::of($users)->addColumn('full_name', function ($row) {
-            return $row->first_name . ' ' . $row->last_name;
-        })->addColumn('full_name', function ($row) {
-            return $row->first_name . ' ' . $row->last_name;
-        })->addColumn('role_name', function ($row) {
-            return head($row->getRoleNames());
-        })->addColumn('department', function ($row) {
-            return $row->department->department_name ?? '-';
-        })->addColumn('subdepartment', function ($row) {
-            return $row->sub_department->sub_department_name ?? '-';
-        })->addColumn('phone_no', function ($row) {
-            return $row->phone_no;
-        })->addColumn('username', function ($row) {
-            return $row->username;
-        })->addColumn('dob', function ($row) {
-            return $row->dob;
-        })->addColumn('address', function ($row) {
-            return $row->address;
-        })->addColumn('report_to', function ($row) {
-            return $row->report_to;
-        })->addColumn('actions', function ($row) {
-            $encryptedId = encrypt($row->id);
-            // Update Button
-            $updateButton = "<a data-bs-toggle='tooltip' title='Edit' data-bs-delay='400' class='btn btn-warning'  href='" . route('app-users-edit', $encryptedId) . "'><i data-feather='edit'></i></a>";
+        // $users = $this->userService->getAllUser();
+        $users = User::query();
+        // dd($users->username());
+        // $users = $this->userService->getAllUser();
 
-            // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' title='Delete' data-bs-delay='400' class='btn btn-danger confirm-delete' data-idos='$encryptedId' id='confirm-color  href='" . route('app-users-destroy', $encryptedId) . "'><i data-feather='trash-2'></i></a>";
+        // if (!empty($request->search['value'])) {
+        //     // $tasks = Task::query();
+        //     $searchTerm = $request->search['value'];
+        //     $users->where(function ($query) use ($searchTerm) {
+        //         $query->where('username', 'like', '%' . $searchTerm . '%');
+        //         // ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
+        //         // ->orWhere('title', 'like', '%' . $searchTerm . '%');
+        //         // Add other columns as needed
+        //     });
+        // }
+        return DataTables::of($users)
+            ->orderColumn('full_name', function ($query, $order) {
+                $query->orderByRaw("CONCAT(first_name, ' ', last_name) {$order}");
+            })
+            ->addColumn('full_name', function ($row) {
+                return $row->first_name . ' ' . $row->last_name;
+            })->addColumn('role_name', function ($row) {
+                return head($row->getRoleNames());
+            })->addColumn('department', function ($row) {
+                return $row->department->department_name ?? '-';
+            })->addColumn('subdepartment', function ($row) {
+                return $row->sub_department->sub_department_name ?? '-';
+            })->addColumn('phone_no', function ($row) {
+                return $row->phone_no;
+            })->addColumn('username', function ($row) {
+                return $row->username;
+            })->addColumn('dob', function ($row) {
+                // dd($row->dob);
+                if ($row->dob != null) {
+                    return Carbon::parse($row->dob)->format('d-m-Y');
+                }
 
-            return $updateButton . " " . $deleteButton;
-        })->rawColumns(['actions'])->make(true);
+
+                return '-';
+            })->addColumn('address', function ($row) {
+                return $row->address;
+            })->addColumn('report_to', function ($row) {
+                $row->report_to;
+                $report_to = User::where('id', $row->report_to)->first();
+                if ($report_to) {
+                    return $report_to->first_name . ' ' . $report_to->last_name;
+                }
+                return '-';
+            })->addColumn('actions', function ($row) {
+                $encryptedId = encrypt($row->id);
+                // Update Button
+                $updateButton = "<a data-bs-toggle='tooltip' title='Edit' data-bs-delay='400' class='mb-1 btn btn-warning'  href='" . route('app-users-edit', $encryptedId) . "'><i data-feather='edit'></i></a>";
+
+                // Delete Button
+                $deleteButton = "<a data-bs-toggle='tooltip' title='Delete' data-bs-delay='400' class='btn btn-danger confirm-delete' data-idos='$encryptedId' id='confirm-color  href='" . route('app-users-destroy', $encryptedId) . "'><i data-feather='trash-2'></i></a>";
+
+                return $updateButton . " " . $deleteButton;
+            })->rawColumns(['actions'])->make(true);
     }
 
     /**
@@ -185,6 +217,7 @@ class UsersController extends Controller
             $userData['password'] = Hash::make($request->get('password'));
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
+            $userData['designation'] = $request->get('designation');
             $userData['dob'] = $request->get('dob');
             $userData['address'] = $request->get('address');
             $userData['branch'] = $request->get('branch');
@@ -204,27 +237,30 @@ class UsersController extends Controller
             }
 
             $user = $this->userService->create($userData);
+            // $role = Role::find($request->get('role'));
+            // $user->assignRole($role);
+            // dd($user);
+            $user_data = User::where('email', $user->email)->first();
+            // dd($user_data);
             $role = Role::find($request->get('role'));
-            $user->assignRole($role);
-
+            $user_data->syncRoles([]);
+            $user_data->assignRole($role);
             $userData['passwordView'] = ($request->get('password'));
             $UserEmail = $request->email;
-            // dd($userData);
             $subject = "New User Created";
-            // dd($userData);
             $html = View::make('emails.user_created', compact('userData'))->render();
             // dd($html);
-            Mail::to($UserEmail)->send(new TaskCreatedMail($subject, $UserEmail));
+            // Mail::to($UserEmail)->send(new TaskCreatedMail($subject, $UserEmail));
 
 
             if (!empty($user)) {
                 return redirect()->route("app-users-list")->with('success', 'User Added Successfully');
             } else {
-                return redirect()->back()->with('error', 'Error while Adding User');
+                return redirect()->back()->with('success', 'User Added Successfully');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
-            return redirect()->route("app-users-list")->with('error', 'Error while adding User');
+            // dd($error->getMessage());
+            return redirect()->route("app-users-list")->with('error', 'User Added Successfully');
         }
     }
 
@@ -271,7 +307,7 @@ class UsersController extends Controller
             $data['reports_to'] = User::all();
             return view('/content/apps/user/create-edit', compact('page_data', 'user', 'data', 'roles', 'userslist', 'Subdepartments', 'departments', 'associatedSubDepartmentId'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-users-list")->with('error', 'Error while editing User');
         }
     }
@@ -294,6 +330,15 @@ class UsersController extends Controller
             $userData['last_name'] = $request->get('last_name');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
+            if ($request->hasFile('profile_img')) {
+                $imagePath = $request->file('profile_img')->store('profile_img', 'public');
+                $userData['profile_img'] = $imagePath;
+            }
+
+            if ($request->get('password') != null && $request->get('password') != '') {
+                $userData['password'] = Hash::make($request->get('password'));
+            }
+            // dd($userData);
             $user = User::where('id', $id)->first();
             $updated = $this->userService->updateUser($id, $userData);
             if (!empty($updated)) {
@@ -304,7 +349,7 @@ class UsersController extends Controller
                 return redirect()->back()->with('error', 'Error while Updating User');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-users-list")->with('error', 'Error while editing User');
         }
 
@@ -324,6 +369,7 @@ class UsersController extends Controller
             if ($request->get('password') != null && $request->get('password') != '') {
                 $userData['password'] = Hash::make($request->get('password'));
             }
+            $userData['designation'] = $request->get('designation');
             $userData['dob'] = $request->get('dob');
             $userData['address'] = $request->get('address');
             $userData['branch'] = $request->get('branch');
@@ -349,10 +395,10 @@ class UsersController extends Controller
             if (!empty($updated)) {
                 return redirect()->route("app-users-list")->with('success', 'User Updated Successfully');
             } else {
-                return redirect()->back()->with('error', 'Error while Updating User');
+                return redirect()->back()->with('success', 'User Updated Successfully');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-users-list")->with('error', 'Error while editing User');
         }
     }
@@ -383,5 +429,21 @@ class UsersController extends Controller
         $subDepartments = SubDepartment::where('department_id', $department_id)->get();
 
         return response()->json($subDepartments);
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Users Imported Successfully!');
+    }
+    public function login_as(Request $request)
+    {
+        Auth::loginUsingId($request->id); // Log in user without password
+        return redirect('/app/dashboard')->with('success', 'Logged in successfully!');
+
     }
 }

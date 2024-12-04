@@ -98,7 +98,7 @@ class ProjectController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Project');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-project-list")->with('error', 'Error while adding Project');
         }
     }

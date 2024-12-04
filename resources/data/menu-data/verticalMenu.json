@@ -4,7 +4,67 @@
             "url": "app/dashboard",
             "name": "Dashboard",
             "icon": "lock",
-            "slug": "app-roles-list",
+            "slug": "dashboard-index",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/list",
+            "name": "Task List",
+            "icon": "align-left",
+            "slug": "app-task-list",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/mytask",
+            "name": "My task",
+            "icon": "clipboard",
+            "slug": "app-task-get-mytask",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/accepted",
+            "name": "Task Accepted",
+            "icon": "check-square",
+            "slug": "app-task-accepted",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+          {
+            "url": "app/rejected-tasks",
+            "name": "rejected-tasks",
+            "icon": "check-square",
+            "slug": "rejected-tasks",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/assign_by_me",
+            "name": "Task Assign By Me",
+            "icon": "phone-outgoing",
+            "slug": "app-task-get-assign_by_me",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/requested",
+            "name": "Task Requested",
+            "icon": "phone-incoming",
+            "slug": "app-task-requested",
             "permission": [
                 "task-list",
                 "task-create"
@@ -91,43 +151,12 @@
             ]
         },
         {
-            "url": "app/task/list",
-            "name": "Task",
+            "url": "app/activity",
+            "name": "activity",
             "icon": "user",
-            "slug": "app-task-list",
+            "slug": "activity-index",
             "permission": [
-                "task-list",
-                "task-create"
-            ]
-        },
-        {
-            "url": "app/task/accepted",
-            "name": "Task Accepted",
-            "icon": "user",
-            "slug": "app-task-accepted",
-            "permission": [
-                "task-list",
-                "task-create"
-            ]
-        },
-        {
-            "url": "app/calender",
-            "name": "Calender",
-            "icon": "user",
-            "slug": "app-calender",
-            "permission": [
-                "task-list",
-                "task-create"
-            ]
-        },
-        {
-            "url": "app/task/requested",
-            "name": "Task Requested",
-            "icon": "user",
-            "slug": "app-task-requested",
-            "permission": [
-                "task-list",
-                "task-create"
+                "activity"
             ]
         }
     ]

@@ -27,6 +27,6 @@ class StatusRepository
     }
     public function getAll()
     {
-        return Status::get();
+        return Status::where('status', 'on')->get();
     }
 }

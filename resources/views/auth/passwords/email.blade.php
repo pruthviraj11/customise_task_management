@@ -50,7 +50,7 @@
                             </g>
                         </g>
                         </svg>
-                        <h2 class="brand-text text-primary ms-1">Vuexy</h2>
+                        <h4 class="card-title mb-1">Welcome to  TMS RAO 👋</h4>
                     </a>
                     @if (session('status'))
                         <div class="text-success d-inline-block mb-1" role="alert alert-success">

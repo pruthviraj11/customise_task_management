@@ -86,6 +86,56 @@
                                 <input type="text" class="form-control account-number-mask" id="accountPhoneNumber"
                                     name="phone_no" placeholder="Phone Number" value="{{ $data->phone_no }}" />
                             </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="row align-items-md-end">
+                                    <div class="col-md-9 col-sm-12">
+                                        <label class="form-label" for="password">
+                                            Password</label>
+                                        {{-- <div class="input-group input-group-merge form-password-toggle">
+                                                            <input
+                                                                type="password"
+                                                                class="form-control form-control-merge"
+                                                                id="password"
+                                                                name="password"
+                                                                value=""
+                                                            />
+                                                            <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
+                                                        </div> --}}
+                                        <input type="text" id="password" class="form-control"
+                                            placeholder="{{ $data ? ($data->password ? 'Enter or Click Generate to Change Password' : 'Password') : '' }}"
+                                            name="password" value="{{ old('password') ?? old('password') }}">
+                                        <span class="text-danger">
+                                            @error('password')
+                                                {{ $message }}
+                                            @enderror
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12">
+                                        <button type="button" class="btn btn-outline-primary"
+                                            id="generatePassword">Generate Password
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="profile_img">Profile Photo</label>
+                                <input type="file" id="profile_img" class="form-control" name="profile_img">
+
+                                {{-- {{ dd($data) }} --}}
+                                @if (!empty($data->profile_img))
+                                    <img width="150" src="{{ Storage::url($data->profile_img) }}" class="mt-2 "
+                                        alt="Profile Photo">
+                                @else
+                                    <img src="{{ asset('images/avatars/10.png') }}" class="mt-2" alt="Default Avatar"
+                                        style="height: auto;width: 100px;">
+                                @endif
+
+                                <span class="text-danger">
+                                    @error('profile_img')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
                             {{-- <div class="col-12 col-sm-6 mb-1">
                                 <label class="form-label" for="accountAddress">Address</label>
                                 <input type="text" value="{{ $data->address }}" class="form-control" id="accountAddress"
@@ -280,7 +330,34 @@
 @endsection
 
 @section('page-script')
+
+
     <script src="{{ asset(mix('js/scripts/components/components-bs-toast.js')) }}"></script>
     <!-- Page js files -->
     <script src="{{ asset(mix('js/scripts/pages/page-account-settings-account.js')) }}"></script>
+
+    <script>
+        // Function to generate a random password
+        function generateRandomPassword(length) {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset.charAt(randomIndex);
+            }
+            return password;
+        }
+
+        $(document).ready(function() {
+            // Generate password when the button is clicked
+            $("#generatePassword").click(function() {
+                const generatedPassword = generateRandomPassword(
+                    10); // You can adjust the length of the password here
+                $("#password").val(generatedPassword);
+                $("#password").select();
+                document.execCommand("copy");
+                alert("Password copied to clipboard!");
+            });
+        });
+    </script>
 @endsection

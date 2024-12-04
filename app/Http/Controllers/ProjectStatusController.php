@@ -93,7 +93,7 @@ class ProjectStatusController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Project Status');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-project-status-list")->with('error', 'Error while adding Project Status');
         }
     }
@@ -112,7 +112,7 @@ class ProjectStatusController extends Controller
 
             return view('.content.apps.ProjectStatus.create-edit', compact('page_data', 'department', 'data', 'departmentslist'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-project-status-list")->with('error', 'Error while editing Project Status');
         }
     }

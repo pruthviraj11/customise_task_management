@@ -17,13 +17,13 @@ class SubDepartmentRepository
 
     public function update($id, array $data)
     {
-        return SubDepartment::where('id', $id)->update($data);
+        return SubDepartment::findOrFail($id)->update($data);
     }
 
     public function delete($id)
     {
-        SubDepartment::Where('id', $id)->update($id, ['deleted_by' => auth()->user()->id]);
-        return SubDepartment::where('id', $id)->delete();
+        // SubDepartment::Where('id', $id)->update($id, ['deleted_by' => auth()->user()->id]);
+        return SubDepartment::findOrFail($id)->delete();
     }
     public function getAll()
     {

@@ -38,7 +38,44 @@
                         {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
                     </div>
                     <div class="card-body">
+
                         <div class="row">
+
+                              <div class="col-md-6 d-flex col-sm-12 mb-1">
+                                <div class="form-check m-2 form-check-success">
+                                    <input type="radio" class="form-check-input" id="ticket" name="task_type"
+                                        value="1" {{ $task != '' && $task->ticket == 1 ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="ticket">Ticket</label>
+                                </div>
+
+                                <div class="form-check m-2 form-check-success">
+                                    <input type="radio" class="form-check-input" id="task" name="task_type"
+                                        value="0" {{ $task != '' && $task->ticket == 0 ? 'checked' : '' }}
+                                        @if ($task == '') checked @endif>
+                                    <label class="form-check-label" for="task">Task</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @if ($task != '')
+                                    <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
+                                      <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}  {{ $task->creator->last_name }}</a>
+                                @endif
+                                                              @if($hasAcceptedTask)
+                                                          @php $encrypted_id= encrypt($task->id)@endphp
+    {{-- Button to edit the task if accepted --}}
+    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href="{{ route('app-task-edit', $encrypted_id) }}" target='_blank'>
+        <i class='ficon' data-feather='edit'></i>
+    </a>
+@else
+    {{-- Button to go back to task list if not accepted --}}
+    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Go to Task List' class='btn-sm btn-secondary me-1' href="{{ route('app-task-requested') }}">
+        <i class='ficon' data-feather='list'></i>
+    </a>
+@endif
+
+
+                            </div>
+
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="title">
                                     Title<span class="red">*</span></label>
@@ -51,6 +88,7 @@
                                     @enderror
                                 </span>
                             </div>
+
 
 
 
@@ -103,7 +141,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="start_date">Start Date</label>
                                 <input readonly type="date" id="start_date" class="form-control" name="start_date"
                                     value="{{ old('start_date') ?? ($task != '' ? $task->start_date : '') }}">
@@ -113,7 +151,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="due_date">End Date</label>
                                 <input readonly type="date" id="due_date" class="form-control" name="due_date"
                                     value="{{ old('due_date') ?? ($task != '' ? $task->due_date : '') }}">
@@ -123,7 +161,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="priority_id">Priority</label>
                                 <select disabled id="priority_id" class="form-select select2" name="priority_id">
                                     <option value="">Select Priority</option>
@@ -140,7 +178,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="department_id">Department</label>
                                 <select disabled id="department_id" class="form-select select2" name="department_id">
                                     <option value="">Select Department</option>
@@ -158,7 +196,7 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="sub_department_id">Sub Department</label>
                                 <select disabled id="sub_department_id" class="form-select select2"
                                     name="sub_department_id">
@@ -181,7 +219,7 @@
                             </div>
 
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="task_status">Status</label>
                                 <select disabled id="task_status" class="form-select select2" name="task_status">
                                     <option value="">Select Sub Department</option>
@@ -198,6 +236,19 @@
                                     @enderror
                                 </span>
                             </div>
+                            @if ($task->completed_date)
+                                <div class="col-md-4 col-sm-12 mb-1">
+                                    <label class="form-label" for="completed_dates">Completed Date</label>
+                                    <input readonly type="date" id="completed_dates" class="form-control"
+                                        name="completed_dates"
+                                        value="{{ old('completed_dates') ?? ($task != '' ? $task->completed_date : '') }}">
+                                    <span class="text-danger">
+                                        @error('completed_dates')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            @endif
                             <div class="col-md-12 col-sm-12 mb-1">
                                 <label class="form-label" for="attachments">Attachments</label>
                                 {{-- <label class="form-label" for="attachments">Attachments</label>
@@ -242,8 +293,9 @@
                                                 class="user-details d-flex justify-content-between align-items-center flex-wrap">
                                                 <div class="avatar me-75">
                                                     @if (!empty($comment->creator->profile_img))
-                                                         <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-            class="" alt="Profile Image" width="48" height="48">
+                                                        <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
+                                                            class="" alt="Profile Image" width="48"
+                                                            height="48">
                                                     @else
                                                         <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
                                                             class="" alt="Default Avatar" width="48"

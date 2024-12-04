@@ -8,17 +8,20 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SubDepartmentController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthenticationController;
-
+use App\Http\Controllers\TaskImportController;
+use App\Http\Controllers\SubdepartmentImportController;
+use App\Exports\TasksExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,11 +75,16 @@ Route::group(['prefix' => 'auth'], function () {
 
 
 Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
+    Route::get('/tasks/data', [DashboardController::class, 'getTaskData'])->name('tasks.data');
+    Route::get('users/status-data', [DashboardController::class, 'getUserStatusData'])->name('users.task.status.data');
+    Route::get('users/status-hierarchy', [DashboardController::class, 'getUserStatusData_hierarchy'])->name('users.task.status.hierarchy');
     Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
     Route::get('send/mail', [MailController::class, 'sendMail'])->name('send-mail');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
+    Route::get('activity', [DashboardController::class, 'activity'])->name('activity-index');
 
+    Route::get('rejected-tasks', [TaskController::class, 'rejected_task'])->name('rejected-tasks');
 
     Route::get('/profile/{encrypted_id}', [UsersController::class, 'profile'])->name('profile.show');
     Route::post('/profile/update/{encrypted_id}', [UsersController::class, 'updateProfile'])->name('profile-update');
@@ -86,7 +94,16 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     //   ROLE AND USER CONTROLLER
 
     // =============================================================================================================================
+    //Notification
 
+    Route::get('notification/reminders', [NotificationController::class, 'getAllRecentNotification'])->name('api-notification-recent');
+    Route::get('notification/list', [NotificationController::class, 'index'])->name('app-notifications');
+    Route::get('notification/read/{id?}', [NotificationController::class, 'notification_read'])->name('app-notifications-read');
+    Route::get('notification/mark/read/{id?}', [NotificationController::class, 'notification_mark_read'])->name('app-notifications-mark-read');
+    Route::get('notification/read/all', [NotificationController::class, 'notification_read'])->name('app-notifications-read-all');
+    Route::get('notification/getAll', [NotificationController::class, 'getAll'])->name('notifications-get-all');
+
+    //
     // Roles Start
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
     Route::get('roles/getAll', [RoleController::class, 'getAll'])->name('app-roles-get-all');
@@ -181,10 +198,12 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     //Task start
     Route::get('task/list', [TaskController::class, 'index'])->name('app-task-list');
-    Route::get('task/card-view', [TaskController::class, 'kanban'])->name('app-task-cardView');
+    Route::get('task/card-view/{type}', [TaskController::class, 'kanban'])->name('app-task-cardView');
+    // Route::get('task/card-view/mytask', [TaskController::class, 'kanban'])->name('app-task-kanban-mytask');
     Route::get('task/add', [TaskController::class, 'create'])->name('app-task-add');
     Route::post('task/store', [TaskController::class, 'store'])->name('app-task-store');
     Route::get('task/edit/{encrypted_id}', [TaskController::class, 'edit'])->name('app-task-edit');
+    Route::get('task/retrive/{encrypted_id}', [TaskController::class, 'retrive'])->name('app-task-retrive');
     Route::put('task/update/{encrypted_id}', [TaskController::class, 'update'])->name('app-task-update');
     Route::get('task/destroy/{encrypted_id}', [TaskController::class, 'destroy'])->name('app-task-destroy');
     Route::get('task/getAll', [TaskController::class, 'getAll'])->name('app-task-get-all');
@@ -195,7 +214,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');
     Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
     Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
-    Route::get('task/getAllForView', [TaskController::class, 'getAllForView'])->name('app-task-getAllForView-all');
+    Route::get('task/getAllForView/{type}', [TaskController::class, 'getAllForView'])->name('app-task-getAllForView-all');
     Route::get('task/updateTaskFromView/{encrypted_id}/{status}', [TaskController::class, 'updateTaskFromView'])->name('app-task-updateTaskFromView-all');
     Route::post('comments', [TaskController::class, 'storeComments'])->name('comments.store');
     Route::get('sub-departments/{department_id}', [TaskController::class, 'getSubDepartments'])->name('app-sub-departments');
@@ -209,14 +228,16 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');
     // Task List End
 
-
-    // Calender Start
-    Route::get('calender', [CalendarController::class, 'index'])->name('app-calender');
-
-    // Calender End
-
     Route::get('task/mytask', [TaskController::class, 'index'])->name('app-task-get-mytask');
+    Route::get('task/updateTaskNumber', [TaskController::class, 'updateTaskNumber'])->name('app-task-updateTaskNumber');
     Route::get('task/get_task', [TaskController::class, 'getAll_mytask'])->name('app-task-mytask-get');
+    Route::get('task/kanban/mytask', [TaskController::class, 'getAll_kanban_mytask'])->name('app-task-kanban-mytask-get');
+    Route::get('task/kanban/accepted', [TaskController::class, 'getAll_kanban_accepted'])->name('app-task-kanban-get-accepted');
+    Route::get('task/kanban/requested', [TaskController::class, 'getAll_kanban_requested'])->name('app-task-kanban-get-requested');
+    Route::get('task/kanban/all', [TaskController::class, 'getAll_kanban_all'])->name('app-task-kanban-get-all');
+    Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
+    Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
+    // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
 
     Route::get('task/accepted_by_me', [TaskController::class, 'index'])->name('app-task-get-accepted_by_me');
     Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
@@ -230,8 +251,14 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/conceptualization', [TaskController::class, 'index'])->name('app-task-get-conceptualization');
     Route::get('task/getAll_conceptualization', [TaskController::class, 'getAll_conceptualization'])->name('app-task-getAll_conceptualization-get');
 
+    Route::get('task/closed', [TaskController::class, 'index'])->name('app-task-get-close');
+    Route::get('task/getAll_close', [TaskController::class, 'getAll_close'])->name('app-task-getAll_close-get');
+
     Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-get-due_date_past');
     Route::get('task/getAll_due_date_past', [TaskController::class, 'getAll_due_date_past'])->name('app-task-getAll_due_date_past-get');
+
+    Route::get('task/deleted', [TaskController::class, 'index'])->name('app-task-get-deleted');
+    Route::get('task/getAll_deleted', [TaskController::class, 'getAll_deleted'])->name('app-task-getAll_deleted-get');
 
     Route::get('task/scope_defined', [TaskController::class, 'index'])->name('app-task-get-scope_defined');
     Route::get('task/getAll_scope_defined', [TaskController::class, 'getAll_scope_defined'])->name('app-task-getAll_scope_defined-get');
@@ -252,9 +279,53 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/admin_rej', [TaskController::class, 'index'])->name('app-task-get-admin_rej');
     Route::get('task/getAll_admin_rej', [TaskController::class, 'getAll_admin_rej'])->name('app-task-getAll_admin_rej-get');
 
+    Route::get('task/total_deleted', [TaskController::class, 'index'])->name('app-task-get-total_deleted');
+    Route::get('task/get_deleted', [TaskController::class, 'getAll_total_deleted'])->name('app-task-total_deleted-get');
+
     Route::get('task/total_task', [TaskController::class, 'index'])->name('app-task-get-total_task');
+    Route::get('task/my_and_team', [TaskController::class, 'index'])->name('app-task-get-my_and_team');
+
     Route::get('task/getAll_total_task', [TaskController::class, 'getAll_total_task'])->name('app-task-getAll_total_task-get');
+    Route::get('task/my_and_team/get', [TaskController::class, 'getAll_team_and_mytask'])->name('app-task-my_and_team-get');
 
+    Route::get('task/team_task', [TaskController::class, 'index'])->name('app-task-get-team_task');
+    Route::get('task/team_task/list', [TaskController::class, 'getAll_team_task'])->name('app-task-get-team_task-list');
+    Route::get('attachments/{attachmentId}/download', [TaskController::class, 'download'])->name('attachment.download');
 
+    // Route::get('/attachments/{attachmentId}/download', 'AttachmentController@download')->name('attachment.download');
+    Route::get('/statuses', [TaskController::class, 'getStatuses'])->name('get-status');
+    Route::get('/get-projects', [TaskController::class, 'getProjects'])->name('get-projects');
+
+    Route::get('/created-by-options', [TaskController::class, 'getCreatedByOptions'])->name('get-users');
+    Route::get('/department-options', [TaskController::class, 'getDepartmentOptions'])->name('get-departments');
+
+    Route::post('/departments/import', [DepartmentController::class, 'import'])->name('departments.import');
+
+    //export task List
+    Route::get('/export-tasks', function () {
+        return Excel::download(new TasksExport, 'tasks.xlsx');
+    })->name('export-tasks');
+    Route::get('/export-total-tasks', [TaskController::class, 'exportTotalTasks'])->name('export-total-tasks');
 });
+Route::post('users/import', [UsersController::class, 'import'])->name('users.import');
+Route::get('login/as/{id}', [UsersController::class, 'login_as'])->name('users.login');
+
+// Route::post()
+Route::post('/import-tasks', [TaskImportController::class, 'import'])->name('tasks.import');
+Route::post('/update-tasks', [TaskImportController::class, 'import'])->name('tasks.import');
+Route::post('/import-subdepartments', [SubdepartmentImportController::class, 'import'])->name('subdepartment.import');
+
 /* Route Apps */
+use App\Http\Controllers\ImportController;
+
+Route::post('import', [ImportController::class, 'import'])->name('import');
+Route::post('/tasks/import', [TaskController::class, 'importTasks'])->name('tasks.import');
+
+
+Route::get('/task/get-counts', [DashboardController::class, 'getTaskCounts'])->name('app-task-get-counts');
+Route::get('/task-counts', [DashboardController::class, 'getTaskCounts_2'])->name('task.counts');
+Route::get('/tasks/total-count', [DashboardController::class, 'getTotalTaskCountAjax'])->name('tasks.totalCount');
+
+Route::any('/upload_task', [DashboardController::class, 'upload_task'])->name('kk');
+
+Route::get('/tasks/team_task',[DashboardController::class, 'team_task'])->name('tasks.team_task');

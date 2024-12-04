@@ -17,12 +17,17 @@ class TaskRepository
 
     public function update($id, array $data)
     {
-        return Task::where('id', $id)->update($data);
+        // return Task::where('id', $id)->update($data);
+
+        $task = Task::findOrFail($id);
+        return $task->update($data);
     }
 
     public function delete($id)
     {
-        return Task::where('id', $id)->delete();
+
+        // return Task::where('id', $id)->delete();
+        return Task::findOrFail($id)->delete();
     }
     public function getAll()
     {

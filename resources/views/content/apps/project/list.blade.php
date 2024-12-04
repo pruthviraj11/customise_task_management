@@ -40,8 +40,9 @@
 
                                 <th>Actions</th>
                                 <th>Project Name</th>
-                                <th> Department </th>
+                                {{-- <th> Users </th> --}}
                                 <th>Description</th>
+                                <th>Created date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -76,67 +77,132 @@
 
 @section('page-script')
     <script>
-        $(document).ready(function() {
-            $('#projects-table').DataTable({
-                processing: true,
-                serverSide: true,
-                dom: 'lBfrtip',
-                buttons: [
-                    {
-                        extend: 'excel',
-                        text: '  <i class="ficon" data-feather="file-text"></i> Excel',
-                        title: '',
-                        filename: 'departments',
-                        className: 'btn btn-primary  btn-sm',
-                        exportOptions: {
-                            modifier: {
-                                length: -1
-                            },
-                            columns: [1, 2, 3, 4, 5]
-                        }
-                    },
-                   
-                ],
-                ajax: "{{ route('app-project-get-all') }}",
-                columns: [{
-                        data: 'actions',
-                        name: 'actions',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'project_name',
-                        name: 'project_name',
-                    },
-                    {
-                        data: 'users',
-                        name: 'users'
-                    },
-                    {
-                        data: 'description',
-                        name: 'description'
-                    },
+$(document).ready(function() {
+    $('#projects-table').DataTable({
+        dom: '<"export-buttons"B>lfrtip',
+        processing: true,
+        serverSide: true,
+        buttons: [{
+            extend: 'excel',
+            text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
+            action: newexportaction, // Custom export action function
+            title: '',
+            filename: 'Task',
+            className: 'btn btn-success btn-sm',
+            exportOptions: {
+                modifier: {
+                    length: -1 // Exports all rows
+                },
+                columns: [1, 2, 3,4] // Export specific columns (adjust indexes as needed)
+            }
+        }],
+        ajax: "{{ route('app-project-get-all') }}", // URL to fetch data via AJAX
+        columns: [
+            {
+                data: 'actions',
+                name: 'actions',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'project_name',
+                name: 'project_name',
+            },
+            {
+                data: 'description',
+                name: 'description'
+            },
+            {
+    data: 'created_at',
+    name: 'created_at',
+    searchable: true,
+    render: function(data) {
+        if (data) {
+            var date = new Date(data);
 
-                    {
-                        data: 'status',
-                        name: 'status',
-                        render: function(data) {
+            // Format date as DD/MM/YYYY
+            var formattedDate = ('0' + date.getDate()).slice(-2) + '/' +
+                                ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+                                date.getFullYear();
 
-                            if (data === 'on') {
-                                return '<span class="badge bg-success">Active</span>';
-                            } else {
-                                return '<span class="badge bg-danger">Inactive</span>';
-                            }
-                        }
-                    },
+            // Format time as HH:MM:SS
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            var seconds = ('0' + date.getSeconds()).slice(-2);
 
-                ],
-                drawCallback: function() {
-                    feather.replace();
+            var formattedTime = hours + ':' + minutes + ':' + seconds;
+
+            return formattedDate + ' ' + formattedTime; // Combine date and time
+        }
+        return '';
+    }
+},
+            {
+                data: 'status',
+                name: 'status',
+                render: function(data) {
+                    if (data === 'on') {
+                        return '<span class="badge bg-success">Active</span>';
+                    } else {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
                 }
+            }
+        ],
+        drawCallback: function() {
+            feather.replace(); // Replace Feather icons after each draw
+        }
+    });
 
-            });
-        });
+    // Custom Excel export action function
+ function newexportaction(e, dt, button, config) {
+                var self = this;
+                var oldStart = dt.settings()[0]._iDisplayStart;
+                dt.one('preXhr', function(e, s, data) {
+                    // Just this once, load all data from the server...
+                    data.start = 0;
+                    data.length = 2147483647;
+                    dt.one('preDraw', function(e, settings) {
+                        // Call the original action function
+                        if (button[0].className.indexOf('buttons-copy') >= 0) {
+                            $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button,
+                                config);
+                        } else if (button[0].className.indexOf('buttons-excel') >= 0) {
+                            $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
+                                $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt,
+                                    button, config) :
+                                $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt,
+                                    button, config);
+                        } else if (button[0].className.indexOf('buttons-csv') >= 0) {
+                            $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
+                                $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button,
+                                    config) :
+                                $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button,
+                                    config);
+                        } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
+                            $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
+                                $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
+                                    config) :
+                                $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button,
+                                    config);
+                        } else if (button[0].className.indexOf('buttons-print') >= 0) {
+                            $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
+                        }
+                        dt.one('preXhr', function(e, s, data) {
+                            settings._iDisplayStart = oldStart;
+                            data.start = oldStart;
+                        });
+                        // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
+                        setTimeout(dt.ajax.reload, 0);
+                        // Prevent rendering of the full data to the DOM
+                        return false;
+                    });
+                });
+                // Requery the server with the new one-time export settings
+                dt.ajax.reload();
+            }
+});
+
 
         $(document).on("click", ".confirm-delete", function(e) {
             e.preventDefault();

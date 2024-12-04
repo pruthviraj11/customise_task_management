@@ -82,7 +82,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            {{-- <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="user_id">User</label>
                                 <select id="user_id" class="form-select select2" name="user_id[]" multiple>
                                     <option value="">Select User</option>
@@ -98,11 +98,11 @@
                                         {{ $message }}
                                     @enderror
                                 </span>
-                            </div>
+                            </div> --}}
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="project_status_id">Project Status</label>
                                 <select id="project_status_id" class="form-select select2" name="project_status_id">
-                                    <option value="">Select Project Status</option>
+                                    {{-- <option value="">Select Project Status</option> --}}
                                     @foreach ($projectStatuses as $status)
                                         <option value="{{ $status->id }}"
                                             {{ (old('project_status_id') ?? ($project != '' ? $project->project_status_id : '')) == $status->id ? 'selected' : '' }}>
@@ -123,7 +123,8 @@
                                 <div class="form-check form-check-success form-switch">
                                     <input type="checkbox" name="status"
                                         {{ $project != '' && $project->status == 'on' ? 'checked' : '' }}
-                                        class="form-check-input" id="customSwitch4" @if(empty($project)) checked  @endif />
+                                        class="form-check-input" id="customSwitch4"
+                                        @if (empty($project)) checked @endif />
                                 </div>
                                 <span class="text-danger">
                                     @error('status')

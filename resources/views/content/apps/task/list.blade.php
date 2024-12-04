@@ -4,15 +4,41 @@
 
 @section('vendor-style')
     {{-- Page Css files --}}
+    <link rel="stylesheet" href="{{ asset(mix('vendors/css/pickers/flatpickr/flatpickr.min.css')) }}">
+
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/forms/select/select2.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/dataTables.bootstrap5.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/responsive.bootstrap5.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/buttons.bootstrap5.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/rowGroup.bootstrap5.min.css')) }}">
+
 @endsection
 
+<style>
+    .table-responsive {
+        position: relative;
+        height: 600px;
+        /* Set a specific height for the scrollable area */
+        overflow-y: auto;
+        /* Allow vertical scrolling */
+        margin-top: 20px;
+    }
 
+    #tasks-table thead th {
+        position: sticky;
+        top: 0;
+        /* Ensure the same background as the table header */
+        z-index: 10;
+    }
+
+    #tasks-table th,
+    #tasks-table td {
+        padding: 10px;
+        text-align: center;
+    }
+</style>
 @section('page-style')
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/base/plugins/forms/pickers/form-flat-pickr.css') }}">
     {{-- Page Css files --}}
     <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/forms/form-validation.css')) }}">
 @endsection
@@ -29,32 +55,139 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Task list</h4>
-                <div class="d-flex flex-row col-auto gap-1">
-                    <a href="{{ route('app-task-add') }}" class=" btn btn-primary">Add Task
-                    </a>
-                    <a href="{{ route('app-task-cardView') }}" class="btn btn-primary">Card View
-                    </a>
-                </div>
+
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
+                    @if ($type === 'list')
+                        <!-- Filter Inputs -->
+                        {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
+                        <div class="row mb-2">
+                            <div class="mb-1 col-3">
+                                <label class="form-label" for="filter-status">Task Or Ticket</label>
+                                <select id="task" class="form-select select2">
+                                    <option value="">ALL</option>
+                                    <option value="0">Task</option>
+                                    <option value="1">Ticket</option>
+                                </select>
+                            </div>
+                            <div class="mb-1 col-3 ">
+                                <label class="form-label" for="filter-status">Filter by Status
+                                    By</label>
+                                <select class="  form-select select2" id="filter-status">
+                                    <option value="">ALL</option>
+                                </select>
+                            </div>
+                            <div class="mb-1 col-3 ">
+                                <label class="form-label" for="filter-project">Filter by Project</label>
+                                <select class="form-select select2" id="filter-project">
+                                    <option value="">ALL</option>
+                                </select>
+                            </div>
+
+
+                            <div class="mb-1 col-3 ">
+                                <label class="form-label" for="filter-created-by">Filter by Created
+                                    By</label>
+                                <select id="filter-created-by" class="form-select select2">
+                                    <option value="">ALL</option>
+                                </select>
+                            </div>
+                            <div class="mb-1 col-3">
+                                <label class="form-label" for="filter-assignee">Filter by Assignee</label>
+                                <select id="filter-assignee" class="form-select select2" multiple>
+                                    <option value="">ALL</option>
+                                </select>
+                            </div>
+                            <div class="mb-1 col-3 ">
+                                <label class="form-label" for="filter-department">Filter by department</label>
+                                <select id="filter-department"class=" form-select select2">
+                                    <option value="">ALL </option>
+                                </select>
+                            </div>
+                            <div class="mb-1 col-3 ">
+                                <label class="form-label" for="dt_date">Start Date
+                                    By</label>
+                                <input type="text" class="form-control dt-date flatpickr-range dt-input"
+                                    data-mb-1column="5" id="dt_date" placeholder="StartDate to EndDate"
+                                    data-mb-1column-index="4" name="dt_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
+                                    data-column-index="4" name="value_from_start_date" />
+                                <input type="hidden" class="form-control dt-date end_date dt-input"
+                                    name="value_from_end_date" data-column="5" data-column-index="4" />
+                            </div>
+                            <div class="mb-1  col-3">
+                                <label class="form-label" for="end_date">End Date</label>
+                                <input type="text" class="form-control dt-date flatpickr-range dt-input" data-column="5"
+                                    id="end_date" placeholder="StartDate to EndDate" data-column-index="4"
+                                    name="end_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
+                                    data-column-index="4" name="value_from_start_date" />
+                                <input type="hidden" class="form-control dt-date end_date dt-input"
+                                    name="value_from_end_date" data-column="5" data-column-index="4" />
+                            </div>
+
+                            <div class="mb-1 col-3">
+                                <label class="form-label" for="accepted_task_date">Accepted Task Date</label>
+                                <input type="text" class="form-control dt-date flatpickr-range dt-input"
+                                    data-column="5" id="accepted_task_date" placeholder="Start Date to End Date"
+                                    data-column-index="4" name="accepted_task_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
+                                    data-column-index="4" name="value_from_accepted_task_start_date" />
+                                <input type="hidden" class="form-control dt-date end_date dt-input"
+                                    name="value_from_accepted_task_end_date" data-column="5" data-column-index="4" />
+                            </div>
+
+
+                            {{-- <input type="date" id="filter-start-date" class="col  form-control"
+                                placeholder="Filter by Start Date"> --}}
+                            <div class="col-md-12 text-end">
+                                <button id="apply-filters" class="mt-2 col btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="d-flex flex-row mb-1 col-auto gap-1">
+                        <a href="{{ route('app-task-add') }}" class=" justify-content-center btn btn-warning"> <i
+                                data-feather="plus-circle" class="font-medium-4"></i> Add Task
+                        </a>
+
+                        @if ($type != 'requested' && $type != 'my_and_team' && $type != 'deleted')
+                            <a href="{{ route('app-task-cardView', $type) }}" class="btn btn-info">Card View</a>
+                        @endif
+                        {{-- <a href="{{ route('export-tasks') }}" class="btn btn-success">Export</a> --}}
+                        @if (auth()->user()->hasRole('Super Admin') && $type == 'list')
+                            <a href="{{ route('export-total-tasks') }}" class="btn btn-success">Export</a>
+                        @endif
+                    </div>
                     <table class="user-list-table table " id="tasks-table">
                         <thead>
-                            <tr>
+                            <tr class="">
 
                                 <th>Actions</th>
+                                <th>Task Number</th>
+                                <th>Task/Ticket</th>
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Subject</th>
                                 <th>Assingn By</th>
                                 <th>Task assign to</th>
+                                <th>Status</th>
+
                                 <th>Created Date</th>
                                 <th>Start Date</th>
+                                <th>Start Date</th>
                                 <th>Due Date</th>
+                                <th>Due Date</th>
+                                <th>Completed Date</th>
                                 <th>Accepted task Date</th>
-                                <th>Status</th>
+
                                 <th>Project</th>
                                 <th>Department</th>
+                                <th>Sub Department</th>
+                                <th>Owner Department</th>
+                                <th>Owner Sub Department</th>
+                                <th>Owner Contatinfo</th>
+                                <th>Close Date</th>
                             </tr>
                         </thead>
                     </table>
@@ -128,6 +261,8 @@
 
 @section('vendor-script')
     {{-- Vendor js files --}}
+    <script src="{{ asset(mix('vendors/js/pickers/flatpickr/flatpickr.min.js')) }}"></script>
+
     <script src="{{ asset(mix('vendors/js/forms/select/select2.full.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/tables/datatable/jquery.dataTables.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/tables/datatable/dataTables.bootstrap5.min.js')) }}"></script>
@@ -147,8 +282,350 @@
 @endsection
 
 @section('page-script')
+    <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
+    <script>
+        // Datepicker for advanced filter
+        var separator = ' - ',
+            rangePickr = $('.flatpickr-range'),
+            dateFormat = 'DD/MM/YYYY';
+        var options = {
+            autoUpdateInput: false,
+            autoApply: true,
+            locale: {
+                format: dateFormat,
+                separator: separator
+            },
+            opens: $('html').attr('data-textdirection') === 'rtl' ? 'left' : 'right'
+        };
+
+        //
+        if (rangePickr.length) {
+            rangePickr.flatpickr({
+                mode: 'range',
+                dateFormat: 'd/m/Y',
+                onClose: function(selectedDates, dateStr, instance) {
+                    var startDate = '',
+                        endDate = new Date();
+                    if (selectedDates[0] != undefined) {
+                        startDate =
+                            selectedDates[0].getMonth() + 1 + '/' + selectedDates[0].getDate() + '/' +
+                            selectedDates[0].getFullYear();
+                        $('.start_date').val(startDate);
+                    }
+                    if (selectedDates[1] != undefined) {
+                        endDate =
+                            selectedDates[1].getMonth() + 1 + '/' + selectedDates[1].getDate() + '/' +
+                            selectedDates[1].getFullYear();
+                        $('.end_date').val(endDate);
+                    }
+                    $(rangePickr).trigger('change').trigger('keyup');
+                }
+            });
+        }
+    </script>
     <script>
         $(document).ready(function() {
+            // function newexportaction(e, dt, button, config) {
+            //     var self = this;
+            //     var oldStart = dt.settings()[0]._iDisplayStart;
+            //     dt.one('preXhr', function(e, s, data) {
+            //         // Load all data from the server
+            //         data.start = 0;
+            //         data.length = 2147483647;
+            //         dt.one('preDraw', function(e, settings) {
+            //             // Call the original action function
+            //             if (button[0].className.indexOf('buttons-copy') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button,
+            //                     config);
+            //             } else if (button[0].className.indexOf('buttons-excel') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt,
+            //                         button, config) :
+            //                     $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt,
+            //                         button, config);
+            //             } else if (button[0].className.indexOf('buttons-csv') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button,
+            //                         config) :
+            //                     $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button,
+            //                         config);
+            //             } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
+            //                         config) :
+            //                     $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button,
+            //                         config);
+            //             } else if (button[0].className.indexOf('buttons-print') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
+            //             }
+            //             dt.one('preXhr', function(e, s, data) {
+            //                 settings._iDisplayStart = oldStart;
+            //                 data.start = oldStart;
+            //             });
+            //             // Reload the grid with the original page
+            //             setTimeout(dt.ajax.reload, 0);
+            //             // Prevent rendering of the full data to the DOM
+            //             return false;
+            //         });
+            //     });
+            //     // Requery the server with the new one-time export settings
+            //     dt.ajax.reload();
+            // }
+
+
+            var type = @json($type);
+            if (type === 'accepted') {
+                ajaxUrl = "{{ route('app-task-get-accepted') }}";
+            } else if (type === 'team_task') {
+                ajaxUrl = "{{ route('app-task-get-team_task-list') }}";
+            } else if (type === 'requested') {
+                ajaxUrl = "{{ route('app-task-get-requested') }}";
+            } else if (type === 'list') {
+                ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
+            } else if (type == 'mytask') {
+                ajaxUrl = "{{ route('app-task-mytask-get') }}";
+            } else if (type == 'accepted_by_me') {
+                ajaxUrl = "{{ route('app-task-getAll_accepted_by_me-get') }}";
+            } else if (type == 'assign_by_me') {
+                ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
+            } else if (type == 'requested_me') {
+                ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
+            } else if (type == 'conceptualization') {
+                ajaxUrl = "{{ route('app-task-getAll_conceptualization-get') }}";
+            } else if (type == 'close') {
+                ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
+            } else if (type == 'due_date_past') {
+                ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
+            } else if (type == 'scope_defined') {
+                ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
+            } else if (type == 'completed') {
+                ajaxUrl = "{{ route('app-task-getAll_completed-get') }}";
+            } else if (type == 'hold') {
+                ajaxUrl = "{{ route('app-task-getAll_hold-get') }}";
+            } else if (type == 'in_execution') {
+                ajaxUrl = "{{ route('app-task-getAll_in_execution-get') }}";
+            } else if (type == 'admin_acc') {
+                ajaxUrl = "{{ route('app-task-getAll_admin_acc-get') }}";
+            } else if (type == 'admin_req') {
+                ajaxUrl = "{{ route('app-task-getAll_admin_req-get') }}";
+            } else if (type == 'admin_rej') {
+                ajaxUrl = "{{ route('app-task-getAll_admin_rej-get') }}";
+            } else if (type == 'total_task') {
+                ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
+            } else if (type == 'deleted') {
+                ajaxUrl = "{{ route('app-task-getAll_deleted-get') }}";
+            } else if (type == 'my_and_team') {
+                ajaxUrl = "{{ route('app-task-my_and_team-get') }}";
+            }
+            var table = $('#tasks-table').DataTable({
+                dom: '<"export-buttons"B>lfrtip',
+                // processing: true,
+                // serverSide: true,
+                // pageLength: 10,
+                filter: true,
+                deferRender: true,
+                // scrollY: 200,
+                scrollCollapse: true,
+                scroller: true,
+                "searching": true,
+                buttons: [{
+                    extend: 'excel',
+                    text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
+                    action: newexportaction,
+                    title: '',
+                    filename: 'Task',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        modifier: {
+                            length: -1
+                        },
+                        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17]
+                    }
+                }],
+                ajax: {
+                    url: ajaxUrl,
+                    data: function(d) {
+                        d.department = $('#filter-department').val();
+                        d.assignees = $('#filter-assignee').val();
+                        d.dt_date = $('#dt_date').val();
+                        d.task = $('#task').val();
+                        d.accepted_task_date = $('#accepted_task_date').val();
+                        d.end_date = $('#end_date').val();
+                        d.status = $('#filter-status').val();
+                        d.project = $('#filter-project').val();
+                        d.created_by = $('#filter-created-by').val();
+                        d.start_date = $('#filter-start-date').val();
+                    }
+                },
+                order: [
+                    [13, 'desc']
+                ],
+                columns: [{
+                        data: 'actions',
+                        name: 'actions',
+                        searchable: false
+                    }, // Non-searchable column
+                    {
+                        data: 'TaskNumber',
+                        name: 'TaskNumber',
+                        searchable: true,
+                    }, // Ensure searchable is set to true
+                    {
+                        data: 'ticket',
+                        name: 'ticket',
+                        searchable: true,
+                        render: function(data) {
+                            return data == '0' ? '<span class="badge bg-success">Task</span>' :
+                                '<span class="badge bg-info">Ticket</span>';
+                        }
+                    },
+                    {
+                        data: 'title',
+                        name: 'title',
+                        searchable: true
+                    },
+                    {
+                        data: 'description',
+                        name: 'description',
+                        visible: false,
+                        export: true,
+                        searchable: true
+                    },
+                    {
+                        data: 'subject',
+                        name: 'subject',
+                        searchable: true
+                    },
+                    {
+                        data: 'created_by_username',
+                        name: 'created_by_username',
+                        searchable: true
+                    },
+                    {
+                        data: 'task_Assign',
+                        name: 'task_Assign',
+                        searchable: true
+                    },
+                    {
+                        data: 'task_status_name',
+                        name: 'task_status_name',
+                        searchable: true
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at',
+                        searchable: true,
+                        render: function(data) {
+                            if (data) {
+                                var date = new Date(data);
+
+                                // Format date as DD/MM/YYYY
+                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' +
+                                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+                                    date.getFullYear();
+
+                                // Format time as HH:MM:SS
+                                var hours = ('0' + date.getHours()).slice(-2);
+                                var minutes = ('0' + date.getMinutes()).slice(-2);
+                                var seconds = ('0' + date.getSeconds()).slice(-2);
+
+                                var formattedTime = hours + ':' + minutes + ':' + seconds;
+
+                                return formattedDate + ' ' + formattedTime; // Combine date and time
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'start_date',
+                        name: 'start_date',
+                        searchable: true,
+                        render: function(data) {
+                            if (data) {
+                                var date = new Date(data);
+                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
+                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+                                return formattedDate;
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'start_date',
+                        name: 'start_date',
+                        visible: false
+                    },
+                    {
+                        data: 'due_date',
+                        name: 'due_date',
+                        searchable: true,
+                        render: function(data) {
+                            if (data) {
+                                var date = new Date(data);
+                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
+                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+                                return formattedDate;
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'due_date',
+                        name: 'due_date',
+                        visible: false,
+                    },
+                    {
+                        data: 'completed_date',
+                        name: 'completed_date',
+                        searchable: true
+                    },
+                    {
+                        data: 'accepted_date',
+                        name: 'accepted_date',
+                        searchable: true
+                    },
+                    {
+                        data: 'project_name',
+                        name: 'project_name',
+                        searchable: true
+                    }, // Ensure searchable is true here
+                    {
+                        data: 'department_name',
+                        name: 'department_name',
+                        searchable: true
+                    },
+                    {
+                        data: 'sub_department_name',
+                        name: 'sub_department_name',
+                        searchable: true
+                    },
+                    {
+                        data: 'created_by_department',
+                        name: 'created_by_department',
+                        searchable: true
+                    },
+                    {
+                        data: 'created_by_sub_department',
+                        name: 'created_by_sub_department',
+                        searchable: true
+                    },
+                    {
+                        data: 'created_by_phone_no',
+                        name: 'created_by_phone_no',
+                        searchable: true
+                    },
+                    {
+                        data: 'close_date',
+                        name: 'close_date',
+                        searchable: true
+                    }
+                ],
+
+                drawCallback: function() {
+                    feather.replace();
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
 
             function newexportaction(e, dt, button, config) {
                 var self = this;
@@ -197,177 +674,86 @@
                 dt.ajax.reload();
             }
 
-            var type = @json($type);
-            var ajaxUrl;
-            if (type === 'accepted') {
-                ajaxUrl = "{{ route('app-task-get-accepted') }}";
-            } else if (type === 'requested') {
-                ajaxUrl = "{{ route('app-task-get-requested') }}";
-            } else if (type === 'list') {
-                ajaxUrl = "{{ route('app-task-get-all') }}";
-            } else if (type == 'mytask') {
-                ajaxUrl = "{{ route('app-task-mytask-get') }}";
-            } else if (type == 'accepted_by_me') {
-                ajaxUrl = "{{ route('app-task-getAll_accepted_by_me-get') }}";
-            } else if (type == 'assign_by_me') {
-                ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
-            } else if (type == 'requested_me') {
-                ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
-            } else if (type == 'conceptualization') {
-                ajaxUrl = "{{ route('app-task-getAll_conceptualization-get') }}";
-            } else if (type == 'due_date_past') {
-                ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-            } else if (type == 'scope_defined') {
-                ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
-            } else if (type == 'completed') {
-                ajaxUrl = "{{ route('app-task-getAll_completed-get') }}";
-            } else if (type == 'hold') {
-                ajaxUrl = "{{ route('app-task-getAll_hold-get') }}";
-            } else if (type == 'in_execution') {
-                ajaxUrl = "{{ route('app-task-getAll_in_execution-get') }}";
-            } else if (type == 'admin_acc') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_acc-get') }}";
-            } else if (type == 'admin_req') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_req-get') }}";
-            }else if (type == 'admin_rej') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_rej-get') }}";
-            } else if (type == 'total_task') {
-                ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
-            }
-            $('#tasks-table').DataTable({
-                dom: '<"export-buttons"B>lfrtip',
-                processing: true,
-                serverSide: true,
-                buttons: [{
-                    extend: 'excel',
-                    text: '<i class="ficon" data-feather="file-text"></i> Excel',
-                    action: newexportaction,
-                    title: '',
-                    filename: 'Task',
-                    className: 'btn btn-primary btn-sm',
-                    exportOptions: {
-                        modifier: {
-                            length: -1
-                        },
-                        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-                    }
-                }, ],
-                ajax: ajaxUrl,
-                columns: [{
-                        data: 'actions',
-                        name: 'actions',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'title',
-                        name: 'title',
-                    },
-                    {
-                        data: 'description',
-                        name: 'description',
-                        visible: false,
-                        export: true,
-                    },
-                    {
-                        data: 'subject',
-                        name: 'subject',
-                    },
-
-                    {
-                        data: 'created_by_username',
-                        name: 'created_by_username',
-                    },
-
-                    {
-                        data: 'task_Assign',
-                        name: 'task_Assign',
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at',
-                        render: function(data, type, row) {
-                            // Check if the data is valid
-                            if (data) {
-                                // Parse the date string to a Date object
-                                var date = new Date(data);
-                                // Format the date to dd-mm-yyyy
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-
-                    {
-                        data: 'start_date',
-                        name: 'start_date',
-                        render: function(data, type, row) {
-                            // Check if the data is valid
-                            if (data) {
-                                // Parse the date string to a Date object
-                                var date = new Date(data);
-                                // Format the date to dd-mm-yyyy
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-                    {
-                        data: 'due_date',
-                        name: 'due_date',
-                        render: function(data, type, row) {
-                            // Check if the data is valid
-                            if (data) {
-                                // Parse the date string to a Date object
-                                var date = new Date(data);
-                                // Format the date to dd-mm-yyyy
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-                    {
-                        data: 'accepted_date',
-                        name: 'accepted_date',
-                        render: function(data, type, row) {
-                            // Check if the data is valid
-                            if (data) {
-                                // Parse the date string to a Date object
-                                var date = new Date(data);
-                                // Format the date to dd-mm-yyyy
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-                    {
-                        data: 'task_status_name',
-                        name: 'task_status_name',
-                    },
-                    {
-                        data: 'project_name',
-                        name: 'project_name',
-                    },
-                    {
-                        data: 'department_name',
-                        name: 'department_name',
-                    },
-
-                ],
-                drawCallback: function() {
-                    feather.replace();
-                }
-
+            // Apply Filters
+            $('#apply-filters').on('click', function() {
+                table.draw();
             });
         });
+
+
+        $(document).ready(function() {
+            // Fetch status options and populate the dropdown
+            $.ajax({
+                url: '{{ route('get-status') }}', // Assuming this is the endpoint to fetch status options
+                method: 'GET',
+                success: function(response) {
+                    // Assuming response is an array of status objects
+                    response.forEach(function(status) {
+                        $('#filter-status').append('<option value="' + status.id + '">' + status
+                            .displayname + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching status options:', error);
+                }
+            });
+            $.ajax({
+                url: '{{ route('get-projects') }}', // Define this route for fetching project options
+                method: 'GET',
+                success: function(response) {
+                    // Assuming response is an array of project objects
+                    response.forEach(function(project) {
+                        $('#filter-project').append('<option value="' + project.id + '">' +
+                            project.project_name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching project options:', error);
+                }
+            });
+
+            $.ajax({
+                url: '{{ route('get-users') }}',
+                method: 'GET',
+                success: function(response) {
+                    response.forEach(function(user) {
+                        $('#filter-created-by').append('<option value="' + user.id + '">' + user
+                            .full_name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching created by options:', error);
+                }
+            });
+            $.ajax({
+                url: '{{ route('get-users') }}',
+                method: 'GET',
+                success: function(response) {
+                    response.forEach(function(user) {
+                        $('#filter-assignee').append('<option value="' + user.id + '">' + user
+                            .full_name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching assignees:', error);
+                }
+            });
+            $.ajax({
+                url: '{{ route('get-departments') }}',
+                method: 'GET',
+                success: function(response) {
+                    response.forEach(function(department) {
+                        $('#filter-department').append('<option value="' + department.id +
+                            '">' + department.department_name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching department options:', error);
+                }
+            });
+
+        });
+
 
         $(document).on("click", ".confirm-delete", function(e) {
             e.preventDefault();
@@ -398,6 +784,45 @@
                     Swal.fire({
                         title: 'Cancelled',
                         text: 'Your imaginary file is safe :)',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).on("click", ".confirm-retrieve", function(e) {
+            e.preventDefault();
+            var id = $(this).data("idos");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, retrieve it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-outline-danger ms-1'
+                },
+                buttonsStyling: false
+            }).then(function(result) {
+                if (result.value) {
+                    window.location.href = '/app/task/retrive/' + id;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'retrieved!',
+                        text: 'Your file has been retrieved.',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire({
+                        title: 'Cancelled',
+                        text: 'Your imaginary file is deleted :)',
                         icon: 'error',
                         customClass: {
                             confirmButton: 'btn btn-success'

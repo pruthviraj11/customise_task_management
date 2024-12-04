@@ -79,28 +79,29 @@
             $('#sub_departments-table').DataTable({
                 processing: true,
                 serverSide: true,
-                 dom: 'lBfrtip',
-                 buttons: [
-                    {
-                        extend: 'excel',
-                        text: '<i class="ficon" data-feather="file-text"></i> Excel',
-                         title: '',
-                        filename: 'Project Status',
-                        className: 'btn btn-primary  btn-sm',
-                        exportOptions: {
-                            columns: [1,2,3]
-                        }
-                    },
-                ],
+                dom: 'lBfrtip',
+               buttons: [{
+            extend: 'excel',
+            text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
+            action: newexportaction, // Custom export function
+            title: '',
+            filename: 'Department',
+            className: 'btn btn-success btn-sm',
+            exportOptions: {
+                modifier: {
+                    length: -1 // Export all data, not just the current page
+                },
+                columns: [1, 2, 3, 4] // Export these columns
+            }
+        }],
                 ajax: "{{ route('app-sub_department-get-all') }}",
-                columns: [
-                 {
+                columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
                         searchable: false
-                    },    
-                {
+                    },
+                    {
                         data: 'sub_department_name',
                         name: 'sub_department_name',
                     },
@@ -125,13 +126,58 @@
                             }
                         }
                     },
-                   
+
                 ],
                 drawCallback: function() {
                     feather.replace();
                 }
 
             });
+             function newexportaction(e, dt, button, config) {
+        var self = this;
+        var oldStart = dt.settings()[0]._iDisplayStart;
+
+        dt.one('preXhr', function(e, settings, data) {
+            // Fetch all data from the server
+            data.start = 0;
+            data.length = 2147483647; // Max integer value to fetch all records
+
+            dt.one('preDraw', function(e, settings) {
+                // Call the original action based on the button clicked
+                if (button[0].className.indexOf('buttons-copy') >= 0) {
+                    $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button, config);
+                } else if (button[0].className.indexOf('buttons-excel') >= 0) {
+                    $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config)
+                        ? $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config)
+                        : $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt, button, config);
+                } else if (button[0].className.indexOf('buttons-csv') >= 0) {
+                    $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config)
+                        ? $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button, config)
+                        : $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button, config);
+                } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
+                    $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config)
+                        ? $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button, config)
+                        : $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button, config);
+                } else if (button[0].className.indexOf('buttons-print') >= 0) {
+                    $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
+                }
+
+                // After exporting, reset the pagination
+                dt.one('preXhr', function(e, settings, data) {
+                    settings._iDisplayStart = oldStart;
+                    data.start = oldStart;
+                });
+
+                // Re-render the DataTable after the export
+                setTimeout(dt.ajax.reload, 0);
+
+                return false; // Prevent immediate rendering of full data
+            });
+        });
+
+        // Trigger the export
+        dt.ajax.reload();
+    }
         });
 
         $(document).on("click", ".confirm-delete", function(e) {

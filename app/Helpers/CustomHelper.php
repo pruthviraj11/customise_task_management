@@ -46,8 +46,105 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use App\Jobs\SendEmail;
 
-// use Exception;
+function parseDateRange($dateRange)
+{
+    if (!$dateRange) {
+        return null;
+    }
 
+    // Split the date range into start and end dates
+    $dates = explode(' to ', $dateRange);
+
+    if (count($dates) !== 2) {
+        return null; // Invalid format
+    }
+
+    // Convert each date from "dd/mm/yyyy" to "Y-m-d"
+    $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[0]))->format('Y-m-d');
+    $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[1]))->format('Y-m-d');
+
+    return [$startDate, $endDate];
+}
+
+// use Exception;
+function createNotification($to = '', $inquiry_id = '',$message, $notification_type = 'Create', $creditNoteNo = '')
+{
+    try {
+        $notification = new InternalNotifications();
+        $notification->notification_from = auth()->user()->id;
+        $notification->notification_to = $to;
+        $notification->inquiry_id = $inquiry_id;
+        $notification->notification_type = $notification_type;
+        // $inquiry = Task::where('id', $inquiry_id)->select('title')->first();
+
+        $notification->message = $message;
+        $notification->notification_status = false;
+        $notification->save();
+
+        return response(['status' => true, 'message' => 'Notification Successful..']);
+    } catch (Exception $error) {
+        return response(['status' => false, 'message' => $error->getMessage()]);
+    }
+}
+
+function getNotifications()
+{
+    $notification['list'] = '';
+    $notification['count'] = 0;
+    $notification_list = InternalNotifications::where('notification_to', auth()->user()->id)->where('notification_status', false)->take(10)->latest()->get();
+    $notification_count = count($notification_list);
+    $total_notification_count = InternalNotifications::where('notification_to', auth()->user()->id)->where('notification_status', false)->count();
+    $html = '';
+    foreach ($notification_list as $key => $list) {
+        $html .= '<div href="#" class="list-item d-flex align-items-start">' .
+            '<div class="list-item-body flex-grow-1" >' .
+            '<p class="media-heading text-success"><span class="fw-bolder">' .
+            notificationTitle($list->notification_type) . '!</span></p>' .
+            '<p class="fw-bolder"> ' . $list->message . '</p>' .
+            '</div>' .
+            '<a href="' . route('app-notifications-mark-read', $list->id) . '" class="btn btn-primary mt-1" data-bs-toggle="tooltip" title="Mark as Read" data-bs-delay="400">Read</a>' .
+            //            '<input type="button" data-bs-toggle="tooltip" title="Mark as Read" data-bs-delay="400" id="read_notification_index" class="btn btn-sm btn-primary mt-1 read_notification_index" data-internal-notification-id = "' . $list->id . '" value="Read" name="Read">'.
+//            '<span class="btn btn-sm btn-primary rounded notification-read" data-notification-id="'.$list->id.'">Read</div>' .
+            '</div>';
+    }
+
+    $data = [
+        'total_notification' => $total_notification_count,
+        'new_notifications' => $notification_count,
+        'notification_html' => $html
+    ];
+
+    return $data;
+}
+
+function notificationTitle($type = '')
+{
+    if ($type == 'transfer') {
+        $title = "New Transfer";
+    } elseif ($type == 'accepted') {
+        $title = "Transfer Accepted";
+    } elseif ($type == 'in_qc') {
+        $title = "Package in QC";
+    } elseif ($type == 'in_query') {
+        $title = "Package Query Raised";
+    } elseif ($type == 'qc_approve') {
+        $title = "Package QC Approved";
+    } elseif ($type == 'in_process') {
+        $title = "Package in Escalation";
+    } elseif ($type == 'is_reverted') {
+        $title = "Package Reverted";
+    } elseif ($type == 'in_pro') {
+        $title = "Package Cancellation Raised";
+    } elseif ($type == 'rejected') {
+        $title = "Transfer Request Rejected";
+    } elseif ($type == 'sim_card_receipt_generated' || $type == 'loan_receipt_generated' || $type == 'insurance_receipt_generated' || $type == 'air_ticket_receipt_generated' || $type == 'forex_receipt_generated' || $type == 'passport_receipt_generated') {
+        $title = "New Receipt Generated";
+    } else {
+        $title = "New Notification";
+    }
+
+    return $title;
+}
 
 function sendSMS($template = '', $mobile_no = [])
 {
@@ -1082,7 +1179,7 @@ function userDataImport()
         }
         return "Successfully added Users";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -1370,7 +1467,7 @@ function userDataUpdate()
         }
         return "Successfully added Users";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 function assignSameRole(){
@@ -1383,252 +1480,21 @@ function assignSameRole(){
 function assignRole()
 {
     try {
-        $users = array(
-            array('role_id' => '108', 'model_type' => 'App\\Models\\User', 'model_id' => '1'),
-            array('role_id' => '9', 'model_type' => 'App\\Models\\User', 'model_id' => '13'),
-            array('role_id' => '137', 'model_type' => 'App\\Models\\User', 'model_id' => '14'),
-            array('role_id' => '108', 'model_type' => 'App\\Models\\User', 'model_id' => '15'),
-            array('role_id' => '11', 'model_type' => 'App\\Models\\User', 'model_id' => '16'),
-            array('role_id' => '12', 'model_type' => 'App\\Models\\User', 'model_id' => '17'),
-            array('role_id' => '14', 'model_type' => 'App\\Models\\User', 'model_id' => '18'),
-            array('role_id' => '15', 'model_type' => 'App\\Models\\User', 'model_id' => '19'),
-            array('role_id' => '17', 'model_type' => 'App\\Models\\User', 'model_id' => '21'),
-            array('role_id' => '18', 'model_type' => 'App\\Models\\User', 'model_id' => '22'),
-            array('role_id' => '22', 'model_type' => 'App\\Models\\User', 'model_id' => '23'),
-            array('role_id' => '12', 'model_type' => 'App\\Models\\User', 'model_id' => '24'),
-            array('role_id' => '7', 'model_type' => 'App\\Models\\User', 'model_id' => '25'),
-            array('role_id' => '48', 'model_type' => 'App\\Models\\User', 'model_id' => '26'),
-            array('role_id' => '126', 'model_type' => 'App\\Models\\User', 'model_id' => '27'),
-            array('role_id' => '10', 'model_type' => 'App\\Models\\User', 'model_id' => '28'),
-            array('role_id' => '77', 'model_type' => 'App\\Models\\User', 'model_id' => '29'),
-            array('role_id' => '114', 'model_type' => 'App\\Models\\User', 'model_id' => '30'),
-            array('role_id' => '95', 'model_type' => 'App\\Models\\User', 'model_id' => '31'),
-            array('role_id' => '108', 'model_type' => 'App\\Models\\User', 'model_id' => '32'),
-            array('role_id' => '106', 'model_type' => 'App\\Models\\User', 'model_id' => '33'),
-            array('role_id' => '107', 'model_type' => 'App\\Models\\User', 'model_id' => '34'),
-            array('role_id' => '1', 'model_type' => 'App\\Models\\User', 'model_id' => '35'),
-            array('role_id' => '13', 'model_type' => 'App\\Models\\User', 'model_id' => '39'),
-            array('role_id' => '16', 'model_type' => 'App\\Models\\User', 'model_id' => '40'),
-            array('role_id' => '105', 'model_type' => 'App\\Models\\User', 'model_id' => '41'),
-            array('role_id' => '20', 'model_type' => 'App\\Models\\User', 'model_id' => '42'),
-            array('role_id' => '23', 'model_type' => 'App\\Models\\User', 'model_id' => '44'),
-            array('role_id' => '24', 'model_type' => 'App\\Models\\User', 'model_id' => '45'),
-            array('role_id' => '25', 'model_type' => 'App\\Models\\User', 'model_id' => '46'),
-            array('role_id' => '42', 'model_type' => 'App\\Models\\User', 'model_id' => '47'),
-            array('role_id' => '27', 'model_type' => 'App\\Models\\User', 'model_id' => '48'),
-            array('role_id' => '28', 'model_type' => 'App\\Models\\User', 'model_id' => '49'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '50'),
-            array('role_id' => '53', 'model_type' => 'App\\Models\\User', 'model_id' => '51'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '52'),
-            array('role_id' => '30', 'model_type' => 'App\\Models\\User', 'model_id' => '53'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '54'),
-            array('role_id' => '31', 'model_type' => 'App\\Models\\User', 'model_id' => '55'),
-            array('role_id' => '32', 'model_type' => 'App\\Models\\User', 'model_id' => '56'),
-            array('role_id' => '60', 'model_type' => 'App\\Models\\User', 'model_id' => '57'),
-            array('role_id' => '34', 'model_type' => 'App\\Models\\User', 'model_id' => '58'),
-            array('role_id' => '31', 'model_type' => 'App\\Models\\User', 'model_id' => '59'),
-            array('role_id' => '37', 'model_type' => 'App\\Models\\User', 'model_id' => '61'),
-            array('role_id' => '31', 'model_type' => 'App\\Models\\User', 'model_id' => '62'),
-            array('role_id' => '38', 'model_type' => 'App\\Models\\User', 'model_id' => '63'),
-            array('role_id' => '39', 'model_type' => 'App\\Models\\User', 'model_id' => '64'),
-            array('role_id' => '40', 'model_type' => 'App\\Models\\User', 'model_id' => '65'),
-            array('role_id' => '41', 'model_type' => 'App\\Models\\User', 'model_id' => '66'),
-            array('role_id' => '42', 'model_type' => 'App\\Models\\User', 'model_id' => '67'),
-            array('role_id' => '29', 'model_type' => 'App\\Models\\User', 'model_id' => '68'),
-            array('role_id' => '43', 'model_type' => 'App\\Models\\User', 'model_id' => '69'),
-            array('role_id' => '31', 'model_type' => 'App\\Models\\User', 'model_id' => '70'),
-            array('role_id' => '44', 'model_type' => 'App\\Models\\User', 'model_id' => '71'),
-            array('role_id' => '45', 'model_type' => 'App\\Models\\User', 'model_id' => '72'),
-            array('role_id' => '46', 'model_type' => 'App\\Models\\User', 'model_id' => '73'),
-            array('role_id' => '47', 'model_type' => 'App\\Models\\User', 'model_id' => '74'),
-            array('role_id' => '49', 'model_type' => 'App\\Models\\User', 'model_id' => '75'),
-            array('role_id' => '44', 'model_type' => 'App\\Models\\User', 'model_id' => '76'),
-            array('role_id' => '50', 'model_type' => 'App\\Models\\User', 'model_id' => '77'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '78'),
-            array('role_id' => '53', 'model_type' => 'App\\Models\\User', 'model_id' => '80'),
-            array('role_id' => '54', 'model_type' => 'App\\Models\\User', 'model_id' => '81'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '82'),
-            array('role_id' => '43', 'model_type' => 'App\\Models\\User', 'model_id' => '84'),
-            array('role_id' => '55', 'model_type' => 'App\\Models\\User', 'model_id' => '85'),
-            array('role_id' => '30', 'model_type' => 'App\\Models\\User', 'model_id' => '86'),
-            array('role_id' => '51', 'model_type' => 'App\\Models\\User', 'model_id' => '87'),
-            array('role_id' => '56', 'model_type' => 'App\\Models\\User', 'model_id' => '88'),
-            array('role_id' => '51', 'model_type' => 'App\\Models\\User', 'model_id' => '89'),
-            array('role_id' => '32', 'model_type' => 'App\\Models\\User', 'model_id' => '90'),
-            array('role_id' => '57', 'model_type' => 'App\\Models\\User', 'model_id' => '91'),
-            array('role_id' => '58', 'model_type' => 'App\\Models\\User', 'model_id' => '92'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '93'),
-            array('role_id' => '58', 'model_type' => 'App\\Models\\User', 'model_id' => '94'),
-            array('role_id' => '58', 'model_type' => 'App\\Models\\User', 'model_id' => '95'),
-            array('role_id' => '51', 'model_type' => 'App\\Models\\User', 'model_id' => '96'),
-            array('role_id' => '59', 'model_type' => 'App\\Models\\User', 'model_id' => '97'),
-            array('role_id' => '60', 'model_type' => 'App\\Models\\User', 'model_id' => '98'),
-            array('role_id' => '51', 'model_type' => 'App\\Models\\User', 'model_id' => '99'),
-            array('role_id' => '63', 'model_type' => 'App\\Models\\User', 'model_id' => '100'),
-            array('role_id' => '58', 'model_type' => 'App\\Models\\User', 'model_id' => '101'),
-            array('role_id' => '63', 'model_type' => 'App\\Models\\User', 'model_id' => '102'),
-            array('role_id' => '63', 'model_type' => 'App\\Models\\User', 'model_id' => '103'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '105'),
-            array('role_id' => '49', 'model_type' => 'App\\Models\\User', 'model_id' => '106'),
-            array('role_id' => '66', 'model_type' => 'App\\Models\\User', 'model_id' => '107'),
-            array('role_id' => '44', 'model_type' => 'App\\Models\\User', 'model_id' => '108'),
-            array('role_id' => '67', 'model_type' => 'App\\Models\\User', 'model_id' => '109'),
-            array('role_id' => '68', 'model_type' => 'App\\Models\\User', 'model_id' => '110'),
-            array('role_id' => '69', 'model_type' => 'App\\Models\\User', 'model_id' => '111'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '112'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '113'),
-            array('role_id' => '72', 'model_type' => 'App\\Models\\User', 'model_id' => '114'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '115'),
-            array('role_id' => '29', 'model_type' => 'App\\Models\\User', 'model_id' => '116'),
-            array('role_id' => '73', 'model_type' => 'App\\Models\\User', 'model_id' => '117'),
-            array('role_id' => '74', 'model_type' => 'App\\Models\\User', 'model_id' => '118'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '120'),
-            array('role_id' => '76', 'model_type' => 'App\\Models\\User', 'model_id' => '121'),
-            array('role_id' => '41', 'model_type' => 'App\\Models\\User', 'model_id' => '122'),
-            array('role_id' => '76', 'model_type' => 'App\\Models\\User', 'model_id' => '123'),
-            array('role_id' => '78', 'model_type' => 'App\\Models\\User', 'model_id' => '124'),
-            array('role_id' => '53', 'model_type' => 'App\\Models\\User', 'model_id' => '125'),
-            array('role_id' => '66', 'model_type' => 'App\\Models\\User', 'model_id' => '126'),
-            array('role_id' => '79', 'model_type' => 'App\\Models\\User', 'model_id' => '127'),
-            array('role_id' => '141', 'model_type' => 'App\\Models\\User', 'model_id' => '128'),
-            array('role_id' => '76', 'model_type' => 'App\\Models\\User', 'model_id' => '130'),
-            array('role_id' => '81', 'model_type' => 'App\\Models\\User', 'model_id' => '131'),
-            array('role_id' => '49', 'model_type' => 'App\\Models\\User', 'model_id' => '132'),
-            array('role_id' => '82', 'model_type' => 'App\\Models\\User', 'model_id' => '133'),
-            array('role_id' => '53', 'model_type' => 'App\\Models\\User', 'model_id' => '134'),
-            array('role_id' => '83', 'model_type' => 'App\\Models\\User', 'model_id' => '135'),
-            array('role_id' => '84', 'model_type' => 'App\\Models\\User', 'model_id' => '136'),
-            array('role_id' => '59', 'model_type' => 'App\\Models\\User', 'model_id' => '137'),
-            array('role_id' => '63', 'model_type' => 'App\\Models\\User', 'model_id' => '138'),
-            array('role_id' => '43', 'model_type' => 'App\\Models\\User', 'model_id' => '140'),
-            array('role_id' => '43', 'model_type' => 'App\\Models\\User', 'model_id' => '141'),
-            array('role_id' => '39', 'model_type' => 'App\\Models\\User', 'model_id' => '142'),
-            array('role_id' => '39', 'model_type' => 'App\\Models\\User', 'model_id' => '143'),
-            array('role_id' => '41', 'model_type' => 'App\\Models\\User', 'model_id' => '144'),
-            array('role_id' => '85', 'model_type' => 'App\\Models\\User', 'model_id' => '145'),
-            array('role_id' => '32', 'model_type' => 'App\\Models\\User', 'model_id' => '146'),
-            array('role_id' => '86', 'model_type' => 'App\\Models\\User', 'model_id' => '147'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '148'),
-            array('role_id' => '87', 'model_type' => 'App\\Models\\User', 'model_id' => '149'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '150'),
-            array('role_id' => '79', 'model_type' => 'App\\Models\\User', 'model_id' => '151'),
-            array('role_id' => '34', 'model_type' => 'App\\Models\\User', 'model_id' => '152'),
-            array('role_id' => '88', 'model_type' => 'App\\Models\\User', 'model_id' => '153'),
-            array('role_id' => '89', 'model_type' => 'App\\Models\\User', 'model_id' => '154'),
-            array('role_id' => '90', 'model_type' => 'App\\Models\\User', 'model_id' => '156'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '158'),
-            array('role_id' => '91', 'model_type' => 'App\\Models\\User', 'model_id' => '159'),
-            array('role_id' => '29', 'model_type' => 'App\\Models\\User', 'model_id' => '160'),
-            array('role_id' => '76', 'model_type' => 'App\\Models\\User', 'model_id' => '161'),
-            array('role_id' => '74', 'model_type' => 'App\\Models\\User', 'model_id' => '163'),
-            array('role_id' => '130', 'model_type' => 'App\\Models\\User', 'model_id' => '164'),
-            array('role_id' => '59', 'model_type' => 'App\\Models\\User', 'model_id' => '165'),
-            array('role_id' => '69', 'model_type' => 'App\\Models\\User', 'model_id' => '168'),
-            array('role_id' => '73', 'model_type' => 'App\\Models\\User', 'model_id' => '169'),
-            array('role_id' => '27', 'model_type' => 'App\\Models\\User', 'model_id' => '170'),
-            array('role_id' => '53', 'model_type' => 'App\\Models\\User', 'model_id' => '171'),
-            array('role_id' => '96', 'model_type' => 'App\\Models\\User', 'model_id' => '172'),
-            array('role_id' => '50', 'model_type' => 'App\\Models\\User', 'model_id' => '173'),
-            array('role_id' => '31', 'model_type' => 'App\\Models\\User', 'model_id' => '174'),
-            array('role_id' => '29', 'model_type' => 'App\\Models\\User', 'model_id' => '176'),
-            array('role_id' => '99', 'model_type' => 'App\\Models\\User', 'model_id' => '177'),
-            array('role_id' => '102', 'model_type' => 'App\\Models\\User', 'model_id' => '179'),
-            array('role_id' => '103', 'model_type' => 'App\\Models\\User', 'model_id' => '180'),
-            array('role_id' => '104', 'model_type' => 'App\\Models\\User', 'model_id' => '182'),
-            array('role_id' => '105', 'model_type' => 'App\\Models\\User', 'model_id' => '183'),
-            array('role_id' => '5', 'model_type' => 'App\\Models\\User', 'model_id' => '200'),
-            array('role_id' => '5', 'model_type' => 'App\\Models\\User', 'model_id' => '202'),
-            array('role_id' => '32', 'model_type' => 'App\\Models\\User', 'model_id' => '203'),
-            array('role_id' => '101', 'model_type' => 'App\\Models\\User', 'model_id' => '204'),
-            array('role_id' => '32', 'model_type' => 'App\\Models\\User', 'model_id' => '205'),
-            array('role_id' => '105', 'model_type' => 'App\\Models\\User', 'model_id' => '206'),
-            array('role_id' => '110', 'model_type' => 'App\\Models\\User', 'model_id' => '207'),
-            array('role_id' => '111', 'model_type' => 'App\\Models\\User', 'model_id' => '208'),
-            array('role_id' => '108', 'model_type' => 'App\\Models\\User', 'model_id' => '209'),
-            array('role_id' => '112', 'model_type' => 'App\\Models\\User', 'model_id' => '210'),
-            array('role_id' => '112', 'model_type' => 'App\\Models\\User', 'model_id' => '211'),
-            array('role_id' => '103', 'model_type' => 'App\\Models\\User', 'model_id' => '212'),
-            array('role_id' => '78', 'model_type' => 'App\\Models\\User', 'model_id' => '213'),
-            array('role_id' => '79', 'model_type' => 'App\\Models\\User', 'model_id' => '214'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '216'),
-            array('role_id' => '105', 'model_type' => 'App\\Models\\User', 'model_id' => '217'),
-            array('role_id' => '123', 'model_type' => 'App\\Models\\User', 'model_id' => '218'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '219'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '220'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '221'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '222'),
-            array('role_id' => '115', 'model_type' => 'App\\Models\\User', 'model_id' => '223'),
-            array('role_id' => '37', 'model_type' => 'App\\Models\\User', 'model_id' => '224'),
-            array('role_id' => '116', 'model_type' => 'App\\Models\\User', 'model_id' => '225'),
-            array('role_id' => '117', 'model_type' => 'App\\Models\\User', 'model_id' => '226'),
-            array('role_id' => '74', 'model_type' => 'App\\Models\\User', 'model_id' => '227'),
-            array('role_id' => '60', 'model_type' => 'App\\Models\\User', 'model_id' => '228'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '229'),
-            array('role_id' => '103', 'model_type' => 'App\\Models\\User', 'model_id' => '230'),
-            array('role_id' => '85', 'model_type' => 'App\\Models\\User', 'model_id' => '231'),
-            array('role_id' => '39', 'model_type' => 'App\\Models\\User', 'model_id' => '232'),
-            array('role_id' => '124', 'model_type' => 'App\\Models\\User', 'model_id' => '233'),
-            array('role_id' => '125', 'model_type' => 'App\\Models\\User', 'model_id' => '234'),
-            array('role_id' => '127', 'model_type' => 'App\\Models\\User', 'model_id' => '235'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '236'),
-            array('role_id' => '38', 'model_type' => 'App\\Models\\User', 'model_id' => '237'),
-            array('role_id' => '128', 'model_type' => 'App\\Models\\User', 'model_id' => '238'),
-            array('role_id' => '125', 'model_type' => 'App\\Models\\User', 'model_id' => '239'),
-            array('role_id' => '29', 'model_type' => 'App\\Models\\User', 'model_id' => '240'),
-            array('role_id' => '58', 'model_type' => 'App\\Models\\User', 'model_id' => '241'),
-            array('role_id' => '125', 'model_type' => 'App\\Models\\User', 'model_id' => '242'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '243'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '244'),
-            array('role_id' => '43', 'model_type' => 'App\\Models\\User', 'model_id' => '245'),
-            array('role_id' => '49', 'model_type' => 'App\\Models\\User', 'model_id' => '246'),
-            array('role_id' => '66', 'model_type' => 'App\\Models\\User', 'model_id' => '247'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '248'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '249'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '250'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '251'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '252'),
-            array('role_id' => '81', 'model_type' => 'App\\Models\\User', 'model_id' => '253'),
-            array('role_id' => '129', 'model_type' => 'App\\Models\\User', 'model_id' => '254'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '255'),
-            array('role_id' => '133', 'model_type' => 'App\\Models\\User', 'model_id' => '256'),
-            array('role_id' => '73', 'model_type' => 'App\\Models\\User', 'model_id' => '257'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '258'),
-            array('role_id' => '65', 'model_type' => 'App\\Models\\User', 'model_id' => '259'),
-            array('role_id' => '26', 'model_type' => 'App\\Models\\User', 'model_id' => '260'),
-            array('role_id' => '76', 'model_type' => 'App\\Models\\User', 'model_id' => '261'),
-            array('role_id' => '96', 'model_type' => 'App\\Models\\User', 'model_id' => '262'),
-            array('role_id' => '70', 'model_type' => 'App\\Models\\User', 'model_id' => '263'),
-            array('role_id' => '72', 'model_type' => 'App\\Models\\User', 'model_id' => '264'),
-            array('role_id' => '71', 'model_type' => 'App\\Models\\User', 'model_id' => '265'),
-            array('role_id' => '51', 'model_type' => 'App\\Models\\User', 'model_id' => '266'),
-            array('role_id' => '131', 'model_type' => 'App\\Models\\User', 'model_id' => '267'),
-            array('role_id' => '73', 'model_type' => 'App\\Models\\User', 'model_id' => '268'),
-            array('role_id' => '132', 'model_type' => 'App\\Models\\User', 'model_id' => '269'),
-            array('role_id' => '135', 'model_type' => 'App\\Models\\User', 'model_id' => '270'),
-            array('role_id' => '134', 'model_type' => 'App\\Models\\User', 'model_id' => '272'),
-            array('role_id' => '94', 'model_type' => 'App\\Models\\User', 'model_id' => '273'),
-            array('role_id' => '23', 'model_type' => 'App\\Models\\User', 'model_id' => '274'),
-            array('role_id' => '95', 'model_type' => 'App\\Models\\User', 'model_id' => '276'),
-            array('role_id' => '108', 'model_type' => 'App\\Models\\User', 'model_id' => '277'),
-            array('role_id' => '138', 'model_type' => 'App\\Models\\User', 'model_id' => '278'),
-            array('role_id' => '139', 'model_type' => 'App\\Models\\User', 'model_id' => '279'),
-            array('role_id' => '140', 'model_type' => 'App\\Models\\User', 'model_id' => '280'),
-            array('role_id' => '137', 'model_type' => 'App\\Models\\User', 'model_id' => '281'),
-            array('role_id' => '69', 'model_type' => 'App\\Models\\User', 'model_id' => '282'),
-            array('role_id' => '69', 'model_type' => 'App\\Models\\User', 'model_id' => '283')
-        );
-        foreach ($users as $user) {
-            $role_id = $user['role_id'];
-            $role_name = Role::where('id', $role_id)->pluck('name')->first();
-            $data = User::where('id', $user['model_id'])->first();
+        $users = User::get();
+        $superAdmin = User::where('id',1)->first();
 
-            if ($data) {
-                $data->assignRole($role_name);
+        foreach ($users as $user) {
+            $role_name = Role::where('id', 14)->pluck('name')->first();
+
+            if ($user) {
+                $user->assignRole($role_name);
             }
         }
+         $role_name = Role::where('id', 1)->pluck('name')->first();
+         $superAdmin->assignRole($role_name);
         return "Successfully added Role Assigned to Users";
     } catch (Exception $error) {
-        dd($error->getMessage(), $role_name, $user);
+        // dd($error->getMessage(), $role_name, $user);
     }
 }
 
@@ -1791,7 +1657,7 @@ function roleDataImport()
         }
         return "Roles Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -1862,7 +1728,7 @@ function departmentDataImport()
         }
         return "Departments Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -1924,7 +1790,7 @@ function subDepartmentDataImport()
         }
         return "Departments Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -1956,7 +1822,7 @@ function statusImport()
         }
         return "Departments Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -1983,7 +1849,7 @@ function projectStatusImport()
         }
         return "Project Status Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -2019,7 +1885,7 @@ function projectImport()
         }
         return "Project Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -2335,7 +2201,7 @@ function projectUsersImport()
         }
         return "Project Users Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -5584,7 +5450,7 @@ function taskImport()
         }
         return "Project Status Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 
@@ -7331,7 +7197,7 @@ function taskAssigneesImport()
         }
         return "Task Assignees Successfully Added";
     } catch (Exception $error) {
-        dd($error->getMessage());
+        // dd($error->getMessage());
     }
 }
 function giveAllPermissionToRole(){

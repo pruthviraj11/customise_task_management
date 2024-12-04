@@ -17,13 +17,13 @@ class ProjectRepository
 
     public function update($id, array $data)
     {
-        return Project::where('id', $id)->update($data);
+        return Project::findOrFail($id)->update($data);
     }
 
     public function delete($id)
     {
         Project::Where('id', $id)->update(['deleted_by' => auth()->user()->id]);
-        return Project::where('id', $id)->delete();
+        return Project::findOrFail($id)->delete();
     }
     public function getAll()
     {

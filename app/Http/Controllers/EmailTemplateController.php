@@ -76,7 +76,7 @@ class EmailTemplateController extends Controller
                 return redirect()->back()->with('error', 'Error while Adding Email Template');
             }
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             //            return response()->json(['status'=>true, 'message'=>$error->getMessage()]);
             return redirect()->route('app-email-templates-list')->with('error', 'Error while adding Email Template');
         }
