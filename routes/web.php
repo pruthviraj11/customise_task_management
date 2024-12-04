@@ -1,0 +1,260 @@
+<?php
+
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ProjectStatusController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\StatusController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\SubDepartmentController;
+use App\Http\Controllers\ProjectController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthenticationController;
+
+
+/*
+|--------------------------------------------------------------------------
+| Web Routesf
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+// Main Page Route
+Route::get('/', function () {
+    return redirect('/login');
+});
+
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::any('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Forgot Password routes
+Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Reset Password routes
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
+
+Route::group(['prefix' => 'auth'], function () {
+    Route::get('login-basic', [AuthenticationController::class, 'login_basic'])->name('auth-login-basic');
+    Route::get('login-cover', [AuthenticationController::class, 'login_cover'])->name('auth-login-cover');
+    Route::get('register-basic', [AuthenticationController::class, 'register_basic'])->name('auth-register-basic');
+    Route::get('register-cover', [AuthenticationController::class, 'register_cover'])->name('auth-register-cover');
+    Route::get('forgot-password-basic', [AuthenticationController::class, 'forgot_password_basic'])->name('auth-forgot-password-basic');
+    Route::get('forgot-password-cover', [AuthenticationController::class, 'forgot_password_cover'])->name('auth-forgot-password-cover');
+    Route::get('reset-password-basic', [AuthenticationController::class, 'reset_password_basic'])->name('auth-reset-password-basic');
+    Route::get('reset-password-cover', [AuthenticationController::class, 'reset_password_cover'])->name('auth-reset-password-cover');
+    Route::get('verify-email-basic', [AuthenticationController::class, 'verify_email_basic'])->name('auth-verify-email-basic');
+    Route::get('verify-email-cover', [AuthenticationController::class, 'verify_email_cover'])->name('auth-verify-email-cover');
+    Route::get('two-steps-basic', [AuthenticationController::class, 'two_steps_basic'])->name('auth-two-steps-basic');
+    Route::get('two-steps-cover', [AuthenticationController::class, 'two_steps_cover'])->name('auth-two-steps-cover');
+    Route::get('register-multisteps', [AuthenticationController::class, 'register_multi_steps'])->name('auth-register-multisteps');
+    Route::get('lock-screen', [AuthenticationController::class, 'lock_screen'])->name('auth-lock_screen');
+});
+
+
+
+
+Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
+    Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
+    Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
+    Route::get('send/mail', [MailController::class, 'sendMail'])->name('send-mail');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
+
+
+    Route::get('/profile/{encrypted_id}', [UsersController::class, 'profile'])->name('profile.show');
+    Route::post('/profile/update/{encrypted_id}', [UsersController::class, 'updateProfile'])->name('profile-update');
+
+    // =============================================================================================================================
+
+    //   ROLE AND USER CONTROLLER
+
+    // =============================================================================================================================
+
+    // Roles Start
+    Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
+    Route::get('roles/getAll', [RoleController::class, 'getAll'])->name('app-roles-get-all');
+    Route::post('roles/store', [RoleController::class, 'store'])->name('app-roles-store');
+    Route::get('roles/add', [RoleController::class, 'create'])->name('app-roles-add');
+    Route::get('roles/edit/{encrypted_id}', [RoleController::class, 'edit'])->name('app-roles-edit');
+    Route::put('roles/update/{encrypted_id}', [RoleController::class, 'update'])->name('app-roles-update');
+    Route::get('roles/destroy/{encrypted_id}', [RoleController::class, 'destroy'])->name('app-roles-delete');
+    /* Roles Routes End */
+
+    //User start
+    Route::get('users/list', [UsersController::class, 'index'])->name('app-users-list');
+    Route::get('users/add', [UsersController::class, 'create'])->name('app-users-add');
+    Route::post('users/store', [UsersController::class, 'store'])->name('app-users-store');
+    Route::get('users/edit/{encrypted_id}', [UsersController::class, 'edit'])->name('app-users-edit');
+    Route::put('users/update/{encrypted_id}', [UsersController::class, 'update'])->name('app-users-update');
+    Route::get('users/destroy/{encrypted_id}', [UsersController::class, 'destroy'])->name('app-users-destroy');
+    Route::get('users/getAll', [UsersController::class, 'getAll'])->name('app-users-get-all');
+    Route::get('sub-departments/{department_id}', [UsersController::class, 'getSubDepartmentsName'])->name('app-sub-departments');
+    //User End
+
+    //Departments start
+    Route::get('department/list', [DepartmentController::class, 'index'])->name('app-department-list');
+    Route::get('department/add', [DepartmentController::class, 'create'])->name('app-department-add');
+    Route::post('department/store', [DepartmentController::class, 'store'])->name('app-department-store');
+    Route::get('department/edit/{encrypted_id}', [DepartmentController::class, 'edit'])->name('app-department-edit');
+    Route::put('department/update/{encrypted_id}', [DepartmentController::class, 'update'])->name('app-department-update');
+    Route::get('department/destroy/{encrypted_id}', [DepartmentController::class, 'destroy'])->name('app-department-destroy');
+    Route::get('department/getAll', [DepartmentController::class, 'getAll'])->name('app-department-get-all');
+    //Departments End
+
+    //Status start
+    Route::get('status/list', [StatusController::class, 'index'])->name('app-status-list');
+    Route::get('status/add', [StatusController::class, 'create'])->name('app-status-add');
+    Route::post('status/store', [StatusController::class, 'store'])->name('app-status-store');
+    Route::get('status/edit/{encrypted_id}', [StatusController::class, 'edit'])->name('app-status-edit');
+    Route::put('status/update/{encrypted_id}', [StatusController::class, 'update'])->name('app-status-update');
+    Route::get('status/destroy/{encrypted_id}', [StatusController::class, 'destroy'])->name('app-status-destroy');
+    Route::get('status/getAll', [StatusController::class, 'getAll'])->name('app-status-get-all');
+    //Status End
+
+    //Priority start
+    Route::get('priority/list', [PriorityController::class, 'index'])->name('app-priority-list');
+    Route::get('priority/add', [PriorityController::class, 'create'])->name('app-priority-add');
+    Route::post('priority/store', [PriorityController::class, 'store'])->name('app-priority-store');
+    Route::get('priority/edit/{encrypted_id}', [PriorityController::class, 'edit'])->name('app-priority-edit');
+    Route::put('priority/update/{encrypted_id}', [PriorityController::class, 'update'])->name('app-priority-update');
+    Route::get('priority/destroy/{encrypted_id}', [PriorityController::class, 'destroy'])->name('app-priority-destroy');
+    Route::get('priority/getAll', [PriorityController::class, 'getAll'])->name('app-priority-get-all');
+    //Priority End
+
+    //SubDepartments start
+    Route::get('sub_department/list', [SubDepartmentController::class, 'index'])->name('app-sub_department-list');
+    Route::get('sub_department/add', [SubDepartmentController::class, 'create'])->name('app-sub_department-add');
+    Route::post('sub_department/store', [SubDepartmentController::class, 'store'])->name('app-sub_department-store');
+    Route::get('sub_department/edit/{encrypted_id}', [SubDepartmentController::class, 'edit'])->name('app-sub_department-edit');
+    Route::put('sub_department/update/{encrypted_id}', [SubDepartmentController::class, 'update'])->name('app-sub_department-update');
+    Route::get('sub_department/destroy/{encrypted_id}', [SubDepartmentController::class, 'destroy'])->name('app-sub_department-destroy');
+    Route::get('sub_department/getAll', [SubDepartmentController::class, 'getAll'])->name('app-sub_department-get-all');
+    //SubDepartments End
+
+    //Project start
+    Route::get('project/list', [ProjectController::class, 'index'])->name('app-project-list');
+    Route::get('project/add', [ProjectController::class, 'create'])->name('app-project-add');
+    Route::post('project/store', [ProjectController::class, 'store'])->name('app-project-store');
+    Route::get('project/edit/{encrypted_id}', [ProjectController::class, 'edit'])->name('app-project-edit');
+    Route::put('project/update/{encrypted_id}', [ProjectController::class, 'update'])->name('app-project-update');
+    Route::get('project/destroy/{encrypted_id}', [ProjectController::class, 'destroy'])->name('app-project-destroy');
+    Route::get('project/getAll', [ProjectController::class, 'getAll'])->name('app-project-get-all');
+    //Project End
+
+
+    //SubDepartments start
+    Route::get('project_status/list', [ProjectStatusController::class, 'index'])->name('app-project-status-list');
+    Route::get('project_status/add', [ProjectStatusController::class, 'create'])->name('app-project-status-add');
+    Route::post('project_status/store', [ProjectStatusController::class, 'store'])->name('app-project-status-store');
+    Route::get('project_status/edit/{encrypted_id}', [ProjectStatusController::class, 'edit'])->name('app-project-status-edit');
+    Route::put('project_status/update/{encrypted_id}', [ProjectStatusController::class, 'update'])->name('app-project-status-update');
+    Route::get('project_status/destroy/{encrypted_id}', [ProjectStatusController::class, 'destroy'])->name('app-project-status-destroy');
+    Route::get('project_status/getAll', [ProjectStatusController::class, 'getAll'])->name('app-project-status-get-all');
+    //SubDepartments End
+    //Email Template start
+    Route::get('email-templates/list', [EmailTemplateController::class, 'index'])->name('app-email-templates-list');
+    Route::get('email-templates/add', [EmailTemplateController::class, 'create'])->name('app-email-templates-add');
+    Route::post('email-templates/store', [EmailTemplateController::class, 'store'])->name('app-email-templates-store');
+    Route::get('email-templates/edit/{encrypted_id}', [EmailTemplateController::class, 'edit'])->name('app-email-templates-edit');
+    Route::put('email-templates/update/{encrypted_id}', [EmailTemplateController::class, 'update'])->name('app-email-templates-update');
+    Route::get('email-templates/destroy/{encrypted_id}', [EmailTemplateController::class, 'destroy'])->name('app-email-templates-destroy');
+    Route::get('email-templates/getAll', [EmailTemplateController::class, 'getAll'])->name('app-email-templates-get-all');
+    //Email Template End
+
+
+    //Task start
+    Route::get('task/list', [TaskController::class, 'index'])->name('app-task-list');
+    Route::get('task/card-view', [TaskController::class, 'kanban'])->name('app-task-cardView');
+    Route::get('task/add', [TaskController::class, 'create'])->name('app-task-add');
+    Route::post('task/store', [TaskController::class, 'store'])->name('app-task-store');
+    Route::get('task/edit/{encrypted_id}', [TaskController::class, 'edit'])->name('app-task-edit');
+    Route::put('task/update/{encrypted_id}', [TaskController::class, 'update'])->name('app-task-update');
+    Route::get('task/destroy/{encrypted_id}', [TaskController::class, 'destroy'])->name('app-task-destroy');
+    Route::get('task/getAll', [TaskController::class, 'getAll'])->name('app-task-get-all');
+    // Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
+    Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
+    Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
+    Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
+    Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');
+    Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
+    Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
+    Route::get('task/getAllForView', [TaskController::class, 'getAllForView'])->name('app-task-getAllForView-all');
+    Route::get('task/updateTaskFromView/{encrypted_id}/{status}', [TaskController::class, 'updateTaskFromView'])->name('app-task-updateTaskFromView-all');
+    Route::post('comments', [TaskController::class, 'storeComments'])->name('comments.store');
+    Route::get('sub-departments/{department_id}', [TaskController::class, 'getSubDepartments'])->name('app-sub-departments');
+    Route::get('users-by-department/{department_id}', [TaskController::class, 'getUsersByDepartment'])->name('app-users-by-department');
+    //Task End
+
+    // Task List Start
+    Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
+    Route::get('task/requested', [TaskController::class, 'index'])->name('app-task-requested');
+    Route::get('task/accepted/get/all', [TaskController::class, 'getAll'])->name('app-accepted-get-all');
+    Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');
+    // Task List End
+
+
+    // Calender Start
+    Route::get('calender', [CalendarController::class, 'index'])->name('app-calender');
+
+    // Calender End
+
+    Route::get('task/mytask', [TaskController::class, 'index'])->name('app-task-get-mytask');
+    Route::get('task/get_task', [TaskController::class, 'getAll_mytask'])->name('app-task-mytask-get');
+
+    Route::get('task/accepted_by_me', [TaskController::class, 'index'])->name('app-task-get-accepted_by_me');
+    Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
+
+    Route::get('task/assign_by_me', [TaskController::class, 'index'])->name('app-task-get-assign_by_me');
+    Route::get('task/getAll_assign_by_me', [TaskController::class, 'getAll_assign_by_me'])->name('app-task-getAll_assign_by_me-get');
+
+    Route::get('task/requested_me', [TaskController::class, 'index'])->name('app-task-get-requested_me');
+    Route::get('task/getAll_requested_me', [TaskController::class, 'getAll_requested_me'])->name('app-task-getAll_requested_me-get');
+
+    Route::get('task/conceptualization', [TaskController::class, 'index'])->name('app-task-get-conceptualization');
+    Route::get('task/getAll_conceptualization', [TaskController::class, 'getAll_conceptualization'])->name('app-task-getAll_conceptualization-get');
+
+    Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-get-due_date_past');
+    Route::get('task/getAll_due_date_past', [TaskController::class, 'getAll_due_date_past'])->name('app-task-getAll_due_date_past-get');
+
+    Route::get('task/scope_defined', [TaskController::class, 'index'])->name('app-task-get-scope_defined');
+    Route::get('task/getAll_scope_defined', [TaskController::class, 'getAll_scope_defined'])->name('app-task-getAll_scope_defined-get');
+
+    Route::get('task/completed', [TaskController::class, 'index'])->name('app-task-get-completed');
+    Route::get('task/getAll_completed', [TaskController::class, 'getAll_completed'])->name('app-task-getAll_completed-get');
+
+    Route::get('task/in_execution', [TaskController::class, 'index'])->name('app-task-get-in_execution');
+    Route::get('task/getAll_in_execution', [TaskController::class, 'getAll_in_execution'])->name('app-task-getAll_in_execution-get');
+
+    Route::get('task/hold', [TaskController::class, 'index'])->name('app-task-get-hold');
+    Route::get('task/getAll_hold', [TaskController::class, 'getAll_hold'])->name('app-task-getAll_hold-get');
+
+    Route::get('task/admin_acc', [TaskController::class, 'index'])->name('app-task-get-admin_acc');
+    Route::get('task/getAll_admin_acc', [TaskController::class, 'getAll_admin_acc'])->name('app-task-getAll_admin_acc-get');
+    Route::get('task/admin_req', [TaskController::class, 'index'])->name('app-task-get-admin_req');
+    Route::get('task/getAll_admin_req', [TaskController::class, 'getAll_admin_req'])->name('app-task-getAll_admin_req-get');
+    Route::get('task/admin_rej', [TaskController::class, 'index'])->name('app-task-get-admin_rej');
+    Route::get('task/getAll_admin_rej', [TaskController::class, 'getAll_admin_rej'])->name('app-task-getAll_admin_rej-get');
+
+    Route::get('task/total_task', [TaskController::class, 'index'])->name('app-task-get-total_task');
+    Route::get('task/getAll_total_task', [TaskController::class, 'getAll_total_task'])->name('app-task-getAll_total_task-get');
+
+
+});
+/* Route Apps */

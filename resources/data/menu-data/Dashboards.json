@@ -1,0 +1,190 @@
+{
+    "menu": [
+        {
+            "name": "Dashboards",
+            "badge": "2",
+            "badgeClass": "badge badge-light-warning rounded-pill ms-auto me-1",
+            "icon": "home",
+            "slug": "",
+            "submenu": [
+            ]
+        },
+        {
+            "name": "User",
+            "icon": "user",
+            "slug": "",
+            "submenu": [
+                {
+                    "url": "app/user/list",
+                    "name": "List",
+                    "icon": "circle",
+                    "slug": "app-user-list"
+                },
+                {
+                    "name": "View",
+                    "icon": "circle",
+                    "slug": "",
+                    "submenu": [
+                        {
+                            "url": "app/user/view/account",
+                            "name": "Account",
+                            "slug": "app-user-view-account"
+                        },
+                        {
+                            "url": "app/user/view/security",
+                            "name": "Security",
+                            "slug": "app-user-view-security"
+                        },
+                        {
+                            "url": "app/user/view/billing",
+                            "name": "Billings & Plans",
+                            "slug": "app-user-view-billing"
+                        },
+                        {
+                            "url": "app/user/view/notifications",
+                            "name": "Notifications",
+                            "slug": "app-user-view-notifications"
+                        },
+                        {
+                            "url": "app/user/view/connections",
+                            "name": "Connections",
+                            "slug": "app-user-view-connections"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "url": "app/user/enquiry_design",
+            "name": "Enquiry",
+            "icon": "info",
+            "slug": "app-user-enquiry_design"
+        },
+        {
+            "url": "app/visa-types/list ",
+            "name": "Visa type",
+            "icon": "award",
+            "slug": "app-visa-types-list"
+        },
+        {
+            "url": "app/inquiry-status/list ",
+            "name": "Inquiry Status",
+            "icon": "award",
+            "slug": "app-inquiry-status-list"
+        },
+        {
+            "url": "app/level/list ",
+            "name": "Level",
+            "icon": "award",
+            "slug": "app-level-list"
+        },
+        {
+            "url": "app/inquiry-active-status/list ",
+            "name": "Inquiry Visible Status",
+            "icon": "eye",
+            "slug": "app-inquiry-active-status-list"
+        },
+        {
+            "url": "app/branches/list",
+            "name": "Branches",
+            "icon": "map",
+            "slug": "app-branches-list"
+        },
+        {
+            "url": "app/follow-up-type/list ",
+            "name": "Follow Up Type",
+            "icon": "award",
+            "slug": "app-follow-up-type-list"
+        },
+        {
+            "url": "app/follow-up-status/list",
+            "name": "Follow Up Status",
+            "icon": "map",
+            "slug": "app-follow-up-status-list"
+        },
+        {
+            "url": "app/document/list",
+            "name": "Document",
+            "icon": "map",
+            "slug": "app-document-list"
+        },
+        {
+            "url": "app/user/enquiry_design",
+            "name": "Enquiry",
+            "icon": "info",
+            "slug": "app-user-enquiry_design"
+        },
+        {
+            "url": "app/visa-types/list ",
+            "name": "Visa type",
+            "icon": "award",
+            "slug": "app-visa-types-list"
+        },
+        {
+            "url": "app/inquiry-status/list ",
+            "name": "Inquiry Status",
+            "icon": "award",
+            "slug": "app-inquiry-status-list"
+        },
+        {
+            "url": "app/level/list ",
+            "name": "Level",
+            "icon": "award",
+            "slug": "app-level-list"
+        },
+        {
+            "url": "app/inquiry-active-status/list ",
+            "name": "Inquiry Visible Status",
+            "icon": "eye",
+            "slug": "app-inquiry-active-status-list"
+        },
+        {
+            "url": "app/branches/list",
+            "name": "Branches",
+            "icon": "map",
+            "slug": "app-branches-list"
+        },
+        {
+            "url": "app/follow-up-type/list ",
+            "name": "Follow Up Type",
+            "icon": "award",
+            "slug": "app-follow-up-type-list"
+        },
+        {
+            "url": "app/follow-up-status/list",
+            "name": "Follow Up Status",
+            "icon": "map",
+            "slug": "app-follow-up-status-list"
+        },
+        {
+            "url": "app/documents/list",
+            "name": "Document",
+            "icon": "map",
+            "slug": "app-documents-list"
+        },
+        {
+            "url": "app/email-templates/list",
+            "name": "Email Template",
+            "icon": "mail",
+            "slug": "app-email-templates-list"
+        },
+        {
+            "url": "app/sms-templates/list",
+            "name": "SMS Template",
+            "icon": "message-square",
+            "slug": "app-sms-templates-list"
+        },
+        {
+            "url": "app/follow-up-action-status/list",
+            "name": "Follow Up Action Status",
+            "icon": "map",
+            "slug": "app-follow-up-action-status-list"
+        },
+        {
+            "url": "app/follow-ups/list",
+            "name": "Follow Up List",
+            "icon": "map",
+            "slug": "app-follow-ups-list"
+        }
+    ]
+}

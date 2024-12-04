@@ -1,0 +1,134 @@
+{
+    "menu": [
+        {
+            "url": "app/dashboard",
+            "name": "Dashboard",
+            "icon": "lock",
+            "slug": "app-roles-list",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/roles/list",
+            "name": "Roles",
+            "icon": "lock",
+            "slug": "app-roles-list",
+            "permission": [
+                "role-list",
+                "role-create"
+            ]
+        },
+        {
+            "url": "app/users/list",
+            "name": "User",
+            "icon": "user",
+            "slug": "app-users-list",
+            "permission": [
+                "user-list",
+                "user-create"
+            ]
+        },
+        {
+            "url": "app/department/list",
+            "name": "Department",
+            "icon": "user",
+            "slug": "app-department-list",
+            "permission": [
+                "department-list",
+                "department-create"
+            ]
+        },
+        {
+            "url": "app/status/list",
+            "name": "Status",
+            "icon": "user",
+            "slug": "app-status-list",
+            "permission": [
+                "status-list",
+                "status-create"
+            ]
+        },
+        {
+            "url": "app/priority/list",
+            "name": "Priority",
+            "icon": "user",
+            "slug": "app-priority-list",
+            "permission": [
+                "priority-list",
+                "priority-create"
+            ]
+        },
+        {
+            "url": "app/sub_department/list",
+            "name": "Sub Department",
+            "icon": "user",
+            "slug": "app-sub_department-list",
+            "permission": [
+                "sub_department-list",
+                "sub_department-create"
+            ]
+        },
+        {
+            "url": "app/project/list",
+            "name": "Project",
+            "icon": "user",
+            "slug": "app-project-list",
+            "permission": [
+                "project-list",
+                "project-create"
+            ]
+        },
+        {
+            "url": "app/project_status/list",
+            "name": "Project Status",
+            "icon": "user",
+            "slug": "app-project-status-list",
+            "permission": [
+                "project-status-list",
+                "project-status-create"
+            ]
+        },
+        {
+            "url": "app/task/list",
+            "name": "Task",
+            "icon": "user",
+            "slug": "app-task-list",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/accepted",
+            "name": "Task Accepted",
+            "icon": "user",
+            "slug": "app-task-accepted",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/calender",
+            "name": "Calender",
+            "icon": "user",
+            "slug": "app-calender",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/requested",
+            "name": "Task Requested",
+            "icon": "user",
+            "slug": "app-task-requested",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        }
+    ]
+}

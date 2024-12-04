@@ -1,0 +1,234 @@
+{
+    "menu": [
+        {
+            "url": "app/dashboard",
+            "name": "Dashboard",
+            "icon": "home",
+            "slug": "app-dashboard",
+            "permission": [
+                "dashboard"
+            ]
+        },
+        {
+            "url": "app/users/list",
+            "name": "User",
+            "icon": "user",
+            "slug": "app-users-list",
+            "permission": [
+                "user-list",
+                "user-create"
+            ]
+        },
+        {
+            "name": "Inquiry",
+            "icon": "file-plus",
+            "slug": "",
+            "permission": [
+                "inquiry-list",
+                "inquiry-create"
+            ],
+            "submenu": [
+                {
+                    "url": "app/inquiries/add",
+                    "name": "Add",
+                    "icon": "circle",
+                    "slug": "app-inquiries-add",
+                    "permission": [
+                        "inquiry-create"
+                    ]
+                },
+                {
+                    "url": "app/inquiries/list/inquiry",
+                    "name": "Inquiry List",
+                    "icon": "circle",
+                    "slug": "app-inquiries-list-inquiry",
+                    "permission": [
+                        "inquiry-list"
+                    ]
+                },
+                {
+                    "url": "app/inquiry-status-change/list",
+                    "name": "Inquiry Status Change",
+                    "icon": "circle",
+                    "slug": "app-inquiry-status-change-list",
+                    "permission": [
+                        "inquiry-edit"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Inquiry Transfer List",
+            "icon": "bell",
+            "url": "app/inquiries-transfer-requests/list",
+            "slug": "app-inquiries-transfer-list",
+            "permission": [
+                "inquiry-transfer-list"
+            ]
+        },
+        {
+            "name": "Operation",
+            "icon": "layout",
+            "url": "app/operations/list",
+            "slug": "app-operation-list",
+            "permission": [
+                "operations-list"
+            ]
+        },
+        {
+            "name": "Daily Report",
+            "icon": "layout",
+            "url": "app/dashboard/daily/report",
+            "slug": "app-dashboard-daily-report",
+            "permission": [
+                "daily-report"
+            ]
+        },
+        {
+            "name": "Master",
+            "icon": "layout",
+            "slug": "",
+            "permission": [
+                "inquiry-status-list",
+                "inquiry-active-status-list",
+                "branch-list",
+                "follow-up-status-list",
+                "follow-up-type-list",
+                "follow-up-action-status-list",
+                "programs-list",
+                "product-list",
+                "role-list",
+                "role-create"
+            ],
+            "submenu": [
+                {
+                    "url": "app/roles/list",
+                    "name": "Roles",
+                    "icon": "lock",
+                    "slug": "app-roles-list",
+                    "permission": [
+                        "role-list",
+                        "role-create"
+                    ]
+                },
+                {
+                    "url": "app/inquiry-status/list ",
+                    "name": "Inquiry Status",
+                    "icon": "check-circle",
+                    "slug": "app-inquiry-status-list",
+                    "permission": [
+                        "inquiry-status-list"
+                    ]
+                },
+                {
+                    "url": "app/inquiry-active-status/list ",
+                    "name": "Inquiry Visible Status",
+                    "icon": "eye",
+                    "slug": "app-inquiry-active-status-list",
+                    "permission": [
+                        "inquiry-active-status-list"
+                    ]
+                },
+                {
+                    "url": "app/community/list",
+                    "name": "Communities",
+                    "icon": "eye",
+                    "slug": "app-community-list",
+                    "permission": [
+                        "community-list"
+                    ]
+                },
+                {
+                    "url": "app/branches/list",
+                    "name": "Branches",
+                    "icon": "map",
+                    "slug": "app-branches-list",
+                    "permission": [
+                        "branch-list"
+                    ]
+                },
+                {
+                    "url": "app/follow-up-type/list ",
+                    "name": "Follow Up Type",
+                    "icon": "award",
+                    "slug": "app-follow-up-type-list",
+                    "permission": [
+                        "follow-up-type-list"
+                    ]
+                },
+                {
+                    "url": "app/follow-up-status/list",
+                    "name": "Follow Up Status",
+                    "icon": "help-circle",
+                    "slug": "app-follow-up-status-list",
+                    "permission": [
+                        "follow-up-status-list"
+                    ]
+                },
+                {
+                    "url": "app/follow-up-action-status/list",
+                    "name": "Follow Up Action Status",
+                    "icon": "map",
+                    "slug": "app-follow-up-action-status-list",
+                    "permission": [
+                        "follow-up-action-status-list"
+                    ]
+                },
+                {
+                    "url": "app/programs/list",
+                    "name": "Program",
+                    "icon": "folder",
+                    "slug": "app-programs-list",
+                    "permission": [
+                        "programs-list"
+                    ]
+                },
+                {
+                    "url": "app/products/list",
+                    "name": "Product",
+                    "icon": "folder",
+                    "slug": "app-products-list",
+                    "permission": [
+                        "product-list"
+                    ]
+                },
+                {
+                    "url": "app/email-templates/list",
+                    "name": "Email Template",
+                    "icon": "mail",
+                    "slug": "app-email-templates-list",
+                    "permission": [
+                        "email-templates-list"
+                    ]
+                },
+                {
+                    "url": "app/sms-templates/list",
+                    "name": "SMS Template",
+                    "icon": "message-square",
+                    "slug": "app-sms-templates-list",
+                    "permission": [
+                        "sms-templates-list"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Follow Up List",
+            "icon": "list",
+            "url": "app/follow-ups/list",
+            "slug": "app-follow-ups-list",
+            "permission": [
+                "follow-up-list"
+            ]
+        },
+        {
+            "name": "Setting",
+            "icon": "list",
+            "url": "app/settings",
+            "slug": "settings",
+            "permission": [
+                "settings"
+            ]
+        }
+    ]
+}
