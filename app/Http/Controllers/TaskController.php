@@ -1832,7 +1832,7 @@ class TaskController extends Controller
     }
     // old befor sub_task code
 
-   
+
 
     public function updateTaskFromView($encrypted_id, $status)
     {
