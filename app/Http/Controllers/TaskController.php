@@ -76,10 +76,38 @@ class TaskController extends Controller
 
         $type = last(explode('-', request()->route()->getName()));
 
-
+        // dd($type);
 
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
+
+
+        // $taskAssignees = TaskAssignee::all();
+
+        // foreach ($taskAssignees as $taskAssignee) {
+        //     // Get the task by task_id from task_assignees, ensuring created_by is not null
+        //     $task = Task::whereNotNull('task_status')
+        //         ->whereNotNull('created_by') // Ensure created_by is not null in the tasks table
+        //         ->where('id', $taskAssignee->task_id)
+        //         ->first();
+
+        //     if ($task != null) {
+        //         // Check if task_status in task_assignees is null
+        //         if ($taskAssignee->task_status) {
+        //             // Update the task_status in task_assignees from tasks table
+        //             $taskAssignee->task_status = $task->task_status;
+        //         }
+
+        //         // Check if created_by in task_assignees is null
+        //         if ($taskAssignee->created_by === null) {
+        //             // Update the created_by in task_assignees from tasks table
+        //             $taskAssignee->created_by = $task->created_by;
+        //         }
+
+        //         // Save the changes
+        //         $taskAssignee->save();
+        //     }
+        // }
 
 
         return view('content.apps.task.list', compact('data', 'type'));
@@ -221,6 +249,7 @@ class TaskController extends Controller
             })->addColumn('description', function ($row) {
                 $description = html_entity_decode($row->description);
                 return $description;
+                
             })->rawColumns(['actions'])->make(true);
 
     }
@@ -1263,132 +1292,132 @@ class TaskController extends Controller
 
         return view('.content.apps.task.create-edit', compact('page_data', 'task', 'departmentslist', 'data', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys'));
     }
-
-    public function store(CreateTaskRequest $request)
-    {
-        try {
-            $project = Project::where('id', $request->get('project_id'))->first();
-            $priority = Priority::where('id', $request->get('priority_id'))->first();
-            $status = Status::where('id', $request->get('task_status'))->first();
-
-
-            if ($request->get('task_status') == 4) {
-                $taskData['completed_date'] = now();
-            }
-            if ($request->get('task_status') == 7) {
-                $taskData['close_date'] = now();
-            }
-            $taskData['created_by'] = auth()->user()->id;
-            $authenticatedUserId = intval(auth()->user()->id);
-            $userIds = $request->input('user_id', []);
-            $userIds = array_map('intval', $userIds);
-            $users = User::whereIn('id', $userIds)->get()->groupBy('department_id');
-
-            foreach ($users as $departmentId => $departmentUsers) {
-                $deparment_data = Department::where('id', $departmentId)->first();
-                $taskData = [
-
-                    'department_id' => $departmentId,
-                    'department_name' => $deparment_data->department_name,
-                    'sub_department_id' => $departmentId,
-                    'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-                    'title' => $request->get('title'),
-                    'description' => $request->get('description'),
-                    'subject' => $request->get('subject'),
-                    'project_id' => $request->get('project_id'),
-                    'project_name' => $project->project_name,
-                    'start_date' => $request->get('start_date'),
-                    'due_date' => $request->get('due_date'),
-                    'priority_id' => $request->get('priority_id'),
-                    'priority_name' => $priority->priority_name,
-                    'task_status' => $request->get('task_status'),
-                    'status_name' => $status->status_name,
-                ];
-                if ($request->get('task_status') == 4) {
-                    $taskData['completed_date'] = now();
-                }
-                if ($request->get('task_status') == 7) {
-                    $taskData['close_date'] = now();
-                }
-                $taskData['created_by'] = auth()->user()->id;
-
-                if (in_array($authenticatedUserId, $departmentUsers->pluck('id')->toArray())) {
-                    $taskData['accepted_date'] = now();
-                }
-
-                $task = $this->taskService->create($taskData);
-                $task->TaskNumber = $task->id;
-                $task->save();
-
-                if ($request->hasFile('attachments')) {
-                    foreach ($request->file('attachments') as $attachment) {
-                        $filenameWithExtension = $attachment->getClientOriginalName();
-                        $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
-                        $extension = $attachment->getClientOriginalExtension();
-                        $storedFilename = $filename . '_' . time() . '.' . $extension;
-
-                        $path = $attachment->storeAs('attachments', $storedFilename);
-
-                        TaskAttachment::create([
-                            'task_id' => $task->id,
-                            'file' => $path,
-                        ]);
-                    }
-                }
-
-                $departmentUserIds = $departmentUsers->pluck('id')->toArray();
-
-                $task->users()->sync($departmentUserIds);
-                $task->users()->updateExistingPivot($departmentUserIds, ['status' => 0]);
-
-                if (in_array($authenticatedUserId, $departmentUserIds)) {
-                    $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
-                }
-            }
+    // Pradips Code
+    // public function store(CreateTaskRequest $request)
+    // {
+    //     try {
+    //         $project = Project::where('id', $request->get('project_id'))->first();
+    //         $priority = Priority::where('id', $request->get('priority_id'))->first();
+    //         $status = Status::where('id', $request->get('task_status'))->first();
 
 
-            $authUserId = auth()->user()->id;
-            if (in_array($authUserId, $userIds)) {
-                $task->users()->updateExistingPivot($authUserId, ['status' => 1]);
-            }
+    //         if ($request->get('task_status') == 4) {
+    //             $taskData['completed_date'] = now();
+    //         }
+    //         if ($request->get('task_status') == 7) {
+    //             $taskData['close_date'] = now();
+    //         }
+    //         $taskData['created_by'] = auth()->user()->id;
+    //         $authenticatedUserId = intval(auth()->user()->id);
+    //         $userIds = $request->input('user_id', []);
+    //         $userIds = array_map('intval', $userIds);
+    //         $users = User::whereIn('id', $userIds)->get()->groupBy('department_id');
+
+    //         foreach ($users as $departmentId => $departmentUsers) {
+    //             $deparment_data = Department::where('id', $departmentId)->first();
+    //             $taskData = [
+
+    //                 'department_id' => $departmentId,
+    //                 'department_name' => $deparment_data->department_name,
+    //                 'sub_department_id' => $departmentId,
+    //                 'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+    //                 'title' => $request->get('title'),
+    //                 'description' => $request->get('description'),
+    //                 'subject' => $request->get('subject'),
+    //                 'project_id' => $request->get('project_id'),
+    //                 'project_name' => $project->project_name,
+    //                 'start_date' => $request->get('start_date'),
+    //                 'due_date' => $request->get('due_date'),
+    //                 'priority_id' => $request->get('priority_id'),
+    //                 'priority_name' => $priority->priority_name,
+    //                 'task_status' => $request->get('task_status'),
+    //                 'status_name' => $status->status_name,
+    //             ];
+    //             if ($request->get('task_status') == 4) {
+    //                 $taskData['completed_date'] = now();
+    //             }
+    //             if ($request->get('task_status') == 7) {
+    //                 $taskData['close_date'] = now();
+    //             }
+    //             $taskData['created_by'] = auth()->user()->id;
+
+    //             if (in_array($authenticatedUserId, $departmentUsers->pluck('id')->toArray())) {
+    //                 $taskData['accepted_date'] = now();
+    //             }
+
+    //             $task = $this->taskService->create($taskData);
+    //             $task->TaskNumber = $task->id;
+    //             $task->save();
+
+    //             if ($request->hasFile('attachments')) {
+    //                 foreach ($request->file('attachments') as $attachment) {
+    //                     $filenameWithExtension = $attachment->getClientOriginalName();
+    //                     $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+    //                     $extension = $attachment->getClientOriginalExtension();
+    //                     $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+    //                     $path = $attachment->storeAs('attachments', $storedFilename);
+
+    //                     TaskAttachment::create([
+    //                         'task_id' => $task->id,
+    //                         'file' => $path,
+    //                     ]);
+    //                 }
+    //             }
+
+    //             $departmentUserIds = $departmentUsers->pluck('id')->toArray();
+
+    //             $task->users()->sync($departmentUserIds);
+    //             $task->users()->updateExistingPivot($departmentUserIds, ['status' => 0]);
+
+    //             if (in_array($authenticatedUserId, $departmentUserIds)) {
+    //                 $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
+    //             }
+    //         }
 
 
-            $loggedInUser = auth()->user();
-            $encryptedId = encrypt($task->id);
-            $task->encryptedId = $encryptedId;
-
-            $html = View::make('emails.task_created', compact('task'))->render();
-            $subject = "New Task Created";
-
-            foreach ($task->users as $user) {
-                $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
-
-                createNotification(
-                    $user->id,
-                    $task->id,
-                    'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
-                    'Created'
-                );
-            }
+    //         $authUserId = auth()->user()->id;
+    //         if (in_array($authUserId, $userIds)) {
+    //             $task->users()->updateExistingPivot($authUserId, ['status' => 1]);
+    //         }
 
 
+    //         $loggedInUser = auth()->user();
+    //         $encryptedId = encrypt($task->id);
+    //         $task->encryptedId = $encryptedId;
 
-            // die;
-            // $mail = Mail::to('pradip12345.pv@gmail.com')->send(new TaskCreatedMail($subject, $html));
-            if (!empty($task)) {
-                return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
-            } else {
+    //         $html = View::make('emails.task_created', compact('task'))->render();
+    //         $subject = "New Task Created";
 
-                return redirect()->back()->with('error', ' Error while Email');
-            }
-        } catch (\Exception $error) {
-            \Log::error('Error adding task: ' . $error->getMessage(), [
-                'exception' => $error,
-                // You can add more context if needed
-            ]);
-            return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
-        }
-    }
+    //         foreach ($task->users as $user) {
+    //             $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+    //             createNotification(
+    //                 $user->id,
+    //                 $task->id,
+    //                 'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+    //                 'Created'
+    //             );
+    //         }
+
+
+
+    //         // die;
+    //         // $mail = Mail::to('pradip12345.pv@gmail.com')->send(new TaskCreatedMail($subject, $html));
+    //         if (!empty($task)) {
+    //             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
+    //         } else {
+
+    //             return redirect()->back()->with('error', ' Error while Email');
+    //         }
+    //     } catch (\Exception $error) {
+    //         \Log::error('Error adding task: ' . $error->getMessage(), [
+    //             'exception' => $error,
+    //             // You can add more context if needed
+    //         ]);
+    //         return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
+    //     }
+    // }
 
 
 
@@ -1534,9 +1563,109 @@ class TaskController extends Controller
     //     }
     // }
 
+    // Pradips Code
 
+    public function store(CreateTaskRequest $request)
+    {
+        try {
+            // Fetch project, priority, and status
+            $project = Project::where('id', $request->get('project_id'))->first();
+            $priority = Priority::where('id', $request->get('priority_id'))->first();
+            $status = Status::where('id', $request->get('task_status'))->first();
 
+            // Prepare task data
+            $taskData = [
+                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'project_id' => $request->get('project_id'),
+                'project_name' => $project->project_name,
+                'start_date' => $request->get('start_date'),
+                'due_date' => $request->get('due_date'),
+                'priority_id' => $request->get('priority_id'),
+                'priority_name' => $priority->priority_name,
+                'task_status' => $request->get('task_status'),
+                'status_name' => $status->status_name,
+                'created_by' => auth()->user()->id,
+            ];
 
+            // Handle status-specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            }
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+            }
+
+            // Create the task
+            $task = $this->taskService->create($taskData);
+            $task->TaskNumber = $task->id;  // Set task number
+            $task->save();
+
+            // Attach files if any
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $attachment) {
+                    $filenameWithExtension = $attachment->getClientOriginalName();
+                    $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                    $extension = $attachment->getClientOriginalExtension();
+                    $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+                    $path = $attachment->storeAs('attachments', $storedFilename);
+
+                    TaskAttachment::create([
+                        'task_id' => $task->id,
+                        'file' => $path,
+                    ]);
+                }
+            }
+
+            // Get the list of users and assign them to the task
+            $userIds = $request->input('user_id', []);
+            $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
+
+            // Sync users to the task (assign task to all users)
+            $task->users()->sync($userIds); // Sync the users
+
+            // Update their pivot table status (0 for others, 1 for the creator)
+            foreach ($userIds as $userId) {
+                $task->users()->updateExistingPivot($userId, ['status' => 0, 'task_status' => $request->get('task_status')]);
+            }
+
+            $authenticatedUserId = auth()->user()->id;
+            if (in_array($authenticatedUserId, $userIds)) {
+                $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
+            }
+
+            // Send notifications to users
+            $loggedInUser = auth()->user();
+            $encryptedId = encrypt($task->id);
+            $task->encryptedId = $encryptedId;
+
+            $html = View::make('emails.task_created', compact('task'))->render();
+            $subject = "New Task Created";
+
+            foreach ($task->users as $user) {
+                $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+                createNotification(
+                    $user->id,
+                    $task->id,
+                    'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+                    'Created'
+                );
+            }
+
+            // Redirect with success message
+            return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
+        } catch (\Exception $error) {
+            // Log any error
+            \Log::error('Error adding task: ' . $error->getMessage(), [
+                'exception' => $error,
+            ]);
+            return redirect()->route("app-task-list")->with('error', 'Error while adding task');
+        }
+    }
     public function edit($encrypted_id)
     {
         try {
@@ -1695,30 +1824,171 @@ class TaskController extends Controller
     // }
 
     // old befor sub_task code
+    // public function update(UpdateTaskRequest $request, $encrypted_id)
+    // {
+    //     try {
+    //         $id = decrypt($encrypted_id);
+    //         $project = Project::where('id', $request->get('project_id'))->first();
+    //         $priority = Priority::where('id', $request->get('priority_id'))->first();
+    //         $status = Status::where('id', $request->get('task_status'))->first();
+    //         $taskData['ticket'] = $request->get('task_type') == '1' ? 1 : 0;
+    //         $taskData['title'] = $request->get('title');
+    //         $taskData['description'] = $request->get('description');
+    //         $taskData['subject'] = $request->get('subject');
+    //         $taskData['closed'] = $request->input('closed') ? true : false;
+    //         $taskData['project_name'] = $project->project_name;
+    //         $taskData['priority_name'] = $priority->priority_name;
+    //         $taskData['status_name'] = $status->status_name;
+
+
+
+
+    //         $taskData['project_id'] = $request->get('project_id');
+    //         $taskData['start_date'] = $request->get('start_date');
+    //         $taskData['due_date'] = $request->get('due_date');
+    //         $taskData['priority_id'] = $request->get('priority_id');
+    //         $taskData['task_status'] = $request->get('task_status');
+    //         if ($request->get('task_status') == 4) {
+    //             $taskData['completed_date'] = now();
+    //         } else {
+    //             $taskData['completed_date'] = null;
+    //         }
+
+    //         if ($request->get('task_status') == 7) {
+    //             $taskData['close_date'] = now();
+    //         }
+
+    //         $taskData['updated_by'] = auth()->user()->id;
+
+    //         if ($request->comment != '') {
+    //             $comment = new Comments();
+    //             $comment->comment = $request->input('comment');
+    //             $comment->task_id = $request->input('task_id');
+    //             $comment->created_by = Auth::id();
+    //             $comment->save();
+    //         }
+
+    //         // Fetch the task being updated
+    //         $task = Task::where('id', $id)->first();
+
+    //         // If 'closed' is checked, update the task status to 7 (closed) if created by the current user
+    //         if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+    //             $taskData['task_status'] = 7;
+    //         }
+
+    //         // Update the task
+    //         $updated = $this->taskService->updatetask($id, $taskData);
+
+    //         // Handle file attachments
+    //         if ($request->hasFile('attachments')) {
+    //             foreach ($request->file('attachments') as $attachment) {
+    //                 $filenameWithExtension = $attachment->getClientOriginalName();
+    //                 $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+    //                 $extension = $attachment->getClientOriginalExtension();
+    //                 $storedFilename = $filename . '_' . time() . '.' . $extension;
+    //                 $path = $attachment->storeAs('attachments', $storedFilename);
+
+    //                 TaskAttachment::create([
+    //                     'task_id' => $id,
+    //                     'file' => $path,
+    //                 ]);
+    //             }
+    //         }
+
+    //         // Sync task with selected users
+    //         $userIds = $request->input('user_id', []);
+    //         $task = Task::find($id);
+    //         $currentUsers = $task->users()->pluck('users.id')->toArray();
+
+    //         // Array to store users who belong to the same department
+    //         $usersInSameDepartment = [];
+
+    //         // Check if any new user does not belong to the same department as the task
+    //         foreach ($userIds as $userId) {
+    //             $user = User::find($userId);
+
+    //             if ($user->department_id != $task->department_id) {
+
+    //                 $deparment_data = Department::where('id', $task->department_id)->first();
+    //                 // Create a new task for the user in a different department
+    //                 $newTaskData = $taskData;
+    //                 $taskData['department_name'] = $deparment_data->department_name;
+
+    //                 $newTaskData['created_by'] = auth()->user()->id;
+    //                 $newTaskData['department_id'] = $user->department_id; // Set department to user's department
+    //                 $newTask = Task::create($newTaskData);
+
+    //                 // Log new task creation due to department mismatch
+    //                 $this->logActivity("New task created due to department mismatch", $newTask, 'create', auth()->user()->id);
+
+    //                 // Assign this user to the new task
+    //                 $newTask->users()->sync([$userId]);
+    //             } else {
+    //                 // Collect users belonging to the same department
+    //                 $usersInSameDepartment[] = $userId;
+    //             }
+    //         }
+    //         foreach ($usersInSameDepartment as $userId) {
+    //             $user = User::find($userId);
+    //             $taskViewUrl = route('app-task-view', encrypt($task->id));
+
+    //             // Message for task update notification
+    //             $updateMessage = 'The task "' . $task->id . '" has been updated or assigned to you.<a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
+
+    //             // Send notification for task update
+    //             createNotification($user->id, $task->id, $updateMessage, 'Updated');
+
+
+
+    //         }
+
+    //         // Sync the users who belong to the same department
+    //         if ($currentUsers != $usersInSameDepartment) {
+    //             $task->users()->sync($usersInSameDepartment);
+
+    //             // Log the sync action
+    //             $this->logActivity('Synced users to task', $task, 'sync', auth()->user()->id, ['old' => $currentUsers, 'new' => $usersInSameDepartment]);
+    //         }
+
+    //         if (!empty($updated)) {
+    //             return redirect()->back()->with('success', 'Task Updated Successfully');
+    //         } else {
+    //             return redirect()->back()->with('error', 'Error while Updating Task');
+    //         }
+    //     } catch (\Exception $error) {
+    //         return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
+    //     }
+    // }
+    // old befor sub_task code
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
         try {
+            // Decrypt the encrypted task ID
             $id = decrypt($encrypted_id);
+
+            // Fetch project, priority, and status
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
             $status = Status::where('id', $request->get('task_status'))->first();
-            $taskData['ticket'] = $request->get('task_type') == '1' ? 1 : 0;
-            $taskData['title'] = $request->get('title');
-            $taskData['description'] = $request->get('description');
-            $taskData['subject'] = $request->get('subject');
-            $taskData['closed'] = $request->input('closed') ? true : false;
-            $taskData['project_name'] = $project->project_name;
-            $taskData['priority_name'] = $priority->priority_name;
-            $taskData['status_name'] = $status->status_name;
 
+            // Prepare task data
+            $taskData = [
+                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'project_name' => $project->project_name,
+                'priority_name' => $priority->priority_name,
+                'status_name' => $status->status_name,
+                'project_id' => $request->get('project_id'),
+                'start_date' => $request->get('start_date'),
+                'due_date' => $request->get('due_date'),
+                'priority_id' => $request->get('priority_id'),
+                'task_status' => $request->get('task_status'),
+                'updated_by' => auth()->user()->id,
+            ];
 
-
-
-            $taskData['project_id'] = $request->get('project_id');
-            $taskData['start_date'] = $request->get('start_date');
-            $taskData['due_date'] = $request->get('due_date');
-            $taskData['priority_id'] = $request->get('priority_id');
-            $taskData['task_status'] = $request->get('task_status');
+            // Handle task status specific fields (completed_date and close_date)
             if ($request->get('task_status') == 4) {
                 $taskData['completed_date'] = now();
             } else {
@@ -1729,26 +1999,16 @@ class TaskController extends Controller
                 $taskData['close_date'] = now();
             }
 
-            $taskData['updated_by'] = auth()->user()->id;
+            // Fetch the task to be updated
+            $task = Task::findOrFail($id);
 
-            if ($request->comment != '') {
-                $comment = new Comments();
-                $comment->comment = $request->input('comment');
-                $comment->task_id = $request->input('task_id');
-                $comment->created_by = Auth::id();
-                $comment->save();
-            }
-
-            // Fetch the task being updated
-            $task = Task::where('id', $id)->first();
-
-            // If 'closed' is checked, update the task status to 7 (closed) if created by the current user
+            // If task is being closed by the creator, update task status to 7 (closed)
             if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
                 $taskData['task_status'] = 7;
             }
 
             // Update the task
-            $updated = $this->taskService->updatetask($id, $taskData);
+            $updated = $this->taskService->updateTask($id, $taskData);
 
             // Handle file attachments
             if ($request->hasFile('attachments')) {
@@ -1757,6 +2017,7 @@ class TaskController extends Controller
                     $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
                     $extension = $attachment->getClientOriginalExtension();
                     $storedFilename = $filename . '_' . time() . '.' . $extension;
+
                     $path = $attachment->storeAs('attachments', $storedFilename);
 
                     TaskAttachment::create([
@@ -1766,40 +2027,13 @@ class TaskController extends Controller
                 }
             }
 
-            // Sync task with selected users
+            // Sync task with selected users (assign task to all selected users)
             $userIds = $request->input('user_id', []);
-            $task = Task::find($id);
-            $currentUsers = $task->users()->pluck('users.id')->toArray();
+            $task = Task::find($id);  // Re-fetch task if needed
+            $task->users()->sync($userIds);  // Sync all selected users to the task
 
-            // Array to store users who belong to the same department
-            $usersInSameDepartment = [];
-
-            // Check if any new user does not belong to the same department as the task
+            // Send notification to all selected users about the update
             foreach ($userIds as $userId) {
-                $user = User::find($userId);
-
-                if ($user->department_id != $task->department_id) {
-
-                    $deparment_data = Department::where('id', $task->department_id)->first();
-                    // Create a new task for the user in a different department
-                    $newTaskData = $taskData;
-                    $taskData['department_name'] = $deparment_data->department_name;
-
-                    $newTaskData['created_by'] = auth()->user()->id;
-                    $newTaskData['department_id'] = $user->department_id; // Set department to user's department
-                    $newTask = Task::create($newTaskData);
-
-                    // Log new task creation due to department mismatch
-                    $this->logActivity("New task created due to department mismatch", $newTask, 'create', auth()->user()->id);
-
-                    // Assign this user to the new task
-                    $newTask->users()->sync([$userId]);
-                } else {
-                    // Collect users belonging to the same department
-                    $usersInSameDepartment[] = $userId;
-                }
-            }
-            foreach ($usersInSameDepartment as $userId) {
                 $user = User::find($userId);
                 $taskViewUrl = route('app-task-view', encrypt($task->id));
 
@@ -1808,30 +2042,32 @@ class TaskController extends Controller
 
                 // Send notification for task update
                 createNotification($user->id, $task->id, $updateMessage, 'Updated');
-
-
-
             }
 
-            // Sync the users who belong to the same department
-            if ($currentUsers != $usersInSameDepartment) {
-                $task->users()->sync($usersInSameDepartment);
-
-                // Log the sync action
-                $this->logActivity('Synced users to task', $task, 'sync', auth()->user()->id, ['old' => $currentUsers, 'new' => $usersInSameDepartment]);
+            // Check if any comment was provided and save it
+            if ($request->comment != '') {
+                $comment = new Comments();
+                $comment->comment = $request->input('comment');
+                $comment->task_id = $request->input('task_id');
+                $comment->created_by = auth()->id();
+                $comment->save();
             }
 
-            if (!empty($updated)) {
+            // Redirect based on success or failure
+            if ($updated) {
                 return redirect()->back()->with('success', 'Task Updated Successfully');
             } else {
-                return redirect()->back()->with('error', 'Error while Updating Task');
+                return redirect()->back()->with('error', 'Error while updating task');
             }
+
         } catch (\Exception $error) {
+            // Log any error and return a generic error message
+            \Log::error('Error updating task: ' . $error->getMessage(), [
+                'exception' => $error,
+            ]);
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
     }
-    // old befor sub_task code
-
 
 
     public function updateTaskFromView($encrypted_id, $status)
@@ -3161,7 +3397,7 @@ class TaskController extends Controller
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
         // Common query for all tasks
-        $query = Task::query();
+        $query = TaskAssignee::query();
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
@@ -3169,10 +3405,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
-                $q->where('tasks.created_by', $userId)
-                    ->orWhereHas('assignees', function ($q) use ($userId) {
-                        $q->where('user_id', $userId);
-                    });
+                $q->where('user_id', $userId);
             });
         }
 
@@ -3216,15 +3449,14 @@ class TaskController extends Controller
             $query->where('tasks.project_id', $project);
         }
 
-        // Eager loading of related data to avoid N+1 queries
-        $query->with(['creator', 'assignees.user', 'taskStatus', 'project', 'department', 'sub_department']);
-
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
         $tasks = $query->get();
 
         // Return the data using DataTables, add custom columns
         return DataTables::of($tasks)
+
             ->addColumn('actions', function ($row) {
+                // dd($row);
                 $encryptedId = encrypt($row->id);
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
@@ -3234,30 +3466,71 @@ class TaskController extends Controller
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
-            ->addColumn('task_Assign', function ($row) {
-                return $row->assignees->pluck('user.first_name')->implode(', ') ?: "-";
+            ->addColumn('Task_number', function ($row) {
+                return $row->task ? $row->task->TaskNumber : "-";
             })
-            ->addColumn('task_status_name', function ($row) {
-                return $row->taskStatus ? $row->taskStatus->status_name : "-";
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
             })
-            ->addColumn('project_name', function ($row) {
-                return $row->project ? $row->project->project_name : "-";
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
             })
-            ->addColumn('department_name', function ($row) {
-                return $row->department ? $row->department->department_name : "-";
+
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
             })
-            ->addColumn('sub_department_name', function ($row) {
-                return $row->sub_department ? $row->sub_department->sub_department_name : "-";
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
             })
-            ->addColumn('created_by_department', function ($row) {
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id ? $row->user->first_name . " " . $row->user->last_name : "-";
+            })
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+            })
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? $row->task->close_date : '-';
+            })
+             ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? $row->task->completed_date : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->task && $row->task->accepted_date ? $row->task->accepted_date : '-';
+            })
+
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+            })
+
+            ->addColumn('sub_department', function ($row) {
+                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
             })
-            ->addColumn('created_by_sub_department', function ($row) {
+
+            ->addColumn('creator_sub_department', function ($row) {
                 return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
             })
-            ->addColumn('created_by_phone_no', function ($row) {
+            ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
+
+
+
+
             ->rawColumns(['actions'])
             ->make(true);
     }

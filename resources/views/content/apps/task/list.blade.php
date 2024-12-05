@@ -172,15 +172,11 @@
                                 <th>Assingn By</th>
                                 <th>Task assign to</th>
                                 <th>Status</th>
-
                                 <th>Created Date</th>
                                 <th>Start Date</th>
-                                <th>Start Date</th>
-                                <th>Due Date</th>
                                 <th>Due Date</th>
                                 <th>Completed Date</th>
                                 <th>Accepted task Date</th>
-
                                 <th>Project</th>
                                 <th>Department</th>
                                 <th>Sub Department</th>
@@ -188,6 +184,8 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contatinfo</th>
                                 <th>Close Date</th>
+
+
                             </tr>
                         </thead>
                     </table>
@@ -458,7 +456,7 @@
                     }
                 },
                 order: [
-                    [13, 'desc']
+                    [1, 'desc']
                 ],
                 columns: [{
                         data: 'actions',
@@ -466,20 +464,16 @@
                         searchable: false
                     }, // Non-searchable column
                     {
-                        data: 'TaskNumber',
-                        name: 'TaskNumber',
-                        searchable: true,
-                    }, // Ensure searchable is set to true
-                    {
-                        data: 'ticket',
-                        name: 'ticket',
-                        searchable: true,
-                        render: function(data) {
-                            return data == '0' ? '<span class="badge bg-success">Task</span>' :
-                                '<span class="badge bg-info">Ticket</span>';
-                        }
+                        data: 'Task_number',
+                        name: 'Task_number',
+                        searchable: true
                     },
                     {
+                        data: 'Task_Ticket',
+                        name: 'Task_Ticket',
+                        searchable: true
+                    },
+                      {
                         data: 'title',
                         name: 'title',
                         searchable: true
@@ -487,9 +481,8 @@
                     {
                         data: 'description',
                         name: 'description',
-                        visible: false,
-                        export: true,
-                        searchable: true
+                        searchable: true,
+                        visible:false,
                     },
                     {
                         data: 'subject',
@@ -502,123 +495,76 @@
                         searchable: true
                     },
                     {
-                        data: 'task_Assign',
-                        name: 'task_Assign',
+                        data: 'Task_assign_to',
+                        name: 'Task_assign_to',
                         searchable: true
                     },
-                    {
-                        data: 'task_status_name',
-                        name: 'task_status_name',
+                     {
+                        data: 'status',
+                        name: 'status',
                         searchable: true
                     },
-                    {
-                        data: 'created_at',
-                        name: 'created_at',
-                        searchable: true,
-                        render: function(data) {
-                            if (data) {
-                                var date = new Date(data);
-
-                                // Format date as DD/MM/YYYY
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' +
-                                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
-                                    date.getFullYear();
-
-                                // Format time as HH:MM:SS
-                                var hours = ('0' + date.getHours()).slice(-2);
-                                var minutes = ('0' + date.getMinutes()).slice(-2);
-                                var seconds = ('0' + date.getSeconds()).slice(-2);
-
-                                var formattedTime = hours + ':' + minutes + ':' + seconds;
-
-                                return formattedDate + ' ' + formattedTime; // Combine date and time
-                            }
-                            return '';
-                        }
-                    },
-                    {
+                     {
+                        data: 'Created_Date',
+                        name: 'Created_Date',
+                        searchable: true
+                    }, {
                         data: 'start_date',
                         name: 'start_date',
-                        searchable: true,
-                        render: function(data) {
-                            if (data) {
-                                var date = new Date(data);
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
+                        searchable: true
                     },
-                    {
-                        data: 'start_date',
-                        name: 'start_date',
-                        visible: false
-                    },
-                    {
+                     {
                         data: 'due_date',
                         name: 'due_date',
-                        searchable: true,
-                        render: function(data) {
-                            if (data) {
-                                var date = new Date(data);
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-                    {
-                        data: 'due_date',
-                        name: 'due_date',
-                        visible: false,
+                        searchable: true
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
                         searchable: true
                     },
+
                     {
                         data: 'accepted_date',
                         name: 'accepted_date',
                         searchable: true
                     },
                     {
-                        data: 'project_name',
-                        name: 'project_name',
-                        searchable: true
-                    }, // Ensure searchable is true here
-                    {
-                        data: 'department_name',
-                        name: 'department_name',
+                        data: 'project',
+                        name: 'project',
                         searchable: true
                     },
                     {
-                        data: 'sub_department_name',
-                        name: 'sub_department_name',
+                        data: 'department',
+                        name: 'department',
                         searchable: true
                     },
-                    {
-                        data: 'created_by_department',
-                        name: 'created_by_department',
+                     {
+                        data: 'sub_department',
+                        name: 'sub_department',
                         searchable: true
                     },
-                    {
-                        data: 'created_by_sub_department',
-                        name: 'created_by_sub_department',
+                     {
+                        data: 'creator_department',
+                        name: 'creator_department',
                         searchable: true
                     },
-                    {
-                        data: 'created_by_phone_no',
-                        name: 'created_by_phone_no',
+                     {
+                        data: 'creator_sub_department',
+                        name: 'creator_sub_department',
                         searchable: true
                     },
-                    {
+                     {
+                        data: 'creator_phone',
+                        name: 'creator_phone',
+                        searchable: true
+                    },
+                      {
                         data: 'close_date',
                         name: 'close_date',
                         searchable: true
-                    }
+                    },
+
                 ],
 
                 drawCallback: function() {
