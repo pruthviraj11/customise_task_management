@@ -567,10 +567,14 @@
                 <div class="container">
                     <div class="card">
                         <div class="card-header d-grid">
-                            <h1>Employee wise Status of Task
-                            </h1>
-                            <div class="container">
-                                <div class="row col-md-6">
+
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h1>Employee wise Status of Task
+                                    </h1>
+                                </div>
+                                <div class="col-md-6">
                                     <form action="#" method="GET">
                                         <label for="user_id">Select User</label>
                                         <select name="user_id" id="user_id" class="form-control">
@@ -582,7 +586,6 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <button type="submit" class="btn btn-primary mt-2">Filter</button>
                                     </form>
                                 </div>
                             </div>
