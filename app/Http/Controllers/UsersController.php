@@ -218,6 +218,7 @@ class UsersController extends Controller
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
             $userData['designation'] = $request->get('designation');
+            $userData['G7'] = $request->get('G7');
             $userData['dob'] = $request->get('dob');
             $userData['address'] = $request->get('address');
             $userData['branch'] = $request->get('branch');
@@ -364,6 +365,7 @@ class UsersController extends Controller
             $userData['last_name'] = $request->get('last_name');
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
+            $userData['G7'] = $request->get('G7');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
             if ($request->get('password') != null && $request->get('password') != '') {

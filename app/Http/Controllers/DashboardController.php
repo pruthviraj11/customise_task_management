@@ -25,6 +25,7 @@ class DashboardController extends Controller
     {
 
         $userId = auth()->user()->id;
+        $usersWithG7 = User::where('G7', 1)->get();
 
         // $my_task = Task::join('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
         //     ->where(function ($query) use ($userId) {
@@ -229,7 +230,7 @@ class DashboardController extends Controller
         $teamTasks = 00;
 
         // dd('heare');
-        return view('content.apps.dashboard.index', compact('MeAndTeam', 'teamTasks', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count'));
+        return view('content.apps.dashboard.index', compact('MeAndTeam', 'teamTasks', 'usersWithG7','data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count'));
     }
     public function activity()
     {

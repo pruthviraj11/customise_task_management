@@ -250,6 +250,7 @@
                                     @enderror
                                 </span>
                             </div>
+
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="role">
                                     Select Role </label>
@@ -290,7 +291,7 @@
                                 </span>
                             </div>
                             {{-- {{ dd($user); }} --}}
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="status">
                                     Status </label>
                                 <div class="form-check form-check-success form-switch">
@@ -305,6 +306,20 @@
                                     @enderror
                                 </span>
                             </div>
+
+                            <div class="col-md-3 col-sm-12 mb-1">
+                                <label class="form-label" for="G7">
+                                    Select User As a G7 : </label>
+                                <input type="checkbox" id="G7" name="G7" class="form-check-input"
+                                    value="1" {{ old('G7', $user->G7 ?? 0) == 1 ? 'checked' : '' }}>
+                                <span class="text-danger">
+                                    @error('G7')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
+
                         </div>
 
                         <div class="col-12">

@@ -41,6 +41,7 @@ class User extends Authenticatable
         'dob',
         'created_at',
         'profile_img',
+        'G7',
         'updated_at',
         // Add other fields as necessary
     ];
