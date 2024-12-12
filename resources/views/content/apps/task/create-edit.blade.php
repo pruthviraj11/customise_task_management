@@ -64,7 +64,8 @@
                             <div class="col-md-6">
                                 @if ($task != '')
                                     <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
-                                      <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}  {{ $task->creator->last_name }}</a>
+                                    <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
+                                        {{ $task->creator->last_name }}</a>
                                 @endif
 
                             </div>
@@ -132,67 +133,30 @@
                                 </span>
                             </div>
 
-                           {{-- <div class="col-md-6 col-sm-12 mb-1">
-                               <label class="form-label" for="department_id">Department</label><span
-                                   class="red">*</span>
-                               <select id="department_id" class="form-select select2" name="department_id" required>
-                                   <option value="">Select Department</option>
-                                   @foreach ($departments as $department)
-                                       <option value="{{ $department->id }}"
-                                           {{ old('department_id') == $department->id ? 'selected' : ($task ? ($task->department_id == $department->id ? 'selected' : '') : '') }}>
-                                           {{ $department->department_name }}
-                                       </option>
-                                   @endforeach
-                               </select>
-                               <span class="text-danger">
-                                   @error('department_id')
-                                       {{ $message }}
-                                   @enderror
-                               </span>
-                           </div> --}}
 
-                           {{-- <div class="col-md-6 col-sm-12 mb-1">
-                               <label class="form-label" for="sub_department_id">Sub Department</label><span
-                                   class="red">*</span>
-                               <select id="sub_department_id" class="form-select select2" name="sub_department_id"
-                                   required>
-                                   <option value="">Select Sub Department</option><span class="red">*</span>
-                                   @if ($task)
-                                       @foreach ($Subdepartments as $data)
-                                           <option value="{{ $data->id }}"
-                                               {{ old('sub_department_id') == $data->id ? 'selected' : ($task ? ($task->sub_department_id == $data->id ? 'selected' : '') : '') }}>
-                                               {{ $data->sub_department_name }}
-                                           </option>
-                                       @endforeach
-                                   @endif
-                               </select>
-                               <span class="text-danger">
-                                   @error('sub_department_id')
-                                       {{ $message }}
-                                   @enderror
-                               </span>
-                           </div> --}}
                             <style>
                                 .fixed-width {
                                     display: inline-block;
-                                    width: 50px; /* Set the width as needed */
+                                    width: 50px;
+                                    /* Set the width as needed */
                                     overflow: hidden;
                                     white-space: nowrap;
                                 }
                             </style>
-                             <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="user_id">Assign To</label><span class="red">*</span>
-                                 <select id="user_id" class="form-select select2" name="user_id[]" multiple required>
-                                     <option value="">Select User</option>
-                                     @foreach ($users as $user)
-                                         <option value="{{ $user->id }}"
-                                             {{ old('user_id') && in_array($user->id, old('user_id')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
-                                             <span class="fixed-width">{{ $user->first_name }} {{ $user->last_name }}</span>
-                                             |{{ $user->department->department_name ?? '' }}|
-                                             {{ $user->sub_department->sub_department_name ?? '' }}
-                                         </option>
-                                     @endforeach
-                                 </select>
+                                <select id="user_id" class="form-select select2" name="user_id[]" multiple required>
+                                    <option value="">Select User</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id') && in_array($user->id, old('user_id')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                            <span class="fixed-width">{{ $user->first_name }}
+                                                {{ $user->last_name }}</span>
+                                            |{{ $user->department->department_name ?? '' }}|
+                                            {{ $user->sub_department->sub_department_name ?? '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                 <span class="text-danger">
                                     @error('user_id')
                                         {{ $message }}
@@ -201,23 +165,7 @@
                             </div>
 
 
-                           {{-- <div class="col-md-6 col-sm-12 mb-1" id="assign_to_section">
-                               <label class="form-label" for="user_id">Assign To</label><span class="red">*</span>
-                               <select id="user_id" class="form-select select2" name="user_id[]" multiple required>
-                                   <option value="">Select User</option>
-                                   @foreach ($users as $user)
-                                       <option value="{{ $user->id }}"
-                                           {{ old('user_id') ? (in_array($user->id, old('user_id')) ? 'selected' : '') : ($task ? (in_array($user->id, $task->users->pluck('id')->toArray()) ? 'selected' : '') : '') }}>
-                                           {{ $user->first_name }} {{ $user->last_name }}
-                                       </option>
-                                   @endforeach
-                               </select>
-                               <span class="text-danger">
-                                   @error('user_id')
-                                       {{ $message }}
-                                   @enderror
-                               </span>
-                           </div> --}}
+
 
 
                             <div class="col-md-3 col-sm-12 mb-1 position-relative">
@@ -394,6 +342,114 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <h1>Task Details</h1>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <form>
+                            <!-- Task Title -->
+                            <div class="mb-3 row">
+                                <label for="taskTitle" class="col-md-4 col-form-label">Task Title</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" id="taskTitle"
+                                        value="{{ $task->title }}" disabled>
+                                </div>
+                            </div>
+
+                            <!-- Task Description -->
+                            <div class="mb-3 row">
+                                <label for="taskDescription" class="col-md-4 col-form-label">Description</label>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" id="taskDescription" rows="3" disabled>{{ $task->description }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Subtasks -->
+                            <h2>Subtasks</h2>
+                            @if ($SubTaskData->isEmpty())
+                                <p>No subtasks found.</p>
+                            @else
+                                @foreach ($SubTaskData as $index => $subtask)
+                                    <!-- Subtask Section -->
+                                    <div class="subtask-section mb-4">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Task Number -->
+                                                <label for="taskNumber_{{ $subtask->id }}" class="col-form-label">Task
+                                                    Number</label>
+                                                <input type="text" class="form-control"
+                                                    id="taskNumber_{{ $subtask->id }}"
+                                                    value="{{ $subtask->task_number }}" disabled>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Subtask Title -->
+                                                <label for="subtaskTitle_{{ $subtask->id }}"
+                                                    class="col-form-label">Subtask Title</label>
+                                                <input type="text" class="form-control"
+                                                    id="subtaskTitle_{{ $subtask->id }}"
+                                                    value="{{ $subtask->task->title }}" disabled>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Task Status -->
+                                                <label for="taskStatus_{{ $subtask->id }}" class="col-form-label">Task
+                                                    Status</label>
+                                                <input type="text" class="form-control"
+                                                    id="taskStatus_{{ $subtask->id }}"
+                                                    value="{{ $subtask->taskStatus->displayname }}" disabled>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Start Date -->
+                                                <label for="startDate_{{ $subtask->id }}" class="col-form-label">Start
+                                                    Date</label>
+                                                <input type="text" class="form-control"
+                                                    id="startDate_{{ $subtask->id }}"
+                                                    value="{{ $subtask->task->start_date }}" disabled>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Due Date -->
+                                                <label for="dueDate_{{ $subtask->id }}" class="col-form-label">Due
+                                                    Date</label>
+                                                <input type="text" class="form-control"
+                                                    id="dueDate_{{ $subtask->id }}"
+                                                    value="{{ $subtask->task->due_date }}" disabled>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <!-- Assigned To -->
+                                                <label for="assignedTo_{{ $subtask->id }}"
+                                                    class="col-form-label">Assigned to</label>
+                                                <input type="text" class="form-control"
+                                                    id="assignedTo_{{ $subtask->id }}"
+                                                    value="{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+
+                                        <!-- Divider Between Subtasks -->
+                                        @if ($index < $SubTaskData->count() - 1)
+                                            <hr class="my-4">
+                                        @endif
+                                    </div>
+                                @endforeach
+                            @endif
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
         </div>
         </div>
     </section>

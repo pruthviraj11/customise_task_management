@@ -27,43 +27,16 @@ class DashboardController extends Controller
         $userId = auth()->user()->id;
         $usersWithG7 = User::where('G7', 1)->get();
 
-        // $my_task = Task::join('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
-        //     ->where(function ($query) use ($userId) {
-        //         $query->where('tasks.created_by', $userId)
-        //             ->Where('task_assignees.user_id', $userId);
-        //     })
-        //     ->where('task_assignees.status', 1)
-        //     ->count();
 
         $user = auth()->user();
 
 
-        // $taccepted_by_me = Task::whereHas('assignees', function ($query) use ($user) {
-        //     $query->where('user_id', $user->id)->where('status', '1');
-        // })
-        //     ->whereNotIn('created_by', [$user->id])
-        //     ->count();
-
+    
 
 
         $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
 
-        // $mytotal_task = $my_task + $taccepted_by_me;
-
-        // $assign_by_me = Task::where('created_by', $userId)
-        //     ->whereDoesntHave('assignees', function ($query) use ($userId) {
-        //         $query->where('user_id', $userId);
-        //     })
-        //     ->count();
-
-
-        // $requested_me = Task::leftJoin('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
-        //     ->where('task_assignees.user_id', $userId)
-        //     ->where('task_assignees.status', 0)
-        //     ->where('tasks.created_by', '!=', $userId)
-        //     ->whereNot('tasks.task_status', 7)
-        //     ->count();
-
+       
         $task_count['conceptualization'] = Task::where('task_status', 1)
             ->whereHas('assignees', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -123,9 +96,7 @@ class DashboardController extends Controller
         $total['req_task'] = '';
         $total['acc_task'] = '';
         $total['rej_task'] = '';
-        // $total['total_task'] = $my_task + $taccepted_by_me + $assign_by_me + $requested_me;
-
-        // $total['total_task'] = $task_count['conceptualization'] + $task_count['scope_defined'] + $task_count['completed'] + $task_count['in_execution'] + $task_count['hold'];
+      
         $tasks = [];
         $data = [];
         $statuses = [];
@@ -184,10 +155,7 @@ class DashboardController extends Controller
             foreach ($taskCounts as $count) {
                 $taskCountMatrix[$count->task_status][$count->department_id] = $count->total;
             }
-            // $data = Task::join('departments', 'tasks.department_id', '=', 'departments.id')
-            //     ->select('departments.department_name', \DB::raw('count(*) as task_count'))
-            //     ->groupBy('tasks.department_id', 'departments.department_name')
-            //     ->get();
+           
 
         }
 

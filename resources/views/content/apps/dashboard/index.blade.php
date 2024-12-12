@@ -575,7 +575,7 @@
                                     </h1>
                                 </div>
                                 <div class="col-md-6">
-                                    <form action="#" method="GET">
+                                    {{-- <form action="#" method="GET">
                                         <label for="user_id">Select User</label>
                                         <select name="user_id" id="user_id" class="form-control">
                                             <option value="">-- Select a User --</option>
@@ -586,7 +586,7 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </form>
+                                    </form> --}}
                                 </div>
                             </div>
 
