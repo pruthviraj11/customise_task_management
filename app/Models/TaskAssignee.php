@@ -22,6 +22,8 @@ class TaskAssignee extends Model
         'status',
         'remark',
         'deleted_by',
+        'department',
+        'sub_department',
         'created_by',
         'updated_by',
         'task_number',

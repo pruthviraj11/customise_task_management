@@ -346,103 +346,69 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
-                    <!-- Card Header -->
-                    <div class="card-header">
-                        <h1>Task Details</h1>
-                    </div>
 
                     <!-- Card Body -->
                     <div class="card-body">
-                        <form>
-                            <!-- Task Title -->
-                            <div class="mb-3 row">
-                                <label for="taskTitle" class="col-md-4 col-form-label">Task Title</label>
-                                <div class="col-md-8">
-                                    <input type="text" class="form-control" id="taskTitle"
-                                        value="{{ $task->title }}" disabled>
-                                </div>
+                        <h2>Sub tasks</h2>
+                        @if ($SubTaskData == [])
+                            <p>No subtasks found.</p>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center mx-auto">
+                                    <thead>
+                                        <tr>
+                                            <th>Task Number</th>
+                                            <th>Assigned To</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($SubTaskData as $subtask)
+                                            <tr>
+                                                <td>{{ $subtask->task_number }}</td>
+                                                <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
+                                                </td>
+                                                <td>{{ $subtask->task->due_date }}</td>
+                                                <td>
+                                                    {{ $subtask->taskStatus->displayname }}
+                                                </td>
+                                                <td>
+                                                    @if ($subtask->status != 'Completed')
+                                                        @if ($subtask->creator->id == auth()->id())
+                                                            <!-- Check if the logged-in user is the creator -->
+                                                            <form action="{{ route('subtask.complete', $subtask->id) }}"
+                                                                method="POST" class="mark-completed-form">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <button type="submit" class="btn btn-success btn-sm"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                    title="Mark as Completed">
+                                                                    <i class="feather-icon"
+                                                                        data-feather="check-circle"></i>
+                                                                </button>
+
+                                                            </form>
+                                                        @else
+                                                            <button class="btn btn-secondary btn-sm" disabled>Not Assigned
+                                                                to You</button>
+                                                        @endif
+                                                    @else
+                                                        <button class="btn btn-secondary btn-sm"
+                                                            disabled>Completed</button>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <!-- Task Description -->
-                            <div class="mb-3 row">
-                                <label for="taskDescription" class="col-md-4 col-form-label">Description</label>
-                                <div class="col-md-8">
-                                    <textarea class="form-control" id="taskDescription" rows="3" disabled>{{ $task->description }}</textarea>
-                                </div>
-                            </div>
 
-                            <!-- Subtasks -->
-                            <h2>Subtasks</h2>
-                            @if ($SubTaskData->isEmpty())
-                                <p>No subtasks found.</p>
-                            @else
-                                @foreach ($SubTaskData as $index => $subtask)
-                                    <!-- Subtask Section -->
-                                    <div class="subtask-section mb-4">
-                                        <div class="row">
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Task Number -->
-                                                <label for="taskNumber_{{ $subtask->id }}" class="col-form-label">Task
-                                                    Number</label>
-                                                <input type="text" class="form-control"
-                                                    id="taskNumber_{{ $subtask->id }}"
-                                                    value="{{ $subtask->task_number }}" disabled>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Subtask Title -->
-                                                <label for="subtaskTitle_{{ $subtask->id }}"
-                                                    class="col-form-label">Subtask Title</label>
-                                                <input type="text" class="form-control"
-                                                    id="subtaskTitle_{{ $subtask->id }}"
-                                                    value="{{ $subtask->task->title }}" disabled>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Task Status -->
-                                                <label for="taskStatus_{{ $subtask->id }}" class="col-form-label">Task
-                                                    Status</label>
-                                                <input type="text" class="form-control"
-                                                    id="taskStatus_{{ $subtask->id }}"
-                                                    value="{{ $subtask->taskStatus->displayname }}" disabled>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Start Date -->
-                                                <label for="startDate_{{ $subtask->id }}" class="col-form-label">Start
-                                                    Date</label>
-                                                <input type="text" class="form-control"
-                                                    id="startDate_{{ $subtask->id }}"
-                                                    value="{{ $subtask->task->start_date }}" disabled>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Due Date -->
-                                                <label for="dueDate_{{ $subtask->id }}" class="col-form-label">Due
-                                                    Date</label>
-                                                <input type="text" class="form-control"
-                                                    id="dueDate_{{ $subtask->id }}"
-                                                    value="{{ $subtask->task->due_date }}" disabled>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <!-- Assigned To -->
-                                                <label for="assignedTo_{{ $subtask->id }}"
-                                                    class="col-form-label">Assigned to</label>
-                                                <input type="text" class="form-control"
-                                                    id="assignedTo_{{ $subtask->id }}"
-                                                    value="{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Divider Between Subtasks -->
-                                        @if ($index < $SubTaskData->count() - 1)
-                                            <hr class="my-4">
-                                        @endif
-                                    </div>
-                                @endforeach
-                            @endif
-                        </form>
+                        @endif
                     </div>
+
                 </div>
             </div>
         </div>
@@ -721,6 +687,28 @@
             // Update due date min value when start date changes
             startDateInput.addEventListener('change', function() {
                 dueDateInput.min = this.value;
+            });
+        });
+    </script>
+    <script>
+        // Attach a SweetAlert confirmation to the form submission
+        document.querySelectorAll('.mark-completed-form').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting immediately
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Once marked as completed, you will not be able to change this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, mark as completed!',
+                    cancelButtonText: 'No, keep it pending'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form if user clicks 'Yes'
+                        form.submit();
+                    }
+                });
             });
         });
     </script>

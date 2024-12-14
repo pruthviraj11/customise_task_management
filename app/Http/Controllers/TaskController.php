@@ -83,7 +83,6 @@ class TaskController extends Controller
 
 
         // $taskAssignees = TaskAssignee::all();
-
         // foreach ($taskAssignees as $taskAssignee) {
         //     // Get the task by task_id from task_assignees, ensuring created_by is not null
         //     $task = Task::whereNotNull('task_status')
@@ -1338,6 +1337,7 @@ class TaskController extends Controller
         $page_data['page_title'] = "Task";
         $page_data['form_title'] = "Add New Task";
         $task = '';
+        $SubTaskData = [];
         $projects = Project::where('status', 'on')->get();
         $departments = Department::where('status', 'on')->get();
         $Subdepartments = SubDepartment::where('status', 'on')->get();
@@ -1354,7 +1354,7 @@ class TaskController extends Controller
         $departmentslist = $this->taskService->getAlltask();
         $data['department'] = Task::all();
 
-        return view('.content.apps.task.create-edit', compact('page_data', 'task', 'departmentslist', 'data', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys'));
+        return view('.content.apps.task.create-edit', compact('page_data', 'SubTaskData', 'task', 'departmentslist', 'data', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys'));
     }
     // Pradips Code
     // public function store(CreateTaskRequest $request)
@@ -1701,14 +1701,26 @@ class TaskController extends Controller
             foreach ($userIds as $index => $userId) {
                 // Dynamically generate a task number for each user, starting from 01
                 $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
-
+                $user = User::find($userId);  // Assuming you have a User model
+                $departmentId = $user->department_id;
+                $subdepartment = $user->subdepartment;
                 // Update pivot with user-specific task number
                 $task->users()->updateExistingPivot($userId, [
                     'status' => 0,
                     'task_status' => $request->get('task_status'),
-                    'task_number' => $taskNumber
+                    'task_number' => $taskNumber,
+                    'department' => $departmentId,  // Save department_id
+                    'sub_department' => $subdepartment, // Save subdepartment
+                    'created_by' => auth()->user()->id,
+                    'created_at' => now(),  // Use the current timestamp for created_at
                 ]);
+
             }
+            $task =Task::where('id', $task->id)->first() ;
+            $task->last_task_number = $taskNumber;
+
+            // Save the updated task
+            $task->save();
 
 
 
@@ -1751,10 +1763,18 @@ class TaskController extends Controller
             // dd($id);
             $task = $this->taskService->gettask($id);
             // dd($task);
-            $SubTaskData = TaskAssignee::where('task_id', $task->id)->get();
+            $SubTaskData = TaskAssignee::where('task_id', $task->id)
+                ->get()
+                ->unique('task_number')  // Remove duplicate subtasks based on task_number
+                ->sortBy(function ($subtask) {
+                    // Remove hyphen and cast the task number to integer for correct sorting
+                    return (int) str_replace('-', '', $subtask->task_number);
+                });
+
+
             // dd($SubTaskData);
 
-            
+
             $page_data['page_title'] = "Task";
             $page_data['form_title'] = "Edit Task";
 
@@ -1772,9 +1792,9 @@ class TaskController extends Controller
             $data['department'] = Task::all();
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
 
-            return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId','SubTaskData'));
+            return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData'));
         } catch (\Exception $error) {
-            // dd($error->getMessage());
+            dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
     }
@@ -2045,7 +2065,7 @@ class TaskController extends Controller
     // old befor sub_task code
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
-        try {
+        // try {
             // Decrypt the encrypted task ID
             $id = decrypt($encrypted_id);
 
@@ -2110,10 +2130,30 @@ class TaskController extends Controller
                 }
             }
 
-            // Sync task with selected users (assign task to all selected users)
+            // // Sync task with selected users (assign task to all selected users)
             $userIds = $request->input('user_id', []);
             $task = Task::find($id);  // Re-fetch task if needed
-            $task->users()->sync($userIds);  // Sync all selected users to the task
+            // $task->users()->sync($userIds);  // Sync all selected users to the task
+            $task->users()->sync(
+                collect($userIds)->mapWithKeys(function ($userId) use ($task) {
+                    return [
+                        $userId => [
+                            'created_by' => $task->created_by,
+                            'task_status' => $task->task_status,  // Add task_status to pivot data
+                        ]
+                    ];
+                })->toArray()
+            );
+
+            $userIds = $request->input('user_id', []);
+            $task = Task::find($id);  // Re-fetch task if needed
+
+            $lastTaskNumber = $task->last_task_number;
+           
+
+
+
+
 
             // Send notification to all selected users about the update
             foreach ($userIds as $userId) {
@@ -2143,13 +2183,10 @@ class TaskController extends Controller
                 return redirect()->back()->with('error', 'Error while updating task');
             }
 
-        } catch (\Exception $error) {
-            // Log any error and return a generic error message
-            \Log::error('Error updating task: ' . $error->getMessage(), [
-                'exception' => $error,
-            ]);
-            return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
-        }
+        // } catch (\Exception $error) {
+        //     // dd($error->getMessage());
+        //     return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
+        // }
     }
 
 
@@ -3544,7 +3581,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId = encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
@@ -4186,6 +4223,19 @@ class TaskController extends Controller
 
             ->rawColumns(['actions'])
             ->make(true);
+    }
+    public function markAsCompleted($subtaskId)
+    {
+        dd($subtaskId);
+        // Find the subtask by ID
+        $subtask = TaskAssignee::where('id', $subtaskId)->first();
+
+        // Update the status of the subtask to 'Completed'
+        $subtask->status = '1';
+        $subtask->save();
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Subtask marked as completed');
     }
 
 }

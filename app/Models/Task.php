@@ -30,6 +30,7 @@ class Task extends Model
         'due_date',
         'accepted_date',
         'completed_date',
+        'last_task_number',
         'deleted_by',
         'created_by',
         'updated_by',
