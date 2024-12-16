@@ -1079,7 +1079,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ??  "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -1216,7 +1216,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ??  "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -2149,7 +2149,7 @@ class TaskController extends Controller
             $task = Task::find($id);  // Re-fetch task if needed
 
             $lastTaskNumber = $task->last_task_number;
-           
+
 
 
 
@@ -3591,7 +3591,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ??  "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -4159,7 +4159,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ??  "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
