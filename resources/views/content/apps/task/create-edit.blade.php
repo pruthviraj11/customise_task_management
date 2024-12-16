@@ -34,7 +34,10 @@
                 @csrf
                 @method('PUT')
     @endif
-
+    @php
+        $isCreator = $task && $task->creator->id == auth()->user()->id;
+        // dd($isCreator);
+    @endphp
     <section id="multiple-column-form">
         <div class="row">
             <div class="col-12">
@@ -75,7 +78,7 @@
                                 </label>
                                 <input type="text" id="title" class="form-control" placeholder="Enter Task Name"
                                     name="title" value="{{ old('title') ?? ($task != '' ? $task->title : '') }}"
-                                    required>
+                                    @if ($isCreator == false) readonly @endif required>
                                 <span class="text-danger">
                                     @error('title')
                                         {{ $message }}
@@ -83,16 +86,13 @@
                                 </span>
                             </div>
 
-
-
-
-
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="subject">
-                                    Subject</label><span class="red">*</span>
+                                    Subject<span class="red">*</span>
+                                </label>
                                 <input type="text" id="subject" class="form-control" placeholder="Enter subject"
                                     name="subject" value="{{ old('subject') ?? ($task != '' ? $task->subject : '') }}"
-                                    required>
+                                    @if ($isCreator == false) readonly @endif required>
                                 <span class="text-danger">
                                     @error('subject')
                                         {{ $message }}
@@ -117,7 +117,7 @@
                             </script>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="project_id">Project</label><span class="red">*</span>
-                                <select id="project_id" class="form-select select2" name="project_id" required>
+                                <select id="project_id" class="form-select select2" name="project_id"   @if ($isCreator == false) disabled @endif required>
                                     <option value="">Select Project</option>
                                     @foreach ($projects as $project)
                                         <option value="{{ $project->id }}"
@@ -145,7 +145,7 @@
                             </style>
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="user_id">Assign To</label><span class="red">*</span>
-                                <select id="user_id" class="form-select select2" name="user_id[]" multiple required>
+                                <select id="user_id" class="form-select select2" name="user_id[]" multiple   @if ($isCreator == false) disabled @endif required>
                                     <option value="">Select User</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
@@ -173,7 +173,7 @@
                                     class="red">*</span>
                                 <input type="date" id="start_date" class="form-control" name="start_date"
                                     value="{{ old('start_date') ?? ($task != '' ? $task->start_date : date('Y-m-d')) }}"
-                                    required>
+                                     @if ($isCreator == false) readonly @endif required>
                                 <span class="text-danger">
                                     @error('start_date')
                                         {{ $message }}
@@ -184,7 +184,7 @@
                                 <label class="form-label" for="due_date">End Date</label><span class="red">*</span>
                                 <input type="date" id="due_date" class="form-control" name="due_date"
                                     value="{{ old('due_date') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
-                                    required>
+                                     required>
                                 <span class="text-danger">
                                     @error('due_date')
                                         {{ $message }}
@@ -194,7 +194,7 @@
 
                             <div class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="priority_id">Priority</label><span class="red">*</span>
-                                <select id="priority_id" class="form-select select2" name="priority_id" required>
+                                <select id="priority_id" class="form-select select2" name="priority_id"   @if ($isCreator == false) disabled @endif required>
                                     {{-- <option value="">Select Priority</option> --}}
                                     @foreach ($Prioritys as $Priority)
                                         <option value="{{ $Priority->id }}"
@@ -215,7 +215,7 @@
                             <div class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="task_status">Status</label><span class="red">*</span>
                                 <select id="task_status" class="form-select select2" name="task_status"
-                                    {{ $task ? ($task->task_status == 7 ? 'disabled' : '') : '' }} required>
+                                    {{ $task ? ($task->task_status == 7 ? 'disabled' : '') : '' }}    required>
                                     {{-- <option value="">Select Status</option> --}}
                                     @foreach ($Status as $Statu)
                                         <option value="{{ $Statu->id }}"
@@ -236,7 +236,7 @@
                                 <label class="form-label" for="attachments">Attachments</label>
                                 <div class="input-group mb-3 w-100">
                                     <input type="file" class="form-control" id="attachments" name="attachments[]"
-                                        multiple>
+                                       @if ($isCreator == false) disabled @endif   multiple>
                                     <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
                                 </div>
                                 @if ($task)
@@ -266,7 +266,7 @@
 
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="description">Description</label>
-                                <textarea id="description" class="form-control" placeholder="Enter Description" name="description">{{ old('description') ?? ($task != '' ? html_entity_decode($task->description) : '') }}</textarea>
+                                <textarea id="description" class="form-control" placeholder="Enter Description" name="description"   @if ($isCreator == false) disabled @endif>{{ old('description') ?? ($task != '' ? html_entity_decode($task->description) : '') }}</textarea>
                                 <span class="text-danger">
                                     @error('description')
                                         {{ $message }}
@@ -816,7 +816,7 @@
                         $.ajax({
                             url: '{{ route('subtask.reopen', '__subtaskId__') }}'.replace(
                                 '__subtaskId__', subtaskId
-                                ), // Correct dynamic URL replacement
+                            ), // Correct dynamic URL replacement
                             method: 'POST',
                             data: {
                                 _token: "{{ csrf_token() }}", // CSRF token for security
@@ -830,7 +830,7 @@
                                         'success'
                                     );
 
-                                      location.reload();
+                                    location.reload();
                                     // Optionally, update the UI to reflect the status change
                                     // $(this).closest('tr').find('.status-column').text('Reopened');
                                 } else {

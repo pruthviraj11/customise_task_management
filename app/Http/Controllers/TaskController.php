@@ -2071,6 +2071,7 @@ class TaskController extends Controller
     // old befor sub_task code
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
+        dd($request->all());
         // try {
         // Decrypt the encrypted task ID
         $id = decrypt($encrypted_id);
