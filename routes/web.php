@@ -238,7 +238,11 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
     // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
-    Route::put('/subtask/{subtask}/complete', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
+    Route::post('/subtask/{subtask}', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
+    Route::delete('/subtask/{subtask}', [TaskController::class, 'removeUser'])->name('subtask.removeUser');
+    Route::post('/subtask/reopen/{id}', [TaskController::class, 'reopen'])->name('subtask.reopen');
+
+
     Route::get('task/accepted_by_me', [TaskController::class, 'index'])->name('app-task-get-accepted_by_me');
     Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
 

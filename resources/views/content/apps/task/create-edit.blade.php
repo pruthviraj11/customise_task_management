@@ -346,7 +346,6 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
-
                     <!-- Card Body -->
                     <div class="card-body">
                         <h2>Sub tasks</h2>
@@ -358,6 +357,7 @@
                                     <thead>
                                         <tr>
                                             <th>Task Number</th>
+                                            <th>Assigned by</th>
                                             <th>Assigned To</th>
                                             <th>Due Date</th>
                                             <th>Status</th>
@@ -370,45 +370,48 @@
                                                 <td>{{ $subtask->task_number }}</td>
                                                 <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
                                                 </td>
-                                                <td>{{ $subtask->task->due_date }}</td>
-                                                <td>
-                                                    {{ $subtask->taskStatus->displayname }}
+                                                <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}
                                                 </td>
+                                                <td>{{ \Carbon\Carbon::parse($subtask->task->due_date)->format('d/m/Y') }}
+                                                </td>
+                                                <td>{{ $subtask->taskStatus->displayname }}</td>
                                                 <td>
-                                                    @if ($subtask->status != 'Completed')
-                                                        @if ($subtask->creator->id == auth()->id())
-                                                            <!-- Check if the logged-in user is the creator -->
-                                                            <form action="{{ route('subtask.complete', $subtask->id) }}"
-                                                                method="POST" class="mark-completed-form">
-                                                                @csrf
-                                                                @method('PUT')
-                                                                <button type="submit" class="btn btn-success btn-sm"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                    title="Mark as Completed">
-                                                                    <i class="feather-icon"
-                                                                        data-feather="check-circle"></i>
-                                                                </button>
+                                                    <!-- Button to trigger AJAX request to mark as completed -->
+                                                    <a class="btn btn-success btn-sm mark-completed-btn"
+                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Mark as Completed">
+                                                        <i class="feather-icon" data-feather="check-circle"></i>
+                                                    </a>
+                                                    <!-- Button to reopen the task when status is 7 or 4 -->
+                                                    @if (in_array($subtask->task_status, [7, 4]))
+                                                        <a class="btn btn-warning btn-sm reopen-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Reopen Task">
+                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
+                                                        </a>
+                                                    @endif
+                                                    <!-- Button to remove user from task (only visible to creator) -->
+                                                    @if (Auth::user()->id === $subtask->created_by)
+                                                        <a class="btn btn-danger btn-sm remove-user-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-user-id="{{ $subtask->user->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Remove User">
+                                                            <i class="feather-icon" data-feather="user-x"></i>
 
-                                                            </form>
-                                                        @else
-                                                            <button class="btn btn-secondary btn-sm" disabled>Not Assigned
-                                                                to You</button>
-                                                        @endif
-                                                    @else
-                                                        <button class="btn btn-secondary btn-sm"
-                                                            disabled>Completed</button>
+                                                        </a>
                                                     @endif
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
+
                                 </table>
                             </div>
 
-
-                        @endif
                     </div>
-
+                    @endif
                 </div>
             </div>
         </div>
@@ -691,11 +694,13 @@
         });
     </script>
     <script>
-        // Attach a SweetAlert confirmation to the form submission
-        document.querySelectorAll('.mark-completed-form').forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the form from submitting immediately
+        $(document).ready(function() {
+            // Handle the click event on the "Mark as Completed" button
+            $('.mark-completed-btn').on('click', function() {
+                var subtaskId = $(this).data(
+                    'subtask-id'); // Get the subtask ID from the button's data attribute
 
+                // Show SweetAlert confirmation before proceeding
                 Swal.fire({
                     title: 'Are you sure?',
                     text: 'Once marked as completed, you will not be able to change this!',
@@ -705,11 +710,152 @@
                     cancelButtonText: 'No, keep it pending'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Submit the form if user clicks 'Yes'
-                        form.submit();
+                        // Perform the AJAX request if user confirms
+                        $.ajax({
+                            url: '{{ route('subtask.complete', ['subtask' => '__subtaskId__']) }}'
+                                .replace('__subtaskId__', subtaskId),
+                            method: 'POST', // Change method to POST
+                            data: {
+                                _token: '{{ csrf_token() }}', // CSRF token for security
+                                _method: 'POST' // Add a hidden _method field to mimic PUT request
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire(
+                                        'Completed!',
+                                        'The subtask has been marked as completed.',
+                                        'success'
+                                    );
+                                    // Optionally, change the button to "Completed"
+                                    $(this).prop('disabled', true).text('Completed');
+
+                                    // Reload the page after successful completion
+                                    location.reload(); // This will reload the page
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an issue marking the subtask as completed.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        $(document).on('click', '.remove-user-btn', function(e) {
+            e.preventDefault();
+
+            var subtaskId = $(this).data('subtask-id');
+            var userId = $(this).data('user-id');
+
+
+            // Show SweetAlert confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to remove this user from the task!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove user!',
+                cancelButtonText: 'No, keep user',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // AJAX request to remove user from task
+                    $.ajax({
+                        url: '{{ route('subtask.removeUser', ['subtask' => '__subtaskId__']) }}'
+                            .replace('__subtaskId__', subtaskId),
+                        type: 'DELETE',
+                        data: {
+                            user_id: userId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Removed!',
+                                    'The user has been removed from the task.',
+                                    'success'
+                                );
+                                // Reload the page after success
+                                location.reload();
+                            }
+                        },
+                        error: function(response) {
+                            Swal.fire(
+                                'Error!',
+                                'There was a problem removing the user.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
+            // Reopen button click event
+            $('.reopen-btn').click(function(e) {
+                e.preventDefault();
+                let subtaskId = $(this).data('subtask-id');
+
+                // SweetAlert confirmation
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to reopen this task?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, reopen!',
+                    cancelButtonText: 'No, keep it closed'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send AJAX request to update status to 1 (Reopened)
+                        $.ajax({
+                            url: '{{ route('subtask.reopen', '__subtaskId__') }}'.replace(
+                                '__subtaskId__', subtaskId
+                                ), // Correct dynamic URL replacement
+                            method: 'POST',
+                            data: {
+                                _token: "{{ csrf_token() }}", // CSRF token for security
+                                status: 1
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire(
+                                        'Reopened!',
+                                        'The task has been reopened successfully.',
+                                        'success'
+                                    );
+
+                                      location.reload();
+                                    // Optionally, update the UI to reflect the status change
+                                    // $(this).closest('tr').find('.status-column').text('Reopened');
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'There was an issue reopening the task.',
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function() {
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred while trying to reopen the task.',
+                                    'error'
+                                );
+                            }
+                        });
                     }
                 });
             });
         });
     </script>
+
+
+
+
 @endsection

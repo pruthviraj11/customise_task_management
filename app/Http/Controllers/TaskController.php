@@ -1205,7 +1205,7 @@ class TaskController extends Controller
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId = encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
@@ -1716,7 +1716,7 @@ class TaskController extends Controller
                 ]);
 
             }
-            $task =Task::where('id', $task->id)->first() ;
+            $task = Task::where('id', $task->id)->first();
             $task->last_task_number = $taskNumber;
 
             // Save the updated task
@@ -1763,14 +1763,19 @@ class TaskController extends Controller
             // dd($id);
             $task = $this->taskService->gettask($id);
             // dd($task);
+
+
             $SubTaskData = TaskAssignee::where('task_id', $task->id)
+                ->where(function ($query) {
+                    $query->where('created_by', Auth::user()->id)
+                        ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
+                })
                 ->get()
                 ->unique('task_number')  // Remove duplicate subtasks based on task_number
                 ->sortBy(function ($subtask) {
                     // Remove hyphen and cast the task number to integer for correct sorting
                     return (int) str_replace('-', '', $subtask->task_number);
                 });
-
 
             // dd($SubTaskData);
 
@@ -1787,6 +1792,7 @@ class TaskController extends Controller
             $users = User::where('status', '1')
                 ->where('id', '!=', 1)
                 ->get();
+
 
             $departmentslist = $this->taskService->getAlltask();
             $data['department'] = Task::all();
@@ -2066,122 +2072,168 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
         // try {
-            // Decrypt the encrypted task ID
-            $id = decrypt($encrypted_id);
+        // Decrypt the encrypted task ID
+        $id = decrypt($encrypted_id);
 
-            // Fetch project, priority, and status
-            $project = Project::where('id', $request->get('project_id'))->first();
-            $priority = Priority::where('id', $request->get('priority_id'))->first();
-            $status = Status::where('id', $request->get('task_status'))->first();
+        // Fetch project, priority, and status
+        $project = Project::where('id', $request->get('project_id'))->first();
+        $priority = Priority::where('id', $request->get('priority_id'))->first();
+        $status = Status::where('id', $request->get('task_status'))->first();
 
-            // Prepare task data
-            $taskData = [
-                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'subject' => $request->get('subject'),
-                'project_name' => $project->project_name,
-                'priority_name' => $priority->priority_name,
-                'status_name' => $status->status_name,
-                'project_id' => $request->get('project_id'),
-                'start_date' => $request->get('start_date'),
-                'due_date' => $request->get('due_date'),
-                'priority_id' => $request->get('priority_id'),
-                'task_status' => $request->get('task_status'),
-                'updated_by' => auth()->user()->id,
-            ];
+        // Prepare task data
+        $taskData = [
+            'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+            'title' => $request->get('title'),
+            'description' => $request->get('description'),
+            'subject' => $request->get('subject'),
+            'project_name' => $project->project_name,
+            'priority_name' => $priority->priority_name,
+            'status_name' => $status->status_name,
+            'project_id' => $request->get('project_id'),
+            'start_date' => $request->get('start_date'),
+            'due_date' => $request->get('due_date'),
+            'priority_id' => $request->get('priority_id'),
+            'task_status' => $request->get('task_status'),
+            'updated_by' => auth()->user()->id,
+        ];
 
-            // Handle task status specific fields (completed_date and close_date)
-            if ($request->get('task_status') == 4) {
-                $taskData['completed_date'] = now();
+        // Handle task status specific fields (completed_date and close_date)
+        if ($request->get('task_status') == 4) {
+            $taskData['completed_date'] = now();
+        } else {
+            $taskData['completed_date'] = null;
+        }
+
+        if ($request->get('task_status') == 7) {
+            $taskData['close_date'] = now();
+        }
+
+        // Fetch the task to be updated
+        $task = Task::findOrFail($id);
+
+        // If task is being closed by the creator, update task status to 7 (closed)
+        if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+            $taskData['task_status'] = 7;
+        }
+
+        // Update the task
+        $updated = $this->taskService->updateTask($id, $taskData);
+
+        // Handle file attachments
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $attachment) {
+                $filenameWithExtension = $attachment->getClientOriginalName();
+                $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                $extension = $attachment->getClientOriginalExtension();
+                $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+                $path = $attachment->storeAs('attachments', $storedFilename);
+
+                TaskAttachment::create([
+                    'task_id' => $id,
+                    'file' => $path,
+                ]);
+            }
+        }
+
+
+        // Get the user IDs from the request
+        $userIds = $request->input('user_id', []);
+        $task = Task::find($id);
+
+        // Get the last task assignee record to determine the new task number
+        $getLastRecord = TaskAssignee::where('task_id', $task->id)
+            ->withTrashed() // Include soft-deleted records
+            ->orderBy('id', 'desc') // Orders by descending order of 'id'
+            ->first(); // Retrieves the first record (both deleted and non-deleted)
+        // dd($getLastRecord);
+
+        // Generate the new task number
+        $lastTaskNumber = $getLastRecord ? $getLastRecord->task_number : 'T-01';
+        $taskParts = explode('-', $lastTaskNumber);
+        $newTaskNumber = $taskParts[0] . '-' . str_pad((intval($taskParts[1]) + 1), 2, '0', STR_PAD_LEFT);
+
+        // Get current assignees for the task
+        $currentAssignees = TaskAssignee::where('task_id', $task->id)->pluck('user_id')->toArray();
+
+        foreach ($userIds as $userId) {
+            // Check if the user is already assigned to the task
+            $existingAssignee = TaskAssignee::where('task_id', $task->id)
+                ->where('user_id', $userId)
+                ->whereNull('deleted_at')
+                ->first();
+            // dd($existingAssignee);
+
+            if ($existingAssignee) {
+                // Update the existing record
+                $existingAssignee->task_number = in_array($userId, $currentAssignees)
+                    ? $existingAssignee->task_number
+                    : $newTaskNumber;
+
+                $existingAssignee->task_status = $task->task_status;
+                $existingAssignee->created_by = $task->created_by;
+                $existingAssignee->save(); // Save the updated record
             } else {
-                $taskData['completed_date'] = null;
+                // Create a new assignee record
+                TaskAssignee::create([
+                    'task_id' => $task->id,
+                    'user_id' => $userId,
+                    'task_number' => $newTaskNumber,
+                    'task_status' => $task->task_status,
+                    'created_by' => $task->created_by,
+                    'created_at' => Carbon::now(), // Ensure the timestamp is set
+                    'updated_at' => Carbon::now(),
+                ]);
             }
+        }
 
-            if ($request->get('task_status') == 7) {
-                $taskData['close_date'] = now();
-            }
+        // Optional: Soft delete users that are no longer assigned (if needed)
+        TaskAssignee::where('task_id', $task->id)
+            ->whereNotIn('user_id', $userIds)
+            ->whereNull('deleted_at') // Only consider non-deleted records
+            ->get()
+            ->each(function ($assignee) {
+                $assignee->delete(); // Soft delete the record
+            });
 
-            // Fetch the task to be updated
-            $task = Task::findOrFail($id);
 
-            // If task is being closed by the creator, update task status to 7 (closed)
-            if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
-                $taskData['task_status'] = 7;
-            }
+        $userIds = $request->input('user_id', []);
+        $task = Task::find($id);  // Re-fetch task if needed
 
-            // Update the task
-            $updated = $this->taskService->updateTask($id, $taskData);
-
-            // Handle file attachments
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $attachment) {
-                    $filenameWithExtension = $attachment->getClientOriginalName();
-                    $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
-                    $extension = $attachment->getClientOriginalExtension();
-                    $storedFilename = $filename . '_' . time() . '.' . $extension;
-
-                    $path = $attachment->storeAs('attachments', $storedFilename);
-
-                    TaskAttachment::create([
-                        'task_id' => $id,
-                        'file' => $path,
-                    ]);
-                }
-            }
-
-            // // Sync task with selected users (assign task to all selected users)
-            $userIds = $request->input('user_id', []);
-            $task = Task::find($id);  // Re-fetch task if needed
-            // $task->users()->sync($userIds);  // Sync all selected users to the task
-            $task->users()->sync(
-                collect($userIds)->mapWithKeys(function ($userId) use ($task) {
-                    return [
-                        $userId => [
-                            'created_by' => $task->created_by,
-                            'task_status' => $task->task_status,  // Add task_status to pivot data
-                        ]
-                    ];
-                })->toArray()
-            );
-
-            $userIds = $request->input('user_id', []);
-            $task = Task::find($id);  // Re-fetch task if needed
-
-            $lastTaskNumber = $task->last_task_number;
-           
+        $lastTaskNumber = $task->last_task_number;
 
 
 
 
 
-            // Send notification to all selected users about the update
-            foreach ($userIds as $userId) {
-                $user = User::find($userId);
-                $taskViewUrl = route('app-task-view', encrypt($task->id));
 
-                // Message for task update notification
-                $updateMessage = 'The task "' . $task->id . '" has been updated or assigned to you.<a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
+        // Send notification to all selected users about the update
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            $taskViewUrl = route('app-task-view', encrypt($task->id));
 
-                // Send notification for task update
-                createNotification($user->id, $task->id, $updateMessage, 'Updated');
-            }
+            // Message for task update notification
+            $updateMessage = 'The task "' . $task->id . '" has been updated or assigned to you.<a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
 
-            // Check if any comment was provided and save it
-            if ($request->comment != '') {
-                $comment = new Comments();
-                $comment->comment = $request->input('comment');
-                $comment->task_id = $request->input('task_id');
-                $comment->created_by = auth()->id();
-                $comment->save();
-            }
+            // Send notification for task update
+            createNotification($user->id, $task->id, $updateMessage, 'Updated');
+        }
 
-            // Redirect based on success or failure
-            if ($updated) {
-                return redirect()->back()->with('success', 'Task Updated Successfully');
-            } else {
-                return redirect()->back()->with('error', 'Error while updating task');
-            }
+        // Check if any comment was provided and save it
+        if ($request->comment != '') {
+            $comment = new Comments();
+            $comment->comment = $request->input('comment');
+            $comment->task_id = $request->input('task_id');
+            $comment->created_by = auth()->id();
+            $comment->save();
+        }
+
+        // Redirect based on success or failure
+        if ($updated) {
+            return redirect()->back()->with('success', 'Task Updated Successfully');
+        } else {
+            return redirect()->back()->with('error', 'Error while updating task');
+        }
 
         // } catch (\Exception $error) {
         //     // dd($error->getMessage());
@@ -4224,18 +4276,89 @@ class TaskController extends Controller
             ->rawColumns(['actions'])
             ->make(true);
     }
-    public function markAsCompleted($subtaskId)
+    public function markAsCompleted(Request $request, $subtaskId)
     {
-        dd($subtaskId);
-        // Find the subtask by ID
-        $subtask = TaskAssignee::where('id', $subtaskId)->first();
+        try {
+            // Find the subtask by ID
+            $subtask = TaskAssignee::find($subtaskId);
 
-        // Update the status of the subtask to 'Completed'
-        $subtask->status = '1';
-        $subtask->save();
+            // Check if the subtask exists
+            if (!$subtask) {
+                return response()->json(['success' => false, 'message' => 'Subtask not found'], 404);
+            }
 
-        // Redirect back with a success message
-        return redirect()->back()->with('success', 'Subtask marked as completed');
+            // Update the status of the subtask to 'Completed'
+            $subtask->task_status = '4';  // Or use a status code if applicable
+            $subtask->save();
+
+            // Return a success response
+            return response()->json(['success' => true, 'message' => 'Subtask marked as completed']);
+        } catch (\Exception $e) {
+            // Catch any exceptions and return error message
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
     }
+
+    public function removeUser(Request $request, $subtaskId)
+    {
+        // Find the subtask by ID
+        // dd($subtaskId);
+        $subtask = TaskAssignee::find($subtaskId);
+        // dd($subtask->creator);
+        // Check if the authenticated user is the creator of the subtask
+        if ($subtask->creator->id != auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get the user_id from the request
+        $userId = $request->input('user_id');
+        // dd($userId);
+        // Initialize TaskAssignee instance
+        $taskAssignee = new TaskAssignee();
+
+        // Soft delete the user from the task
+        $success = $taskAssignee->removeUserFromTask($subtaskId, $userId);
+
+        if ($success) {
+            return response()->json(['success' => 'User removed successfully']);
+        }
+
+        return response()->json(['error' => 'Failed to remove user'], 400);
+    }
+    public function reopen($id, Request $request)
+    {
+        // Find the subtask by its ID
+        $subtask = TaskAssignee::find($id);
+
+        if ($subtask) {
+            // Get task and user data
+            $task = $subtask->task; // Assuming a 'task' relation exists
+            $user = $subtask->user; // Assuming a 'user' relation exists
+
+            // Update the subtask status
+            $subtask->task_status = $request->status;
+            $subtask->save();
+            // Construct the task view URL (replace with your actual URL generation logic)
+            $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Assuming a route 'task.view' exists
+
+            // Create the notification message
+            $message = 'Your task ' . $task->id . ' has been reopened.<br>
+                    <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
+
+            // Create notification for the user
+            createNotification(
+                $user->id, // The user ID receiving the notification
+                $task->id, // The task ID
+                $message,   // The notification message
+                'Created'  // Status of the notification
+            );
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Subtask not found']);
+    }
+
+
 
 }
