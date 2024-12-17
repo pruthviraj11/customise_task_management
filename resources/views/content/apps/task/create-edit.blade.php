@@ -173,7 +173,7 @@
                                     class="red">*</span>
                                 <input type="date" id="start_date" class="form-control" name="start_date"
                                     value="{{ old('start_date') ?? ($task != '' ? $task->start_date : date('Y-m-d')) }}"
-                                     @if ($isCreator == false) readonly @endif required>
+                                     @if ($isCreator == false) readon @endif required>
                                 <span class="text-danger">
                                     @error('start_date')
                                         {{ $message }}
