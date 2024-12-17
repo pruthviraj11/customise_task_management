@@ -22,7 +22,7 @@
 @section('content')
 
     <section class="app-user-list">
-        <div class="row">
+       @php /* <div class="row">
 
 
             @if (session('success'))
@@ -89,27 +89,7 @@
                         </div>
                     @endif
             @endif
-            {{-- @if (auth()->user()->id != 1)
-                <div class="row">
-                    <div class="col-lg-4 col-sm-12">
-                        <a href="{{ route('app-task-get-total_deleted') }}">
-                            <div class="card">
-                                <div class="card-body d-flex align-items-center justify-content-center">
-                                    <div>
-                                        <h3 class="fw-bolder mb-75 ">{{ $deleted_task }}</h3>
-                                        <span>Total Tasks</span>
-                                    </div>
-                                    <div class="avatar bg-light-primary p-50">
-                                        <span class="avatar-content">
-                                            <i data-feather="user" class="font-medium-4"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            @endif --}}
+          
             @if (auth()->user()->id == 1)
                 <div class="col-lg-12 col-sm-12">
                     <a href="{{ route('app-task-get-total_task') }}" data-bs-toggle="tooltip" title="View Total Tasks">
@@ -128,134 +108,10 @@
                         </div>
                     </a>
                 </div>
-                {{-- <div class="col-lg-4 col-sm-12">
-                    <a href="{{ route('app-task-get-admin_acc') }}">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75 ">{{ $total['acc_task'] }}</h3>
-                                    <span>Total Accepted Task</span>
-                                </div>
-                                <div class="avatar bg-light-primary p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-4 col-sm-12">
-                    <a href="{{ route('app-task-get-admin_req') }}">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75 ">{{ $total['req_task'] }}</h3>
-                                    <span>Total Requsted Task</span>
-                                </div>
-                                <div class="avatar bg-light-primary p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-4 col-sm-12">
-                    <a href="{{ route('app-task-get-admin_rej') }}">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75 ">{{ $total['rej_task'] }}</h3>
-                                    <span>Total Rejected Task</span>
-                                </div>
-                                <div class="avatar bg-light-primary p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div> --}}
+               
             @endif
             @if (auth()->user()->id != 1)
-                {{-- <div class="col-lg-3 col-sm-6">
-                    <a href="{{ route('app-task-get-mytask') }}" data-bs-toggle="tooltip"
-                        title="This task is created by you for yourself">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75">{{ $my_task }}</h3>
-                                    <span>My Task</span>
-                                </div>
-                                <div class="avatar bg-light-primary p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="clipboard" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <a href="{{ route('app-task-get-accepted_by_me') }} " data-bs-toggle="tooltip"
-                        title="This task is accepted by you">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75">{{ $taccepted_by_me }}</h3>
-                                    <span>Accepted By Me</span>
-                                </div>
-                                <div class="avatar bg-light-danger p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="check-square" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-3 col-sm-6" data-bs-toggle="tooltip" title="This task is assigned by you">
-                    <a href="{{ route('app-task-get-assign_by_me') }}">
-
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75">{{ $assign_by_me }}</h3>
-                                    <span>Task Assign By Me</span>
-                                </div>
-                                <div class="avatar bg-light-success p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="phone-outgoing" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-3 col-sm-6" data-bs-toggle="tooltip"
-                    title="This task is requested to you . You need to accept this task.">
-
-                    <a href="{{ route('app-task-requested') }}">
-
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75">{{ $requested_me }}</h3>
-                                    <span>Task Requested Me</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="phone-incoming" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div> --}}
-
+                
 
                 <div class="row">
                     <!-- My Task -->
@@ -358,160 +214,8 @@
                     </a>
                 </div>
 
-                {{-- <div class="col-md">
-        <a href="{{ route('app-task-get-due_date_past') }}">
-            <div class="card" style="min-height: 120px">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div>
-                        <h3 class="fw-bolder mb-75" id="due_date_past_count">0</h3>
-                        <span class="text-danger">Due Date Past Task</span>
-                    </div>
-                    <div class="avatar bg-light-warning p-50">
-                        <span class="avatar-content">
-                            <i data-feather="user-x" class="font-medium-4"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div> --}}
-
-                <div class="col-md">
-                    <a href="{{ route('app-task-get-scope_defined') }}">
-                        <div class="card" style="min-height: 120px">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="scope_defined_count">0</h3>
-                                    <span>Scope Defined Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md">
-                    <a href="{{ route('app-task-get-in_execution') }}">
-                        <div class="card" style="min-height: 120px">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="in_execution_count">0</h3>
-                                    <span>In Execution Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md">
-                    <a href="{{ route('app-task-get-completed') }}">
-                        <div class="card" style="min-height: 120px">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="completed_count">0</h3>
-                                    <span>Completed Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md">
-                    <a href="{{ route('app-task-get-close') }}">
-                        <div class="card" style="min-height: 120px">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="close_count">0</h3>
-                                    <span>Close Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md">
-                    <a href="{{ route('app-task-get-hold') }}">
-                        <div class="card" style="min-height: 120px">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="hold_count">0</h3>
-                                    <span>Hold Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <hr size="10" color="red">
-
-            <div class="row">
-                <div class="col-lg-3 col-sm-6">
-                    <a href="{{ route('app-task-get-due_date_past') }}">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="due_date_past_count_2">0</h3>
-                                    <span class="text-danger">Due Date Past Task</span>
-                                </div>
-                                <div class="avatar bg-light-warning p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user-x" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-lg-3 col-sm-6">
-                    <a href="{{ route('app-task-get-deleted') }}">
-                        <div class="card">
-                            <div class="card-body d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h3 class="fw-bolder mb-75" id="deleted_count">0</h3>
-                                    <span class="text-danger">Total Deleted Task</span>
-                                </div>
-                                <div class="avatar bg-light-primary p-50">
-                                    <span class="avatar-content">
-                                        <i data-feather="user" class="font-medium-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-
-            {{-- @if (auth()->user()->id == 1) --}}
-
-            {{-- @endif --}}
-        </div>
+               
+        </div> */@endphp
         @if (auth()->user()->id != 1)
             <div class="container">
                 <div class="card">
@@ -802,7 +506,7 @@
     <script src="{{ asset(mix('vendors/js/charts/chart.min.js')) }}"></script>
     <script src="{{ asset(mix('js/scripts/charts/chart-chartjs.js')) }}"></script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $.ajax({
                 url: '{{ route('app-task-get-counts') }}', // Adjust route name as needed
@@ -844,7 +548,7 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 
     @if (auth()->user()->id == 1)
         {{-- <script>
