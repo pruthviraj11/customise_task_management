@@ -1079,7 +1079,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task_number ??  "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -1216,7 +1216,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task_number ??  "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -2071,7 +2071,7 @@ class TaskController extends Controller
     // old befor sub_task code
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
-        dd($request->all());
+        // dd($request->all());
         // try {
         // Decrypt the encrypted task ID
         $id = decrypt($encrypted_id);
@@ -2080,46 +2080,71 @@ class TaskController extends Controller
         $project = Project::where('id', $request->get('project_id'))->first();
         $priority = Priority::where('id', $request->get('priority_id'))->first();
         $status = Status::where('id', $request->get('task_status'))->first();
-
-        // Prepare task data
-        $taskData = [
-            'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
-            'subject' => $request->get('subject'),
-            'project_name' => $project->project_name,
-            'priority_name' => $priority->priority_name,
-            'status_name' => $status->status_name,
-            'project_id' => $request->get('project_id'),
-            'start_date' => $request->get('start_date'),
-            'due_date' => $request->get('due_date'),
-            'priority_id' => $request->get('priority_id'),
-            'task_status' => $request->get('task_status'),
-            'updated_by' => auth()->user()->id,
-        ];
-
-        // Handle task status specific fields (completed_date and close_date)
-        if ($request->get('task_status') == 4) {
-            $taskData['completed_date'] = now();
-        } else {
-            $taskData['completed_date'] = null;
-        }
-
-        if ($request->get('task_status') == 7) {
-            $taskData['close_date'] = now();
-        }
-
-        // Fetch the task to be updated
         $task = Task::findOrFail($id);
+        // Prepare task data
+        if ($task && $task->creator->id == auth()->user()->id) {
+            $taskData = [
+                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'project_name' => $project->project_name,
+                'priority_name' => $priority->priority_name,
+                'status_name' => $status->status_name,
+                'project_id' => $request->get('project_id'),
+                'start_date' => $request->get('start_date'),
+                'due_date' => $request->get('due_date'),
+                'priority_id' => $request->get('priority_id'),
+                'task_status' => $request->get('task_status'),
+                'updated_by' => auth()->user()->id,
+            ];
 
-        // If task is being closed by the creator, update task status to 7 (closed)
-        if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
-            $taskData['task_status'] = 7;
+            // Handle task status specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            } else {
+                $taskData['completed_date'] = null;
+            }
+
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+            }
+
+            // Fetch the task to be updated
+            $task = Task::findOrFail($id);
+
+            // If task is being closed by the creator, update task status to 7 (closed)
+            if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+                $taskData['task_status'] = 7;
+            }
+
+            // Update the task
+            $updated = $this->taskService->updateTask($id, $taskData);
+        } else {
+            $taskData = [
+                'due_date' => $request->get('due_date'),
+                'task_status' => $request->get('task_status'),
+            ];
+
+            // Handle task status specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            } else {
+                $taskData['completed_date'] = null;
+            }
+
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+            }
+
+            if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+                $taskData['task_status'] = 7;
+            }
+            // Update the task with restricted fields
+            $updated = $this->taskService->updateTask($id, $taskData);
+            return redirect()->back()->with('success', 'Task Updated Successfully');
+
         }
-
-        // Update the task
-        $updated = $this->taskService->updateTask($id, $taskData);
-
         // Handle file attachments
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $attachment) {
@@ -3644,7 +3669,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task_number ??  "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -4212,7 +4237,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task_number ??  "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
