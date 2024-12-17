@@ -35,10 +35,14 @@
                 @method('PUT')
     @endif
     @php
-        if (last(explode('-', request()->route()->getName())) == 'edit') {
-            $isCreator = $task && $task->creator->id == auth()->user()->id;
-        } else {
+        if ($page_data['form_title'] == 'Add New Task') {
+            // $isCreator = $task && $task->creator->id == auth()->user()->id;
             $isCreator = true;
+
+        } else {
+            // $isCreator = true;
+            $isCreator = $task && $task->creator->id == auth()->user()->id;
+
         }
 
     @endphp
