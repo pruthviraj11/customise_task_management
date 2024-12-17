@@ -1268,18 +1268,18 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            $taskDetails = TaskAssignee::where('task_id', $id)->where('user_id',auth()->user()->id)->first();
+            $taskDetails = TaskAssignee::where('task_id', $id)->where('user_id', auth()->user()->id)->first();
             // dd($taskDetails);
             $createdById = $taskDetails->created_by;
             $departmentId = $taskDetails->department;
-           
+
             $departmentDetails = Department::where('id', $departmentId)->first();
             // dd($departmentDetails);
 
             $userDetails = User::where('id', $createdById)->first();
             $departmentHOD = User::where('id', $departmentDetails->hod)->first();
             // dd($departmentHOD);
-            
+
             $userId = auth()->user()->id;
             TaskAssignee::where('user_id', $userId)
                 ->where('task_id', $id)
@@ -4243,31 +4243,38 @@ class TaskController extends Controller
     {
         if ($request->ajax()) {
             // Get the rejected task assignees
-            $rejectedTasks = TaskAssignee::select(
-                'task_assignees.*',  // Get all fields from task_assignees
-                'tasks.description', // Description from the Task model
-                'tasks.created_by',  // Created by from the Task model
-                'tasks.project_id',  // Project ID from the Task model
-                'tasks.task_status', // Task status from Task model
-                'users.first_name',  // First name of the user (assignee)
-                'users.last_name',   // Last name of the user (assignee)
-                'projects.project_name', // Project name
-                'task_assignees.remark as rejection_reason' // Rejection reason from task_assignees
-            )
-                ->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')  // Join with tasks
-                ->join('users', 'task_assignees.user_id', '=', 'users.id')  // Join with users (assignees)
-                ->join('projects', 'tasks.project_id', '=', 'projects.id')  // Join with projects
-                ->where('task_assignees.status', 2)  // Filter for rejected status (2)
+            // $rejectedTasks = TaskAssignee::select(
+            //     'task_assignees.*',  // Get all fields from task_assignees
+            //     'tasks.description', // Description from the Task model
+            //     'tasks.created_by',  // Created by from the Task model
+            //     'tasks.project_id',  // Project ID from the Task model
+            //     'tasks.task_status', // Task status from Task model
+            //     'tasks.id', // Task status from Task model
+            //     'users.first_name',  // First name of the user (assignee)
+            //     'users.id',  // First name of the user (assignee)
+            //     'users.last_name',   // Last name of the user (assignee)
+            //     'projects.project_name', // Project name
+            //     'task_assignees.remark as rejection_reason' // Rejection reason from task_assignees
+            // )
+            //     ->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')  // Join with tasks
+            //     ->join('users', 'task_assignees.user_id', '=', 'users.id')  // Join with users (assignees)
+            //     ->join('projects', 'tasks.project_id', '=', 'projects.id')  // Join with projects
+            // ->where('task_assignees.status', 2)  // Filter for rejected status (2)
+            // ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
+            // ->get();
+            // dd($rejectedTasks);
+
+            $rejectedTasks = TaskAssignee::where('task_assignees.status', 2)  // Filter for rejected status (2)
                 ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
                 ->get();
-
+            // dd($rejectedTasks);
             // Check if the current user is admin (id = 1)
             if (auth()->user()->id == 1) {
                 // Admin can view all rejected tasks
                 $rejectedTasks = $rejectedTasks;
             } else {
                 // Non-admin users can only see tasks they created
-                $rejectedTasks = $rejectedTasks->where('tasks.created_by', auth()->user()->id);
+                $rejectedTasks = $rejectedTasks->where('task_assignees.created_by', auth()->user()->id);
             }
 
             return datatables()->of($rejectedTasks)
