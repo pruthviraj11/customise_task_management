@@ -30,19 +30,31 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    <table class="rejected-list-table table dt-responsive" id="rejected-items-table">
+                    <table class="rejected-list-table table" id="rejected-items-table">
                         <thead>
                             <tr>
-                                <th>Task Id</th>
-                                <th>Item Name</th>
+                                <th>Actions</th>
+                                <th>Task Number</th>
+                                <th>Task/Ticket</th>
+                                <th>Title</th>
                                 <th>Description</th>
-                                <th>
-                                    created by
-                                </th>
-                                <th>Submitted By</th>
-                                <th>Rejection Reason</th>
-                                <th>Rejection Date</th>
+                                <th>Subject</th>
+                                <th>Assingn By</th>
+                                <th>Task assign to</th>
                                 <th>Status</th>
+                                <th>Created Date</th>
+                                <th>Start Date</th>
+                                <th>Due Date</th>
+                                <th>Completed Date</th>
+                                <th>Accepted task Date</th>
+                                <th>Project</th>
+                                <th>Department</th>
+                                <th>Sub Department</th>
+                                <th>Owner Department</th>
+                                <th>Owner Sub Department</th>
+                                <th>Owner Contatinfo</th>
+                                <th>Close Date</th>
+
                             </tr>
                         </thead>
                     </table>
@@ -90,46 +102,112 @@
                     }
                 }],
                 columns: [{
-                        data: 'id',
-                        name: 'id',
-                        orderable: false,
+                        data: 'actions',
+                        name: 'actions',
                         searchable: false
+                    }, // Non-searchable column
+                    {
+                        data: 'Task_number',
+                        name: 'Task_number',
+                        searchable: true
                     },
                     {
+                        data: 'Task_Ticket',
+                        name: 'Task_Ticket',
+                        searchable: true
+                    },
+                      {
                         data: 'title',
                         name: 'title',
+                        searchable: true
                     },
                     {
                         data: 'description',
-                        name: 'description'
+                        name: 'description',
+                        searchable: true,
+                        visible:false,
                     },
                     {
-                        data: 'created_by',
-                        name: 'created_by'
+                        data: 'subject',
+                        name: 'subject',
+                        searchable: true
                     },
                     {
-                        data: 'assignee_name',
-                        name: 'assignee_name'
+                        data: 'created_by_username',
+                        name: 'created_by_username',
+                        searchable: true
                     },
                     {
-                        data: 'rejection_reason',
-                        name: 'rejection_reason'
+                        data: 'Task_assign_to',
+                        name: 'Task_assign_to',
+                        searchable: true
+                    },
+                     {
+                        data: 'status',
+                        name: 'status',
+                        searchable: true
+                    },
+                     {
+                        data: 'Created_Date',
+                        name: 'Created_Date',
+                        searchable: true
+                    }, {
+                        data: 'start_date',
+                        name: 'start_date',
+                        searchable: true
+                    },
+                     {
+                        data: 'due_date',
+                        name: 'due_date',
+                        searchable: true
                     },
                     {
-                        data: 'assignee_updated_at',
-                        name: 'assignee_updated_at'
+                        data: 'completed_date',
+                        name: 'completed_date',
+                        searchable: true
+                    },
+
+                    {
+                        data: 'accepted_date',
+                        name: 'accepted_date',
+                        searchable: true
                     },
                     {
-                        data: 'assignee_status',
-                        name: 'assignee_status',
-                        render: function(data) {
-                            if (data === 'Rejected') {
-                                return '<span class="badge bg-danger">Rejected</span>';
-                            } else {
-                                return '<span class="badge bg-danger">Rejected</span>';
-                            }
-                        }
+                        data: 'project',
+                        name: 'project',
+                        searchable: true
                     },
+                    {
+                        data: 'department',
+                        name: 'department',
+                        searchable: true
+                    },
+                     {
+                        data: 'sub_department',
+                        name: 'sub_department',
+                        searchable: true
+                    },
+                     {
+                        data: 'creator_department',
+                        name: 'creator_department',
+                        searchable: true
+                    },
+                     {
+                        data: 'creator_sub_department',
+                        name: 'creator_sub_department',
+                        searchable: true
+                    },
+                     {
+                        data: 'creator_phone',
+                        name: 'creator_phone',
+                        searchable: true
+                    },
+                      {
+                        data: 'close_date',
+                        name: 'close_date',
+                        searchable: true
+                    },
+
                 ],
                 drawCallback: function() {
                     feather.replace();

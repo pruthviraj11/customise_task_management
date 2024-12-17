@@ -4264,46 +4264,89 @@ class TaskController extends Controller
             // ->get();
             // dd($rejectedTasks);
 
-            $rejectedTasks = TaskAssignee::where('task_assignees.status', 2)  // Filter for rejected status (2)
-                ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
+            $rejectedTasks = TaskAssignee::where('status', 2)  // Filter for rejected status (2)
+                ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
                 ->get();
-            // dd($rejectedTasks);
             // Check if the current user is admin (id = 1)
             if (auth()->user()->id == 1) {
                 // Admin can view all rejected tasks
                 $rejectedTasks = $rejectedTasks;
             } else {
                 // Non-admin users can only see tasks they created
-                $rejectedTasks = $rejectedTasks->where('task_assignees.created_by', auth()->user()->id);
+                $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
             }
 
             return datatables()->of($rejectedTasks)
-                ->addColumn('assignee_name', function ($task) {
-                    return $task->first_name . ' ' . $task->last_name; // Full name of the assignee
-                })
-                ->addColumn('created_by', function ($task) {
-                    $user = User::find($task->created_by);
-                    return $user ? $user->first_name . ' ' . $user->last_name : 'Unknown'; // Full name of the creator
-                })
-                ->addColumn('assignee_updated_at', function ($task) {
-                    return $task->updated_at
-                        ? Carbon::parse($task->updated_at)->format('d/m/Y')
-                        : 'NA'; // Format as dd/mm/yyyy or 'NA' if null
-                })
-                ->addColumn('project', function ($task) {
-                    return $task->project_name; // Directly return project name
-                })
-                ->editColumn('description', function ($task) {
-                    return strip_tags($task->description); // Remove HTML tags from the description
-                })
-                ->editColumn('rejection_reason', function ($task) {
-                    return strip_tags($task->rejection_reason); // Remove HTML tags from rejection_reason
-                })
-                ->editColumn('assignee_status', function ($task) {
-                    return $task->status == 2 ? 'Rejected' : 'Unknown';  // Set 'Rejected' for status 2
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            ->addColumn('actions', function ($row) {
+                $encryptedId = encrypt($row->task_id);
+                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+                $buttons = $updateButton . " " . $deleteButton . " " . $viewButton;
+                return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
+            })
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+            })
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+            })
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+            })
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? $row->task->close_date : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? $row->task->completed_date : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->task && $row->task->accepted_date ? $row->task->accepted_date : '-';
+            })
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+            })
+            ->addColumn('sub_department', function ($row) {
+                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
         }
 
         // Return the view if not an AJAX request
