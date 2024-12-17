@@ -2268,7 +2268,7 @@ class TaskController extends Controller
             }
             // Update the task with restricted fields
             $updated = $this->taskService->updateTask($id, $taskData);
-            return redirect()->back()->with('success', 'Task Updated Successfully');
+            // return redirect()->back()->with('success', 'Task Updated Successfully');
 
         }
         // Handle file attachments
@@ -2356,7 +2356,7 @@ class TaskController extends Controller
 
 
 
-
+     
 
 
         // Send notification to all selected users about the update
@@ -2372,6 +2372,7 @@ class TaskController extends Controller
         }
 
         // Check if any comment was provided and save it
+        // dd($$request->comment);
         if ($request->comment != '') {
             $comment = new Comments();
             $comment->comment = $request->input('comment');
