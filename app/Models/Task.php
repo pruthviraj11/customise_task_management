@@ -59,6 +59,8 @@ class Task extends Model
                 'status_name',
                 'title',
                 'subject',
+                'close_by',
+                'completed_by',
                 'description',
                 'start_date',
                 'due_date',

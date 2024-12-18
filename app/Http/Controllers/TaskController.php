@@ -694,7 +694,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -2000,9 +2000,9 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             // dd($creator);
             if ($creator == 1) {
-                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData','getTaskComments'));
+                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
-                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData','getTaskComments'));
+                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
         } catch (\Exception $error) {
@@ -2309,17 +2309,21 @@ class TaskController extends Controller
                     'task_status' => $request->get('task_status'),
                     'updated_by' => auth()->user()->id,
                 ];
+                // dd($taskData);
 
                 // Handle task status specific fields (completed_date and close_date)
                 if ($request->get('task_status') == 4) {
+                    // dd("Completed");
                     $taskData['completed_date'] = now();
                 } else {
                     $taskData['completed_date'] = null;
                 }
 
-        if ($request->get('task_status') == 7) {
-            $taskData['close_date'] = now();
-        }
+                if ($request->get('task_status') == 7) {
+                    // dd("Completed");
+
+                    $taskData['close_date'] = now();
+                }
 
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
@@ -2354,16 +2358,18 @@ class TaskController extends Controller
                     'due_date' => $request->get('due_date'),
                     'task_status' => $request->get('task_status'),
                 ];
-
+                // dd($taskData);
                 // Handle task status specific fields (completed_date and close_date)
                 if ($request->get('task_status') == 4) {
                     $taskData['completed_date'] = now();
+                    $taskData['completed_by'] = auth()->user()->id;
                 } else {
                     $taskData['completed_date'] = null;
                 }
 
                 if ($request->get('task_status') == 7) {
                     $taskData['close_date'] = now();
+                    $taskData['close_by'] = auth()->user()->id;
                 }
 
                 if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
@@ -2420,7 +2426,7 @@ class TaskController extends Controller
             foreach ($userIds as $userId) {
 
                 // Increment the sequential number for each user
-              
+
                 // Check if the user is already assigned to the task
                 $existingAssignee = TaskAssignee::where('task_id', $task->id)
                     ->where('user_id', $userId)
@@ -2450,7 +2456,7 @@ class TaskController extends Controller
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
-                $lastSequentialNumber++;
+                    $lastSequentialNumber++;
 
                 }
 
@@ -4722,37 +4728,49 @@ class TaskController extends Controller
     }
     public function reopen($id, Request $request)
     {
-        // Find the subtask by its ID
-        $subtask = TaskAssignee::find($id);
+        try {
+            // Find the subtask by its ID
+            $subtask = TaskAssignee::find($id);
+            // dd($subtask);
+            if ($subtask) {
+                // Get task and user data
+                $task = $subtask->task; // Assuming a 'task' relation exists
+                $user = $subtask->user; // Assuming a 'user' relation exists
+                // dd($task, $user);
+                // Update the subtask status
+                $subtask->task_status = $request->status;
+                $subtask->reopen_date = now();
+                $subtask->reopen_by = auth()->user()->id;
+                // dd($subtask);
+                $subtask->save();
 
-        if ($subtask) {
-            // Get task and user data
-            $task = $subtask->task; // Assuming a 'task' relation exists
-            $user = $subtask->user; // Assuming a 'user' relation exists
+                // Construct the task view URL (replace with your actual URL generation logic)
+                $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Assuming a route 'task.view' exists
 
-            // Update the subtask status
-            $subtask->task_status = $request->status;
-            $subtask->save();
-            // Construct the task view URL (replace with your actual URL generation logic)
-            $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Assuming a route 'task.view' exists
-
-            // Create the notification message
-            $message = 'Your task ' . $task->id . ' has been reopened.<br>
+                // Create the notification message
+                $message = 'Your task ' . $task->id . ' has been reopened.<br>
                     <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
 
-            // Create notification for the user
-            createNotification(
-                $user->id, // The user ID receiving the notification
-                $task->id, // The task ID
-                $message,   // The notification message
-                'Created'  // Status of the notification
-            );
+                // Create notification for the user
+                createNotification(
+                    $user->id, // The user ID receiving the notification
+                    $task->id, // The task ID
+                    $message,   // The notification message
+                    'Created'  // Status of the notification
+                );
 
-            return response()->json(['success' => true]);
+                return response()->json(['success' => true]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Subtask not found']);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+
+            // Return a response with the error message
+            return response()->json(['success' => false, 'message' => 'An error occurred, please try again later.']);
         }
-
-        return response()->json(['success' => false, 'message' => 'Subtask not found']);
     }
+
 
 
 
