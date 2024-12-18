@@ -1313,7 +1313,7 @@ class TaskController extends Controller
 
     public function getAll_accepted(Request $request)
     {
-        // dd('getAll_accepted');
+
         $user = auth()->user();
 
         // Modify query based on task_assignees table
@@ -2377,8 +2377,6 @@ class TaskController extends Controller
 
 
 
-     
-
 
         // Send notification to all selected users about the update
         foreach ($userIds as $userId) {
@@ -2444,7 +2442,8 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            $taskData['deleted_by'] = Auth()->user()->id;
+
+   $taskData['deleted_by'] = Auth()->user()->id;
             $updated = $this->taskService->updatetask($id, $taskData);
             $deleted = $this->taskService->deletetask($id);
             if (!empty($deleted)) {
