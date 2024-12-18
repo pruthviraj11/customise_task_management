@@ -2479,6 +2479,7 @@ class TaskController extends Controller
                 if ($request->get('task_status') == 4) {
                     // dd("Completed");
                     $taskData['completed_date'] = now();
+                    $taskData['completed_by'] = auth()->user()->id;
                 } else {
                     $taskData['completed_date'] = null;
                 }
@@ -2487,6 +2488,7 @@ class TaskController extends Controller
                     // dd("Completed");
 
                     $taskData['close_date'] = now();
+                    $taskData['close_by'] = auth()->user()->id;
                 }
 
                 // Fetch the task to be updated
