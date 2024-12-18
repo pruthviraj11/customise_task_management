@@ -86,8 +86,10 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     Route::get('users/total_tasks_details', [DashboardCUstomizedController::class, 'getTotalTaskInfo'])->name('users.total_task_details');
 
-
-
+    Route::get('/tasks/requested_to_us/{user_id}/{status_id}', [TaskController::class, 'requestedToUsTasks'])
+    ->name('tasks.requested_to_us');
+    Route::get('/tasks/requested_to_us_status/{user_id}/{status_id}', [TaskController::class, 'requestedToUsStatusTasks'])
+    ->name('tasks.requested_to_us_status');
 
     Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');

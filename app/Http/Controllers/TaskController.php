@@ -1423,6 +1423,39 @@ class TaskController extends Controller
             ->make(true);
     }
 
+    public function requestedToUsTasks($user_id, $status_id)
+    {
+        $user = auth()->user()->id;
+        // Fetch tasks based on user ID and status ID
+        $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->where('created_by', $user_id)->get();
+
+
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasks,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+    public function requestedToUsStatusTasks($user_id, $status_id)
+    {
+        dd($status_id);
+
+        $user = auth()->user()->id;
+        // Fetch tasks based on user ID and status ID
+        $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
+
+
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasks,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+
     // 27-06
     // public function accept_task($encrypted_id)
     // {
@@ -2246,24 +2279,24 @@ class TaskController extends Controller
                 'updated_by' => auth()->user()->id,
             ];
 
-        // Handle task status specific fields (completed_date and close_date)
-        if ($request->get('task_status') == 4) {
-            $taskData['completed_date'] = now();
-        } else {
-            $taskData['completed_date'] = null;
-        }
+            // Handle task status specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            } else {
+                $taskData['completed_date'] = null;
+            }
 
-        if ($request->get('task_status') == 7) {
-            $taskData['close_date'] = now();
-        }
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+            }
 
-        // Fetch the task to be updated
-        $task = Task::findOrFail($id);
+            // Fetch the task to be updated
+            $task = Task::findOrFail($id);
 
-        // If task is being closed by the creator, update task status to 7 (closed)
-        if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
-            $taskData['task_status'] = 7;
-        }
+            // If task is being closed by the creator, update task status to 7 (closed)
+            if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+                $taskData['task_status'] = 7;
+            }
 
             // Update the task
             $updated = $this->taskService->updateTask($id, $taskData);
@@ -2309,20 +2342,20 @@ class TaskController extends Controller
             }
         }
 
-            // // Sync task with selected users (assign task to all selected users)
-            $userIds = $request->input('user_id', []);
-            $task = Task::find($id);  // Re-fetch task if needed
-            // $task->users()->sync($userIds);  // Sync all selected users to the task
-            $task->users()->sync(
-                collect($userIds)->mapWithKeys(function ($userId) use ($task) {
-                    return [
-                        $userId => [
-                            'created_by' => $task->created_by,
-                            'task_status' => $task->task_status,  // Add task_status to pivot data
-                        ]
-                    ];
-                })->toArray()
-            );
+        // // Sync task with selected users (assign task to all selected users)
+        $userIds = $request->input('user_id', []);
+        $task = Task::find($id);  // Re-fetch task if needed
+        // $task->users()->sync($userIds);  // Sync all selected users to the task
+        $task->users()->sync(
+            collect($userIds)->mapWithKeys(function ($userId) use ($task) {
+                return [
+                    $userId => [
+                        'created_by' => $task->created_by,
+                        'task_status' => $task->task_status,  // Add task_status to pivot data
+                    ]
+                ];
+            })->toArray()
+        );
 
         $userIds = $request->input('user_id', []);
         $task = Task::find($id);  // Re-fetch task if needed
@@ -2397,7 +2430,7 @@ class TaskController extends Controller
         try {
             $id = decrypt($encrypted_id);
 
-   $taskData['deleted_by'] = Auth()->user()->id;
+            $taskData['deleted_by'] = Auth()->user()->id;
             $updated = $this->taskService->updatetask($id, $taskData);
             $deleted = $this->taskService->deletetask($id);
             if (!empty($deleted)) {
@@ -4379,18 +4412,18 @@ class TaskController extends Controller
         $tasks = TaskAssignee::where('user_id', $userId)  // Focus on task assignees
             ->where('status', '!=', 2)  // Ensure the task is not deleted (assuming status 2 is deleted)
             ->with([
-                    'task',  // Load the related task
-                    'task.attachments',
-                    'task.assignees' => function ($query) {
-                        $query->select('task_id', 'status', 'remark'); // Customize as needed
-                    },
-                    'task.creator',  // Task creator
-                    'task.taskStatus',  // Task status
-                    'task.project',  // Task project
-                    'task.department',  // Task department
-                    'task.sub_department',  // Task sub-department
-                    'task.comments'  // Task comments
-                ])
+                'task',  // Load the related task
+                'task.attachments',
+                'task.assignees' => function ($query) {
+                    $query->select('task_id', 'status', 'remark'); // Customize as needed
+                },
+                'task.creator',  // Task creator
+                'task.taskStatus',  // Task status
+                'task.project',  // Task project
+                'task.department',  // Task department
+                'task.sub_department',  // Task sub-department
+                'task.comments'  // Task comments
+            ])
             ->whereHas('task', function ($query) use ($userId) {
                 $query->where('created_by', $userId)  // Ensure the task was created by the current user
                     ->havingRaw('COUNT(task_assignees.user_id) = 1');  // Ensure task has only one assignee

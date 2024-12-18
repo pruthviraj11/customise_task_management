@@ -46,8 +46,6 @@
                             <th>User Name</th>
                             <th>Requested To Us</th>
 
-
-
                             @foreach ($statusinfos as $index => $status)
                                 @if ($index <= 3)
                                     <th>{{ $status->status_name }}</th>
@@ -213,14 +211,26 @@
                         },
                         {
                             data: 'requested_to_us',
-                            name: 'requested_to_us'
+                            name: 'requested_to_us',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId = row.status_id
+                                let url =
+                                    '{{ route('tasks.requested_to_us', ['user_id' => ':user_id', 'status_id' => ':status_id','type' => ':type']) }}';
+                                url = url.replace(':user_id', userId).replace(':status_id',
+                                    statusId).replace(':type', type);
+
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+
+                            }
                         },
 
                         @foreach ($statusinfos as $index => $status)
                             @if ($index <= 3)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}'
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    
                                 },
                             @endif
                         @endforeach
