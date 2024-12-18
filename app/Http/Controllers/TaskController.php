@@ -1431,12 +1431,15 @@ class TaskController extends Controller
             ->make(true);
     }
 
-    public function requestedToUsTasks($user_id, $status_id)
+    public function requestedToUsTasks($user_id, $status_id, $type)
     {
         $user = auth()->user()->id;
-        // Fetch tasks based on user ID and status ID
-        $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->where('created_by', $user_id)->get();
-
+        if ($type == 'requested_to_us') {
+            // Fetch tasks based on user ID and status ID
+            $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->where('created_by', $user_id)->get();
+        }elseif($type == 'requested_by_me'){
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
+        }
 
         // Pass data to a view (or return as JSON if it's an API)
         return view('tasks.show', [
@@ -1446,15 +1449,174 @@ class TaskController extends Controller
             'type' => 'requested_by_me'
         ]);
     }
-    public function requestedToUsStatusTasks($user_id, $status_id)
+    public function requestedToUsStatusTasks($user_id, $status_id, $type)
     {
-        dd($status_id);
+        $user = auth()->user()->id;
+        if ($type == 'requested_to_us') {
+            $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
+
+        }elseif($type = 'requested_by_me'){
+            $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user)->get();
+
+        }
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasks,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+
+    public function requestedToUsPendingTasks($user_id, $status_id, $type)
+    {
+        $user = auth()->user()->id;
+        if ($type == 'requested_to_us') {
+            // Fetch tasks based on user ID and status ID
+            $tasks = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', [1, 3, 5, 6])
+                ->where('created_by', $user_id)
+                ->get();
+        }elseif($type == 'requested_by_me'){
+            $tasks = TaskAssignee::where('user_id', $user_id)
+            ->whereIn('task_status', [1, 3, 5, 6])
+            ->where('created_by', $user)
+            ->get();
+        }
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasks,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+    public function requestedToUsOverDuesTasks($user_id, $status_id, $type)
+    {
+        $user = auth()->user()->id;
+        $cdate = date("Y-m-d");
+        if ($type == 'requested_to_us') {
+            // Fetch tasks based on user ID and status ID
+            $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user)
+                ->where('created_by', $user_id)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+            $tasksData = [];
+            foreach ($due_tasks as $due_task) {
+                $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
+                foreach ($countTotalTask as $task) {
+                    $tasksData[] = $task; // Add the task to the array
+                }
+            }
+        }elseif($type == 'requested_by_me'){
+
+            $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user_id)
+            ->where('created_by', $user)
+            ->whereNotIn('task_status', [4, 7])
+            ->get();
+        $tasksData = [];
+        foreach ($due_tasks as $due_task) {
+            $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
+            foreach ($countTotalTask as $task) {
+                $tasksData[] = $task; // Add the task to the array
+            }
+        }
+        }
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasksData,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+
+    public function requestedToUsTodayDuesTasks($user_id, $status_id, $type)
+    {
+        $user = auth()->user()->id;
+        $cdate = date("Y-m-d");
+        if ($type == 'requested_to_us') {
+
+            // Fetch tasks based on user ID and status ID
+            $today_tasks = TaskAssignee::where('user_id', $user)
+                ->where('created_by', $user_id)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+
+            $tasksData = [];
+            foreach ($today_tasks as $today_task) {
+                $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->get();
+                foreach ($countTotalTask as $task) {
+                    $tasksData[] = $task; // Add the task to the array
+                }
+            }
+        }elseif($type == 'requested_by_me'){
+            $today_tasks = TaskAssignee::where('user_id', $user_id)
+            ->where('created_by', $user)
+            ->whereNotIn('task_status', [4, 7])
+            ->get();
+
+        $tasksData = [];
+        foreach ($today_tasks as $today_task) {
+            $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->get();
+            foreach ($countTotalTask as $task) {
+                $tasksData[] = $task; // Add the task to the array
+            }
+        }
+        }
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasksData,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
+
+
+    public function requestedToUsFinishedTasks($user_id, $status_id, $type)
+    {
 
         $user = auth()->user()->id;
         // Fetch tasks based on user ID and status ID
-        $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
+        if ($type == 'requested_to_us') {
 
+            $tasks = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', ['4', '7'])
+                ->where('created_by', $user_id)
+                ->get();
+        }elseif($type == 'requested_by_me'){
+            $tasks = TaskAssignee::where('user_id', $user_id)
+            ->whereIn('task_status', ['4', '7'])
+            ->where('created_by', $user)
+            ->get();
+        }
+        // Pass data to a view (or return as JSON if it's an API)
+        return view('tasks.show', [
+            'tasks' => $tasks,
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'type' => 'requested_by_me'
+        ]);
+    }
 
+    public function requestedToUsTotalTasks($user_id, $status_id, $type)
+    {
+
+        $user = auth()->user()->id;
+        if ($type == 'requested_to_us') {
+
+            // Fetch tasks based on user ID and status ID
+            $tasks = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('created_by', $user_id)
+                ->get();
+        }elseif($type == 'requested_by_me'){
+            $tasks = TaskAssignee::where('user_id', $user_id)
+            ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+            ->where('created_by', $user)
+            ->get();
+        }
         // Pass data to a view (or return as JSON if it's an API)
         return view('tasks.show', [
             'tasks' => $tasks,
@@ -2000,9 +2162,9 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             // dd($creator);
             if ($creator == 1) {
-                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData','getTaskComments'));
+                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
-                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData','getTaskComments'));
+                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
         } catch (\Exception $error) {
@@ -2317,9 +2479,9 @@ class TaskController extends Controller
                     $taskData['completed_date'] = null;
                 }
 
-        if ($request->get('task_status') == 7) {
-            $taskData['close_date'] = now();
-        }
+                if ($request->get('task_status') == 7) {
+                    $taskData['close_date'] = now();
+                }
 
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);

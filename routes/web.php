@@ -86,10 +86,39 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     Route::get('users/total_tasks_details', [DashboardCUstomizedController::class, 'getTotalTaskInfo'])->name('users.total_task_details');
 
-    Route::get('/tasks/requested_to_us/{user_id}/{status_id}', [TaskController::class, 'requestedToUsTasks'])
+
+    /// Route For Dashboard data onclick counts Starts
+    Route::get('/tasks/requested_to_us/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
     ->name('tasks.requested_to_us');
-    Route::get('/tasks/requested_to_us_status/{user_id}/{status_id}', [TaskController::class, 'requestedToUsStatusTasks'])
+    Route::get('/tasks/requested_to_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
     ->name('tasks.requested_to_us_status');
+    Route::get('/tasks/requested_to_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
+    ->name('tasks.requested_to_us_pending_task');
+    Route::get('/tasks/requested_to_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
+    ->name('tasks.requested_to_us_over_due');
+    Route::get('/tasks/requested_to_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
+    ->name('tasks.requested_to_us_today_due');
+    Route::get('/tasks/requested_to_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
+    ->name('tasks.requested_to_us_finished_task');
+    Route::get('/tasks/requested_to_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
+    ->name('tasks.requested_to_us_total_task');
+
+    Route::get('/tasks/requested_by_us/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    ->name('tasks.requested_by_us');
+    Route::get('/tasks/requested_by_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
+    ->name('tasks.requested_by_us_status');
+    Route::get('/tasks/requested_by_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
+    ->name('tasks.requested_by_us_pending_task');
+    Route::get('/tasks/requested_by_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
+    ->name('tasks.requested_by_us_over_due');
+    Route::get('/tasks/requested_by_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
+    ->name('tasks.requested_by_us_today_due');
+    Route::get('/tasks/requested_by_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
+    ->name('tasks.requested_by_us_finished_task');
+    Route::get('/tasks/requested_by_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
+    ->name('tasks.requested_by_us_total_task');
+    /// Route For Dashboard data onclick counts Ends
+
 
     Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
