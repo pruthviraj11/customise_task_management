@@ -2565,31 +2565,43 @@ class TaskController extends Controller
             // dd($getLastRecord);
 
             // Generate the new task number
+
+
+
+
+
+            // Assuming $getLastRecord is the last task record fetched
             $lastTaskNumber = $getLastRecord ? $getLastRecord->task_number : 'T-01';
+
+            // Split the last task number into its prefix and sequential part
             $taskParts = explode('-', $lastTaskNumber);
-            $newTaskNumber = $taskParts[0] . '-' . str_pad((intval($taskParts[1]) + 1), 2, '0', STR_PAD_LEFT);
-
-            // Get current assignees for the task
-            $currentAssignees = TaskAssignee::where('task_id', $task->id)->pluck('user_id')->toArray();
-
+            $taskPrefix = $taskParts[0]; // This is the prefix (e.g., "9176")
+            $lastSequentialNumber = isset($taskParts[1]) ? (int) $taskParts[1] : 1; // The last number (e.g., "02")
+            // dd($lastSequentialNumber);
+            // Loop through the userIds to assign the task number
             foreach ($userIds as $userId) {
+
+                // Increment the sequential number for each user
+              
                 // Check if the user is already assigned to the task
                 $existingAssignee = TaskAssignee::where('task_id', $task->id)
                     ->where('user_id', $userId)
                     ->whereNull('deleted_at')
                     ->first();
-                // dd($existingAssignee);
 
                 if ($existingAssignee) {
                     // Update the existing record
                     $existingAssignee->task_number = in_array($userId, $currentAssignees)
                         ? $existingAssignee->task_number
-                        : $newTaskNumber;
+                        : '';
 
                     $existingAssignee->task_status = $task->task_status;
                     $existingAssignee->created_by = $task->created_by;
                     $existingAssignee->save(); // Save the updated record
                 } else {
+                    $newSequentialNumber = str_pad($lastSequentialNumber + 1, 2, '0', STR_PAD_LEFT);
+                    $newTaskNumber = $taskPrefix . '-' . $newSequentialNumber;
+
                     // Create a new assignee record
                     TaskAssignee::create([
                         'task_id' => $task->id,
@@ -2597,11 +2609,66 @@ class TaskController extends Controller
                         'task_number' => $newTaskNumber,
                         'task_status' => $task->task_status,
                         'created_by' => $task->created_by,
-                        'created_at' => Carbon::now(), // Ensure the timestamp is set
+                        'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
+                $lastSequentialNumber++;
+
                 }
+
+                // Increment the sequential number for the next user
             }
+
+
+
+
+
+
+
+
+
+
+
+
+            // $lastTaskNumber = $getLastRecord ? $getLastRecord->task_number : 'T-01';
+            // $taskParts = explode('-', $lastTaskNumber);
+            // $newTaskNumber = $taskParts[0] . '-' . str_pad((intval($taskParts[1]) + 1), 2, '0', STR_PAD_LEFT);
+
+            // // Get current assignees for the task
+            // $currentAssignees = TaskAssignee::where('task_id', $task->id)->pluck('user_id')->toArray();
+
+            // foreach ($userIds as $userId) {
+            //     dd($newTaskNumber);
+            //     // Check if the user is already assigned to the task
+            //     $existingAssignee = TaskAssignee::where('task_id', $task->id)
+            //         ->where('user_id', $userId)
+            //         ->whereNull('deleted_at')
+            //         ->first();
+            //     // dd($existingAssignee);
+
+            //     if ($existingAssignee) {
+            //         // Update the existing record
+            //         $existingAssignee->task_number = in_array($userId, $currentAssignees)
+            //             ? $existingAssignee->task_number
+            //             : $newTaskNumber;
+
+            //         $existingAssignee->task_status = $task->task_status;
+            //         $existingAssignee->created_by = $task->created_by;
+            //         $existingAssignee->save(); // Save the updated record
+            //     } else {
+            //         // Create a new assignee record
+            //         TaskAssignee::create([
+            //             'task_id' => $task->id,
+            //             'user_id' => $userId,
+            //             'task_number' => $newTaskNumber,
+            //             'task_status' => $task->task_status,
+            //             'created_by' => $task->created_by,
+            //             'created_at' => Carbon::now(), // Ensure the timestamp is set
+            //             'updated_at' => Carbon::now(),
+            //         ]);
+            //     }
+
+            // }
 
 
 
