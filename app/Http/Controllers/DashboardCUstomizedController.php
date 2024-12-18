@@ -557,6 +557,7 @@ class DashboardCUstomizedController extends Controller
 
         foreach ($users as $user) {
             $array = [
+                'user_id' => $user->id,
                 'user_name' => $user->first_name . ' ' . $user->last_name,
             ];
 

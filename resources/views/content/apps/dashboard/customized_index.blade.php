@@ -216,9 +216,9 @@
                                 let userId = row.user_id;
                                 let statusId = row.status_id
                                 let url =
-                                    '{{ route('tasks.requested_to_us', ['user_id' => ':user_id', 'status_id' => ':status_id','type' => ':type']) }}';
+                                    '{{ route('tasks.requested_to_us', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
                                 url = url.replace(':user_id', userId).replace(':status_id',
-                                    statusId).replace(':type', type);
+                                    statusId);
 
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
 
@@ -230,40 +230,113 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+
+                                        let url =
+                                            '{{ route('tasks.requested_to_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id',
+                                            statusId);
+
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
+
                                 },
                             @endif
                         @endforeach
 
                         {
                             data: 'pending_tasks',
-                            name: 'pending_tasks'
+                            name: 'pending_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_pending_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'over_dues',
-                            name: 'over_dues'
+                            name: 'over_dues',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_over_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'today_dues',
-                            name: 'today_dues'
+                            name: 'today_dues',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
 
                         @foreach ($statusinfos as $index => $status)
                             @if ($index >= 4)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}'
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                        let url =
+                                            '{{ route('tasks.requested_to_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id', statusId);
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
                                 },
                             @endif
                         @endforeach
 
                         {
                             data: 'finish_tasks',
-                            name: 'finish_tasks'
+                            name: 'finish_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_finished_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'total',
-                            name: 'total'
+                            name: 'total',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
 
                     ]
@@ -295,29 +368,83 @@
                         },
                         {
                             data: 'requested_by_us',
-                            name: 'requested_by_us'
+                            name: 'requested_by_us',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId = row.status_id
+                                let url =
+                                    '{{ route('tasks.requested_by_us', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(':status_id',
+                                    statusId);
+
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+
+                            }
                         },
 
                         @foreach ($statusinfos as $index => $status)
                             @if ($index <= 3)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}'
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+
+                                        let url =
+                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id',
+                                            statusId);
+
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
                                 },
                             @endif
                         @endforeach
 
                         {
                             data: 'pending_tasks',
-                            name: 'pending_tasks'
+                            name: 'pending_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_pending_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'over_dues',
-                            name: 'over_dues'
+                            name: 'over_dues',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_by_us_over_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'today_dues',
-                            name: 'today_dues'
+                            name: 'today_dues',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
 
                         @foreach ($statusinfos as $index => $status)
@@ -331,11 +458,31 @@
 
                         {
                             data: 'finish_tasks',
-                            name: 'finish_tasks'
+                            name: 'finish_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_by_us_finished_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
                         {
                             data: 'total',
-                            name: 'total'
+                            name: 'total',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_by_us_total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
                         },
 
                     ]
