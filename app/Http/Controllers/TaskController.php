@@ -126,7 +126,15 @@ class TaskController extends Controller
         //             // Save the updated taskAssignee
         //             $taskAssignee->save();
         //         }
+        //         if ($taskAssignee->due_date == null) {
+        //             // Store the task due_date on task_assignee
+        //             $taskAssignee->due_date = $task->due_date;
+
+        //             $taskAssignee->save();
+        //         }
         //         $user = User::find($taskAssignee->user_id);
+
+                
 
         //         if ($user != null) {
         //             // Check if department and sub_department are null, and if so, update them
