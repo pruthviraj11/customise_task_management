@@ -26,6 +26,11 @@ class TaskService
         $task = $this->taskRepository->find($id);
         return $task;
     }
+    public function gettaskAssigne($id)
+    {
+        $task = $this->taskRepository->findassignees($id);
+        return $task;
+    }
     public function deleteTask($id)
     {
         $deleted = $this->taskRepository->delete($id);
@@ -34,6 +39,11 @@ class TaskService
     public function updateTask($id, $taskData)
     {
         $updated = $this->taskRepository->update($id, $taskData);
+        return $updated;
+    }
+    public function updateTaskAssigne($id, $taskData)
+    {
+        $updated = $this->taskRepository->updateAssigne($id, $taskData);
         return $updated;
     }
 

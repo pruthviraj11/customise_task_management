@@ -20,6 +20,7 @@ class TaskAssignee extends Model
         'task_id',
         'user_id',
         'status',
+        'due_date',
         'remark',
         'deleted_by',
         'department',
