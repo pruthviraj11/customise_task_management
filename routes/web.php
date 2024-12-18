@@ -8,6 +8,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardCUstomizedController;
+
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EmailTemplateController;
@@ -78,10 +80,22 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/data', [DashboardController::class, 'getTaskData'])->name('tasks.data');
     Route::get('users/status-data', [DashboardController::class, 'getUserStatusData'])->name('users.task.status.data');
     Route::get('users/status-hierarchy', [DashboardController::class, 'getUserStatusData_hierarchy'])->name('users.task.status.hierarchy');
+
+    Route::get('users/requested_by_me', [DashboardCUstomizedController::class, 'getRequestedByMeTaskInfo'])->name('users.task.requested_me');
+    Route::get('users/requested_to_me', [DashboardCUstomizedController::class, 'getRequestedToMeTaskInfo'])->name('users.task.requested_to_me');
+
+    Route::get('users/total_tasks_details', [DashboardCUstomizedController::class, 'getTotalTaskInfo'])->name('users.total_task_details');
+
+
+
+
     Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
     Route::get('send/mail', [MailController::class, 'sendMail'])->name('send-mail');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
+
+    Route::get('dashboard_customized', [DashboardCUstomizedController::class, 'index'])->name('dashboard-index');
+
     Route::get('activity', [DashboardController::class, 'activity'])->name('activity-index');
 
     Route::get('rejected-tasks', [TaskController::class, 'rejected_task'])->name('rejected-tasks');
@@ -328,4 +342,4 @@ Route::get('/tasks/total-count', [DashboardController::class, 'getTotalTaskCount
 
 Route::any('/upload_task', [DashboardController::class, 'upload_task'])->name('kk');
 
-Route::get('/tasks/team_task',[DashboardController::class, 'team_task'])->name('tasks.team_task');
+Route::get('/tasks/team_task', [DashboardController::class, 'team_task'])->name('tasks.team_task');

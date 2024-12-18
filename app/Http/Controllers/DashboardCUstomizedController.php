@@ -13,37 +13,29 @@ use App\Models\Task;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\Department;
+use App\Models\TaskAssignee;
+
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class DashboardCUstomizedController extends Controller
 {
     public function index()
     {
 
         $userId = auth()->user()->id;
         $usersWithG7 = User::where('G7', 1)->get();
-
-
         $user = auth()->user();
-
-
-
-
-
         $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
-
-
         $task_count['conceptualization'] = Task::where('task_status', 1)
             ->whereHas('assignees', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
-
             })
             ->count();
-
         $today = now()->toDateString();
         $task_count['due_date_past'] = Task::where('task_status', '!=', '7')
             ->where('due_date', '<', today()) // Consider due date passed as of today
@@ -197,8 +189,12 @@ class DashboardController extends Controller
         $MeAndTeam = 00;
         $teamTasks = 00;
 
+        $statusinfos = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
+
+
+
         // dd('heare');
-        return view('content.apps.dashboard.index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count'));
+        return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos'));
     }
     public function activity()
     {
@@ -383,6 +379,479 @@ class DashboardController extends Controller
         return response()->json(['data' => $table_data]);
     }
     // Function to get the total task count
+
+
+    function getHierarchyUsers($userId)
+    {
+        return $userId;
+    }
+
+
+    // function requestedBymeTasks($userId)
+    // {
+    //     $users = DB::table('task_assignees')
+    //         ->join('users', 'task_assignees.user_id', '=', 'users.id')
+    //         ->select('task_assignees.*', 'users.first_name as first_name', 'users.last_name as last_name')
+    //         ->where('task_assignees.user_id', '=', $userId)
+    //         ->get();
+
+    //     return $users;
+    // }
+
+
+
+    public function getAllSubordinates($user)
+    {
+        $subordinates = $user->subordinates;
+
+        foreach ($subordinates as $subordinate) {
+            // Recursively get the subordinates of each subordinate
+            $subordinates = $subordinates->merge($this->getAllSubordinates($subordinate));
+        }
+
+        return $subordinates;
+    }
+
+
+
+
+    /*----------  Requested to me flow ----------*/
+    public function getRequestedToMeTaskInfo()
+    {
+        $loggedInUser = auth()->user();
+        $userId = $loggedInUser->id;
+
+        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+
+
+        //$status = Status::where('status', 'on')->get();
+        $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
+
+        $table_data = [];
+
+        foreach ($users as $user) {
+            $array = [
+                'user_name' => $user->first_name . ' ' . $user->last_name,
+            ];
+
+            $totalAssign = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
+
+            $array['requested_to_us'] = $totalAssign; // Correctly add the key-value pair to the existing array
+
+            $total = 0;
+            $pending_total = 0;
+            $finish_total = 0;
+            $matchIds = [1, 3, 5, 6];
+            $complete_close = ['4', '7'];
+
+            $cdate = date("Y-m-d");
+
+
+            foreach ($status as $i => $s) {
+
+
+                $CountTaskStatus = TaskAssignee::where('user_id', $userId)
+                    ->where('task_status', $s->id)
+                    ->where('created_by', $user->id)
+                    ->count();
+
+                $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
+
+
+
+                /*------  Total PendingTask Detais -----*/
+
+                if (in_array($s->id, $matchIds)) {
+                    $CountPendingTask = TaskAssignee::where('user_id', $userId)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $user->id)
+                        ->count();
+                    $pending_total += $CountPendingTask;
+                }
+
+                /*---------------  Total Dues Tasks ------*/
+
+                $due_tasks = TaskAssignee::where('user_id', $userId)
+                    ->where('created_by', $user->id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalDues = 0;
+                foreach ($due_tasks as $due_task) {
+                    $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                    $totalDues += $countTotalTask;
+                }
+
+                $array['over_dues'] = $totalDues;
+
+                /*--------------- Total Today's Due ------*/
+
+
+                // $TodayCountDueTask = TaskAssignee::where('user_id', $userId)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $user->id)
+                //     ->whereDate('created_at', '=', $cdate)
+                //     ->count();
+
+                $today_tasks = TaskAssignee::where('user_id', $userId)
+                    ->where('created_by', $user->id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalTodayDues = 0;
+                foreach ($today_tasks as $today_task) {
+                    $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
+                    $totalTodayDues += $countTotalTask;
+                }
+
+                $array['today_dues'] = $totalTodayDues;
+
+
+                /*--------------  Total Finished Tasks -----*/
+                if (in_array($s->id, $complete_close)) {
+                    $CountFinishedTask = TaskAssignee::where('user_id', $userId)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $user->id)
+                        ->count();
+                    $finish_total += $CountFinishedTask;
+                }
+
+            }
+
+            $array['pending_tasks'] = $pending_total;
+            $array['finish_tasks'] = $finish_total;
+            $array['total'] = $pending_total + $finish_total;
+
+            array_push($table_data, $array);
+        }
+
+        return response()->json(['data' => $table_data]);
+
+    }
+
+
+
+
+    /*------- Rquested By me Flow--------------*/
+    public function getRequestedByMeTaskInfo()
+    {
+        $loggedInUser = auth()->user();
+        $userId = $loggedInUser->id;
+
+        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+
+
+        //$status = Status::where('status', 'on')->get();
+        $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
+
+
+
+
+        $table_data = [];
+
+        foreach ($users as $user) {
+            $array = [
+                'user_name' => $user->first_name . ' ' . $user->last_name,
+            ];
+
+            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')->where('created_by', $userId)->count();
+
+            $array['requested_by_us'] = $totalAssign; // Correctly add the key-value pair to the existing array
+
+            $total = 0;
+            $pending_total = 0;
+            $finish_total = 0;
+            $matchIds = [1, 3, 5, 6];
+            $complete_close = ['4', '7'];
+
+            $cdate = date("Y-m-d");
+
+
+            foreach ($status as $i => $s) {
+
+
+                $CountTaskStatus = TaskAssignee::where('user_id', $user->id)
+                    ->where('task_status', $s->id)
+                    ->where('created_by', $userId)
+                    ->count();
+
+                $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
+
+
+
+                /*------  Total PendingTask Detais -----*/
+
+                if (in_array($s->id, $matchIds)) {
+                    $CountPendingTask = TaskAssignee::where('user_id', $user->id)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $userId)
+                        ->count();
+                    $pending_total += $CountPendingTask;
+                }
+
+                /*---------------  Total Dues Tasks ------*/
+
+                // $CountDueTask = TaskAssignee::where('user_id', $user->id)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $userId)
+                //     ->whereDate('created_at', '<=', $cdate)
+                //     ->count();
+
+                $due_tasks = TaskAssignee::where('user_id', $user->id)
+                    ->where('created_by', $userId)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalDues = 0;
+                foreach ($due_tasks as $due_task) {
+                    $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                    $totalDues += $countTotalTask;
+                }
+
+                $array['over_dues'] = $totalDues;
+
+                /*--------------- Total Today's Due ------*/
+
+
+                // $TodayCountDueTask = TaskAssignee::where('user_id', $user->id)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $userId)
+                //     ->whereDate('created_at', '=', $cdate)
+                //     ->count();
+
+
+                $today_tasks = TaskAssignee::where('user_id', $user->id)
+                    ->where('created_by', $userId)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalTodayDues = 0;
+                foreach ($today_tasks as $today_task) {
+                    $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
+                    $totalTodayDues += $countTotalTask;
+                }
+
+                $array['today_dues'] = $totalTodayDues;
+
+
+                /*--------------  Total Finished Tasks -----*/
+                if (in_array($s->id, $complete_close)) {
+                    $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $userId)
+                        ->count();
+                    $finish_total += $CountFinishedTask;
+                }
+
+
+
+
+            }
+
+            $array['pending_tasks'] = $pending_total;
+            $array['finish_tasks'] = $finish_total;
+            $array['total'] = $pending_total + $finish_total;
+            ;
+
+
+
+            array_push($table_data, $array);
+        }
+
+        return response()->json(['data' => $table_data]);
+
+
+
+
+
+    }
+
+
+
+    /*----------  Total Task Info -------*/
+
+    public function getTotalTaskInfo()
+    {
+        $loggedInUser = auth()->user();
+        $userId = $loggedInUser->id;
+
+        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+
+
+        //$status = Status::where('status', 'on')->get();
+        $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
+
+        $table_data = [];
+
+        foreach ($users as $user) {
+            $array = [
+                'user_name' => $user->first_name . ' ' . $user->last_name,
+            ];
+
+            $RequestToUs = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
+
+            $RequestByMe = TaskAssignee::where('user_id', $user->id)->where('status', '0')->where('created_by', $userId)->count();
+
+            $array['total_tasks'] = $RequestToUs + $RequestByMe; // Correctly add the key-value pair to the existing array
+
+            $total = 0;
+            $pending_total = 0;
+            $finish_total = 0;
+            $matchIds = [1, 3, 5, 6];
+            $complete_close = ['4', '7'];
+
+            $cdate = date("Y-m-d");
+
+
+            foreach ($status as $i => $s) {
+
+
+                $CountRequestUs = TaskAssignee::where('user_id', $userId)
+                    ->where('task_status', $s->id)
+                    ->where('created_by', $user->id)
+                    ->count();
+
+                $CountRequestTo = TaskAssignee::where('user_id', $user->id)
+
+                    ->where('task_status', $s->id)
+                    ->where('created_by', $userId)
+                    ->count();
+
+                $array[\Str::slug($s->status_name, '_')] = $CountRequestUs + $CountRequestTo;
+
+
+
+                /*------  Total PendingTask Detais -----*/
+
+                if (in_array($s->id, $matchIds)) {
+                    $CountRequestToPendingTask = TaskAssignee::where('user_id', $userId)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $user->id)
+                        ->count();
+
+
+                    $CountRequestByMePendingTask = TaskAssignee::where('user_id', $user->id)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $userId)
+                        ->count();
+
+                    $pending_total += $CountRequestToPendingTask + $CountRequestByMePendingTask;
+                }
+
+                /*---------------  Total Dues Tasks ------*/
+
+                // $CountRequestToTask = TaskAssignee::where('user_id', $userId)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $user->id)
+                //     ->whereDate('created_at', '<=', $cdate)
+                //     ->count();
+
+                $requested_to_tasks = TaskAssignee::where('user_id', $userId)
+                    ->where('created_by', $user->id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalRequestedTodayDues = 0;
+                foreach ($requested_to_tasks as $requested_to_task) {
+                    $countRequestedTotalTask = Task::where('id', $requested_to_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                    $totalRequestedTodayDues += $countRequestedTotalTask;
+                }
+
+
+                // $CountRequestByMeTask = TaskAssignee::where('user_id', $user->id)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $userId)
+                //     ->whereDate('created_at', '<=', $cdate)
+                //     ->count();
+
+                $requested_me_tasks = TaskAssignee::where('user_id', $user->id)
+                    ->where('created_by', $userId)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalRequestedMeTodayDues = 0;
+                foreach ($requested_me_tasks as $requested_me_task) {
+                    $countRequestedMeTotalTask = Task::where('id', $requested_me_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                    $totalRequestedMeTodayDues += $countRequestedMeTotalTask;
+                }
+
+
+                $array['over_dues'] = $totalRequestedTodayDues + $totalRequestedMeTodayDues;
+
+                /*--------------- Total Today's Due ------*/
+
+
+                // $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $userId)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $user->id)
+                //     ->whereDate('created_at', '=', $cdate)
+                //     ->count();
+
+
+                $today_requested_tasks = TaskAssignee::where('user_id', $userId)
+                    ->where('created_by', $user->id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalRequestedTodayDues = 0;
+                foreach ($today_requested_tasks as $today_requested_task) {
+                    $countrequestedToTotalTask = Task::where('id', $today_requested_task->task_id)->where('due_date', '=', $cdate)->count();
+                    $totalRequestedTodayDues += $countrequestedToTotalTask;
+                }
+
+
+                $today_requested_me_tasks = TaskAssignee::where('user_id', $user->id)
+                    ->where('created_by', $userId)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->get();
+
+                $totalRequestedMeTodayDues = 0;
+                foreach ($today_requested_me_tasks as $today_requested_me_task) {
+                    $countrequestedMeTotalTask = Task::where('id', $today_requested_me_task->task_id)->where('due_date', '=', $cdate)->count();
+                    $totalRequestedMeTodayDues += $countrequestedMeTotalTask;
+                }
+
+
+                // $TodayCountRequestByMeDueTask = TaskAssignee::where('user_id', $user->id)
+                //     ->where('task_status', '!=', '4')
+                //     ->where('created_by', $userId)
+                //     ->whereDate('created_at', '=', $cdate)
+                //     ->count();
+
+                $array['today_dues'] = $totalRequestedTodayDues + $totalRequestedMeTodayDues;
+
+
+                /*--------------  Total Finished Tasks -----*/
+                if (in_array($s->id, $complete_close)) {
+                    $CountRequestToFinishedTask = TaskAssignee::where('user_id', $userId)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $user->id)
+                        ->count();
+
+                    $CountRequestByMeFinishedTask = TaskAssignee::where('user_id', $user->id)
+                        ->where('task_status', $s->id)
+                        ->where('created_by', $userId)
+                        ->count();
+                    $finish_total += $CountRequestToFinishedTask + $CountRequestByMeFinishedTask;
+                }
+
+            }
+
+            $array['pending_tasks'] = $pending_total;
+            $array['finish_tasks'] = $finish_total;
+            $array['total'] = $pending_total + $finish_total;
+
+            array_push($table_data, $array);
+        }
+
+        return response()->json(['data' => $table_data]);
+
+    }
+
+
+
+
+
     public function getTotalTaskCount()
     {
         $userId = auth()->user()->id;
@@ -477,17 +946,6 @@ class DashboardController extends Controller
         }
     }
 
-    public function getAllSubordinates($user)
-    {
-        $subordinates = $user->subordinates;
-
-        foreach ($subordinates as $subordinate) {
-            // Recursively get the subordinates of each subordinate
-            $subordinates = $subordinates->merge($this->getAllSubordinates($subordinate));
-        }
-
-        return $subordinates;
-    }
 
     public function getTaskCounts(Request $request)
     {
