@@ -431,6 +431,7 @@ class DashboardCUstomizedController extends Controller
 
         foreach ($users as $user) {
             $array = [
+                'user_id' => $user->id,
                 'user_name' => $user->first_name . ' ' . $user->last_name,
             ];
 
@@ -456,8 +457,7 @@ class DashboardCUstomizedController extends Controller
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
-
-
+                $array['status_id'] = $s->id;
 
                 /*------  Total PendingTask Detais -----*/
 
@@ -525,14 +525,12 @@ class DashboardCUstomizedController extends Controller
                 }
 
             }
-
             $array['pending_tasks'] = $pending_total;
             $array['finish_tasks'] = $finish_total;
             $array['total'] = $pending_total + $finish_total;
 
             array_push($table_data, $array);
         }
-
         return response()->json(['data' => $table_data]);
 
     }
