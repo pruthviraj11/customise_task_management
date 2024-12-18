@@ -1439,6 +1439,10 @@ class TaskController extends Controller
             $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->where('created_by', $user_id)->get();
         }elseif($type == 'requested_by_me'){
             $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
+        }elseif($type == 'total_task'){
+            $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->count();
+            dd($tasks);
+
         }
 
         // Pass data to a view (or return as JSON if it's an API)
@@ -2582,7 +2586,7 @@ class TaskController extends Controller
             foreach ($userIds as $userId) {
 
                 // Increment the sequential number for each user
-              
+
                 // Check if the user is already assigned to the task
                 $existingAssignee = TaskAssignee::where('task_id', $task->id)
                     ->where('user_id', $userId)

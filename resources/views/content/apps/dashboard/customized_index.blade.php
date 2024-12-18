@@ -518,7 +518,18 @@
                         },
                         {
                             data: 'total_tasks',
-                            name: 'total_tasks'
+                            name: 'total_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId = row.status_id
+                                let url =
+                                    '{{ route('tasks.total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+                                url = url.replace(':user_id', userId).replace(':status_id',
+                                    statusId);
+
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+
+                            }
                         },
 
                         @foreach ($statusinfos as $index => $status)
