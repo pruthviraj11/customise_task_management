@@ -117,6 +117,9 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     ->name('tasks.requested_by_us_finished_task');
     Route::get('/tasks/requested_by_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
     ->name('tasks.requested_by_us_total_task');
+
+    Route::get('/tasks/total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    ->name('tasks.total_task');
     /// Route For Dashboard data onclick counts Ends
 
 

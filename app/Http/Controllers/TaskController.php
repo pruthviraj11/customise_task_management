@@ -1439,6 +1439,10 @@ class TaskController extends Controller
             $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->where('created_by', $user_id)->get();
         }elseif($type == 'requested_by_me'){
             $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
+        }elseif($type == 'total_task'){
+            $tasks = TaskAssignee::where('user_id', $user)->where('status', '0')->count();
+            dd($tasks);
+
         }
 
         // Pass data to a view (or return as JSON if it's an API)
