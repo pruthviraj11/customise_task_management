@@ -126,7 +126,19 @@ class TaskController extends Controller
         //             // Save the updated taskAssignee
         //             $taskAssignee->save();
         //         }
+        //         $user = User::find($taskAssignee->user_id);
 
+        //         if ($user != null) {
+        //             // Check if department and sub_department are null, and if so, update them
+        //             if ($taskAssignee->department === null && $taskAssignee->sub_department === null) {
+        //                 // Update department and sub_department from the user table
+        //                 $taskAssignee->department = $user->department_id;
+        //                 $taskAssignee->sub_department = $user->subdepartment;
+
+        //                 // Save the taskAssignee with the updated department and sub_department
+        //                 $taskAssignee->save();
+        //             }
+        //         }
         //         // Save the changes
         //         $taskAssignee->save();
         //     }
@@ -537,94 +549,212 @@ class TaskController extends Controller
             })->rawColumns(['actions'])->make(true);
     }
 
+    // public function getAll_assign_by_me(Request $request)
+    // {
+    //     $userId = auth()->user()->id;
+
+    //     $tasks = Task::where('created_by', $userId)
+    //         ->whereDoesntHave('assignees', function ($query) use ($userId) {
+    //             $query->where('user_id', $userId);
+    //         });
+
+    //     if (!empty($request->search['value'])) {
+    //         // $tasks = Task::query();
+    //         $searchTerm = $request->search['value'];
+    //         $tasks->where(function ($query) use ($searchTerm) {
+    //             $query->where('TaskNumber', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('title', 'like', '%' . $searchTerm . '%');
+    //             // Add other columns as needed
+    //         });
+    //     }
+    //     // dd($tasks);
+    //     return DataTables::of($tasks)->addColumn('actions', function ($row) {
+    //         $encryptedId = encrypt($row->task_id);
+    //         // Update Button
+    //         $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+
+    //         // Delete Button
+    //         $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+    //         $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+    //         $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
+    //         return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
+    //     })  ->addColumn('created_by_username', function ($row) {
+    //             return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+    //         })
+    //         ->addColumn('Task_number', function ($row) {
+    //             return $row->task_number ??  "-";
+    //         })
+    //         ->addColumn('Task_Ticket', function ($row) {
+    //             return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+    //         })
+    //         ->addColumn('description', function ($row) {
+    //             return $row->task && $row->task->description ? $row->task->description : '-';
+    //         })
+
+    //         ->addColumn('subject', function ($row) {
+    //             return $row->task && $row->task->subject ? $row->task->subject : '-';
+    //         })
+    //         ->addColumn('title', function ($row) {
+    //             return $row->task && $row->task->title ? $row->task->title : '-';
+    //         })
+    //         ->addColumn('Task_assign_to', function ($row) {
+    //             return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+    //         })
+
+    //         ->addColumn('status', function ($row) {
+    //             return $row->task_status ? $row->taskStatus->status_name : "-";
+    //         })
+    //         ->addColumn('Created_Date', function ($row) {
+    //             return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+    //         })
+    //         ->addColumn('start_date', function ($row) {
+    //             return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+    //         })
+    //         ->addColumn('due_date', function ($row) {
+    //             return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+    //         })
+    //         ->addColumn('close_date', function ($row) {
+    //             return $row->task && $row->task->close_date ? $row->task->close_date : '-';
+    //         })
+    //         ->addColumn('completed_date', function ($row) {
+    //             return $row->task && $row->task->completed_date ? $row->task->completed_date : '-';
+    //         })
+    //         ->addColumn('accepted_date', function ($row) {
+    //             return $row->task && $row->task->accepted_date ? $row->task->accepted_date : '-';
+    //         })
+
+    //         ->addColumn('project', function ($row) {
+    //             return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+    //         })
+    //         ->addColumn('department', function ($row) {
+    //             return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+    //         })
+
+    //         ->addColumn('sub_department', function ($row) {
+    //             return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+    //         })
+    //         ->addColumn('creator_department', function ($row) {
+    //             return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+    //         })
+
+    //         ->addColumn('creator_sub_department', function ($row) {
+    //             return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+    //         })
+    //         ->addColumn('creator_phone', function ($row) {
+    //             return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+    //         })->rawColumns(['actions'])->make(true);
+    // }
+
     public function getAll_assign_by_me(Request $request)
     {
         $userId = auth()->user()->id;
 
-
-        // $tasks = DB::table('tasks')
-        //     ->where('created_by', '=', $userId)
-        //     ->whereNotExists(function ($query) use ($userId) {
-        //         $query->select(DB::raw(1))
-        //             ->from('task_assignees')
-        //             ->whereRaw('tasks.id = task_assignees.task_id')
-        //             ->where('user_id', '=', $userId);
-        //     });
-        $tasks = Task::where('created_by', $userId)
-            ->whereDoesntHave('assignees', function ($query) use ($userId) {
+        // Fetch tasks assigned to the user but created by the authenticated user
+        $tasks = TaskAssignee::where('created_by', $userId)
+            ->whereDoesntHave('user', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             });
 
+        // Apply search filter if search term is provided
         if (!empty($request->search['value'])) {
-            // $tasks = Task::query();
             $searchTerm = $request->search['value'];
             $tasks->where(function ($query) use ($searchTerm) {
-                $query->where('TaskNumber', 'like', '%' . $searchTerm . '%')
+                $query->where('task_number', 'like', '%' . $searchTerm . '%')
                     ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
                     ->orWhere('title', 'like', '%' . $searchTerm . '%');
-                // Add other columns as needed
             });
         }
-        // dd($tasks);
-        return DataTables::of($tasks)->addColumn('actions', function ($row) {
-            $encryptedId = encrypt($row->id);
-            // Update Button
-            $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
-            // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+        return DataTables::of($tasks)
+            ->addColumn('actions', function ($row) {
+                $encryptedId = encrypt($row->task_id);
 
-            $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-            $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
-            return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
-        })->addColumn('created_by_username', function ($row) {
-            if ($row->creator) {
-                return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
-            } else {
-                return "-";
-            }
-        })->addColumn('task_Assign', function ($row) {
-            // Get all names assigned to this task
-            if ($row->users) {
-                return implode(', ', $row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray());
-            } else {
-                return "-";
-            }
-        })->addColumn('task_status_name', function ($row) {
-            return $row->taskStatus->status_name ?? "-";
-        })
-            ->addColumn('project_name', function ($row) {
-                return $row->project->project_name ?? "-";
+                $updateButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+
+                // Update Button
+                // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                // // Delete Button
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+                $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
+                return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
             })
-            ->addColumn('department_name', function ($row) {
-                return $row->department->department_name ?? "-";
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
-            ->addColumn('sub_department_name', function ($row) {
-
-                return $row->sub_department->sub_department_name ?? "-";
-            })->addColumn('created_by_department', function ($row) {
-                if ($row->creator && $row->creator->department) {
-                    return $row->creator->department->department_name ?? '-';
-                } else {
-                    return "-";
-                }
-            })->addColumn('created_by_sub_department', function ($row) {
-                if ($row->creator && $row->creator->sub_department) {
-                    return $row->creator->sub_department->sub_department_name ?? '-';
-                } else {
-                    return "-";
-                }
-            })->addColumn('created_by_phone_no', function ($row) {
-                if ($row->creator && $row->creator->phone_no) {
-                    return $row->creator->phone_no ?? '-';
-                } else {
-                    return "-";
-                }
-            })->addColumn('description', function ($row) {
-                $description = html_entity_decode($row->description);
-                return $description;
-            })->rawColumns(['actions'])->make(true);
+            ->addColumn('Task_number', function ($row) {
+                return $row->task ? $row->task->task_number ?? "-" : "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+            })
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+            })
+            ->addColumn('status', function ($row) {
+                return $row->task && $row->task->task_status ? $row->task->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+            })
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? $row->task->close_date : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? $row->task->completed_date : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->task && $row->task->accepted_date ? $row->task->accepted_date : '-';
+            })
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+            })
+            ->addColumn('sub_department', function ($row) {
+                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
     }
+
 
     public function getAll_requested_me()
     {
@@ -696,7 +826,7 @@ class TaskController extends Controller
 
     public function getAllForView($type = null)
     {
-        dd($type);
+        // dd($type);
         $status = $this->statusService->getAllstatus();
         $tasks = $this->taskService->getAlltask()->toArray();
 
@@ -1079,7 +1209,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -1148,12 +1278,18 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            $taskDetails = Task::where('id', $id)->first();
+            $taskDetails = TaskAssignee::where('task_id', $id)->where('user_id', auth()->user()->id)->first();
+            // dd($taskDetails);
             $createdById = $taskDetails->created_by;
-            $departmentId = $taskDetails->department_id;
+            $departmentId = $taskDetails->department;
+
             $departmentDetails = Department::where('id', $departmentId)->first();
+            // dd($departmentDetails);
+
             $userDetails = User::where('id', $createdById)->first();
             $departmentHOD = User::where('id', $departmentDetails->hod)->first();
+            // dd($departmentHOD);
+
             $userId = auth()->user()->id;
             TaskAssignee::where('user_id', $userId)
                 ->where('task_id', $id)
@@ -1170,14 +1306,14 @@ class TaskController extends Controller
             // Mail::to($hodMail)->send(new TaskCreatedMail($subject, $html));
             return redirect()->route("app-task-requested")->with('success', 'Task Rejected Successfully');
         } catch (\Exception $error) {
-
+            dd($error->getMessage());
             return redirect()->route("app-task-requested")->with('error', 'Error While Rejecting Task');
         }
     }
 
     public function getAll_accepted(Request $request)
     {
-        // dd('getAll_accepted');
+
         $user = auth()->user();
 
         // Modify query based on task_assignees table
@@ -1205,18 +1341,29 @@ class TaskController extends Controller
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId = encrypt($row->id);
-                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $encryptedId = encrypt($row->task_id);
+
+                $updateButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                $buttons = $updateButton . " " . $deleteButton . " " . $viewButton;
+                $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
             })
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -1763,14 +1910,19 @@ class TaskController extends Controller
             // dd($id);
             $task = $this->taskService->gettask($id);
             // dd($task);
+
+
             $SubTaskData = TaskAssignee::where('task_id', $task->id)
+                ->where(function ($query) {
+                    $query->where('created_by', Auth::user()->id)
+                        ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
+                })
                 ->get()
                 ->unique('task_number')  // Remove duplicate subtasks based on task_number
                 ->sortBy(function ($subtask) {
                     // Remove hyphen and cast the task number to integer for correct sorting
                     return (int) str_replace('-', '', $subtask->task_number);
                 });
-
 
             // dd($SubTaskData);
 
@@ -1787,6 +1939,7 @@ class TaskController extends Controller
             $users = User::where('status', '1')
                 ->where('id', '!=', 1)
                 ->get();
+
 
             $departmentslist = $this->taskService->getAlltask();
             $data['department'] = Task::all();
@@ -2065,6 +2218,7 @@ class TaskController extends Controller
     // old befor sub_task code
     public function update(UpdateTaskRequest $request, $encrypted_id)
     {
+        // dd($request->all());
         // try {
         // Decrypt the encrypted task ID
         $id = decrypt($encrypted_id);
@@ -2073,23 +2227,24 @@ class TaskController extends Controller
         $project = Project::where('id', $request->get('project_id'))->first();
         $priority = Priority::where('id', $request->get('priority_id'))->first();
         $status = Status::where('id', $request->get('task_status'))->first();
-
+        $task = Task::findOrFail($id);
         // Prepare task data
-        $taskData = [
-            'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
-            'subject' => $request->get('subject'),
-            'project_name' => $project->project_name,
-            'priority_name' => $priority->priority_name,
-            'status_name' => $status->status_name,
-            'project_id' => $request->get('project_id'),
-            'start_date' => $request->get('start_date'),
-            'due_date' => $request->get('due_date'),
-            'priority_id' => $request->get('priority_id'),
-            'task_status' => $request->get('task_status'),
-            'updated_by' => auth()->user()->id,
-        ];
+        if ($task && $task->creator->id == auth()->user()->id) {
+            $taskData = [
+                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'project_name' => $project->project_name,
+                'priority_name' => $priority->priority_name,
+                'status_name' => $status->status_name,
+                'project_id' => $request->get('project_id'),
+                'start_date' => $request->get('start_date'),
+                'due_date' => $request->get('due_date'),
+                'priority_id' => $request->get('priority_id'),
+                'task_status' => $request->get('task_status'),
+                'updated_by' => auth()->user()->id,
+            ];
 
         // Handle task status specific fields (completed_date and close_date)
         if ($request->get('task_status') == 4) {
@@ -2110,9 +2265,33 @@ class TaskController extends Controller
             $taskData['task_status'] = 7;
         }
 
-        // Update the task
-        $updated = $this->taskService->updateTask($id, $taskData);
+            // Update the task
+            $updated = $this->taskService->updateTask($id, $taskData);
+        } else {
+            $taskData = [
+                'due_date' => $request->get('due_date'),
+                'task_status' => $request->get('task_status'),
+            ];
 
+            // Handle task status specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            } else {
+                $taskData['completed_date'] = null;
+            }
+
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+            }
+
+            if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
+                $taskData['task_status'] = 7;
+            }
+            // Update the task with restricted fields
+            $updated = $this->taskService->updateTask($id, $taskData);
+            // return redirect()->back()->with('success', 'Task Updated Successfully');
+
+        }
         // Handle file attachments
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $attachment) {
@@ -2130,27 +2309,25 @@ class TaskController extends Controller
             }
         }
 
-        // // Sync task with selected users (assign task to all selected users)
-        $userIds = $request->input('user_id', []);
-        $task = Task::find($id);  // Re-fetch task if needed
-        // $task->users()->sync($userIds);  // Sync all selected users to the task
-        $task->users()->sync(
-            collect($userIds)->mapWithKeys(function ($userId) use ($task) {
-                return [
-                    $userId => [
-                        'created_by' => $task->created_by,
-                        'task_status' => $task->task_status,  // Add task_status to pivot data
-                    ]
-                ];
-            })->toArray()
-        );
+            // // Sync task with selected users (assign task to all selected users)
+            $userIds = $request->input('user_id', []);
+            $task = Task::find($id);  // Re-fetch task if needed
+            // $task->users()->sync($userIds);  // Sync all selected users to the task
+            $task->users()->sync(
+                collect($userIds)->mapWithKeys(function ($userId) use ($task) {
+                    return [
+                        $userId => [
+                            'created_by' => $task->created_by,
+                            'task_status' => $task->task_status,  // Add task_status to pivot data
+                        ]
+                    ];
+                })->toArray()
+            );
 
         $userIds = $request->input('user_id', []);
         $task = Task::find($id);  // Re-fetch task if needed
 
         $lastTaskNumber = $task->last_task_number;
-
-
 
 
 
@@ -2168,6 +2345,7 @@ class TaskController extends Controller
         }
 
         // Check if any comment was provided and save it
+        // dd($$request->comment);
         if ($request->comment != '') {
             $comment = new Comments();
             $comment->comment = $request->input('comment');
@@ -2218,7 +2396,8 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            $taskData['deleted_by'] = Auth()->user()->id;
+
+   $taskData['deleted_by'] = Auth()->user()->id;
             $updated = $this->taskService->updatetask($id, $taskData);
             $deleted = $this->taskService->deletetask($id);
             if (!empty($deleted)) {
@@ -3575,23 +3754,32 @@ class TaskController extends Controller
 
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
         $tasks = $query->get();
-
         // Return the data using DataTables, add custom columns
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId = encrypt($row->task_id);
-                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                // $satusData = TaskAssignee::where('')
+                $updateButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -4039,59 +4227,121 @@ class TaskController extends Controller
     {
         if ($request->ajax()) {
             // Get the rejected task assignees
-            $rejectedTasks = TaskAssignee::select(
-                'task_assignees.*',  // Get all fields from task_assignees
-                'tasks.description', // Description from the Task model
-                'tasks.created_by',  // Created by from the Task model
-                'tasks.project_id',  // Project ID from the Task model
-                'tasks.task_status', // Task status from Task model
-                'users.first_name',  // First name of the user (assignee)
-                'users.last_name',   // Last name of the user (assignee)
-                'projects.project_name', // Project name
-                'task_assignees.remark as rejection_reason' // Rejection reason from task_assignees
-            )
-                ->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')  // Join with tasks
-                ->join('users', 'task_assignees.user_id', '=', 'users.id')  // Join with users (assignees)
-                ->join('projects', 'tasks.project_id', '=', 'projects.id')  // Join with projects
-                ->where('task_assignees.status', 2)  // Filter for rejected status (2)
-                ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
-                ->get();
+            // $rejectedTasks = TaskAssignee::select(
+            //     'task_assignees.*',  // Get all fields from task_assignees
+            //     'tasks.description', // Description from the Task model
+            //     'tasks.created_by',  // Created by from the Task model
+            //     'tasks.project_id',  // Project ID from the Task model
+            //     'tasks.task_status', // Task status from Task model
+            //     'tasks.id', // Task status from Task model
+            //     'users.first_name',  // First name of the user (assignee)
+            //     'users.id',  // First name of the user (assignee)
+            //     'users.last_name',   // Last name of the user (assignee)
+            //     'projects.project_name', // Project name
+            //     'task_assignees.remark as rejection_reason' // Rejection reason from task_assignees
+            // )
+            //     ->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')  // Join with tasks
+            //     ->join('users', 'task_assignees.user_id', '=', 'users.id')  // Join with users (assignees)
+            //     ->join('projects', 'tasks.project_id', '=', 'projects.id')  // Join with projects
+            // ->where('task_assignees.status', 2)  // Filter for rejected status (2)
+            // ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
+            // ->get();
+            // dd($rejectedTasks);
 
+            $rejectedTasks = TaskAssignee::where('status', 2)  // Filter for rejected status (2)
+                ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
+                ->get();
             // Check if the current user is admin (id = 1)
             if (auth()->user()->id == 1) {
                 // Admin can view all rejected tasks
                 $rejectedTasks = $rejectedTasks;
             } else {
                 // Non-admin users can only see tasks they created
-                $rejectedTasks = $rejectedTasks->where('tasks.created_by', auth()->user()->id);
+                $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
             }
 
             return datatables()->of($rejectedTasks)
-                ->addColumn('assignee_name', function ($task) {
-                    return $task->first_name . ' ' . $task->last_name; // Full name of the assignee
+                ->addColumn('actions', function ($row) {
+                    $encryptedId = encrypt($row->task_id);
+
+                    $updateButton = '';
+                    $acceptButton = '';
+                    if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                        $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                    } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                        $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    }
+
+                    // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+                    $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
+                    return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
                 })
-                ->addColumn('created_by', function ($task) {
-                    $user = User::find($task->created_by);
-                    return $user ? $user->first_name . ' ' . $user->last_name : 'Unknown'; // Full name of the creator
+                ->addColumn('created_by_username', function ($row) {
+                    return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
                 })
-                ->addColumn('assignee_updated_at', function ($task) {
-                    return $task->updated_at
-                        ? Carbon::parse($task->updated_at)->format('d/m/Y')
-                        : 'NA'; // Format as dd/mm/yyyy or 'NA' if null
+                ->addColumn('Task_number', function ($row) {
+                    return $row->task_number ?? "-";
                 })
-                ->addColumn('project', function ($task) {
-                    return $task->project_name; // Directly return project name
+                ->addColumn('Task_Ticket', function ($row) {
+                    return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 })
-                ->editColumn('description', function ($task) {
-                    return strip_tags($task->description); // Remove HTML tags from the description
+                ->addColumn('description', function ($row) {
+                    return $row->task && $row->task->description ? $row->task->description : '-';
                 })
-                ->editColumn('rejection_reason', function ($task) {
-                    return strip_tags($task->rejection_reason); // Remove HTML tags from rejection_reason
+                ->addColumn('subject', function ($row) {
+                    return $row->task && $row->task->subject ? $row->task->subject : '-';
                 })
-                ->editColumn('assignee_status', function ($task) {
-                    return $task->status == 2 ? 'Rejected' : 'Unknown';  // Set 'Rejected' for status 2
+                ->addColumn('title', function ($row) {
+                    return $row->task && $row->task->title ? $row->task->title : '-';
                 })
-                ->rawColumns(['action'])
+                ->addColumn('Task_assign_to', function ($row) {
+                    return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                })
+                ->addColumn('status', function ($row) {
+                    return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
+                })
+                ->addColumn('Created_Date', function ($row) {
+                    return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                })
+                ->addColumn('start_date', function ($row) {
+                    return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                })
+                ->addColumn('due_date', function ($row) {
+                    return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                })
+                ->addColumn('close_date', function ($row) {
+                    return $row->task && $row->task->close_date ? $row->task->close_date : '-';
+                })
+                ->addColumn('completed_date', function ($row) {
+                    return $row->task && $row->task->completed_date ? $row->task->completed_date : '-';
+                })
+                ->addColumn('accepted_date', function ($row) {
+                    return $row->task && $row->task->accepted_date ? $row->task->accepted_date : '-';
+                })
+                ->addColumn('project', function ($row) {
+                    return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+                })
+                ->addColumn('department', function ($row) {
+                    return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                })
+                ->addColumn('sub_department', function ($row) {
+                    return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                })
+                ->addColumn('creator_department', function ($row) {
+                    return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+                })
+                ->addColumn('creator_sub_department', function ($row) {
+                    return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+                })
+                ->addColumn('creator_phone', function ($row) {
+                    return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+                })
+                ->rawColumns(['actions'])
                 ->make(true);
         }
 
@@ -4129,18 +4379,18 @@ class TaskController extends Controller
         $tasks = TaskAssignee::where('user_id', $userId)  // Focus on task assignees
             ->where('status', '!=', 2)  // Ensure the task is not deleted (assuming status 2 is deleted)
             ->with([
-                'task',  // Load the related task
-                'task.attachments',
-                'task.assignees' => function ($query) {
-                    $query->select('task_id', 'status', 'remark'); // Customize as needed
-                },
-                'task.creator',  // Task creator
-                'task.taskStatus',  // Task status
-                'task.project',  // Task project
-                'task.department',  // Task department
-                'task.sub_department',  // Task sub-department
-                'task.comments'  // Task comments
-            ])
+                    'task',  // Load the related task
+                    'task.attachments',
+                    'task.assignees' => function ($query) {
+                        $query->select('task_id', 'status', 'remark'); // Customize as needed
+                    },
+                    'task.creator',  // Task creator
+                    'task.taskStatus',  // Task status
+                    'task.project',  // Task project
+                    'task.department',  // Task department
+                    'task.sub_department',  // Task sub-department
+                    'task.comments'  // Task comments
+                ])
             ->whereHas('task', function ($query) use ($userId) {
                 $query->where('created_by', $userId)  // Ensure the task was created by the current user
                     ->havingRaw('COUNT(task_assignees.user_id) = 1');  // Ensure task has only one assignee
@@ -4150,16 +4400,27 @@ class TaskController extends Controller
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
                 $encryptedId = encrypt($row->task_id);
-                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                $updateButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->TaskNumber : "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -4224,18 +4485,89 @@ class TaskController extends Controller
             ->rawColumns(['actions'])
             ->make(true);
     }
-    public function markAsCompleted($subtaskId)
+    public function markAsCompleted(Request $request, $subtaskId)
     {
-        dd($subtaskId);
-        // Find the subtask by ID
-        $subtask = TaskAssignee::where('id', $subtaskId)->first();
+        try {
+            // Find the subtask by ID
+            $subtask = TaskAssignee::find($subtaskId);
 
-        // Update the status of the subtask to 'Completed'
-        $subtask->status = '1';
-        $subtask->save();
+            // Check if the subtask exists
+            if (!$subtask) {
+                return response()->json(['success' => false, 'message' => 'Subtask not found'], 404);
+            }
 
-        // Redirect back with a success message
-        return redirect()->back()->with('success', 'Subtask marked as completed');
+            // Update the status of the subtask to 'Completed'
+            $subtask->task_status = '4';  // Or use a status code if applicable
+            $subtask->save();
+
+            // Return a success response
+            return response()->json(['success' => true, 'message' => 'Subtask marked as completed']);
+        } catch (\Exception $e) {
+            // Catch any exceptions and return error message
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
     }
+
+    public function removeUser(Request $request, $subtaskId)
+    {
+        // Find the subtask by ID
+        // dd($subtaskId);
+        $subtask = TaskAssignee::find($subtaskId);
+        // dd($subtask->creator);
+        // Check if the authenticated user is the creator of the subtask
+        if ($subtask->creator->id != auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get the user_id from the request
+        $userId = $request->input('user_id');
+        // dd($userId);
+        // Initialize TaskAssignee instance
+        $taskAssignee = new TaskAssignee();
+
+        // Soft delete the user from the task
+        $success = $taskAssignee->removeUserFromTask($subtaskId, $userId);
+
+        if ($success) {
+            return response()->json(['success' => 'User removed successfully']);
+        }
+
+        return response()->json(['error' => 'Failed to remove user'], 400);
+    }
+    public function reopen($id, Request $request)
+    {
+        // Find the subtask by its ID
+        $subtask = TaskAssignee::find($id);
+
+        if ($subtask) {
+            // Get task and user data
+            $task = $subtask->task; // Assuming a 'task' relation exists
+            $user = $subtask->user; // Assuming a 'user' relation exists
+
+            // Update the subtask status
+            $subtask->task_status = $request->status;
+            $subtask->save();
+            // Construct the task view URL (replace with your actual URL generation logic)
+            $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Assuming a route 'task.view' exists
+
+            // Create the notification message
+            $message = 'Your task ' . $task->id . ' has been reopened.<br>
+                    <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>';
+
+            // Create notification for the user
+            createNotification(
+                $user->id, // The user ID receiving the notification
+                $task->id, // The task ID
+                $message,   // The notification message
+                'Created'  // Status of the notification
+            );
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Subtask not found']);
+    }
+
+
 
 }

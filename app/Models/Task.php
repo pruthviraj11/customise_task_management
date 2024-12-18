@@ -85,8 +85,10 @@ class Task extends Model
     }
     public function users()
     {
-        return $this->belongsToMany(User::class, 'task_assignees');
+        return $this->belongsToMany(User::class, 'task_assignees')
+            ->whereNull('task_assignees.deleted_at');
     }
+
 
     public function creator()
     {

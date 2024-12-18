@@ -222,7 +222,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/destroy/{encrypted_id}', [TaskController::class, 'destroy'])->name('app-task-destroy');
     Route::get('task/getAll', [TaskController::class, 'getAll'])->name('app-task-get-all');
     // Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
-    Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
+    // Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
     Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
     Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');
@@ -252,7 +252,11 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
     // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
-    Route::put('/subtask/{subtask}/complete', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
+    Route::post('/subtask/{subtask}', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
+    Route::delete('/subtask/{subtask}', [TaskController::class, 'removeUser'])->name('subtask.removeUser');
+    Route::post('/subtask/reopen/{id}', [TaskController::class, 'reopen'])->name('subtask.reopen');
+
+
     Route::get('task/accepted_by_me', [TaskController::class, 'index'])->name('app-task-get-accepted_by_me');
     Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
 

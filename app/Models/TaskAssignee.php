@@ -27,6 +27,7 @@ class TaskAssignee extends Model
         'created_by',
         'updated_by',
         'task_number',
+        'task_status',
         'deleted_at',
         'created_at',
         'updated_at'
@@ -68,4 +69,19 @@ class TaskAssignee extends Model
     // {
     //     return $this->belongsTo(Status::class, 'task_status');
     // }
+    public function removeUserFromTask($subtaskId, $userId)
+    {
+        // Find the task assignment record
+        $taskAssignee = $this->where('id', $subtaskId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($taskAssignee) {
+            // Soft delete the user from the task (sets the deleted_at timestamp)
+            $taskAssignee->delete();
+            return true;
+        }
+
+        return false;
+    }
 }
