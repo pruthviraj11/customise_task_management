@@ -474,37 +474,45 @@ class DashboardCUstomizedController extends Controller
                 $due_tasks = TaskAssignee::where('user_id', $userId)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
+                    ->whereDate('due_date', '<', $cdate)
+                    ->count();
 
-                $totalDues = 0;
-                foreach ($due_tasks as $due_task) {
-                    $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
-                    $totalDues += $countTotalTask;
-                }
 
-                $array['over_dues'] = $totalDues;
+                // $due_tasks = TaskAssignee::where('user_id', $userId)
+                //     ->where('created_by', $user->id)
+                //     ->whereNotIn('task_status', [4, 7])
+                //     ->get();
+
+
+                // $totalDues = 0;
+                // foreach ($due_tasks as $due_task) {
+                //     $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                //     $totalDues += $countTotalTask;
+                // }
+
+                $array['over_dues'] = $due_tasks;
 
                 /*--------------- Total Today's Due ------*/
 
 
-                // $TodayCountDueTask = TaskAssignee::where('user_id', $userId)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $user->id)
-                //     ->whereDate('created_at', '=', $cdate)
-                //     ->count();
-
-                $today_tasks = TaskAssignee::where('user_id', $userId)
+                $TodayCountDueTask = TaskAssignee::where('user_id', $userId)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
+                    ->whereDate('due_date', '=', $cdate)
+                    ->count();
 
-                $totalTodayDues = 0;
-                foreach ($today_tasks as $today_task) {
-                    $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
-                    $totalTodayDues += $countTotalTask;
-                }
+                // $today_tasks = TaskAssignee::where('user_id', $userId)
+                //     ->where('created_by', $user->id)
+                //     ->whereNotIn('task_status', [4, 7])
+                //     ->get();
 
-                $array['today_dues'] = $totalTodayDues;
+                // $totalTodayDues = 0;
+                // foreach ($today_tasks as $today_task) {
+                //     $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
+                //     $totalTodayDues += $countTotalTask;
+                // }
+
+                $array['today_dues'] = $TodayCountDueTask;
 
 
                 /*--------------  Total Finished Tasks -----*/
@@ -589,47 +597,47 @@ class DashboardCUstomizedController extends Controller
 
                 /*---------------  Total Dues Tasks ------*/
 
-                // $CountDueTask = TaskAssignee::where('user_id', $user->id)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $userId)
-                //     ->whereDate('created_at', '<=', $cdate)
-                //     ->count();
-
-                $due_tasks = TaskAssignee::where('user_id', $user->id)
+                $CountDueTask = TaskAssignee::where('user_id', $user->id)
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
+                    ->whereDate('due_date', '<', $cdate)
+                    ->count();
 
-                $totalDues = 0;
-                foreach ($due_tasks as $due_task) {
-                    $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
-                    $totalDues += $countTotalTask;
-                }
+                // $due_tasks = TaskAssignee::where('user_id', $user->id)
+                //     ->where('created_by', $userId)
+                //     ->whereNotIn('task_status', [4, 7])
+                //     ->get();
 
-                $array['over_dues'] = $totalDues;
+                // $totalDues = 0;
+                // foreach ($due_tasks as $due_task) {
+                //     $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->count();
+                //     $totalDues += $countTotalTask;
+                // }
+
+                $array['over_dues'] = $CountDueTask;
 
                 /*--------------- Total Today's Due ------*/
 
 
-                // $TodayCountDueTask = TaskAssignee::where('user_id', $user->id)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $userId)
-                //     ->whereDate('created_at', '=', $cdate)
-                //     ->count();
-
-
-                $today_tasks = TaskAssignee::where('user_id', $user->id)
+                $TodayCountDueTask = TaskAssignee::where('user_id', $user->id)
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
+                    ->whereDate('due_date', '=', $cdate)
+                    ->count();
 
-                $totalTodayDues = 0;
-                foreach ($today_tasks as $today_task) {
-                    $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
-                    $totalTodayDues += $countTotalTask;
-                }
 
-                $array['today_dues'] = $totalTodayDues;
+                // $today_tasks = TaskAssignee::where('user_id', $user->id)
+                //     ->where('created_by', $userId)
+                //     ->whereNotIn('task_status', [4, 7])
+                //     ->get();
+
+                // $totalTodayDues = 0;
+                // foreach ($today_tasks as $today_task) {
+                //     $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->count();
+                //     $totalTodayDues += $countTotalTask;
+                // }
+
+                $array['today_dues'] = $TodayCountDueTask;
 
 
                 /*--------------  Total Finished Tasks -----*/
@@ -738,85 +746,42 @@ class DashboardCUstomizedController extends Controller
 
                 /*---------------  Total Dues Tasks ------*/
 
-                // $CountRequestToTask = TaskAssignee::where('user_id', $userId)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $user->id)
-                //     ->whereDate('created_at', '<=', $cdate)
-                //     ->count();
-
-                $requested_to_tasks = TaskAssignee::where('user_id', $userId)
+                $CountRequestToTask = TaskAssignee::where('user_id', $userId)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
+                    ->whereDate('due_date', '<', $cdate)
+                    ->count();
 
-                $totalRequestedTodayDues = 0;
-                foreach ($requested_to_tasks as $requested_to_task) {
-                    $countRequestedTotalTask = Task::where('id', $requested_to_task->task_id)->whereDate('due_date', '<', $cdate)->count();
-                    $totalRequestedTodayDues += $countRequestedTotalTask;
-                }
-
-
-                // $CountRequestByMeTask = TaskAssignee::where('user_id', $user->id)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $userId)
-                //     ->whereDate('created_at', '<=', $cdate)
-                //     ->count();
-
-                $requested_me_tasks = TaskAssignee::where('user_id', $user->id)
+                $CountRequestByMeTask = TaskAssignee::where('user_id', $user->id)
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
-
-                $totalRequestedMeTodayDues = 0;
-                foreach ($requested_me_tasks as $requested_me_task) {
-                    $countRequestedMeTotalTask = Task::where('id', $requested_me_task->task_id)->whereDate('due_date', '<', $cdate)->count();
-                    $totalRequestedMeTodayDues += $countRequestedMeTotalTask;
-                }
+                    ->whereDate('due_date', '<', $cdate)
+                    ->count();
 
 
-                $array['over_dues'] = $totalRequestedTodayDues + $totalRequestedMeTodayDues;
+
+
+                $array['over_dues'] = $CountRequestToTask + $CountRequestByMeTask;
+
 
                 /*--------------- Total Today's Due ------*/
 
 
-                // $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $userId)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $user->id)
-                //     ->whereDate('created_at', '=', $cdate)
-                //     ->count();
-
-
-                $today_requested_tasks = TaskAssignee::where('user_id', $userId)
+                $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $userId)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
-
-                $totalRequestedTodayDues = 0;
-                foreach ($today_requested_tasks as $today_requested_task) {
-                    $countrequestedToTotalTask = Task::where('id', $today_requested_task->task_id)->where('due_date', '=', $cdate)->count();
-                    $totalRequestedTodayDues += $countrequestedToTotalTask;
-                }
+                    ->whereDate('due_date', '=', $cdate)
+                    ->count();
 
 
                 $today_requested_me_tasks = TaskAssignee::where('user_id', $user->id)
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
-                    ->get();
-
-                $totalRequestedMeTodayDues = 0;
-                foreach ($today_requested_me_tasks as $today_requested_me_task) {
-                    $countrequestedMeTotalTask = Task::where('id', $today_requested_me_task->task_id)->where('due_date', '=', $cdate)->count();
-                    $totalRequestedMeTodayDues += $countrequestedMeTotalTask;
-                }
+                    ->whereDate('due_date', '=', $cdate)
+                    ->count();
 
 
-                // $TodayCountRequestByMeDueTask = TaskAssignee::where('user_id', $user->id)
-                //     ->where('task_status', '!=', '4')
-                //     ->where('created_by', $userId)
-                //     ->whereDate('created_at', '=', $cdate)
-                //     ->count();
-
-                $array['today_dues'] = $totalRequestedTodayDues + $totalRequestedMeTodayDues;
+                $array['today_dues'] = $TodayCountRequestToDueTask + $today_requested_me_tasks;
 
 
                 /*--------------  Total Finished Tasks -----*/
