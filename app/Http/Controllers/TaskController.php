@@ -1426,6 +1426,7 @@ class TaskController extends Controller
 
     public function requestedToUsTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
 
@@ -1544,6 +1545,7 @@ class TaskController extends Controller
     }
     public function requestedToUsStatusTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
         $user = auth()->user()->id;
 // dd($type);
         if ($type == 'requested_to_us') {
@@ -1657,6 +1659,8 @@ class TaskController extends Controller
 
     public function requestedToUsPendingTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
+
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user)
@@ -1778,6 +1782,8 @@ class TaskController extends Controller
     }
     public function requestedToUsOverDuesTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
+
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
         if ($type == 'requested_to_us') {
@@ -1926,6 +1932,8 @@ class TaskController extends Controller
 
     public function requestedToUsTodayDuesTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
+
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
         if ($type == 'requested_to_us') {
@@ -2082,6 +2090,7 @@ class TaskController extends Controller
 
     public function requestedToUsFinishedTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
 
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
@@ -2207,6 +2216,7 @@ class TaskController extends Controller
 
     public function requestedToUsTotalTasks($user_id, $status_id, $type)
     {
+        $user_id = decrypt($user_id);
 
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
@@ -2321,8 +2331,6 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
-
-
 
 
             ->rawColumns(['actions'])
