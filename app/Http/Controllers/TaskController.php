@@ -61,6 +61,7 @@ class TaskController extends Controller
 
     public function index($user_id = '', $status_id = '', $route_type = '')
     {
+        // dd($user_id);
         $tasks = Task::withTrashed()->get();
 
         foreach ($tasks as $task) {
