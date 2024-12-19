@@ -686,7 +686,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -2365,15 +2365,16 @@ class TaskController extends Controller
             // Taskassignee::find($task_ass->id)->update(['status' => 1]);
             $task = Task::where('id', $id)->first();
             // 27-06
-
             $task_ass = TaskAssignee::where('user_id', $userId)
                 ->where('task_id', $id)->get();
             $task_ass = TaskAssignee::where('user_id', $userId)
                 ->where('task_id', $id)
                 ->get();
-
             foreach ($task_ass as $task_assignee) {
-                $task_assignee->update(['status' => 1]);
+                $task_assignee->update(['status' => 1,
+                'accepted_by' => $userId, // Replace with the appropriate value or variable
+                'accepted_date' => now()
+            ]);
             }
             $task->accepted_date = now()->format('Y-m-d H:i:s');
             $task->save();
