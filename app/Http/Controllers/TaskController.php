@@ -1798,53 +1798,77 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
         if ($type == 'requested_to_us') {
-            $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user)
+            // $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user)
+            //     ->where('created_by', $user_id)
+            //     ->whereNotIn('task_status', [4, 7])
+            //     ->get();
+            // $tasksData = [];
+            // foreach ($due_tasks as $due_task) {
+            //     $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
+            //     foreach ($countTotalTask as $task) {
+            //         $tasksData[] = $task; // Add the task to the array
+            //     }
+            // }
+            $tasksData = TaskAssignee::where('user_id', $user)
                 ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '<', $cdate)
                 ->get();
-            $tasksData = [];
-            foreach ($due_tasks as $due_task) {
-                $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
+
         } elseif ($type == 'requested_by_me') {
-            $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user_id)
+            // $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user_id)
+            //     ->where('created_by', $user)
+            //     ->whereNotIn('task_status', [4, 7])
+            //     ->get();
+            // $tasksData = [];
+            // foreach ($due_tasks as $due_task) {
+            //     $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
+            //     foreach ($countTotalTask as $task) {
+            //         $tasksData[] = $task; // Add the task to the array
+            //     }
+            // }
+
+            $tasksData = TaskAssignee::where('user_id', $user_id)
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '<', $cdate)
                 ->get();
-            $tasksData = [];
-            foreach ($due_tasks as $due_task) {
-                $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
         } elseif ($type = 'total_task') {
+
+            // $due_tasks_A = TaskAssignee::where('user_id', $user)
+            //     ->where('created_by', $user_id)
+            //     ->whereNotIn('task_status', [4, 7])
+            //     ->get();
+
+            // $due_tasks_B = TaskAssignee::where('user_id', $user_id)
+            //     ->where('created_by', $user)
+            //     ->whereNotIn('task_status', [4, 7])
+            //     ->get();
 
             $due_tasks_A = TaskAssignee::where('user_id', $user)
                 ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '<', $cdate)
                 ->get();
 
             $due_tasks_B = TaskAssignee::where('user_id', $user_id)
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '<', $cdate)
                 ->get();
 
-            $merged_due_tasks = $due_tasks_A->merge($due_tasks_B);
+            $tasksData = $due_tasks_A->merge($due_tasks_B);
 
-            $tasksData = [];
-            foreach ($merged_due_tasks as $due_task) {
-                $countTotalTask = Task::where('id', $due_task->task_id)
-                    ->whereDate('due_date', '<', $cdate)
-                    ->get();
+            // $tasksData = [];
+            // foreach ($merged_due_tasks as $due_task) {
+            //     $countTotalTask = Task::where('id', $due_task->task_id)
+            //         ->whereDate('due_date', '<', $cdate)
+            //         ->get();
 
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
+            //     foreach ($countTotalTask as $task) {
+            //         $tasksData[] = $task; // Add the task to the array
+            //     }
+            // }
         }
         return DataTables::of($tasksData)
 
@@ -1950,60 +1974,37 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
         if ($type == 'requested_to_us') {
-            $today_tasks = TaskAssignee::where('user_id', $user)
+
+            $tasksData = TaskAssignee::where('user_id', $user)
                 ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '=', $cdate)
                 ->get();
 
-            $tasksData = [];
-            foreach ($today_tasks as $today_task) {
-                $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->get();
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
         } elseif ($type == 'requested_by_me') {
-            $today_tasks = TaskAssignee::where('user_id', $user_id)
+
+            $tasksData = TaskAssignee::where('user_id', $user_id)
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '=', $cdate)
                 ->get();
 
-            $tasksData = [];
-            foreach ($today_tasks as $today_task) {
-                $countTotalTask = Task::where('id', $today_task->task_id)
-                    ->where('due_date', '=', $cdate)
-                    ->get();
-
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
         } elseif ($type == 'total_task') {
             $today_tasks_A = TaskAssignee::where('user_id', $user)
                 ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '=', $cdate)
                 ->get();
 
-            // Fetch tasks requested by the user
+
             $today_tasks_B = TaskAssignee::where('user_id', $user_id)
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
+                ->whereDate('due_date', '=', $cdate)
                 ->get();
 
-            // Merge the two collections
-            $merged_today_tasks = $today_tasks_A->merge($today_tasks_B);
+            $tasksData = $today_tasks_A->merge($today_tasks_B);
 
-            // Process the merged tasks
-            $tasksData = [];
-            foreach ($merged_today_tasks as $today_task) {
-                $countTotalTask = Task::where('id', $today_task->task_id)
-                    ->where('due_date', '=', $cdate)
-                    ->get();
-
-                foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task; // Add the task to the array
-                }
-            }
         }
         return DataTables::of($tasksData)
 
