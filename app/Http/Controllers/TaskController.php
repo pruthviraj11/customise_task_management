@@ -1469,11 +1469,20 @@ class TaskController extends Controller
     public function requestedToUsStatusTasks($user_id, $status_id, $type)
     {
         $user = auth()->user()->id;
+
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
 
         } elseif ($type = 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
+
+        } elseif ($type == 'total_task') {
+
+            $tasks_A = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
+
+            $tasks_B = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
+
+            $tasks = $tasks_A->merge($tasks_B);
 
         }
         return view('tasks.show', [
@@ -1497,6 +1506,19 @@ class TaskController extends Controller
                 ->whereIn('task_status', [1, 3, 5, 6])
                 ->where('created_by', $user)
                 ->get();
+        } elseif ($type == 'total_task') {
+            $tasks_A = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', [1, 3, 5, 6])
+                ->where('created_by', $user_id)
+                ->get();
+
+            $tasks_B = TaskAssignee::where('user_id', $user_id)
+                ->whereIn('task_status', [1, 3, 5, 6])
+                ->where('created_by', $user)
+                ->get();
+
+            $tasks = $tasks_A->merge($tasks_B);
+
         }
         return view('tasks.show', [
             'tasks' => $tasks,
@@ -1529,6 +1551,30 @@ class TaskController extends Controller
             $tasksData = [];
             foreach ($due_tasks as $due_task) {
                 $countTotalTask = Task::where('id', $due_task->task_id)->whereDate('due_date', '<', $cdate)->get();
+                foreach ($countTotalTask as $task) {
+                    $tasksData[] = $task; // Add the task to the array
+                }
+            }
+        } elseif ($type = 'total_task') {
+
+            $due_tasks_A = TaskAssignee::where('user_id', $user)
+                ->where('created_by', $user_id)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+
+            $due_tasks_B = TaskAssignee::where('user_id', $user_id)
+                ->where('created_by', $user)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+
+            $merged_due_tasks = $due_tasks_A->merge($due_tasks_B);
+
+            $tasksData = [];
+            foreach ($merged_due_tasks as $due_task) {
+                $countTotalTask = Task::where('id', $due_task->task_id)
+                    ->whereDate('due_date', '<', $cdate)
+                    ->get();
+
                 foreach ($countTotalTask as $task) {
                     $tasksData[] = $task; // Add the task to the array
                 }
@@ -1567,9 +1613,38 @@ class TaskController extends Controller
 
             $tasksData = [];
             foreach ($today_tasks as $today_task) {
-                $countTotalTask = Task::where('id', $today_task->task_id)->where('due_date', '=', $cdate)->get();
+                $countTotalTask = Task::where('id', $today_task->task_id)
+                    ->where('due_date', '=', $cdate)
+                    ->get();
+
                 foreach ($countTotalTask as $task) {
-                    $tasksData[] = $task;
+                    $tasksData[] = $task; // Add the task to the array
+                }
+            }
+        } elseif ($type == 'total_task') {
+            $today_tasks_A = TaskAssignee::where('user_id', $user)
+                ->where('created_by', $user_id)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+
+            // Fetch tasks requested by the user
+            $today_tasks_B = TaskAssignee::where('user_id', $user_id)
+                ->where('created_by', $user)
+                ->whereNotIn('task_status', [4, 7])
+                ->get();
+
+            // Merge the two collections
+            $merged_today_tasks = $today_tasks_A->merge($today_tasks_B);
+
+            // Process the merged tasks
+            $tasksData = [];
+            foreach ($merged_today_tasks as $today_task) {
+                $countTotalTask = Task::where('id', $today_task->task_id)
+                    ->where('due_date', '=', $cdate)
+                    ->get();
+
+                foreach ($countTotalTask as $task) {
+                    $tasksData[] = $task; // Add the task to the array
                 }
             }
         }
@@ -1597,6 +1672,20 @@ class TaskController extends Controller
                 ->whereIn('task_status', ['4', '7'])
                 ->where('created_by', $user)
                 ->get();
+        } elseif ($type == 'total_task') {
+            $tasks_A = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', ['4', '7'])
+                ->where('created_by', $user_id)
+                ->get();
+
+            $tasks_B = TaskAssignee::where('user_id', $user_id)
+                ->whereIn('task_status', ['4', '7'])
+                ->where('created_by', $user)
+                ->get();
+
+            $tasks = $tasks_A->merge($tasks_B);
+
+
         }
         return view('tasks.show', [
             'tasks' => $tasks,
@@ -1620,6 +1709,20 @@ class TaskController extends Controller
                 ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                 ->where('created_by', $user)
                 ->get();
+        } elseif ($type == 'total_task') {
+            $tasks_A = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('created_by', $user_id)
+                ->get();
+
+            $tasks_B = TaskAssignee::where('user_id', $user_id)
+                ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('created_by', $user)
+                ->get();
+
+            $tasks = $tasks_A->merge($tasks_B);
+
+
         }
         return view('tasks.show', [
             'tasks' => $tasks,
