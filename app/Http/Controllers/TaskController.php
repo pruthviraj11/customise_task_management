@@ -733,7 +733,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
@@ -1249,7 +1249,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -1404,7 +1404,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
@@ -1520,7 +1520,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -1635,7 +1635,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -1761,7 +1761,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -1912,7 +1912,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -2071,7 +2071,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -2200,7 +2200,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -2327,7 +2327,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -4972,7 +4972,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
             ->addColumn('project', function ($row) {
@@ -5478,7 +5478,7 @@ class TaskController extends Controller
                     return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
                 })
                 ->addColumn('accepted_date', function ($row) {
-                    return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                    return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
                 })
                 ->addColumn('project', function ($row) {
                     return $row->task && $row->task->project ? $row->task->project->project_name : '-';
@@ -5617,7 +5617,7 @@ class TaskController extends Controller
                 return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
             })
             ->addColumn('accepted_date', function ($row) {
-                return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
