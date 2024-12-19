@@ -369,7 +369,7 @@
                                     <thead>
                                         <tr>
                                             <th>Task Number</th>
-                                            <th>Assigned by</th>
+                                            {{-- <th>Assigned by</th> --}}
                                             <th>Assigned To</th>
                                             <th>Due Date</th>
                                             <th>Status</th>
@@ -380,8 +380,8 @@
                                         @foreach ($SubTaskData as $subtask)
                                             <tr>
                                                 <td>{{ $subtask->task_number }}</td>
-                                                <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
-                                                </td>
+                                                {{-- <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
+                                                </td> --}}
                                                 <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}
                                                 </td>
                                                 <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}

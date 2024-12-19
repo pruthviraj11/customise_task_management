@@ -665,15 +665,9 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
             });
 
-        // Apply search filter if search term is provided
-        if (!empty($request->search['value'])) {
-            $searchTerm = $request->search['value'];
-            $tasks->where(function ($query) use ($searchTerm) {
-                $query->where('task_number', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('title', 'like', '%' . $searchTerm . '%');
-            });
-        }
+        
+
+       
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
@@ -703,7 +697,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task ? $row->task->task_number ?? "-" : "-";
+                return $row->task_number ??  "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -745,10 +739,10 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
             ->addColumn('sub_department', function ($row) {
-                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -1171,9 +1165,9 @@ class TaskController extends Controller
 
             $tasks = TaskAssignee::whereHas('task', function ($query) {
 
-                $query->whereHas('assignees', function ($query) {
-                    $query->where('status', 0);
-                })
+                // $query->whereHas('assignees', function ($query) {
+                    $query->where('status', 0)
+                // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
                 ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
@@ -1182,9 +1176,9 @@ class TaskController extends Controller
 
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
 
-                $query->whereHas('assignees', function ($query) use ($user) {
-                    $query->where('user_id', $user->id)->where('status', 0);
-                })
+                // $query->whereHas('assignees', function ($query) use ($user) {
+                    $query->where('user_id', $user->id)->where('status', 0)
+                // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
                 ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
@@ -1261,11 +1255,11 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -1335,17 +1329,17 @@ class TaskController extends Controller
             })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
-        // Apply search filter if provided
-        if (!empty($request->search['value'])) {
-            $searchTerm = $request->search['value'];
-            $tasks->where(function ($query) use ($searchTerm) {
-                $query->whereHas('task', function ($subQuery) use ($searchTerm) {
-                    $subQuery->where('TaskNumber', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('title', 'like', '%' . $searchTerm . '%');
-                });
-            });
-        }
+        // // Apply search filter if provided
+        // if (!empty($request->search['value'])) {
+        //     $searchTerm = $request->search['value'];
+        //     $tasks->where(function ($query) use ($searchTerm) {
+        //         // $query->whereHas('task', function ($subQuery) use ($searchTerm) {
+        //         $query->where('task_number', 'like', '%' . $searchTerm . '%');
+        //                 // ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
+        //                 // ->orWhere('title', 'like', '%' . $searchTerm . '%');
+        //         // });
+        //     });
+        // }
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
@@ -1413,10 +1407,10 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
             ->addColumn('sub_department', function ($row) {
-                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -2234,17 +2228,30 @@ class TaskController extends Controller
             // dd($task);
 
 
+            // $SubTaskData = TaskAssignee::where('task_id', $task->id)
+            //     ->where(function ($query) {
+            //         $query->where('created_by', Auth::user()->id)
+            //             ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
+            //     })
+            //     ->get()
+            //     ->unique('task_number')  // Remove duplicate subtasks based on task_number
+            //     ->sortBy(function ($subtask) {
+            //         // Remove hyphen and cast the task number to integer for correct sorting
+            //         return (int) str_replace('-', '', $subtask->task_number);
+            //     });
             $SubTaskData = TaskAssignee::where('task_id', $task->id)
                 ->where(function ($query) {
                     $query->where('created_by', Auth::user()->id)
                         ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
                 })
+                ->where('user_id', '!=', Auth::user()->id)  // Exclude tasks where user_id is the logged-in user
                 ->get()
                 ->unique('task_number')  // Remove duplicate subtasks based on task_number
                 ->sortBy(function ($subtask) {
                     // Remove hyphen and cast the task number to integer for correct sorting
                     return (int) str_replace('-', '', $subtask->task_number);
                 });
+
 
             // dd($SubTaskData);
 
@@ -4288,11 +4295,11 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -4791,10 +4798,10 @@ class TaskController extends Controller
                     return $row->task && $row->task->project ? $row->task->project->project_name : '-';
                 })
                 ->addColumn('department', function ($row) {
-                    return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                    return $row->department && $row->department_data ? $row->department_data->department_name : '-';
                 })
                 ->addColumn('sub_department', function ($row) {
-                    return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                    return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
                 })
                 ->addColumn('creator_department', function ($row) {
                     return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -4929,11 +4936,11 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->task && $row->task->department ? $row->task->department->department_name : '-';
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->task && $row->task->sub_department ? $row->task->sub_department->sub_department_name : '-';
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
