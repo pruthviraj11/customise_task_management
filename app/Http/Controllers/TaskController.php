@@ -131,6 +131,12 @@ class TaskController extends Controller
 
         //             $taskAssignee->save();
         //         }
+        //         if ($taskAssignee->accepted_date == null) {
+        //             // Store the task accepted_date on task_assignee
+        //             $taskAssignee->accepted_date = $task->accepted_date;
+
+        //             $taskAssignee->save();
+        //         }
         //         $user = User::find($taskAssignee->user_id);
 
 
@@ -687,7 +693,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -3199,9 +3205,9 @@ class TaskController extends Controller
             $status = Status::where('id', $request->get('task_status'))->first();
 
             $AssigneUserTaskId = TaskAssignee::where('task_id', $id)->first();
-
+            $currentStatus_Assigne = $AssigneUserTaskId->task_status;
             $task = Task::findOrFail($id);
-
+            $currentStatus_creator = $task->task_status;
             // Prepare task data
             if ($task && $task->creator->id == auth()->user()->id) {
                 // dd($request->get('due_date'));
@@ -3223,21 +3229,34 @@ class TaskController extends Controller
                 // dd($taskData);
 
                 // Handle task status specific fields (completed_date and close_date)
-                if ($request->get('task_status') == 4) {
-                    // dd("Completed");
-                    $taskData['completed_date'] = now();
-                    $taskData['completed_by'] = auth()->user()->id;
-                } else {
+                // if ($request->get('task_status') == 4) {
+                //     // dd("Completed");
+                //     $taskData['completed_date'] = now();
+                //     $taskData['completed_by'] = auth()->user()->id;
+                // } else {
+                //     $taskData['completed_date'] = null;
+                // }
+
+                // if ($request->get('task_status') == 7) {
+                //     // dd("Completed");
+
+                //     $taskData['close_date'] = now();
+                //     $taskData['close_by'] = auth()->user()->id;
+                // }
+                // Check if the task status has changed to 4 or 7 and update dates accordingly
+                if ($request->get('task_status') == 4 && $currentStatus_creator != 4) {
+                    $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 4
+                } elseif ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
+                    // $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 7
+                } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
+                    // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
                 }
-
-                if ($request->get('task_status') == 7) {
-                    // dd("Completed");
-
-                    $taskData['close_date'] = now();
-                    $taskData['close_by'] = auth()->user()->id;
+                // Update close_date if task status is set to 7 and the status has changed
+                if ($request->get('task_status') == 7 && $currentStatus_creator != 7) {
+                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                     $taskData['close_by'] = auth()->user()->id;
                 }
-
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
 
@@ -3273,20 +3292,33 @@ class TaskController extends Controller
                 ];
                 // dd($taskData);
                 // Handle task status specific fields (completed_date and close_date)
-                if ($request->get('task_status') == 4) {
-                    $taskData['completed_date'] = now();
-                    $taskData['completed_by'] = auth()->user()->id;
-                } else {
-                    $taskData['completed_date'] = null;
-                }
+                // if ($request->get('task_status') == 4) {
+                //     $taskData['completed_date'] = now();
+                //     $taskData['completed_by'] = auth()->user()->id;
+                // } else {
+                //     $taskData['completed_date'] = null;
+                // }
 
-                if ($request->get('task_status') == 7) {
-                    $taskData['close_date'] = now();
-                    $taskData['close_by'] = auth()->user()->id;
+                // if ($request->get('task_status') == 7) {
+                //     $taskData['close_date'] = now();
+                //     $taskData['close_by'] = auth()->user()->id;
+                // }
+                if ($request->get('task_status') == 4 && $currentStatus_Assigne != 4) {
+                    $taskData['completed_date'] = now();
+                    $taskData['completed_by'] = auth()->user()->id; // Update completed_date only if the status is set to 4
+                } elseif ($request->get('task_status') == 7 && $currentStatus_Assigne == 4) {
+                    // $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 7
+                } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
+                    // If status is neither 4 nor 7, reset completed_date
+                    $taskData['completed_date'] = null;
                 }
 
                 if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
                     $taskData['task_status'] = 7;
+                }
+                if ($request->get('task_status') == 7 && $currentStatus_Assigne != 7) {
+                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_by'] = auth()->user()->id;
                 }
                 // Update the task with restricted fields
                 $updated = $this->taskService->updateTaskAssigne($id, $taskData);
