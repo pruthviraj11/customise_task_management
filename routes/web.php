@@ -88,35 +88,83 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
 
     /// Route For Dashboard data onclick counts Starts
-    Route::get('/tasks/requested_to_us/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    /////////////////////////   Routes For Requested To Us  Starts ///////////////////////
+    Route::get('/tasks/requested_to_us/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_to_us');
-    Route::get('/tasks/requested_to_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
-    ->name('tasks.requested_to_us_status');
-    Route::get('/tasks/requested_to_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
-    ->name('tasks.requested_to_us_pending_task');
-    Route::get('/tasks/requested_to_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
-    ->name('tasks.requested_to_us_over_due');
-    Route::get('/tasks/requested_to_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
-    ->name('tasks.requested_to_us_today_due');
-    Route::get('/tasks/requested_to_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
-    ->name('tasks.requested_to_us_finished_task');
-    Route::get('/tasks/requested_to_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
-    ->name('tasks.requested_to_us_total_task');
+    Route::get('/tasks/requested_to_us/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    ->name('tasks.requested_to_us_list');
 
-    Route::get('/tasks/requested_by_us/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    Route::get('/tasks/requested_to_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_status');
+    Route::get('/tasks/requested_to_us_status/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
+    ->name('tasks.requested_to_us_status_list');
+
+    Route::get('/tasks/requested_to_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_pending_task');
+    Route::get('/tasks/requested_to_us_pending_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
+    ->name('tasks.requested_to_us_pending_task_list');
+
+    Route::get('/tasks/requested_to_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_over_due');
+    Route::get('/tasks/requested_to_us_over_due/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
+    ->name('tasks.requested_to_us_over_due_list');
+
+    Route::get('/tasks/requested_to_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_today_due');
+    Route::get('/tasks/requested_to_us_today_due/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
+    ->name('tasks.requested_to_us_today_due_list');
+
+    Route::get('/tasks/requested_to_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_finished_task');
+    Route::get('/tasks/requested_to_us_finished_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
+    ->name('tasks.requested_to_us_finished_task_list');
+
+    Route::get('/tasks/requested_to_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_total_task');
+    Route::get('/tasks/requested_to_us_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
+    ->name('tasks.requested_to_us_total_task_list');
+
+    /////////////////////////   Routes For Requested To Us  Ends ///////////////////////
+
+
+    /////////////////////////   Routes For Requested By Us  Starts ///////////////////////
+
+    Route::get('/tasks/requested_by_us/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us');
-    Route::get('/tasks/requested_by_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
+    Route::get('/tasks/requested_by_us/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
+    ->name('tasks.requested_by_us_list');
+
+    Route::get('/tasks/requested_by_us_status/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_status');
-    Route::get('/tasks/requested_by_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
+    Route::get('/tasks/requested_by_us_status/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsStatusTasks'])
+    ->name('tasks.requested_by_us_status_list');
+
+    Route::get('/tasks/requested_by_us_pending_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_pending_task');
-    Route::get('/tasks/requested_by_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
+    Route::get('/tasks/requested_by_us_pending_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsPendingTasks'])
+    ->name('tasks.requested_by_us_pending_task_list');
+
+    Route::get('/tasks/requested_by_us_over_due/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_over_due');
-    Route::get('/tasks/requested_by_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
+    Route::get('/tasks/requested_by_us_over_due/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverDuesTasks'])
+    ->name('tasks.requested_by_us_over_due_list');
+
+    Route::get('/tasks/requested_by_us_today_due/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_today_due');
-    Route::get('/tasks/requested_by_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
+    Route::get('/tasks/requested_by_us_today_due/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTodayDuesTasks'])
+    ->name('tasks.requested_by_us_today_due_list');
+
+    Route::get('/tasks/requested_by_us_finished_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_finished_task');
-    Route::get('/tasks/requested_by_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
+    Route::get('/tasks/requested_by_us_finished_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFinishedTasks'])
+    ->name('tasks.requested_by_us_finished_task_list');
+
+    Route::get('/tasks/requested_by_us_total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us_total_task');
+    Route::get('/tasks/requested_by_us_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
+    ->name('tasks.requested_by_us_total_task_list');
+
+    /////////////////////////  Routes For Requested By Us Ends ///////////////////////
 
     Route::get('/tasks/total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
     ->name('tasks.total_task');
