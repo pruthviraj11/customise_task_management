@@ -372,94 +372,154 @@
 
 
             var type = @json($type);
-           @if ($type === 'accepted') {
-                ajaxUrl = "{{ route('app-task-get-accepted') }}";
-            } @elseif ($type === 'team_task') {
-                ajaxUrl = "{{ route('app-task-get-team_task-list') }}";
-            } @elseif ($type === 'requested') {
-                ajaxUrl = "{{ route('app-task-get-requested') }}";
-            } @elseif ($type === 'list') {
-                ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
-            } @elseif ($type == 'mytask') {
-                ajaxUrl = "{{ route('app-task-mytask-get') }}";
-            } @elseif ($type == 'accepted_by_me') {
-                ajaxUrl = "{{ route('app-task-getAll_accepted_by_me-get') }}";
-            } @elseif ($type == 'assign_by_me') {
-                ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
-            } @elseif ($type == 'requested_me') {
-                ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
-            } @elseif ($type == 'conceptualization') {
-                ajaxUrl = "{{ route('app-task-getAll_conceptualization-get') }}";
-            } @elseif ($type == 'close') {
-                ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
-            } @elseif ($type == 'due_date_past') {
-                ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-            } @elseif ($type == 'scope_defined') {
-                ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
-            } @elseif ($type == 'completed') {
-                ajaxUrl = "{{ route('app-task-getAll_completed-get') }}";
-            } @elseif ($type == 'hold') {
-                ajaxUrl = "{{ route('app-task-getAll_hold-get') }}";
-            } @elseif ($type == 'in_execution') {
-                ajaxUrl = "{{ route('app-task-getAll_in_execution-get') }}";
-            } @elseif ($type == 'admin_acc') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_acc-get') }}";
-            } @elseif ($type == 'admin_req') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_req-get') }}";
-            } @elseif ($type == 'admin_rej') {
-                ajaxUrl = "{{ route('app-task-getAll_admin_rej-get') }}";
-            } @elseif ($type == 'total_task') {
-                ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
-            } @elseif ($type == 'deleted') {
-                ajaxUrl = "{{ route('app-task-getAll_deleted-get') }}";
-            } @elseif ($type == 'my_and_team') {
-                ajaxUrl = "{{ route('app-task-my_and_team-get') }}";
-            }
-            @elseif ($type == 'tasks.requested_to_us' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }@elseif ($type == 'tasks.requested_to_us_status' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }@elseif ($type == 'tasks.requested_to_us_pending_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }@elseif ($type == 'tasks.requested_to_us_over_due' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } @elseif ($type == 'tasks.requested_to_us_today_due' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } @elseif ($type == 'tasks.requested_to_us_finished_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } @elseif ($type == 'tasks.requested_to_us_total_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_to_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }
-            @elseif ($type == 'tasks.requested_by_us' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.requested_by_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_status' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_pending_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_over_due' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_today_due' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_finished_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }@elseif ($type == 'tasks.requested_by_us_total_task' && $user_id !='') {
-                ajaxUrl = "{{ route('tasks.requested_by_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }
-            @elseif ($type == 'tasks.total_task' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_status' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_pending_task' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_over_due' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_today_due' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_finished_task' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            } @elseif ($type == 'tasks.total_task_total_task' && $user_id !='' ) {
-                ajaxUrl = "{{ route('tasks.total_task_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
-            }
+            @if ($type === 'accepted')
+                {
+                    ajaxUrl = "{{ route('app-task-get-accepted') }}";
+                }
+            @elseif ($type === 'team_task') {
+                    ajaxUrl = "{{ route('app-task-get-team_task-list') }}";
+                }
+            @elseif ($type === 'requested') {
+                    ajaxUrl = "{{ route('app-task-get-requested') }}";
+                }
+            @elseif ($type === 'list') {
+                    ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
+                }
+            @elseif ($type == 'mytask') {
+                    ajaxUrl = "{{ route('app-task-mytask-get') }}";
+                }
+            @elseif ($type == 'accepted_by_me') {
+                    ajaxUrl = "{{ route('app-task-getAll_accepted_by_me-get') }}";
+                }
+            @elseif ($type == 'assign_by_me') {
+                    ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
+                }
+            @elseif ($type == 'requested_me') {
+                    ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
+                }
+            @elseif ($type == 'conceptualization') {
+                    ajaxUrl = "{{ route('app-task-getAll_conceptualization-get') }}";
+                }
+            @elseif ($type == 'close') {
+                    ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
+                }
+            @elseif ($type == 'due_date_past') {
+                    ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
+                }
+            @elseif ($type == 'scope_defined') {
+                    ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
+                }
+            @elseif ($type == 'completed') {
+                    ajaxUrl = "{{ route('app-task-getAll_completed-get') }}";
+                }
+            @elseif ($type == 'hold') {
+                    ajaxUrl = "{{ route('app-task-getAll_hold-get') }}";
+                }
+            @elseif ($type == 'in_execution') {
+                    ajaxUrl = "{{ route('app-task-getAll_in_execution-get') }}";
+                }
+            @elseif ($type == 'admin_acc') {
+                    ajaxUrl = "{{ route('app-task-getAll_admin_acc-get') }}";
+                }
+            @elseif ($type == 'admin_req') {
+                    ajaxUrl = "{{ route('app-task-getAll_admin_req-get') }}";
+                }
+            @elseif ($type == 'admin_rej') {
+                    ajaxUrl = "{{ route('app-task-getAll_admin_rej-get') }}";
+                }
+            @elseif ($type == 'total_task') {
+                    ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
+                }
+            @elseif ($type == 'deleted') {
+                    ajaxUrl = "{{ route('app-task-getAll_deleted-get') }}";
+                }
+            @elseif ($type == 'my_and_team') {
+                    ajaxUrl = "{{ route('app-task-my_and_team-get') }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_status' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_status_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_pending_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_pending_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_over_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_over_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_today_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_today_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_finished_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_finished_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_total_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_status' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_status_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_pending_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_pending_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_over_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_over_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_today_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_today_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_finished_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_finished_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_total_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.total_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_status' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_status_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_pending_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_pending_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_over_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_over_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_today_due' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_today_due_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_finished_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_finished_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+            @elseif ($type == 'tasks.total_task_total_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
             @endif
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
@@ -519,7 +579,7 @@
                         name: 'Task_Ticket',
                         searchable: true
                     },
-                      {
+                    {
                         data: 'title',
                         name: 'title',
                         searchable: true
@@ -528,7 +588,7 @@
                         data: 'description',
                         name: 'description',
                         searchable: true,
-                        visible:false,
+                        visible: false,
                     },
                     {
                         data: 'subject',
@@ -545,29 +605,63 @@
                         name: 'Task_assign_to',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'status',
                         name: 'status',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'Created_Date',
                         name: 'Created_Date',
-                        searchable: true
+                        searchable: true,
+                        render: function(data, type, row) {
+                            // Format the date to dd/mm/yyyy
+                            if (data) {
+                                const date = new Date(data);
+                                const day = String(date.getDate()).padStart(2, '0');
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const year = date.getFullYear();
+                                return `${day}/${month}/${year}`;
+                            }
+                            return data; // If the date is invalid, return the original data.
+                        }
                     }, {
                         data: 'start_date',
                         name: 'start_date',
-                        searchable: true
+                        searchable: true,
+                        render: function(data, type, row) {
+                            // Assuming 'data' is a Date object or string that can be parsed into a Date.
+                            var date = new Date(data);
+                            var day = ("0" + date.getDate()).slice(-
+                                2); // Add leading zero if single digit day
+                            var month = ("0" + (date.getMonth() + 1)).slice(-
+                                2); // Add leading zero if single digit month
+                            var year = date.getFullYear();
+
+                            return day + "/" + month + "/" + year; // Return in dd/mm/yyyy format
+                        }
                     },
-                     {
+
+                    {
                         data: 'due_date',
                         name: 'due_date',
-                        searchable: true
+                        searchable: true,
+                        render: function(data, type, row) {
+                            // Assuming 'data' is a Date object or string that can be parsed into a Date.
+                            var date = new Date(data);
+                            var day = ("0" + date.getDate()).slice(-
+                                2); // Add leading zero if single digit day
+                            var month = ("0" + (date.getMonth() + 1)).slice(-
+                                2); // Add leading zero if single digit month
+                            var year = date.getFullYear();
+
+                            return day + "/" + month + "/" + year; // Return in dd/mm/yyyy format
+                        }
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
-                        searchable: true
+                        searchable: true,
                     },
 
                     {
@@ -585,30 +679,30 @@
                         name: 'department',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'sub_department',
                         name: 'sub_department',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'creator_department',
                         name: 'creator_department',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'creator_sub_department',
                         name: 'creator_sub_department',
                         searchable: true
                     },
-                     {
+                    {
                         data: 'creator_phone',
                         name: 'creator_phone',
                         searchable: true
                     },
-                      {
+                    {
                         data: 'close_date',
                         name: 'close_date',
-                        searchable: true
+                        searchable: true,
                     },
 
                 ],

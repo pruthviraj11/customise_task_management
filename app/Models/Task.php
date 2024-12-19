@@ -105,7 +105,7 @@ class Task extends Model
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
-    public function status()
+    public function task_status_data()
     {
         return $this->belongsTo(Status::class, 'task_status');
     }
