@@ -717,14 +717,15 @@ class TaskController extends Controller
                 return $row->task && $row->task->task_status ? $row->task->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1232,14 +1233,15 @@ class TaskController extends Controller
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1386,14 +1388,15 @@ class TaskController extends Controller
                 return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1494,21 +1497,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1608,21 +1612,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1632,6 +1637,7 @@ class TaskController extends Controller
             ->addColumn('accepted_date', function ($row) {
                 return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
@@ -1732,21 +1738,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -1756,6 +1763,7 @@ class TaskController extends Controller
             ->addColumn('accepted_date', function ($row) {
                 return $row->task && $row->task->accepted_date ? Carbon::parse($row->task->accepted_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
@@ -1847,7 +1855,6 @@ class TaskController extends Controller
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
-                // dd($row->status);
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
@@ -1861,7 +1868,6 @@ class TaskController extends Controller
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
             ->addColumn('created_by_username', function ($row) {
-
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
@@ -1883,22 +1889,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
-
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -2029,6 +2035,8 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
             })
+
+
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
             })
@@ -2040,21 +2048,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -2168,21 +2177,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -2294,21 +2304,22 @@ class TaskController extends Controller
                 return $row->task && $row->task->title ? $row->task->title : '-';
             })
             ->addColumn('Task_assign_to', function ($row) {
-                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -2339,6 +2350,8 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
+
+
 
 
             ->rawColumns(['actions'])
@@ -2387,10 +2400,11 @@ class TaskController extends Controller
                 ->where('task_id', $id)
                 ->get();
             foreach ($task_ass as $task_assignee) {
-                $task_assignee->update(['status' => 1,
-                'accepted_by' => $userId, // Replace with the appropriate value or variable
-                'accepted_date' => now()
-            ]);
+                $task_assignee->update([
+                    'status' => 1,
+                    'accepted_by' => $userId, // Replace with the appropriate value or variable
+                    'accepted_date' => now()
+                ]);
             }
             $task->accepted_date = now()->format('Y-m-d H:i:s');
             $task->save();
@@ -4942,14 +4956,15 @@ class TaskController extends Controller
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->due_date ?? '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -5447,14 +5462,15 @@ class TaskController extends Controller
                     return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
                 })
                 ->addColumn('Created_Date', function ($row) {
-                    return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                    return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
                 })
                 ->addColumn('start_date', function ($row) {
-                    return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                    return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
                 })
                 ->addColumn('due_date', function ($row) {
-                    return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                    return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
                 })
+
                 ->addColumn('close_date', function ($row) {
                     return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
                 })
@@ -5585,14 +5601,15 @@ class TaskController extends Controller
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
-                return $row->task && $row->task->created_at ? $row->task->created_at : '-';
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
             })
             ->addColumn('start_date', function ($row) {
-                return $row->task && $row->task->start_date ? $row->task->start_date : '-';
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
             })
             ->addColumn('due_date', function ($row) {
-                return $row->task && $row->task->due_date ? $row->task->due_date : '-';
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
+
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })

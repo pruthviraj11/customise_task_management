@@ -613,50 +613,20 @@
                     {
                         data: 'Created_Date',
                         name: 'Created_Date',
-                        searchable: true,
-                        render: function(data, type, row) {
-                            // Format the date to dd/mm/yyyy
-                            if (data) {
-                                const date = new Date(data);
-                                const day = String(date.getDate()).padStart(2, '0');
-                                const month = String(date.getMonth() + 1).padStart(2, '0');
-                                const year = date.getFullYear();
-                                return `${day}/${month}/${year}`;
-                            }
-                            return data; // If the date is invalid, return the original data.
-                        }
+                        searchable: true
+
                     }, {
                         data: 'start_date',
                         name: 'start_date',
-                        searchable: true,
-                        render: function(data, type, row) {
-                            // Assuming 'data' is a Date object or string that can be parsed into a Date.
-                            var date = new Date(data);
-                            var day = ("0" + date.getDate()).slice(-
-                                2); // Add leading zero if single digit day
-                            var month = ("0" + (date.getMonth() + 1)).slice(-
-                                2); // Add leading zero if single digit month
-                            var year = date.getFullYear();
+                        searchable: true
 
-                            return day + "/" + month + "/" + year; // Return in dd/mm/yyyy format
-                        }
                     },
 
                     {
                         data: 'due_date',
                         name: 'due_date',
-                        searchable: true,
-                        render: function(data, type, row) {
-                            // Assuming 'data' is a Date object or string that can be parsed into a Date.
-                            var date = new Date(data);
-                            var day = ("0" + date.getDate()).slice(-
-                                2); // Add leading zero if single digit day
-                            var month = ("0" + (date.getMonth() + 1)).slice(-
-                                2); // Add leading zero if single digit month
-                            var year = date.getFullYear();
+                        searchable: true
 
-                            return day + "/" + month + "/" + year; // Return in dd/mm/yyyy format
-                        }
                     },
                     {
                         data: 'completed_date',
