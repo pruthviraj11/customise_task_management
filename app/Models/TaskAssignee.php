@@ -97,7 +97,7 @@ class TaskAssignee extends Model
             $taskAssignee->delete();
             return true;
         }
-        
+
 
         return false;
     }
