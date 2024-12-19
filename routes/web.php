@@ -138,7 +138,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('permissions', [RoleController::class, 'permissions_list'])->name('app-permissions-list');
     Route::get('roles/list', [RoleController::class, 'index'])->name('app-roles-list');
     Route::get('send/mail', [MailController::class, 'sendMail'])->name('send-mail');
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
+    // Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
 
     Route::get('dashboard_customized', [DashboardCUstomizedController::class, 'index'])->name('dashboard-index');
 
