@@ -372,79 +372,80 @@
 
 
             var type = @json($type);
-            if (type === 'accepted') {
+           @if ($type === 'accepted') {
                 ajaxUrl = "{{ route('app-task-get-accepted') }}";
-            } else if (type === 'team_task') {
+            } @elseif ($type === 'team_task') {
                 ajaxUrl = "{{ route('app-task-get-team_task-list') }}";
-            } else if (type === 'requested') {
+            } @elseif ($type === 'requested') {
                 ajaxUrl = "{{ route('app-task-get-requested') }}";
-            } else if (type === 'list') {
+            } @elseif ($type === 'list') {
                 ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
-            } else if (type == 'mytask') {
+            } @elseif ($type == 'mytask') {
                 ajaxUrl = "{{ route('app-task-mytask-get') }}";
-            } else if (type == 'accepted_by_me') {
+            } @elseif ($type == 'accepted_by_me') {
                 ajaxUrl = "{{ route('app-task-getAll_accepted_by_me-get') }}";
-            } else if (type == 'assign_by_me') {
+            } @elseif ($type == 'assign_by_me') {
                 ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
-            } else if (type == 'requested_me') {
+            } @elseif ($type == 'requested_me') {
                 ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
-            } else if (type == 'conceptualization') {
+            } @elseif ($type == 'conceptualization') {
                 ajaxUrl = "{{ route('app-task-getAll_conceptualization-get') }}";
-            } else if (type == 'close') {
+            } @elseif ($type == 'close') {
                 ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
-            } else if (type == 'due_date_past') {
+            } @elseif ($type == 'due_date_past') {
                 ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-            } else if (type == 'scope_defined') {
+            } @elseif ($type == 'scope_defined') {
                 ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
-            } else if (type == 'completed') {
+            } @elseif ($type == 'completed') {
                 ajaxUrl = "{{ route('app-task-getAll_completed-get') }}";
-            } else if (type == 'hold') {
+            } @elseif ($type == 'hold') {
                 ajaxUrl = "{{ route('app-task-getAll_hold-get') }}";
-            } else if (type == 'in_execution') {
+            } @elseif ($type == 'in_execution') {
                 ajaxUrl = "{{ route('app-task-getAll_in_execution-get') }}";
-            } else if (type == 'admin_acc') {
+            } @elseif ($type == 'admin_acc') {
                 ajaxUrl = "{{ route('app-task-getAll_admin_acc-get') }}";
-            } else if (type == 'admin_req') {
+            } @elseif ($type == 'admin_req') {
                 ajaxUrl = "{{ route('app-task-getAll_admin_req-get') }}";
-            } else if (type == 'admin_rej') {
+            } @elseif ($type == 'admin_rej') {
                 ajaxUrl = "{{ route('app-task-getAll_admin_rej-get') }}";
-            } else if (type == 'total_task') {
+            } @elseif ($type == 'total_task') {
                 ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
-            } else if (type == 'deleted') {
+            } @elseif ($type == 'deleted') {
                 ajaxUrl = "{{ route('app-task-getAll_deleted-get') }}";
-            } else if (type == 'my_and_team') {
+            } @elseif ($type == 'my_and_team') {
                 ajaxUrl = "{{ route('app-task-my_and_team-get') }}";
             }
-            else if (type === 'tasks.requested_to_us') {
+            @elseif ($type == 'tasks.requested_to_us' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }else if (type === 'tasks.requested_to_us_status') {
+            }@elseif ($type == 'tasks.requested_to_us_status' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }else if (type === 'tasks.requested_to_us_pending_task') {
+            }@elseif ($type == 'tasks.requested_to_us_pending_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            }else if (type === 'tasks.requested_to_us_over_due') {
+            }@elseif ($type == 'tasks.requested_to_us_over_due' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } else if (type === 'tasks.requested_to_us_today_due') {
+            } @elseif ($type == 'tasks.requested_to_us_today_due' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } else if (type === 'tasks.requested_to_us_finished_task') {
+            } @elseif ($type == 'tasks.requested_to_us_finished_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
-            } else if (type === 'tasks.requested_to_us_total_task') {
+            } @elseif ($type == 'tasks.requested_to_us_total_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_to_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
             }
-            else if (type === 'tasks.requested_by_us') {
+            @elseif ($type == 'tasks.requested_by_us' && $user_id !='' ) {
                 ajaxUrl = "{{ route('tasks.requested_by_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_status') {
+            }@elseif ($type == 'tasks.requested_by_us_status' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_pending_task') {
+            }@elseif ($type == 'tasks.requested_by_us_pending_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_over_due') {
+            }@elseif ($type == 'tasks.requested_by_us_over_due' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_today_due') {
+            }@elseif ($type == 'tasks.requested_by_us_today_due' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_finished_task') {
+            }@elseif ($type == 'tasks.requested_by_us_finished_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
-            }else if (type === 'tasks.requested_by_us_total_task') {
+            }@elseif ($type == 'tasks.requested_by_us_total_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
             }
+            @endif
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
                 // processing: true,
