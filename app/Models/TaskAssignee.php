@@ -97,17 +97,10 @@ class TaskAssignee extends Model
             $taskAssignee->delete();
             return true;
         }
-        
+
 
         return false;
     }
 
-    public function department_data()
-    {
-        return $this->belongsTo(Department::class, 'department');
-    }
-    public function sub_department_data()
-    {
-        return $this->belongsTo(SubDepartment::class, 'sub_department');
-    }
+  
 }
