@@ -583,6 +583,7 @@ class DashboardCUstomizedController extends Controller
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
+                $array['status_id'] = $s->id;
 
 
 
@@ -727,6 +728,7 @@ class DashboardCUstomizedController extends Controller
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountRequestUs + $CountRequestTo;
+                $array['status_id'] = $s->id;
 
 
 

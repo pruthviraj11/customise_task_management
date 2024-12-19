@@ -67,6 +67,15 @@ class TaskAssignee extends Model
         return $this->belongsTo(Status::class, 'task_status');  // Ensure correct foreign key 'task_status'
     }
 
+    public function department_data()
+    {
+        return $this->belongsTo(Department::class, 'department');
+    }
+    public function sub_department_data()
+    {
+        return $this->belongsTo(SubDepartment::class, 'sub_department');
+    }
+
     // Define relationship with the creator (created_by references User)
     public function creator()
     {

@@ -415,6 +415,36 @@
             } else if (type == 'my_and_team') {
                 ajaxUrl = "{{ route('app-task-my_and_team-get') }}";
             }
+            else if (type === 'tasks.requested_to_us') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            }else if (type === 'tasks.requested_to_us_status') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            }else if (type === 'tasks.requested_to_us_pending_task') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            }else if (type === 'tasks.requested_to_us_over_due') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            } else if (type === 'tasks.requested_to_us_today_due') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            } else if (type === 'tasks.requested_to_us_finished_task') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            } else if (type === 'tasks.requested_to_us_total_task') {
+                ajaxUrl = "{{ route('tasks.requested_to_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+            }
+            else if (type === 'tasks.requested_by_us') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_status') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_pending_task') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_over_due') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_today_due') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_finished_task') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }else if (type === 'tasks.requested_by_us_total_task') {
+                ajaxUrl = "{{ route('tasks.requested_by_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+            }
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
                 // processing: true,
