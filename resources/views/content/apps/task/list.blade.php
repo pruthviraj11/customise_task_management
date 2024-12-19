@@ -445,6 +445,21 @@
             }@elseif ($type == 'tasks.requested_by_us_total_task' && $user_id !='') {
                 ajaxUrl = "{{ route('tasks.requested_by_us_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
             }
+            @elseif ($type == 'tasks.total_task' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_status' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_status_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_pending_task' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_pending_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_over_due' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_over_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_today_due' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_today_due_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_finished_task' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_finished_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            } @elseif ($type == 'tasks.total_task_total_task' && $user_id !='' ) {
+                ajaxUrl = "{{ route('tasks.total_task_total_task_list',['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+            }
             @endif
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
