@@ -663,9 +663,9 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
             });
 
-        
 
-       
+
+
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
@@ -686,7 +686,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -695,7 +695,7 @@ class TaskController extends Controller
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
             ->addColumn('Task_number', function ($row) {
-                return $row->task_number ??  "-";
+                return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
@@ -1164,8 +1164,8 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) {
 
                 // $query->whereHas('assignees', function ($query) {
-                    $query->where('status', 0)
-                // })
+                $query->where('status', 0)
+                    // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
                 ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
@@ -1175,8 +1175,8 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
 
                 // $query->whereHas('assignees', function ($query) use ($user) {
-                    $query->where('user_id', $user->id)->where('status', 0)
-                // })
+                $query->where('user_id', $user->id)->where('status', 0)
+                    // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
                 ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
@@ -4668,44 +4668,63 @@ class TaskController extends Controller
             });
         }
 
-        // Apply filters before executing the query to reduce unnecessary data retrieval
         if ($task_filter = $request->input('task')) {
-            $query->where('tasks.ticket', $task_filter);
+            // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
+            $query->whereHas('task', function ($q) use ($task_filter) {
+                $q->where('ticket', $task_filter);
+            });
         }
 
         if ($department_filter = $request->input('department')) {
-            $query->where('tasks.department_id', $department_filter);
+            $query->where('department', $department_filter);
         }
 
         if ($created_by = $request->input('created_by')) {
-            $query->where('tasks.created_by', $created_by);
+            $query->where('created_by', $created_by);
         }
 
         if ($assignees = $request->input('assignees')) {
-            $query->whereHas('assignees', function ($q) use ($assignees) {
+            $query->whereHas('user', function ($q) use ($assignees) {
                 $q->whereIn('user_id', $assignees);
             });
         }
 
         if ($status = $request->input('status')) {
-            $query->where('tasks.task_status', $status);
+            $query->where('task_status', $status);
         }
 
         // Date filters
         if ($dtDateRange = parseDateRange($request->input('dt_date'))) {
-            $query->whereBetween('tasks.start_date', $dtDateRange);
+            // Check if the end date is empty (i.e., only a single date is provided)
+            if (empty($dtDateRange[1])) {
+                // If only a single date is provided, filter by that specific date
+                $query->whereHas('task', function ($q) use ($dtDateRange) {
+                    $q->whereDate('start_date', $dtDateRange[0]); // Filter tasks by the specific date
+                });
+            } else {
+                // If a full date range is provided, filter by the date range
+                $query->whereHas('task', function ($q) use ($dtDateRange) {
+                    $q->whereBetween('start_date', $dtDateRange); // Filter tasks by their start date within the range
+                });
+            }
         }
 
+
         if ($acceptedDateRange = parseDateRange($request->input('accepted_task_date'))) {
-            $query->whereBetween('tasks.accepted_date', $acceptedDateRange);
+            $query->whereBetween('accepted_date', $acceptedDateRange);
         }
 
         if ($dueDateRange = parseDateRange($request->input('end_date'))) {
-            $query->whereBetween('tasks.due_date', $dueDateRange);
+            $query->whereBetween('due_date', $dueDateRange);
         }
 
+
+
+        // Handle the project filter
         if ($project = $request->input('project')) {
-            $query->where('tasks.project_id', $project);
+            $query->whereHas('task', function ($q) use ($project) {
+                $q->where('project_id', $project); // Filter tasks by their project_id
+            });
         }
 
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
@@ -4738,8 +4757,10 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
             })
+
+
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
             })
