@@ -451,7 +451,20 @@
                             @if ($index >= 4)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}'
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+
+                                        let url =
+                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id',
+                                            statusId);
+
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
                                 },
                             @endif
                         @endforeach

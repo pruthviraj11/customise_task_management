@@ -88,7 +88,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
 
     /// Route For Dashboard data onclick counts Starts
-    /////////////////////////   Routes For Requested To Us  Starts ///////////////////////
+    /////////////////////////   Routes For Requested To Us  Starts      ///////////////////////
     Route::get('/tasks/requested_to_us/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_to_us');
     Route::get('/tasks/requested_to_us/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTasks'])
@@ -124,10 +124,10 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/requested_to_us_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
     ->name('tasks.requested_to_us_total_task_list');
 
-    /////////////////////////   Routes For Requested To Us  Ends ///////////////////////
+    /////////////////////////  Routes For Requested To Us  Ends      ///////////////////////
 
 
-    /////////////////////////   Routes For Requested By Us  Starts ///////////////////////
+    /////////////////////////  Routes For Requested By Us Starts    ///////////////////////
 
     Route::get('/tasks/requested_by_us/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.requested_by_us');
@@ -166,7 +166,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     /////////////////////////  Routes For Requested By Us Ends ///////////////////////
 
-    /////////////////////////  Routes For Total task Starts ///////////////////////
+    /////////////////////////  Routes For Total task Starts   ///////////////////////
 
     Route::get('/tasks/total_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
     ->name('tasks.total_task');
@@ -205,7 +205,6 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     ->name('tasks.total_task_total_task_list');
 
     /////////////////////////  Routes For Total task Ends ///////////////////////
-
     /// Route For Dashboard data onclick counts Ends
 
 
