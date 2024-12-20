@@ -170,7 +170,7 @@
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Subject</th>
-                                <th>Assingn By</th>
+                                <th>Assign By</th>
                                 <th>Task assign to</th>
                                 <th>Status</th>
                                 <th>Created Date</th>
@@ -383,6 +383,9 @@
                 }
             @elseif ($type === 'requested') {
                     ajaxUrl = "{{ route('app-task-get-requested') }}";
+                }
+            @elseif ($type === 'main') {
+                    ajaxUrl = "{{ route('app-task-get-main') }}";
                 }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";

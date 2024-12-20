@@ -342,6 +342,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll', [TaskController::class, 'getAll'])->name('app-task-get-all');
     // Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
     // Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
+    Route::get('task/getAll/main', [TaskController::class, 'getAll_main'])->name('app-task-get-main');
+
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
     Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
     Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');
@@ -357,6 +359,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     // Task List Start
     Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
     Route::get('task/requested', [TaskController::class, 'index'])->name('app-task-requested');
+    Route::get('task/main', [TaskController::class, 'index'])->name('app-task-main');
+
     Route::get('task/accepted/get/all', [TaskController::class, 'getAll'])->name('app-accepted-get-all');
     Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');
     // Task List End

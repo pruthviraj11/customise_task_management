@@ -39,6 +39,7 @@ return [
     "Document" => "Document",
     "Document Action Status" => "Document Action Status",
     "List" => "List",
+    "Main Task" => "Main Task",
     "PRO List" => "PRO List",
     "Process List" => "Process List",
     "QC List" => "QC List",
