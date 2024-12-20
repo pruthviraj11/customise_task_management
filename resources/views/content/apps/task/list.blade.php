@@ -164,6 +164,7 @@
                             <tr class="">
 
                                 <th>Actions</th>
+                                <th>Task</th>
                                 <th>Task Number</th>
                                 <th>Task/Ticket</th>
                                 <th>Title</th>
@@ -570,6 +571,12 @@
                         name: 'actions',
                         searchable: false
                     }, // Non-searchable column
+                    {
+                        data: 'task_id',
+                        name: 'task_id',
+                        searchable: true,
+                        visible: false
+                    },
                     {
                         data: 'Task_number',
                         name: 'Task_number',
