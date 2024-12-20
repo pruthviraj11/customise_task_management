@@ -26,135 +26,142 @@
 
 
 @section('content')
-    
-            <form action="{{ route('app-task-update', encrypt($task->task_id)) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
 
-    
-    <section id="multiple-column-form">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>{{ $page_data['form_title'] }}</h4>
-                        <a href="{{ route('app-task-list') }}" class="col-md-2 btn btn-primary float-end">Task List</a>
+    <form action="{{ route('app-task-update', encrypt($task->task_id)) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-                        {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
 
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            
-                        
+        <section id="multiple-column-form">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>{{ $page_data['form_title'] }}</h4>
+                            <div class="col-md-6">
+                                @if ($task != '')
+                                    <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
+                                    <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
+                                        {{ $task->creator->last_name }}</a>
+                                @endif
 
-                            <div class="col-md-3 col-sm-12 mb-1">
-                                <label class="form-label" for="due_date">End Date</label><span class="red">*</span>
-                                <input type="date" id="due_date" class="form-control" name="due_date"
-                                    value="{{ old('due_date') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
-                                    required>
-                                <span class="text-danger">
-                                    @error('due_date')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
                             </div>
 
-                        
-
-
-                            <div class="col-md-3 col-sm-12 mb-1">
-                                <label class="form-label" for="task_status">Status</label><span class="red">*</span>
-                                <select id="task_status" class="form-select select2" name="task_status"
-                                    {{ $task ? ($task->task_status == 7 ? 'disabled' : '') : '' }} required>
-                                    {{-- <option value="">Select Status</option> --}}
-                                    @foreach ($Status as $Statu)
-                                        <option value="{{ $Statu->id }}"
-                                            @php $isDisabled = $Statu->disabled == true && ($task == ' ' || (is_object($task) && $task->created_by != auth()->user()->id)); @endphp
-                                            {{ $isDisabled ? 'disabled' : '' }} {{-- {{ $Statu->disabled == true && ($task && $task->created_by != auth()->user()->id) ? 'disabled' : '' }} --}}
-                                            {{ old('task_status') == $Statu->id ? 'selected' : ($task ? ($task->task_status == $Statu->id ? 'selected' : '') : '') }}>
-                                            {{ $Statu->displayname }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <span class="text-danger">
-                                    @error('task_status')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-                          
-                           
-                            @if ($task != '')
-                                <div class="col-md-12 col-sm-12 mt-3">
-                                    {{-- <form action="{{ route('comments.store') }}" method="POST">
-                                        @csrf --}}
-                                    <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                    <div class="mb-3">
-                                        <label for="comment" class="form-label">Add Comment</label>
-                                        <textarea class="form-control" id="comment" name="comment" rows="4"></textarea>
-                                    </div>
-                                    {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
-                                    {{-- </form> --}}
-                                </div>
-                                <div class="col-12 mt-3">
-                                    @foreach ($getTaskComments->comments as $comment)
-                                        <div class="card bg-white shadow-lg">
-                                            <div class="card-header email-detail-head">
-                                                <div
-                                                    class="user-details d-flex justify-content-between align-items-center flex-wrap">
-                                                    <div class="avatar me-75">
-                                                        @if (!empty($comment->creator->profile_img))
-                                                            <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-                                                                class="" alt="Profile Image" width="48"
-                                                                height="48">
-                                                        @else
-                                                            <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                                class="" alt="Default Avatar" width="48"
-                                                                height="48">
-                                                        @endif
-                                                    </div>
-                                                    <div class="mail-items">
-                                                        <h5 class="mt-0">{{ $comment->creator->first_name }}</h5>
-                                                        <div class="email-info-dropup dropdown">
-                                                            <span role="button"
-                                                                class="dropdown-toggle font-small-3 text-muted"
-                                                                id="card_top01" data-bs-toggle="dropdown"
-                                                                aria-haspopup="true" aria-expanded="false">
-                                                                {{ $comment->creator->email }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mail-meta-item d-flex align-items-center">
-                                                    <small
-                                                        class="mail-date-time text-muted">{{ $comment->created_at }}</small>
-                                                </div>
-                                            </div>
-                                            <div class="card-body mail-message-wrapper pt-2">
-                                                <div class="mail-message">
-                                                    {{ $comment->comment }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
+                            {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
 
                         </div>
+                        <div class="card-body">
+                            <div class="row">
+
+
+
+                                <div class="col-md-3 col-sm-12 mb-1">
+                                    <label class="form-label" for="due_date">End Date</label><span class="red">*</span>
+                                    <input type="date" id="due_date" class="form-control" name="due_date"
+                                        value="{{ old('due_date') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
+                                        required>
+                                    <span class="text-danger">
+                                        @error('due_date')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+
+
+
+
+                                <div class="col-md-3 col-sm-12 mb-1">
+                                    <label class="form-label" for="task_status">Status</label><span class="red">*</span>
+                                    <select id="task_status" class="form-select select2" name="task_status"
+                                        {{ $task ? ($task->task_status == 7 ? 'disabled' : '') : '' }} required>
+                                        {{-- <option value="">Select Status</option> --}}
+                                        @foreach ($Status as $Statu)
+                                            <option value="{{ $Statu->id }}"
+                                                @php $isDisabled = $Statu->disabled == true && ($task == ' ' || (is_object($task) && $task->created_by != auth()->user()->id)); @endphp
+                                                {{ $isDisabled ? 'disabled' : '' }} {{-- {{ $Statu->disabled == true && ($task && $task->created_by != auth()->user()->id) ? 'disabled' : '' }} --}}
+                                                {{ old('task_status') == $Statu->id ? 'selected' : ($task ? ($task->task_status == $Statu->id ? 'selected' : '') : '') }}>
+                                                {{ $Statu->displayname }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <span class="text-danger">
+                                        @error('task_status')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+
+
+                                @if ($task != '')
+                                    <div class="col-md-12 col-sm-12 mt-3">
+                                        {{-- <form action="{{ route('comments.store') }}" method="POST">
+                                        @csrf --}}
+                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                        <div class="mb-3">
+                                            <label for="comment" class="form-label">Add Comment</label>
+                                            <textarea class="form-control" id="comment" name="comment" rows="4"></textarea>
+                                        </div>
+                                        {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
+                                        {{-- </form> --}}
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        @foreach ($getTaskComments->comments as $comment)
+                                            <div class="card bg-white shadow-lg">
+                                                <div class="card-header email-detail-head">
+                                                    <div
+                                                        class="user-details d-flex justify-content-between align-items-center flex-wrap">
+                                                        <div class="avatar me-75">
+                                                            @if (!empty($comment->creator->profile_img))
+                                                                <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
+                                                                    class="" alt="Profile Image" width="48"
+                                                                    height="48">
+                                                            @else
+                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
+                                                                    class="" alt="Default Avatar" width="48"
+                                                                    height="48">
+                                                            @endif
+                                                        </div>
+                                                        <div class="mail-items">
+                                                            <h5 class="mt-0">{{ $comment->creator->first_name }}</h5>
+                                                            <div class="email-info-dropup dropdown">
+                                                                <span role="button"
+                                                                    class="dropdown-toggle font-small-3 text-muted"
+                                                                    id="card_top01" data-bs-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                    {{ $comment->creator->email }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mail-meta-item d-flex align-items-center">
+                                                        <small
+                                                            class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body mail-message-wrapper pt-2">
+                                                    <div class="mail-message">
+                                                        {{ $comment->comment }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" name="submit" value="submit" class="btn btn-primary me-1">Submit
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">Reset</button>
                     </div>
                 </div>
-
-                <div class="col-12">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary me-1">Submit
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary">Reset</button>
-                </div>
             </div>
-        </div>
 
-        {{-- <div class="row mt-4">
+            {{-- <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <!-- Card Body -->
@@ -230,9 +237,9 @@
 
 
 
-        </div>
-        </div>
-    </section>
+            </div>
+            </div>
+        </section>
     </form>
 @endsection
 
@@ -255,8 +262,8 @@
     <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
     <script src="{{ asset(mix('js/scripts/components/components-tooltips.js')) }}"></script>
     <script src="{{ asset(mix('js/scripts/forms/pickers/form-pickers.js')) }}"></script>
-    
-  
+
+
 
 
     <script>
@@ -280,58 +287,6 @@
         });
     </script>
     <script>
-        $(document).ready(function() {
-            // Handle the click event on the "Mark as Completed" button
-            $('.mark-completed-btn').on('click', function() {
-                var subtaskId = $(this).data(
-                    'subtask-id'); // Get the subtask ID from the button's data attribute
-
-                // Show SweetAlert confirmation before proceeding
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Once marked as completed, you will not be able to change this!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, mark as completed!',
-                    cancelButtonText: 'No, keep it pending'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Perform the AJAX request if user confirms
-                        $.ajax({
-                            url: '{{ route('subtask.complete', ['subtask' => '__subtaskId__']) }}'
-                                .replace('__subtaskId__', subtaskId),
-                            method: 'POST', // Change method to POST
-                            data: {
-                                _token: '{{ csrf_token() }}', // CSRF token for security
-                                _method: 'POST' // Add a hidden _method field to mimic PUT request
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire(
-                                        'Completed!',
-                                        'The subtask has been marked as completed.',
-                                        'success'
-                                    );
-                                    // Optionally, change the button to "Completed"
-                                    $(this).prop('disabled', true).text('Completed');
-
-                                    // Reload the page after successful completion
-                                    location.reload(); // This will reload the page
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                Swal.fire(
-                                    'Error!',
-                                    'There was an issue marking the subtask as completed.',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            });
-        });
-
         $(document).on('click', '.remove-user-btn', function(e) {
             e.preventDefault();
 

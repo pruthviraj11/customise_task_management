@@ -375,7 +375,10 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::delete('/subtask/{subtask}', [TaskController::class, 'removeUser'])->name('subtask.removeUser');
     Route::post('/subtask/reopen/{id}', [TaskController::class, 'reopen'])->name('subtask.reopen');
 
+    Route::get('/subtask/{subtask}', [TaskController::class, 'editSubtask'])->name('subtask.edit');
 
+    // Update subtask data (for saving the changes)
+    Route::post('/subtask/{subtask}', [TaskController::class, 'updateSubtask'])->name('subtask.update');
     Route::get('task/accepted_by_me', [TaskController::class, 'index'])->name('app-task-get-accepted_by_me');
     Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
 

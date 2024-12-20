@@ -430,10 +430,18 @@ class DashboardCUstomizedController extends Controller
         $table_data = [];
 
         foreach ($users as $user) {
+            $userStatus = $user->status;
+            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+
+            // Only append parentheses if the user is inactive
+            $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
+
             $array = [
                 'user_id' => encrypt($user->id),
-                'user_name' => $user->first_name . ' ' . $user->last_name,
+                'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
+
+
 
             $totalAssign = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
 
@@ -556,10 +564,17 @@ class DashboardCUstomizedController extends Controller
         $table_data = [];
 
         foreach ($users as $user) {
+            $userStatus = $user->status;
+            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+
+            // Only append parentheses if the user is inactive
+            $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
+
             $array = [
-                'user_id' =>  encrypt($user->id),
-                'user_name' => $user->first_name . ' ' . $user->last_name,
+                'user_id' => encrypt($user->id),
+                'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
+
 
             $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')->where('created_by', $userId)->count();
 
@@ -692,11 +707,17 @@ class DashboardCUstomizedController extends Controller
         $table_data = [];
 
         foreach ($users as $user) {
+            $userStatus = $user->status;
+            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+
+            // Only append parentheses if the user is inactive
+            $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
+
             $array = [
                 'user_id' => encrypt($user->id),
-
-                'user_name' => $user->first_name . ' ' . $user->last_name,
+                'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
+
 
             $RequestToUs = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
 

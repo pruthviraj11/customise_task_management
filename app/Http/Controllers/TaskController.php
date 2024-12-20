@@ -14,6 +14,7 @@ use App\Models\Status;
 use App\Models\SubTask;
 use App\Models\Priority;
 use App\Models\Comments;
+use App\Models\ReopenReason;
 use App\Models\TaskAttachment;
 use App\Models\TaskAssignee;
 use Illuminate\Support\Facades\Storage;
@@ -5740,6 +5741,15 @@ class TaskController extends Controller
                 // dd($subtask);
                 $subtask->save();
 
+                // dd($request->all());
+                $reopenReason = new ReopenReason();
+                $reopenReason->reason = $request->reason;  // Reopen reason from the frontend
+                $reopenReason->reopen_date = now();
+                $reopenReason->reopen_by = auth()->user()->id;
+                $reopenReason->user_id = $user->id;
+                $reopenReason->created_by = auth()->user()->id;
+                $reopenReason->created_at = now();
+                $reopenReason->save();
                 // Construct the task view URL (replace with your actual URL generation logic)
                 $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Assuming a route 'task.view' exists
 
@@ -5767,6 +5777,63 @@ class TaskController extends Controller
         }
     }
 
+    public function editSubtask(TaskAssignee $subtask)
+    {
+        $statuses = Status::all();  // Fetch the statuses from the database
+        $task = $subtask->task;
+
+        // Check if the task status has the 'disabled' property in the database
+        return response()->json([
+            'success' => true,
+            'subtask' => [
+                'due_date' => $subtask->due_date ? $subtask->due_date : null,
+                'status' => $subtask->task_status,
+            ],
+            'statuses' => $statuses->map(function ($status) {
+                return [
+                    'id' => $status->id,
+                    'displayname' => $status->displayname,
+                    'disabled' => $status->disabled,  // Ensure 'disabled' is included
+                ];
+            }),
+            'task' => $task
+        ]);
+    }
+
+
+
+
+    // Method to update the subtask data
+    public function updateSubtask(Request $request, TaskAssignee $subtask)
+    {
+        // dd($request->all());
+        // Start by updating the subtask with the new data
+        $subtask->due_date = $request->due_date;
+        $subtask->task_status =  $request->status; // Assuming task_status is an integer
+
+        // Save the subtask
+        if (!$subtask->save()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'There was an error updating the subtask.',
+            ], 500);
+        }
+
+
+       
+            $comment = new Comments(); // Assuming you have a Comment model
+            $comment->comment = $request->comment;
+            $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
+            $comment->created_by = auth()->id(); // The ID of the currently authenticated user
+            $comment->save();
+       
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Subtask updated successfully.',
+            'subtask' => $subtask, // Optionally, return the updated subtask data
+        ]);
+    }
 
 
 

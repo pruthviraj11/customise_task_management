@@ -38,11 +38,9 @@
         if ($page_data['form_title'] == 'Add New Task') {
             // $isCreator = $task && $task->creator->id == auth()->user()->id;
             $isCreator = true;
-
         } else {
             // $isCreator = true;
             $isCreator = $task && $task->creator->id == auth()->user()->id;
-
         }
 
     @endphp
@@ -387,14 +385,32 @@
                                                 <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}
                                                 </td>
                                                 <td>{{ $subtask->taskStatus->displayname }}</td>
+
                                                 <td>
-                                                    <!-- Button to trigger AJAX request to mark as completed -->
+                                                    <!-- Button to trigger edit action -->
+                                                    <a class="btn btn-primary btn-sm edit-btn"
+                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Edit Subtask">
+                                                        <i class="feather-icon" data-feather="edit"></i>
+                                                    </a>
+
+                                                    {{-- {{ dd($subtask->id); }} --}}
+                                                    {{-- <!-- Button to trigger AJAX request to mark as completed -->
                                                     <a class="btn btn-success btn-sm mark-completed-btn"
                                                         data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
                                                         data-bs-placement="top" title="Mark as Completed">
                                                         <i class="feather-icon" data-feather="check-circle"></i>
-                                                    </a>
+                                                    </a> --}}
                                                     <!-- Button to reopen the task when status is 7 or 4 -->
+                                                    {{-- @if (in_array($subtask->task_status, [7, 4]))
+                                                        <a class="btn btn-warning btn-sm reopen-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Reopen Task">
+                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
+                                                        </a>
+                                                    @endif --}}
+
                                                     @if (in_array($subtask->task_status, [7, 4]))
                                                         <a class="btn btn-warning btn-sm reopen-btn"
                                                             data-subtask-id="{{ $subtask->id }}"
@@ -427,8 +443,62 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Due Date -->
+                        <input type="hidden" id="subtaskIdInput" value="">
+                        <div class="mb-3">
+                            <label for="due_date" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="due_date_sub" name="due_date">
+                        </div>
 
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <!-- Status options will be populated dynamically -->
+                            </select>
+                        </div>
 
+                        <!-- Comment -->
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comment</label>
+                            <textarea class="form-control" id="comment_sub" name="comment" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reasonModalLabel">Enter Reopen Reason</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" name="reason" id="reopen-reason"
+                            placeholder="Enter the reason for reopening the task" rows="4"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitReopenReason">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         </div>
@@ -707,48 +777,63 @@
     </script>
     <script>
         $(document).ready(function() {
-            // Handle the click event on the "Mark as Completed" button
-            $('.mark-completed-btn').on('click', function() {
-                var subtaskId = $(this).data(
-                    'subtask-id'); // Get the subtask ID from the button's data attribute
+            // Initialize Select2
+            $('#status').select2();
+
+            $('.edit-btn').on('click', function() {
+                var subtaskId = $(this).data('subtask-id'); // Get the subtask ID
+
+                // Set the subtask ID in the hidden field or any element you want to store it
+                $('#subtaskIdInput').val(subtaskId); // Save the subtask ID to the hidden input
 
                 // Show SweetAlert confirmation before proceeding
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: 'Once marked as completed, you will not be able to change this!',
+                    text: 'You are about to edit this subtask.',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, mark as completed!',
-                    cancelButtonText: 'No, keep it pending'
+                    confirmButtonText: 'Yes, Edit it!',
+                    cancelButtonText: 'No, Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Perform the AJAX request if user confirms
                         $.ajax({
-                            url: '{{ route('subtask.complete', ['subtask' => '__subtaskId__']) }}'
+                            url: '{{ route('subtask.edit', ['subtask' => '__subtaskId__']) }}'
                                 .replace('__subtaskId__', subtaskId),
-                            method: 'POST', // Change method to POST
-                            data: {
-                                _token: '{{ csrf_token() }}', // CSRF token for security
-                                _method: 'POST' // Add a hidden _method field to mimic PUT request
-                            },
+                            method: 'GET',
                             success: function(response) {
                                 if (response.success) {
-                                    Swal.fire(
-                                        'Completed!',
-                                        'The subtask has been marked as completed.',
-                                        'success'
-                                    );
-                                    // Optionally, change the button to "Completed"
-                                    $(this).prop('disabled', true).text('Completed');
+                                    // Pre-fill the modal fields with the subtask data
+                                    $('#due_date_sub').val(response.subtask.due_date ?
+                                        response.subtask.due_date : '');
 
-                                    // Reload the page after successful completion
-                                    location.reload(); // This will reload the page
+                                    // Populate the status dropdown dynamically
+                                    $('#status').empty(); // Clear any existing options
+                                    response.statuses.forEach(function(status) {
+                                        var isSelected = status.id == response
+                                            .subtask.status ? 'selected' : '';
+                                        var isDisabled = status.disabled ?
+                                            'disabled' :
+                                            ''; // Disable option if status is disabled
+
+                                        $('#status').append(
+                                            '<option value="' + status.id +
+                                            '" ' + isSelected + ' ' +
+                                            isDisabled + '>' + status
+                                            .displayname + '</option>'
+                                        );
+                                    });
+
+                                    // Reinitialize Select2 after adding options
+                                    $('#status').select2();
+
+                                    // Show the modal
+                                    $('#editSubtaskModal').modal('show');
                                 }
                             },
                             error: function(xhr, status, error) {
                                 Swal.fire(
                                     'Error!',
-                                    'There was an issue marking the subtask as completed.',
+                                    'There was an issue fetching the subtask data.',
                                     'error'
                                 );
                             }
@@ -756,7 +841,58 @@
                     }
                 });
             });
+
+            // Handle the save changes button in the modal
+            $('#saveChangesBtn').on('click', function() {
+                var subtaskId = $('#subtaskIdInput').val(); // Get the subtask ID from the hidden input
+                var dueDate = $('#due_date_sub').val();
+                var status = $('#status').val();
+                var comment = $('#comment_sub').val();
+                // alert(comment);
+                $.ajax({
+                    url: '{{ route('subtask.update', ['subtask' => '__subtaskId__']) }}'.replace(
+                        '__subtaskId__', subtaskId),
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        due_date: dueDate,
+                        status: status,
+                        comment: comment
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Success!',
+                                'The subtask has been updated.',
+                                'success'
+                            );
+                            $('#editSubtaskModal').modal('hide'); // Hide the modal
+                            location.reload(); // Reload the page to see changes
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'There was an issue updating the subtask.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire(
+                            'Error!',
+                            'There was an issue saving the changes.',
+                            'error'
+                        );
+                    }
+                });
+            });
         });
+
+
+
+
+
+
+
 
         $(document).on('click', '.remove-user-btn', function(e) {
             e.preventDefault();
@@ -808,6 +944,64 @@
         });
 
 
+        // $(document).ready(function() {
+        //     // Reopen button click event
+        //     $('.reopen-btn').click(function(e) {
+        //         e.preventDefault();
+        //         let subtaskId = $(this).data('subtask-id');
+
+        //         // SweetAlert confirmation
+        //         Swal.fire({
+        //             title: 'Are you sure?',
+        //             text: "Do you want to reopen this task?",
+        //             icon: 'warning',
+        //             showCancelButton: true,
+        //             confirmButtonText: 'Yes, reopen!',
+        //             cancelButtonText: 'No, keep it closed'
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 // Send AJAX request to update status to 1 (Reopened)
+        //                 $.ajax({
+        //                     url: '{{ route('subtask.reopen', '__subtaskId__') }}'.replace(
+        //                         '__subtaskId__', subtaskId
+        //                     ), // Correct dynamic URL replacement
+        //                     method: 'POST',
+        //                     data: {
+        //                         _token: "{{ csrf_token() }}", // CSRF token for security
+        //                         status: 1
+        //                     },
+        //                     success: function(response) {
+        //                         if (response.success) {
+        //                             Swal.fire(
+        //                                 'Reopened!',
+        //                                 'The task has been reopened successfully.',
+        //                                 'success'
+        //                             );
+
+        //                             location.reload();
+        //                             // Optionally, update the UI to reflect the status change
+        //                             // $(this).closest('tr').find('.status-column').text('Reopened');
+        //                         } else {
+        //                             Swal.fire(
+        //                                 'Error!',
+        //                                 'There was an issue reopening the task.',
+        //                                 'error'
+        //                             );
+        //                         }
+        //                     },
+        //                     error: function() {
+        //                         Swal.fire(
+        //                             'Error!',
+        //                             'An error occurred while trying to reopen the task.',
+        //                             'error'
+        //                         );
+        //                     }
+        //                 });
+        //             }
+        //         });
+        //     });
+        // });
+
         $(document).ready(function() {
             // Reopen button click event
             $('.reopen-btn').click(function(e) {
@@ -824,42 +1018,56 @@
                     cancelButtonText: 'No, keep it closed'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Send AJAX request to update status to 1 (Reopened)
-                        $.ajax({
-                            url: '{{ route('subtask.reopen', '__subtaskId__') }}'.replace(
-                                '__subtaskId__', subtaskId
-                            ), // Correct dynamic URL replacement
-                            method: 'POST',
-                            data: {
-                                _token: "{{ csrf_token() }}", // CSRF token for security
-                                status: 1
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire(
-                                        'Reopened!',
-                                        'The task has been reopened successfully.',
-                                        'success'
-                                    );
+                        // Open modal to input reason
+                        $('#reasonModal').modal('show');
+                        $('#submitReopenReason').off('click').on('click', function() {
+                            let reason = $('#reopen-reason').val().trim();
+                            if (reason === '') {
+                                Swal.fire('Error!',
+                                    'Please provide a reason to reopen the task.',
+                                    'error');
+                                return;
+                            }
 
-                                    location.reload();
-                                    // Optionally, update the UI to reflect the status change
-                                    // $(this).closest('tr').find('.status-column').text('Reopened');
-                                } else {
+                            // Send AJAX request to update status to 1 (Reopened)
+                            $.ajax({
+                                url: '{{ route('subtask.reopen', '__subtaskId__') }}'
+                                    .replace(
+                                        '__subtaskId__', subtaskId
+                                    ),
+                                method: 'POST',
+                                data: {
+                                    _token: "{{ csrf_token() }}", // CSRF token for security
+                                    status: 1,
+                                    reason: reason
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        Swal.fire(
+                                            'Reopened!',
+                                            'The task has been reopened successfully.',
+                                            'success'
+                                        );
+                                        location.reload();
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an issue reopening the task.',
+                                            'error'
+                                        );
+                                    }
+                                },
+                                error: function() {
                                     Swal.fire(
                                         'Error!',
-                                        'There was an issue reopening the task.',
+                                        'An error occurred while trying to reopen the task.',
                                         'error'
                                     );
                                 }
-                            },
-                            error: function() {
-                                Swal.fire(
-                                    'Error!',
-                                    'An error occurred while trying to reopen the task.',
-                                    'error'
-                                );
-                            }
+                            });
+
+                            // Close the modal after form submission
+                            $('#reasonModal').modal('hide');
                         });
                     }
                 });
