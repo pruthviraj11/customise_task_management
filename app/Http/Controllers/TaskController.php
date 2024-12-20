@@ -2870,6 +2870,7 @@ class TaskController extends Controller
     public function store(CreateTaskRequest $request)
     {
         try {
+            // dd($request->all());
             // Fetch project, priority, and status
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
@@ -2884,7 +2885,7 @@ class TaskController extends Controller
                 'project_id' => $request->get('project_id'),
                 'project_name' => $project->project_name,
                 'start_date' => $request->get('start_date'),
-                'due_date' => $request->get('due_date'),
+                'due_date' => $request->get('due_date_form'),
                 'priority_id' => $request->get('priority_id'),
                 'priority_name' => $priority->priority_name,
                 'task_status' => $request->get('task_status'),
@@ -2947,7 +2948,7 @@ class TaskController extends Controller
                     'status' => 0,
                     'task_status' => $request->get('task_status'),
                     'task_number' => $taskNumber,
-                    'due_date' => $request->get('due_date'),
+                    'due_date' => $request->get('due_date_form'),
                     'department' => $departmentId,  // Save department_id
                     'sub_department' => $subdepartment, // Save subdepartment
                     'created_by' => auth()->user()->id,
@@ -3369,7 +3370,7 @@ class TaskController extends Controller
                     'status_name' => $status->status_name,
                     'project_id' => $request->get('project_id'),
                     'start_date' => $request->get('start_date'),
-                    'due_date' => $request->get('due_date'),
+                    'due_date' => $request->get('due_date_form'),
                     'priority_id' => $request->get('priority_id'),
                     'task_status' => $request->get('task_status'),
                     'updated_by' => auth()->user()->id,
@@ -3435,7 +3436,7 @@ class TaskController extends Controller
             } else {
                 // dd($request->get('due_date'));
                 $taskData = [
-                    'due_date' => $request->get('due_date'),
+                    'due_date' => $request->get('due_date_form'),
                     'task_status' => $request->get('task_status'),
                 ];
                 // dd($taskData);

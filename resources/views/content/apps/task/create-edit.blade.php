@@ -189,12 +189,12 @@
                                 </span>
                             </div>
                             <div class="col-md-3 col-sm-12 mb-1">
-                                <label class="form-label" for="due_date">End Date</label><span class="red">*</span>
-                                <input type="date" id="due_date" class="form-control" name="due_date"
-                                    value="{{ old('due_date') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
+                                <label class="form-label" for="due_date_form">End Date</label><span class="red">*</span>
+                                <input type="date" id="due_date_form" class="form-control" name="due_date_form"
+                                    value="{{ old('due_date_form') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
                                     required>
                                 <span class="text-danger">
-                                    @error('due_date')
+                                    @error('due_date_form')
                                         {{ $message }}
                                     @enderror
                                 </span>
