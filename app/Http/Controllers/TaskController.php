@@ -759,7 +759,7 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -1278,7 +1278,7 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
-            ->rawColumns(['actions'])
+           ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -1430,7 +1430,7 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -1553,7 +1553,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
     public function requestedToUsStatusTasks($user_id, $status_id, $type)
@@ -1668,7 +1668,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -1794,7 +1794,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
     public function requestedToUsOverDuesTasks($user_id, $status_id, $type)
@@ -1969,7 +1969,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -2105,7 +2105,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -2234,7 +2234,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -2361,7 +2361,7 @@ class TaskController extends Controller
 
 
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -3256,7 +3256,7 @@ class TaskController extends Controller
                 // Update close_date if task status is set to 7 and the status has changed
                 if ($request->get('task_status') == 7 && $currentStatus_creator != 7) {
                     $taskData['close_date'] = now();  // Only update close_date when changing to status 7
-                     $taskData['close_by'] = auth()->user()->id;
+                    $taskData['close_by'] = auth()->user()->id;
                 }
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
@@ -5029,7 +5029,7 @@ class TaskController extends Controller
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
 
-            ->rawColumns(['actions','title','creator_phone','creator_sub_department','creator_department','sub_department','department','project','accepted_date','completed_date','close_date','due_date','start_date','status','Task_assign_to','subject','description','Task_Ticket','created_by_username'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
 
@@ -5528,7 +5528,7 @@ class TaskController extends Controller
                 ->addColumn('creator_phone', function ($row) {
                     return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
                 ->make(true);
         }
 
@@ -5670,7 +5670,7 @@ class TaskController extends Controller
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
 
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
     public function markAsCompleted(Request $request, $subtaskId)
