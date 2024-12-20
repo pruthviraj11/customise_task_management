@@ -859,8 +859,7 @@
 
         $(document).on("click", ".accept-task", function(e) {
             e.preventDefault();
-            var id = $(this).data("idos");
-            console.log(id);
+            var id = $(this).data("id");
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",

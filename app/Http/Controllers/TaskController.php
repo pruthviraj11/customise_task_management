@@ -1223,7 +1223,6 @@ class TaskController extends Controller
 
             $encryptedId = encrypt($row->task->id);
 
-
             // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
             $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
@@ -2421,7 +2420,6 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-dd('hii',$encrypted_id);
             $userId = auth()->user()->id;
             // 27-06
             // $task_ass = TaskAssignee::where('user_id', $userId)
