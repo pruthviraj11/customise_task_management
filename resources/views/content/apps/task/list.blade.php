@@ -384,6 +384,9 @@
             @elseif ($type === 'requested') {
                     ajaxUrl = "{{ route('app-task-get-requested') }}";
                 }
+            @elseif ($type === 'main') {
+                    ajaxUrl = "{{ route('app-task-get-main') }}";
+                }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
                 }

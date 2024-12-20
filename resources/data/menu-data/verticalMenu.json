@@ -71,6 +71,16 @@
             ]
         },
         {
+            "url": "app/task/main",
+            "name": "Main Task",
+            "icon": "phone-incoming",
+            "slug": "app-task-main",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
             "url": "app/roles/list",
             "name": "Roles",
             "icon": "lock",
