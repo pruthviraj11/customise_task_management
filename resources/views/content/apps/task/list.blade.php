@@ -170,7 +170,7 @@
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Subject</th>
-                                <th>Assingn By</th>
+                                <th>Assign By</th>
                                 <th>Task assign to</th>
                                 <th>Status</th>
                                 <th>Created Date</th>
