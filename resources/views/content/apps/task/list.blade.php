@@ -281,6 +281,7 @@
 
 @section('page-script')
     <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
+
     <script>
         // Datepicker for advanced filter
         var separator = ' - ',
@@ -849,6 +850,44 @@
             });
         });
 
+        $(document).on("click", ".accept-task", function(e) {
+            e.preventDefault();
+            var id = $(this).data("idos");
+            console.log(id);
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, accept it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-outline-danger ms-1'
+                },
+                buttonsStyling: false
+            }).then(function(result) {
+                if (result.value) {
+                    window.location.href = "{{ route('app-task-accept', ':id') }}".replace(':id', id);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Accepted!',
+                        text: 'Your task has been accepted.',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire({
+                        title: 'Cancelled',
+                        text: 'Your imaginary file is safe :)',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                }
+            });
+        });
 
         $(document).on("click", ".confirm-retrieve", function(e) {
             e.preventDefault();
