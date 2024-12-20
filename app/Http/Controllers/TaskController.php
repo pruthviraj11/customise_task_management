@@ -5028,10 +5028,7 @@ class TaskController extends Controller
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
 
-
-
-
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions','title','creator_phone','creator_sub_department','creator_department','sub_department','department','project','accepted_date','completed_date','close_date','due_date','start_date','status','Task_assign_to','subject','description','Task_Ticket','created_by_username'])
             ->make(true);
     }
 
