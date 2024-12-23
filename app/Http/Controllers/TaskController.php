@@ -697,7 +697,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1245,7 +1245,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -3004,8 +3004,10 @@ class TaskController extends Controller
             $task = $this->taskService->gettask($id);
             $Maintask = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
+                // dd($task);
                 $creator = 1;
-                $getTaskComments = '';
+                $getTaskComments = Comments::where('task_id', $task->id)->get();
+                // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
                 $task = $this->taskService->gettaskAssigne($id)->first();
                 $getTaskComments = Task::where('id', $task->task_id)->first();
@@ -3630,15 +3632,30 @@ class TaskController extends Controller
                 createNotification($user->id, $task->id, $updateMessage, 'Updated');
             }
 
-            // Check if any comment was provided and save it
-            // dd($$request->comment);
-            if ($request->comment != '') {
+
+
+            if ($request->comment_form != '') {
+                // Create a new comment
                 $comment = new Comments();
-                $comment->comment = $request->input('comment');
-                $comment->task_id = $request->input('task_id');
+                $comment->comment = $request->get('comment_form');
+                $comment->task_id = $request->get('task_id');
                 $comment->created_by = auth()->id();
+
+                // Check if 'comments_for' is empty or null
+                if (empty($request->comments_for)) {
+                    // If 'comments_for' is empty or null, store task creator's ID in 'to_user_id'
+                    $comment->to_user_id = $request->task_created_by;
+                } else {
+                    // Otherwise, store the comma-separated list of user IDs in 'to_user_id'
+                    $comment->to_user_id = implode(',', $request->comments_for);
+                }
+                // dd($comment);
+                // Save the comment
                 $comment->save();
             }
+
+
+
 
             // Redirect based on success or failure
             if ($updated) {
@@ -4990,7 +5007,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)
+                $q->where('user_id', $userId)->orWhere('created_by',auth()->user()->id)
                     ->whereHas('user', function ($q) {
                         // Ensure the user is not deleted (i.e., deleted_at is null)
                         $q->whereNull('deleted_at');
@@ -5753,8 +5770,8 @@ class TaskController extends Controller
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
-                 if (auth()->user()->id == '1') {
-                    if ($row->status == 0 ) {
+                if (auth()->user()->id == '1') {
+                    if ($row->status == 0) {
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
@@ -5977,7 +5994,7 @@ class TaskController extends Controller
         // dd($request->all());
         // Start by updating the subtask with the new data
         $subtask->due_date = $request->due_date;
-        $subtask->task_status =  $request->status; // Assuming task_status is an integer
+        $subtask->task_status = $request->status; // Assuming task_status is an integer
 
         // Save the subtask
         if (!$subtask->save()) {
@@ -5988,13 +6005,13 @@ class TaskController extends Controller
         }
 
 
-       
-            $comment = new Comments(); // Assuming you have a Comment model
-            $comment->comment = $request->comment;
-            $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
-            $comment->created_by = auth()->id(); // The ID of the currently authenticated user
-            $comment->save();
-       
+
+        $comment = new Comments(); // Assuming you have a Comment model
+        $comment->comment = $request->comment;
+        $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
+        $comment->created_by = auth()->id(); // The ID of the currently authenticated user
+        $comment->save();
+
         // Return success response
         return response()->json([
             'success' => true,

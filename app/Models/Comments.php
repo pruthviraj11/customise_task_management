@@ -18,7 +18,7 @@ class Comments extends Model
     use HasFactory, LogsActivity, SoftDeletes;
 
     protected $table = 'comments';
-    protected $fillable = ['comment', 'task_id', 'created_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['comment', 'task_id', 'created_by', 'created_at', 'updated_at', 'deleted_at','to_user_id'];
     protected $guarded = [];
     public function getActivitylogOptions(): LogOptions
     {

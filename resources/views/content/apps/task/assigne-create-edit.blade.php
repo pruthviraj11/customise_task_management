@@ -54,14 +54,15 @@
                             <div class="row">
 
 
-
+                                <input type="hidden" name="task_created_by" value="{{ $task->created_by }}">
                                 <div class="col-md-3 col-sm-12 mb-1">
-                                    <label class="form-label" for="due_date">End Date</label><span class="red">*</span>
-                                    <input type="date" id="due_date" class="form-control" name="due_date"
-                                        value="{{ old('due_date') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
+                                    <label class="form-label" for="due_date_form">End Date</label><span
+                                        class="red">*</span>
+                                    <input type="date" id="due_date_form" class="form-control" name="due_date_form"
+                                        value="{{ old('due_date_form') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
                                         required>
                                     <span class="text-danger">
-                                        @error('due_date')
+                                        @error('due_date_form')
                                             {{ $message }}
                                         @enderror
                                     </span>
@@ -96,56 +97,93 @@
                                     <div class="col-md-12 col-sm-12 mt-3">
                                         {{-- <form action="{{ route('comments.store') }}" method="POST">
                                         @csrf --}}
-                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                        {{-- {{ dd($task); }} --}}
+                                        <input type="hidden" name="task_id" value="{{ $task->task_id }}">
                                         <div class="mb-3">
-                                            <label for="comment" class="form-label">Add Comment</label>
-                                            <textarea class="form-control" id="comment" name="comment" rows="4"></textarea>
+                                            <label for="comment_form" class="form-label">Add Comment</label>
+                                            <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
                                         </div>
                                         {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
                                         {{-- </form> --}}
                                     </div>
                                     <div class="col-12 mt-3">
                                         @foreach ($getTaskComments->comments as $comment)
-                                            <div class="card bg-white shadow-lg">
-                                                <div class="card-header email-detail-head">
-                                                    <div
-                                                        class="user-details d-flex justify-content-between align-items-center flex-wrap">
-                                                        <div class="avatar me-75">
-                                                            @if (!empty($comment->creator->profile_img))
-                                                                <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-                                                                    class="" alt="Profile Image" width="48"
-                                                                    height="48">
-                                                            @else
-                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                                    class="" alt="Default Avatar" width="48"
-                                                                    height="48">
-                                                            @endif
-                                                        </div>
-                                                        <div class="mail-items">
-                                                            <h5 class="mt-0">{{ $comment->creator->first_name }}</h5>
-                                                            <div class="email-info-dropup dropdown">
-                                                                <span role="button"
-                                                                    class="dropdown-toggle font-small-3 text-muted"
-                                                                    id="card_top01" data-bs-toggle="dropdown"
-                                                                    aria-haspopup="true" aria-expanded="false">
-                                                                    {{ $comment->creator->email }}
-                                                                </span>
+                                            @php
+                                                // Get the logged-in user ID
+                                                $loggedInUserId = auth()->id();
+
+                                                // Split the comma-separated list of users to whom the comment is directed
+                                                $toUserIds = explode(',', $comment->to_user_id); // if comma-separated IDs are stored
+                                            // dump($toUserIds);
+
+                                            @endphp
+
+                                            {{-- Check if the logged-in user can view the comment --}}
+                                            @if (
+                                                $loggedInUserId == $comment->created_by || // Show for comment creator
+                                                    in_array($loggedInUserId, $toUserIds) || // Show for users the comment is directed to
+                                                    $loggedInUserId == $task->created_by)
+                                                {{-- // Show for task creator --}}
+                                                <div class="card bg-white shadow-lg">
+                                                    <div class="card-header email-detail-head">
+                                                        <div
+                                                            class="user-details d-flex justify-content-between align-items-center flex-wrap">
+                                                            <div class="avatar me-75">
+                                                                {{-- Check if the comment creator is the logged-in user --}}
+                                                                @if ($loggedInUserId == $comment->created_by)
+                                                                    {{-- Display logged-in user's profile image if they are the creator --}}
+                                                                    @if (!empty(auth()->user()->profile_img))
+                                                                        <img src="{{ asset('storage/' . auth()->user()->profile_img) }}"
+                                                                            alt="Profile Image" width="48"
+                                                                            height="48">
+                                                                    @else
+                                                                        <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
+                                                                            alt="Default Avatar" width="48"
+                                                                            height="48">
+                                                                    @endif
+                                                                @else
+                                                                    {{-- Display the comment creator's profile image --}}
+                                                                    @if (!empty($comment->creator->profile_img))
+                                                                        <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
+                                                                            alt="Profile Image" width="48"
+                                                                            height="48">
+                                                                    @else
+                                                                        <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
+                                                                            alt="Default Avatar" width="48"
+                                                                            height="48">
+                                                                    @endif
+                                                                @endif
+                                                            </div>
+                                                            <div class="mail-items">
+                                                                {{-- Check if the logged-in user is the comment creator, or show the creator --}}
+                                                                <h5 class="mt-0">
+                                                                    {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }}
+                                                                </h5>
+                                                                <div class="email-info-dropup dropdown">
+                                                                    <span role="button"
+                                                                        class="dropdown-toggle font-small-3 text-muted"
+                                                                        id="card_top01" data-bs-toggle="dropdown"
+                                                                        aria-haspopup="true" aria-expanded="false">
+                                                                        {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        <div class="mail-meta-item d-flex align-items-center">
+                                                            <small
+                                                                class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                                        </div>
                                                     </div>
-                                                    <div class="mail-meta-item d-flex align-items-center">
-                                                        <small
-                                                            class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                                    <div class="card-body mail-message-wrapper pt-2">
+                                                        <div class="mail-message">
+                                                            {{ $comment->comment }}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="card-body mail-message-wrapper pt-2">
-                                                    <div class="mail-message">
-                                                        {{ $comment->comment }}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @endif
                                         @endforeach
                                     </div>
+
                                 @endif
 
 
