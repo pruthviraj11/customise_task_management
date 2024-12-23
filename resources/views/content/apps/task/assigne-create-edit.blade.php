@@ -106,16 +106,14 @@
                                         {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
                                         {{-- </form> --}}
                                     </div>
-                                    <div class="col-12 mt-3">
-                                        @foreach ($getTaskComments->comments as $comment)
+                                    <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
+                                        @foreach ($getTaskComments as $comment)
                                             @php
                                                 // Get the logged-in user ID
                                                 $loggedInUserId = auth()->id();
 
                                                 // Split the comma-separated list of users to whom the comment is directed
                                                 $toUserIds = explode(',', $comment->to_user_id); // if comma-separated IDs are stored
-                                            // dump($toUserIds);
-
                                             @endphp
 
                                             {{-- Check if the logged-in user can view the comment --}}
@@ -183,6 +181,7 @@
                                             @endif
                                         @endforeach
                                     </div>
+
 
                                 @endif
 

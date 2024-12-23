@@ -104,4 +104,11 @@ class TaskAssignee extends Model
 
         return false;
     }
+    public function isAcceptedByUser($userId)
+    {
+        return $this
+            ->where('user_id', $userId)
+            ->where('status', 1) // Status 1 indicates accepted
+            ->exists(); // Check if any records match
+    }
 }

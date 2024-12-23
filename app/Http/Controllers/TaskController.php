@@ -183,7 +183,20 @@ class TaskController extends Controller
             $id = decrypt($encrypted_id);
 
             $task = $this->taskService->gettask($id);
-
+            if ($task && $task->creator->id == auth()->user()->id) {
+                // dd($task);
+                $creator = 1;
+                $taskAssigne = $this->taskService->gettask($id);
+                $getTaskComments = Comments::where('task_id', $task->id)->get();
+                // $getTaskComments = Task::where('id', $task->task_id)->first();
+            } else {
+                $taskAssigne = $this->taskService->gettask($id);
+                $task = $this->taskService->gettaskAssigne($id)->first();
+                $getTaskComments = Comments::where('task_id', $task->task_id)->first();
+                // dd($getTaskComments);
+                $creator = 0;
+                // dd($task);
+            }
             $page_data['page_title'] = "Task";
             $page_data['form_title'] = "Edit Task";
 
@@ -201,9 +214,9 @@ class TaskController extends Controller
             if ($user) {
                 $hasAcceptedTask = $task->isAcceptedByUser($user->id);
             }
-            return view('content.apps.task.view', compact('page_data', 'hasAcceptedTask', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId'));
+            return view('content.apps.task.view', compact('page_data', 'hasAcceptedTask', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId','getTaskComments','taskAssigne','creator'));
         } catch (\Exception $error) {
-            // dd($error->getMessage());
+            dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
 
@@ -466,19 +479,26 @@ class TaskController extends Controller
 
     public function storeComments(Request $request)
     {
-        // dd("sd");
-        // dd($request->all());
-        $request->validate([
-            'comment' => 'required|string',
-            'task_id' => 'required|exists:tasks,id',
-        ]);
+       
+        if ($request->comment_form != '') {
+            // Create a new comment
+            $comment = new Comments();
+            $comment->comment = $request->get('comment_form');
+            $comment->task_id = $request->get('task_id');
+            $comment->created_by = auth()->id();
 
-        $comment = new Comments();
-        $comment->comment = $request->input('comment');
-        $comment->task_id = $request->input('task_id');
-        $comment->created_by = Auth::id();
-        $comment->save();
-        // return redirect()->route("app-task-list")->with('success', 'Comment added successfully!');
+            // Check if 'comments_for' is empty or null
+            if (empty($request->comments_for)) {
+                // If 'comments_for' is empty or null, store task creator's ID in 'to_user_id'
+                $comment->to_user_id = $request->task_created_by;
+            } else {
+                // Otherwise, store the comma-separated list of user IDs in 'to_user_id'
+                $comment->to_user_id = implode(',', $request->comments_for);
+            }
+            // dd($comment);
+            // Save the comment
+            $comment->save();
+        }
         return redirect()->back()->with('success', 'Comment added successfully!');
     }
 
@@ -3010,7 +3030,7 @@ class TaskController extends Controller
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
                 $task = $this->taskService->gettaskAssigne($id)->first();
-                $getTaskComments = Task::where('id', $task->task_id)->first();
+                $getTaskComments = Comments::where('task_id', $task->task_id)->get();
                 // dd($getTaskComments);
                 $creator = 0;
                 // dd($task);

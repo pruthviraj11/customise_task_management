@@ -41,7 +41,7 @@
 
                         <div class="row">
 
-                              <div class="col-md-6 d-flex col-sm-12 mb-1">
+                            <div class="col-md-6 d-flex col-sm-12 mb-1">
                                 <div class="form-check m-2 form-check-success">
                                     <input type="radio" class="form-check-input" id="ticket" name="task_type"
                                         value="1" {{ $task != '' && $task->ticket == 1 ? 'checked' : '' }}>
@@ -58,20 +58,24 @@
                             <div class="col-md-6">
                                 @if ($task != '')
                                     <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
-                                      <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}  {{ $task->creator->last_name }}</a>
+                                    <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
+                                        {{ $task->creator->last_name }}</a>
                                 @endif
-                                                              @if($hasAcceptedTask)
-                                                          @php $encrypted_id= encrypt($task->id)@endphp
-    {{-- Button to edit the task if accepted --}}
-    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href="{{ route('app-task-edit', $encrypted_id) }}" target='_blank'>
-        <i class='ficon' data-feather='edit'></i>
-    </a>
-@else
-    {{-- Button to go back to task list if not accepted --}}
-    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Go to Task List' class='btn-sm btn-secondary me-1' href="{{ route('app-task-requested') }}">
-        <i class='ficon' data-feather='list'></i>
-    </a>
-@endif
+                                @if ($hasAcceptedTask)
+                                    @php $encrypted_id= encrypt($task->id)@endphp
+                                    {{-- Button to edit the task if accepted --}}
+                                    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task'
+                                        class='btn-sm btn-warning me-1' href="{{ route('app-task-edit', $encrypted_id) }}"
+                                        target='_blank'>
+                                        <i class='ficon' data-feather='edit'></i>
+                                    </a>
+                                @else
+                                    {{-- Button to go back to task list if not accepted --}}
+                                    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Go to Task List'
+                                        class='btn-sm btn-secondary me-1' href="{{ route('app-task-requested') }}">
+                                        <i class='ficon' data-feather='list'></i>
+                                    </a>
+                                @endif
 
 
                             </div>
@@ -124,14 +128,46 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            {{-- <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="user_id">Assign To</label>
+                              
                                 <select disabled id="user_id" class="form-select select2" name="user_id[]" multiple>
                                     <option value="">Select User</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
                                             {{ old('user_id') ? (in_array(old('user_id')[$loop->index] == $user->id) ? 'selected' : '') : ($task ? (in_array($user->id, $task->users->pluck('id')->toArray()) ? 'selected' : '') : '') }}>
                                             {{ $user->first_name }} {{ $user->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger">
+                                    @error('user_id')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div> --}}
+                            <style>
+                                .fixed-width {
+                                    display: inline-block;
+                                    width: 50px;
+                                    /* Set the width as needed */
+                                    overflow: hidden;
+                                    white-space: nowrap;
+                                }
+                            </style>
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="user_id">Assign To</label><span class="red">*</span>
+                                {{-- {{ dd($task->users) }} --}}
+                                <select disabled id="user_id" class="form-select select2" name="user_id[]" multiple
+                                    required>
+                                    <option value="">Select User</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id') && in_array($user->id, old('user_id')) ? 'selected' : ($taskAssigne && $taskAssigne->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                            <span class="fixed-width">{{ $user->first_name }}
+                                                {{ $user->last_name }}</span>
+                                            |{{ $user->department->department_name ?? '' }}|
+                                            {{ $user->sub_department->sub_department_name ?? '' }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -178,7 +214,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-4 col-sm-12 mb-1">
+                            {{-- <div class="col-md-4 col-sm-12 mb-1">
                                 <label class="form-label" for="department_id">Department</label>
                                 <select disabled id="department_id" class="form-select select2" name="department_id">
                                     <option value="">Select Department</option>
@@ -216,7 +252,7 @@
                                         {{ $message }}
                                     @enderror
                                 </span>
-                            </div>
+                            </div> --}}
 
 
                             <div class="col-md-4 col-sm-12 mb-1">
@@ -257,9 +293,9 @@
                                         name="attachments[]" multiple>
                                     <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
                                 </div> --}}
-                                @if ($task)
+                                @if ($taskAssigne)
                                     <ul>
-                                        @foreach ($task->attachments as $attachment)
+                                        @foreach ($taskAssigne->attachments as $attachment)
                                             <li><a target="_blank"
                                                     href="{{ Storage::url('app/' . $attachment->file) }}">{{ last(explode('/', $attachment->file)) }}</a>
                                             </li>
@@ -285,57 +321,117 @@
                                 </span>
                             </div>
 
-                            <div class="col-12 mt-3">
-                                @foreach ($task->comments as $comment)
-                                    <div class="card bg-white shadow-lg">
-                                        <div class="card-header email-detail-head">
-                                            <div
-                                                class="user-details d-flex justify-content-between align-items-center flex-wrap">
-                                                <div class="avatar me-75">
-                                                    @if (!empty($comment->creator->profile_img))
-                                                        <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-                                                            class="" alt="Profile Image" width="48"
-                                                            height="48">
-                                                    @else
-                                                        <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                            class="" alt="Default Avatar" width="48"
-                                                            height="48">
-                                                    @endif
-                                                </div>
-                                                <div class="mail-items">
-                                                    <h5 class="mt-0">{{ $comment->creator->first_name }}</h5>
-                                                    <div class="email-info-dropup dropdown">
-                                                        <span role="button"
-                                                            class="dropdown-toggle font-small-3 text-muted"
-                                                            id="card_top01" data-bs-toggle="dropdown"
-                                                            aria-haspopup="true" aria-expanded="false">
-                                                            {{ $comment->creator->email }}
-                                                        </span>
+                            <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
+                                @foreach ($taskAssigne->comments as $comment)
+                                    @php
+                                        // Get the logged-in user ID
+                                        $loggedInUserId = auth()->id();
+
+                                        // Split the comma-separated list of users to whom the comment is directed
+                                        $toUserIds = explode(',', $comment->to_user_id); // if comma-separated IDs are stored
+                                        // dump($toUserIds);
+                                    @endphp
+
+                                    {{-- Check if the logged-in user can view the comment --}}
+                                    @if (
+                                        $loggedInUserId == $comment->created_by || // Show for comment creator
+                                            in_array($loggedInUserId, $toUserIds) || // Show for users the comment is directed to
+                                            $loggedInUserId == $task->created_by)
+                                        {{-- // Show for task creator --}}
+                                        <div class="card bg-white shadow-lg">
+                                            <div class="card-header email-detail-head">
+                                                <div
+                                                    class="user-details d-flex justify-content-between align-items-center flex-wrap">
+                                                    <div class="avatar me-75">
+                                                        {{-- Check if the comment creator is the logged-in user --}}
+                                                        @if ($loggedInUserId == $comment->created_by)
+                                                            {{-- Display logged-in user's profile image if they are the creator --}}
+                                                            @if (!empty(auth()->user()->profile_img))
+                                                                <img src="{{ asset('storage/' . auth()->user()->profile_img) }}"
+                                                                    alt="Profile Image" width="48" height="48">
+                                                            @else
+                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
+                                                                    alt="Default Avatar" width="48" height="48">
+                                                            @endif
+                                                        @else
+                                                            {{-- Display the comment creator's profile image --}}
+                                                            @if (!empty($comment->creator->profile_img))
+                                                                <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
+                                                                    alt="Profile Image" width="48" height="48">
+                                                            @else
+                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
+                                                                    alt="Default Avatar" width="48" height="48">
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                    <div class="mail-items">
+                                                        {{-- Check if the logged-in user is the comment creator, or show the creator --}}
+                                                        <h5 class="mt-0">
+                                                            {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }}
+                                                        </h5>
+                                                        <div class="email-info-dropup dropdown">
+                                                            <span role="button"
+                                                                class="dropdown-toggle font-small-3 text-muted"
+                                                                id="card_top01" data-bs-toggle="dropdown"
+                                                                aria-haspopup="true" aria-expanded="false">
+                                                                {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div class="mail-meta-item d-flex align-items-center">
+                                                    <small
+                                                        class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                                </div>
                                             </div>
-                                            <div class="mail-meta-item d-flex align-items-center">
-                                                <small
-                                                    class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                            <div class="card-body mail-message-wrapper pt-2">
+                                                <div class="mail-message">
+                                                    {{ $comment->comment }}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="card-body mail-message-wrapper pt-2">
-                                            <div class="mail-message">
-                                                {{ $comment->comment }}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endif
                                 @endforeach
                             </div>
 
+                            @if ($task->created_by == auth()->user()->id)
+                                <div class="col-md-6 col-sm-12 mb-1">
+                                    <label class="form-label" for="comments_for">Comments For </label><span
+                                        class="red">*</span>
+                                    <select id="comments_for" class="form-select select2" name="comments_for[]" multiple
+                                        required>
+                                        <option value="">Select User</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                                <span class="fixed-width">{{ $user->first_name }}
+                                                    {{ $user->last_name }}</span>
+                                                |{{ $user->department->department_name ?? '' }}|
+                                                {{ $user->sub_department->sub_department_name ?? '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <span class="text-danger">
+                                        @error('comments_for')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            @endif
 
                             <div class="col-md-12 col-sm-12 mt-3">
                                 <form action="{{ route('comments.store') }}" method="POST">
                                     @csrf
-                                    <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                    @if ($creator == 1)
+                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                    @else
+                                        <input type="hidden" name="task_id" value="{{ $task->task_id }}">
+                                        <input type="hidden" name="task_created_by" value="{{ $task->created_by }}">
+                                    @endif
+
                                     <div class="mb-3">
-                                        <label for="comment" class="form-label">Add Comment</label>
-                                        <textarea class="form-control" id="comment" name="comment" rows="4"></textarea>
+                                        <label for="comment_form" class="form-label">Add Comment</label>
+                                        <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
