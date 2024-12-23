@@ -381,9 +381,9 @@
                                                 </div>
                                                 <div class="mail-meta-item d-flex align-items-center">
                                                     <small
-                                                        class="mail-date-time text-muted">{{ $comment->created_at }}</small>
+                                                        class="mail-date-time text-muted">{{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y H:i') }}</small>
                                                 </div>
-                                            </div>
+                                            </div> 
                                             <div class="card-body mail-message-wrapper pt-2">
                                                 <div class="mail-message">
                                                     {{ $comment->comment }}
