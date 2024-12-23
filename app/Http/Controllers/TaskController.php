@@ -2685,7 +2685,6 @@ class TaskController extends Controller
         {
             foreach ($user_ids as $user_id) {
                 $user_id = decrypt($user_id);
-
                 $tasksData = TaskAssignee::where('user_id', $user)
                     ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                     ->where('created_by', $user_id)

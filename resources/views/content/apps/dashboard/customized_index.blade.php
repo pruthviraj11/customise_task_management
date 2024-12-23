@@ -411,14 +411,24 @@
                         }
 
 
+                        var totalColumnIndex = totalColumns -
+                            1; // Assuming "Total" column is the last column
+                        var verticalSum = api.column(totalColumnIndex, {
+                                page: 'current'
+                            }).data()
+                            .reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0); // Sum vertically
+                            }, 0);
+
+
                         // Render the grand total in the last column
                         // $(api.column(totalColumns - 1).footer()).html(grandTotal);
 
                         var grandTotalRouteUrl = createUrl(userIds, 'all',
-                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
-                            grandTotalRouteUrl, grandTotal));
+                            grandTotalRouteUrl, verticalSum));
 
                     }
 
@@ -623,13 +633,23 @@
                             grandTotal += columnTotal;
                         }
 
+                        var totalColumnIndex = totalColumns -
+                            1; // Assuming "Total" column is the last column
+                        var verticalSum = api.column(totalColumnIndex, {
+                                page: 'current'
+                            }).data()
+                            .reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0); // Sum vertically
+                            }, 0);
+
+
                         // Render the grand total in the last column
                         // $(api.column(totalColumns - 1).footer()).html(grandTotal);
                         var grandTotalRouteUrl = createUrl(userIds, 'all',
-                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
-                            grandTotalRouteUrl, grandTotal));
+                            grandTotalRouteUrl, verticalSum));
                     }
 
                 });
@@ -839,13 +859,24 @@
                             grandTotal += columnTotal;
                         }
 
+
+                        var totalColumnIndex = totalColumns -
+                            1; // Assuming "Total" column is the last column
+                        var verticalSum = api.column(totalColumnIndex, {
+                                page: 'current'
+                            }).data()
+                            .reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0); // Sum vertically
+                            }, 0);
+
+
                         // Render the grand total in the last column
                         // $(api.column(totalColumns - 1).footer()).html(grandTotal);
                         var grandTotalRouteUrl = createUrl(userIds, 'all',
-                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
-                            grandTotalRouteUrl, grandTotal));
+                            grandTotalRouteUrl, verticalSum));
                     }
 
                 });
