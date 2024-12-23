@@ -73,7 +73,7 @@
         {
             "url": "app/task/main",
             "name": "Main Task",
-            "icon": "phone-incoming",
+            "icon": "clipboard",
             "slug": "app-task-main",
             "permission": [
                 "task-list",
