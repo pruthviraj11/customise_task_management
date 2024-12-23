@@ -68,6 +68,20 @@
 
                         </tr>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 
@@ -107,6 +121,20 @@
 
                         </tr>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 
@@ -146,6 +174,20 @@
 
                         </tr>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 
@@ -339,8 +381,56 @@
                             }
                         },
 
-                    ]
+                    ],
+                    footerCallback: function(row, data, start, end, display) {
+                        var api = this.api();
+                        var totalColumns = api.columns().count();
+                        var grandTotal = 0;
+
+                        for (var i = 1; i < totalColumns; i++) {
+                            var columnTotal = api.column(i).data().reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0);
+                            }, 0);
+
+                            // Construct the URL dynamically based on the column index or data
+                            var userIds = data.map(function(row) {
+                                return row.user_id;
+                            }).join(',');
+
+                            var status_id =
+                            i; // Assuming each column corresponds to a `status_id`
+                            var typeOrStatusId =
+                            'requestedToUsTasks'; // Replace with your type logic
+                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+
+                            // Render the clickable link in the footer
+                            $(api.column(i).footer()).html(renderClickableLink(routeUrl,
+                                columnTotal));
+
+                            grandTotal += columnTotal;
+                        }
+
+                        var grandTotalRouteUrl = createUrl(userIds, 'all', typeOrStatusId); // Pass 'all' or any identifier for the grand total
+
+
+                        // Render the grand total in the last column
+                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                    }
+
                 });
+
+                function createUrl(userId, status_id, typeOrStatusId) {
+                    let routeUrl =
+                        '{{ route('tasks.requested_to_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                    return routeUrl
+                        .replace(':user_id', userId)
+                        .replace(':status_id', status_id)
+                        .replace(':type_or_status_id', typeOrStatusId);
+                }
+
+                function renderClickableLink(routeUrl, data) {
+                    return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
+                }
             });
 
 
@@ -498,8 +588,55 @@
                             }
                         },
 
-                    ]
+                    ],
+                    footerCallback: function(row, data, start, end, display) {
+                        var api = this.api();
+                        var totalColumns = api.columns().count();
+                        var grandTotal = 0;
+
+                        for (var i = 1; i < totalColumns; i++) {
+                            var columnTotal = api.column(i).data().reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0);
+                            }, 0);
+
+                            console.log(row);
+                            // Construct the URL dynamically based on the column index or data
+                            var userIds = data.map(function(row) {
+                                return row.user_id;
+                            }).join(',');
+
+                            var status_id =
+                            i; // Assuming each column corresponds to a `status_id`
+                            var typeOrStatusId =
+                            'requestedToUsTasks'; // Replace with your type logic
+                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+
+                            // Render the clickable link in the footer
+                            $(api.column(i).footer()).html(renderClickableLink(routeUrl,
+                                columnTotal));
+
+                            grandTotal += columnTotal;
+                        }
+
+                        // Render the grand total in the last column
+                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                    }
+
                 });
+                function createUrl(userId, status_id, typeOrStatusId) {
+                    let routeUrl =
+                        '{{ route('tasks.requested_by_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                    return routeUrl
+                        .replace(':user_id', userId)
+                        .replace(':status_id', status_id)
+                        .replace(':type_or_status_id', typeOrStatusId);
+                }
+
+                function renderClickableLink(routeUrl, data) {
+                    return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
+                }
+
+
             });
 
 
@@ -661,8 +798,55 @@
                             }
                         },
 
-                    ]
+                    ],
+                    footerCallback: function(row, data, start, end, display) {
+                        var api = this.api();
+                        var totalColumns = api.columns().count();
+                        var grandTotal = 0;
+
+                        for (var i = 1; i < totalColumns; i++) {
+                            var columnTotal = api.column(i).data().reduce(function(a, b) {
+                                return a + (parseFloat(b) || 0);
+                            }, 0);
+
+                            console.log(row);
+                            // Construct the URL dynamically based on the column index or data
+                            var userIds = data.map(function(row) {
+                                return row.user_id;
+                            }).join(',');
+
+                            var status_id =
+                            i; // Assuming each column corresponds to a `status_id`
+                            var typeOrStatusId =
+                            'requestedToUsTasks'; // Replace with your type logic
+                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+
+                            // Render the clickable link in the footer
+                            $(api.column(i).footer()).html(renderClickableLink(routeUrl,
+                                columnTotal));
+
+                            grandTotal += columnTotal;
+                        }
+
+                        // Render the grand total in the last column
+                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                    }
+
                 });
+                function createUrl(userId, status_id, typeOrStatusId) {
+                    let routeUrl =
+                        '{{ route('tasks.total_task_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                    return routeUrl
+                        .replace(':user_id', userId)
+                        .replace(':status_id', status_id)
+                        .replace(':type_or_status_id', typeOrStatusId);
+                }
+
+                function renderClickableLink(routeUrl, data) {
+                    return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
+                }
+
+
             });
 
 

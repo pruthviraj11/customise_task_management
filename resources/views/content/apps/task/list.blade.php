@@ -525,6 +525,18 @@
                     ajaxUrl =
                         "{{ route('tasks.total_task_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
+            @elseif ($type == 'tasks.requested_to_us_footer_total' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+                @elseif ($type == 'tasks.requested_by_us_footer_total' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
+                @elseif ($type == 'tasks.total_task_footer_total' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.total_task_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
+                }
             @endif
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',

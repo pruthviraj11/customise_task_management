@@ -124,6 +124,12 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/requested_to_us_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
     ->name('tasks.requested_to_us_total_task_list');
 
+
+    Route::get('/tasks/requested_to_us_footer_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_to_us_footer_total');
+    Route::get('/tasks/requested_to_us_footer_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFooterTotalTasks'])
+    ->name('tasks.requested_to_us_footer_total_list');
+
     /////////////////////////  Routes For Requested To Us  Ends      ///////////////////////
 
 
@@ -164,6 +170,11 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/requested_by_us_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
     ->name('tasks.requested_by_us_total_task_list');
 
+    Route::get('/tasks/requested_by_us_footer_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.requested_by_us_footer_total');
+    Route::get('/tasks/requested_by_us_footer_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedByUsFooterTotalTasks'])
+    ->name('tasks.requested_by_us_footer_total_list');
+
     /////////////////////////  Routes For Requested By Us Ends ///////////////////////
 
     /////////////////////////  Routes For Total task Starts   ///////////////////////
@@ -203,6 +214,12 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     ->name('tasks.total_task_total_task');
     Route::get('/tasks/total_task_total_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsTotalTasks'])
     ->name('tasks.total_task_total_task_list');
+
+
+    Route::get('/tasks/total_task_footer_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    ->name('tasks.total_task_footer_total');
+    Route::get('/tasks/total_task_footer_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'totalTaskFooterTotalTasks'])
+    ->name('tasks.total_task_footer_total_list');
 
     /////////////////////////  Routes For Total task Ends ///////////////////////
     /// Route For Dashboard data onclick counts Ends

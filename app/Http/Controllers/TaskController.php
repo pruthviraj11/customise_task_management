@@ -77,7 +77,6 @@ class TaskController extends Controller
 
         $type = last(explode('-', request()->route()->getName()));
 
-
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
 
@@ -2511,6 +2510,886 @@ class TaskController extends Controller
 
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
+    }
+
+
+
+
+    public function requestedToUsFooterTotalTasks($user_id, $status_id, $type)
+    {
+
+        $user_ids = explode(',', $user_id);
+        // $tasks = [];
+
+        $tasks = collect();
+
+        $user = auth()->user()->id;
+
+
+        if ($status_id == '1')  // requested_by_us
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('status', 0)
+                    ->where('created_by', $user_id)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 2)  // Conceptualization
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 1)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 2) //
+        {
+
+
+        } elseif ($status_id == 3) //Scope Defined
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 3)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 4) //In Execution
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 5)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 5) ///For Hold
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 6)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 6)  //pending
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->whereIn('task_status', [1, 3, 5, 6])
+                    ->where('created_by', $user_id)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 7) //For OverDue
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('created_by', $user_id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '<', $cdate)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 8) //For Todays Due
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('created_by', $user_id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '=', $cdate)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 9)     // For Completed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 4)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 10)     // For Closed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 7)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 11)     // For Finished Tasks
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->whereIn('task_status', ['4', '7'])
+                    ->where('created_by', $user_id)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        }
+
+
+        return DataTables::of($tasks)
+
+            ->addColumn('actions', function ($row) {
+                // dd($row);
+                $encryptedId = encrypt($row->task_id);
+                // $satusData = TaskAssignee::where('')
+                $updateButton = '';
+                $deleteButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+            })
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+            })
+
+
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
+            })
+
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            })
+
+            ->addColumn('sub_department', function ($row) {
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
+            ->make(true);
+
+
+    }
+
+    public function requestedByUsFooterTotalTasks($user_id, $status_id, $type)
+    {
+
+        $user_ids = explode(',', $user_id);
+        // $tasks = [];
+
+        $tasks = collect();
+
+        $user = auth()->user()->id;
+
+
+        if ($status_id == '1')  // requested_by_us
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('status', 0)
+                    ->where('created_by', $user)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 2)  // Conceptualization
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 1)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 2) //
+        {
+
+
+        } elseif ($status_id == 3) //Scope Defined
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 3)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 4) //In Execution
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 5)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 5) ///For Hold
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 6)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 6)  //pending
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->whereIn('task_status', [1, 3, 5, 6])
+                    ->where('created_by', $user)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 7) //For OverDue
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('created_by', $user)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '<', $cdate)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 8) //For Todays Due
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('created_by', $user)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '=', $cdate)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 9)     // For Completed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 4)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 10)     // For Closed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 7)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 11)     // For Finished Tasks
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->whereIn('task_status', ['4', '7'])
+                    ->where('created_by', $user)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        }
+
+        return DataTables::of($tasks)
+
+            ->addColumn('actions', function ($row) {
+                // dd($row);
+                $encryptedId = encrypt($row->task_id);
+                // $satusData = TaskAssignee::where('')
+                $updateButton = '';
+                $deleteButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+            })
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+            })
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
+            })
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            })
+            ->addColumn('sub_department', function ($row) {
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
+            ->make(true);
+
+
+    }
+
+    public function totalTaskFooterTotalTasks($user_id, $status_id, $type)
+    {
+        dd('Hii total',$type);
+        $user_ids = explode(',', $user_id);
+        // $tasks = [];
+
+        $tasks = collect();
+
+        $user = auth()->user()->id;
+
+
+        if ($status_id == '1')  // requested_by_us
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasks_A = TaskAssignee::where('user_id', $user)
+                    ->where('status', '0')
+                    ->where('created_by', $user_id)
+                    ->get();
+
+                $tasks_B = TaskAssignee::where('user_id', $user_id)
+                    ->where('status', '0')
+                    ->where('created_by', $user)
+                    ->get();
+
+                // Combine the results into one collection
+                $tasksData = $tasks_A->merge($tasks_B);
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 2)  // Conceptualization
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                // $tasksData = TaskAssignee::where('user_id', $user_id)
+                //     ->where('task_status', 1)
+                //     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                //     ->get();
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 1)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 1)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 2) //
+        {
+
+
+        } elseif ($status_id == 3) //Scope Defined
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                // $tasksData = TaskAssignee::where('user_id', $user_id)
+                //     ->where('task_status', 3)
+                //     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                //     ->get();
+
+                $tasksDataA = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 3)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 3)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 4) //In Execution
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 5)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 5)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 5) ///For Hold
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 6)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 6)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 6)  //pending
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->whereIn('task_status', [1, 3, 5, 6])
+                    ->where('created_by', $user_id)
+                    ->get();
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->whereIn('task_status', [1, 3, 5, 6])
+                    ->where('created_by', $user)
+                    ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
+        } elseif ($status_id == 7) //For OverDue
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('created_by', $user_id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '<', $cdate)
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('created_by', $user)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '<', $cdate)
+                    ->get();
+
+                $tasksData = $tasksDataA->merge($tasksDataB);
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 8) //For Todays Due
+        {
+
+            $cdate = date("Y-m-d");
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('created_by', $user_id)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '=', $cdate)
+                    ->get();
+
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('created_by', $user)
+                    ->whereNotIn('task_status', [4, 7])
+                    ->whereDate('due_date', '=', $cdate)
+                    ->get();
+
+                $tasksData = $tasksDataA->merge($tasksDataB);
+                $tasks = $tasks->merge($tasksData);
+            }
+
+
+        } elseif ($status_id == 9)     // For Completed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 4)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 4)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 10)     // For Closed
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->where('task_status', 7)
+                    ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->where('task_status', 7)
+                    ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->get();
+
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        } elseif ($status_id == 11)     // For Finished Tasks
+        {
+
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                    ->whereIn('task_status', ['4', '7'])
+                    ->where('created_by', $user_id)
+                    ->get();
+
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                    ->whereIn('task_status', ['4', '7'])
+                    ->where('created_by', $user)
+                    ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+        }
+
+
+        return DataTables::of($tasks)
+
+            ->addColumn('actions', function ($row) {
+                // dd($row);
+                $encryptedId = encrypt($row->task_id);
+                // $satusData = TaskAssignee::where('')
+                $updateButton = '';
+                $deleteButton = '';
+                $acceptButton = '';
+                if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+            })
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+            })
+
+
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
+            })
+
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            })
+
+            ->addColumn('sub_department', function ($row) {
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+
+
+
+
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
+            ->make(true);
+
+
     }
 
     // 27-06
@@ -5752,8 +6631,8 @@ class TaskController extends Controller
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
-                 if (auth()->user()->id == '1') {
-                    if ($row->status == 0 ) {
+                if (auth()->user()->id == '1') {
+                    if ($row->status == 0) {
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
@@ -5976,7 +6855,7 @@ class TaskController extends Controller
         // dd($request->all());
         // Start by updating the subtask with the new data
         $subtask->due_date = $request->due_date;
-        $subtask->task_status =  $request->status; // Assuming task_status is an integer
+        $subtask->task_status = $request->status; // Assuming task_status is an integer
 
         // Save the subtask
         if (!$subtask->save()) {
@@ -5987,13 +6866,13 @@ class TaskController extends Controller
         }
 
 
-       
-            $comment = new Comments(); // Assuming you have a Comment model
-            $comment->comment = $request->comment;
-            $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
-            $comment->created_by = auth()->id(); // The ID of the currently authenticated user
-            $comment->save();
-       
+
+        $comment = new Comments(); // Assuming you have a Comment model
+        $comment->comment = $request->comment;
+        $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
+        $comment->created_by = auth()->id(); // The ID of the currently authenticated user
+        $comment->save();
+
         // Return success response
         return response()->json([
             'success' => true,
