@@ -76,7 +76,7 @@ class TaskController extends Controller
         }
 
         $type = last(explode('-', request()->route()->getName()));
-
+        // dd($type);
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
 
@@ -182,20 +182,7 @@ class TaskController extends Controller
             $id = decrypt($encrypted_id);
 
             $task = $this->taskService->gettask($id);
-            if ($task && $task->creator->id == auth()->user()->id) {
-                // dd($task);
-                $creator = 1;
-                $taskAssigne = $this->taskService->gettask($id);
-                $getTaskComments = Comments::where('task_id', $task->id)->get();
-                // $getTaskComments = Task::where('id', $task->task_id)->first();
-            } else {
-                $taskAssigne = $this->taskService->gettask($id);
-                $task = $this->taskService->gettaskAssigne($id)->first();
-                $getTaskComments = Comments::where('task_id', $task->task_id)->first();
-                // dd($getTaskComments);
-                $creator = 0;
-                // dd($task);
-            }
+
             $page_data['page_title'] = "Task";
             $page_data['form_title'] = "Edit Task";
 
@@ -213,9 +200,9 @@ class TaskController extends Controller
             if ($user) {
                 $hasAcceptedTask = $task->isAcceptedByUser($user->id);
             }
-            return view('content.apps.task.view', compact('page_data', 'hasAcceptedTask', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId','getTaskComments','taskAssigne','creator'));
+            return view('content.apps.task.view', compact('page_data', 'hasAcceptedTask', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId'));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            // dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
 
@@ -478,26 +465,19 @@ class TaskController extends Controller
 
     public function storeComments(Request $request)
     {
-       
-        if ($request->comment_form != '') {
-            // Create a new comment
-            $comment = new Comments();
-            $comment->comment = $request->get('comment_form');
-            $comment->task_id = $request->get('task_id');
-            $comment->created_by = auth()->id();
+        // dd("sd");
+        // dd($request->all());
+        $request->validate([
+            'comment' => 'required|string',
+            'task_id' => 'required|exists:tasks,id',
+        ]);
 
-            // Check if 'comments_for' is empty or null
-            if (empty($request->comments_for)) {
-                // If 'comments_for' is empty or null, store task creator's ID in 'to_user_id'
-                $comment->to_user_id = $request->task_created_by;
-            } else {
-                // Otherwise, store the comma-separated list of user IDs in 'to_user_id'
-                $comment->to_user_id = implode(',', $request->comments_for);
-            }
-            // dd($comment);
-            // Save the comment
-            $comment->save();
-        }
+        $comment = new Comments();
+        $comment->comment = $request->input('comment');
+        $comment->task_id = $request->input('task_id');
+        $comment->created_by = Auth::id();
+        $comment->save();
+        // return redirect()->route("app-task-list")->with('success', 'Comment added successfully!');
         return redirect()->back()->with('success', 'Comment added successfully!');
     }
 
@@ -716,7 +696,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1264,7 +1244,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -2701,8 +2681,18 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        }
+        } elseif ($status_id == 'all')      //For Grand Total
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
 
+                $tasksData = TaskAssignee::where('user_id', $user)
+                    ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                    ->where('created_by', $user_id)
+                    ->get();
+                $tasks = $tasks->merge($tasksData);
+            }
+        }
 
         return DataTables::of($tasks)
 
@@ -2966,6 +2956,18 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
+        } elseif ($status_id == 'all')      //For Grand Total
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksData = TaskAssignee::where('user_id', $user_id)
+                    ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                    ->where('created_by', $user)
+                    ->get();
+
+                $tasks = $tasks->merge($tasksData);
+            }
         }
 
         return DataTables::of($tasks)
@@ -3058,7 +3060,6 @@ class TaskController extends Controller
 
     public function totalTaskFooterTotalTasks($user_id, $status_id, $type)
     {
-        dd('Hii total',$type);
         $user_ids = explode(',', $user_id);
         // $tasks = [];
 
@@ -3310,6 +3311,25 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
+        }elseif ($status_id == 'all')      //For Grand Total
+        {
+            foreach ($user_ids as $user_id) {
+                $user_id = decrypt($user_id);
+
+                $tasksDataA = TaskAssignee::where('user_id', $user)
+                ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('created_by', $user_id)
+                ->get();
+
+                $tasksDataB = TaskAssignee::where('user_id', $user_id)
+                ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('created_by', $user)
+                ->get();
+                $tasksData = $tasksDataA->merge($tasksDataB);
+
+                $tasks = $tasks->merge($tasksData);
+            }
+
         }
 
 
@@ -3769,7 +3789,6 @@ class TaskController extends Controller
     public function store(CreateTaskRequest $request)
     {
         try {
-            // dd($request->all());
             // Fetch project, priority, and status
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
@@ -3784,7 +3803,7 @@ class TaskController extends Controller
                 'project_id' => $request->get('project_id'),
                 'project_name' => $project->project_name,
                 'start_date' => $request->get('start_date'),
-                'due_date' => $request->get('due_date_form'),
+                'due_date' => $request->get('due_date'),
                 'priority_id' => $request->get('priority_id'),
                 'priority_name' => $priority->priority_name,
                 'task_status' => $request->get('task_status'),
@@ -3847,7 +3866,7 @@ class TaskController extends Controller
                     'status' => 0,
                     'task_status' => $request->get('task_status'),
                     'task_number' => $taskNumber,
-                    'due_date' => $request->get('due_date_form'),
+                    'due_date' => $request->get('due_date'),
                     'department' => $departmentId,  // Save department_id
                     'sub_department' => $subdepartment, // Save subdepartment
                     'created_by' => auth()->user()->id,
@@ -3903,13 +3922,11 @@ class TaskController extends Controller
             $task = $this->taskService->gettask($id);
             $Maintask = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
-                // dd($task);
                 $creator = 1;
-                $getTaskComments = Comments::where('task_id', $task->id)->get();
-                // $getTaskComments = Task::where('id', $task->task_id)->first();
+                $getTaskComments = '';
             } else {
                 $task = $this->taskService->gettaskAssigne($id)->first();
-                $getTaskComments = Comments::where('task_id', $task->task_id)->get();
+                $getTaskComments = Task::where('id', $task->task_id)->first();
                 // dd($getTaskComments);
                 $creator = 0;
                 // dd($task);
@@ -4271,7 +4288,7 @@ class TaskController extends Controller
                     'status_name' => $status->status_name,
                     'project_id' => $request->get('project_id'),
                     'start_date' => $request->get('start_date'),
-                    'due_date' => $request->get('due_date_form'),
+                    'due_date' => $request->get('due_date'),
                     'priority_id' => $request->get('priority_id'),
                     'task_status' => $request->get('task_status'),
                     'updated_by' => auth()->user()->id,
@@ -4337,7 +4354,7 @@ class TaskController extends Controller
             } else {
                 // dd($request->get('due_date'));
                 $taskData = [
-                    'due_date' => $request->get('due_date_form'),
+                    'due_date' => $request->get('due_date'),
                     'task_status' => $request->get('task_status'),
                 ];
                 // dd($taskData);
@@ -4531,30 +4548,15 @@ class TaskController extends Controller
                 createNotification($user->id, $task->id, $updateMessage, 'Updated');
             }
 
-
-
-            if ($request->comment_form != '') {
-                // Create a new comment
+            // Check if any comment was provided and save it
+            // dd($$request->comment);
+            if ($request->comment != '') {
                 $comment = new Comments();
-                $comment->comment = $request->get('comment_form');
-                $comment->task_id = $request->get('task_id');
+                $comment->comment = $request->input('comment');
+                $comment->task_id = $request->input('task_id');
                 $comment->created_by = auth()->id();
-
-                // Check if 'comments_for' is empty or null
-                if (empty($request->comments_for)) {
-                    // If 'comments_for' is empty or null, store task creator's ID in 'to_user_id'
-                    $comment->to_user_id = $request->task_created_by;
-                } else {
-                    // Otherwise, store the comma-separated list of user IDs in 'to_user_id'
-                    $comment->to_user_id = implode(',', $request->comments_for);
-                }
-                // dd($comment);
-                // Save the comment
                 $comment->save();
             }
-
-
-
 
             // Redirect based on success or failure
             if ($updated) {
@@ -5906,7 +5908,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)->orWhere('created_by',auth()->user()->id)
+                $q->where('user_id', $userId)
                     ->whereHas('user', function ($q) {
                         // Ensure the user is not deleted (i.e., deleted_at is null)
                         $q->whereNull('deleted_at');

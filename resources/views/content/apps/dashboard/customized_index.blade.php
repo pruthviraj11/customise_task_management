@@ -398,9 +398,9 @@
                             }).join(',');
 
                             var status_id =
-                            i; // Assuming each column corresponds to a `status_id`
+                                i; // Assuming each column corresponds to a `status_id`
                             var typeOrStatusId =
-                            'requestedToUsTasks'; // Replace with your type logic
+                                'requestedToUsTasks'; // Replace with your type logic
                             var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
 
                             // Render the clickable link in the footer
@@ -410,11 +410,16 @@
                             grandTotal += columnTotal;
                         }
 
-                        var grandTotalRouteUrl = createUrl(userIds, 'all', typeOrStatusId); // Pass 'all' or any identifier for the grand total
-
 
                         // Render the grand total in the last column
-                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
+
+                        var grandTotalRouteUrl = createUrl(userIds, 'all',
+                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+
+                        $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
+                            grandTotalRouteUrl, grandTotal));
+
                     }
 
                 });
@@ -606,9 +611,9 @@
                             }).join(',');
 
                             var status_id =
-                            i; // Assuming each column corresponds to a `status_id`
+                                i; // Assuming each column corresponds to a `status_id`
                             var typeOrStatusId =
-                            'requestedToUsTasks'; // Replace with your type logic
+                                'requestedToUsTasks'; // Replace with your type logic
                             var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
 
                             // Render the clickable link in the footer
@@ -619,10 +624,16 @@
                         }
 
                         // Render the grand total in the last column
-                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                        var grandTotalRouteUrl = createUrl(userIds, 'all',
+                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+
+                        $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
+                            grandTotalRouteUrl, grandTotal));
                     }
 
                 });
+
                 function createUrl(userId, status_id, typeOrStatusId) {
                     let routeUrl =
                         '{{ route('tasks.requested_by_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
@@ -816,9 +827,9 @@
                             }).join(',');
 
                             var status_id =
-                            i; // Assuming each column corresponds to a `status_id`
+                                i; // Assuming each column corresponds to a `status_id`
                             var typeOrStatusId =
-                            'requestedToUsTasks'; // Replace with your type logic
+                                'requestedToUsTasks'; // Replace with your type logic
                             var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
 
                             // Render the clickable link in the footer
@@ -829,10 +840,16 @@
                         }
 
                         // Render the grand total in the last column
-                        $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
+                        var grandTotalRouteUrl = createUrl(userIds, 'all',
+                        typeOrStatusId); // Pass 'all' or any identifier for the grand total
+
+                        $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
+                            grandTotalRouteUrl, grandTotal));
                     }
 
                 });
+
                 function createUrl(userId, status_id, typeOrStatusId) {
                     let routeUrl =
                         '{{ route('tasks.total_task_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';

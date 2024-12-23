@@ -130,6 +130,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/requested_to_us_footer_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsFooterTotalTasks'])
     ->name('tasks.requested_to_us_footer_total_list');
 
+
     /////////////////////////  Routes For Requested To Us  Ends      ///////////////////////
 
 
