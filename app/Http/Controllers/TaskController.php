@@ -742,7 +742,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1049,11 +1049,11 @@ class TaskController extends Controller
         // dd($tasks);
 
         $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->where('task_assignees.created_by', $userId)
-            ->whereDoesntHave('user', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            });
+        ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+        ->where('task_assignees.created_by', $userId)
+        ->whereDoesntHave('user', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
         $tasksTemp = array();
         foreach ($tasks as $key => $item) {
             // dd($key, $item);
@@ -1430,7 +1430,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
