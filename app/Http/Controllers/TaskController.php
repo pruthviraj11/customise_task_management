@@ -742,7 +742,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1049,11 +1049,11 @@ class TaskController extends Controller
         // dd($tasks);
 
         $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-        ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-        ->where('task_assignees.created_by', $userId)
-        ->whereDoesntHave('user', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->get();
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->where('task_assignees.created_by', $userId)
+            ->whereDoesntHave('user', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->get();
         $tasksTemp = array();
         foreach ($tasks as $key => $item) {
             // dd($key, $item);
@@ -1430,7 +1430,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -7258,6 +7258,88 @@ class TaskController extends Controller
         ]);
     }
 
+    public function checkAndCreateTasks()
+    {
+        // Get today's date
+        $today = Carbon::today()->toDateString();
 
+        // Get all recurring tasks where start_date is today
+        $tasksToCreate = RecurringTask::whereDate('start_date', $today)->get();
+        // dd($tasksToCreate);
+        foreach ($tasksToCreate as $recurringTask) {
+            // Prepare task data (copied from your original example)
+            $taskData = [
+                'ticket' => 1, // Assuming ticket is stored as part of recurring task
+                'title' => $recurringTask->title,
+                'description' => $recurringTask->description,
+                'subject' => $recurringTask->subject,
+                'project_id' => $recurringTask->project_id,
+                'start_date' => $recurringTask->start_date,
+                'due_date' => $recurringTask->due_date,
+                'priority_id' => $recurringTask->priority_id,
+                'task_status' => $recurringTask->task_status,
+                'created_by' => auth()->user()->id,
+            ];
+
+            // Handle status-specific fields
+            if ($recurringTask->task_status == 4) {
+                $taskData['completed_date'] = now();
+            }
+            if ($recurringTask->task_status == 7) {
+                $taskData['close_date'] = now();
+            }
+
+            // Create the task
+            $task = Task::create($taskData);
+
+            // Get user IDs from the recurring task
+            $userIds = explode(',', $recurringTask->task_assignes);
+
+            // Assign task numbers and update pivot table
+            $startingTaskNumber = 1; // Starting task number for each user
+            foreach ($userIds as $index => $userId) {
+                $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
+                $user = User::find($userId);
+
+                // Prepare user-specific data
+                $departmentId = $user->department_id;
+                $subdepartment = $user->subdepartment;
+
+                // Update pivot with user-specific task number and additional details
+                $task->users()->updateExistingPivot($userId, [
+                    'status' => 0, // New task
+                    'task_status' => $recurringTask->task_status,
+                    'task_number' => $taskNumber,
+                    'due_date' => $recurringTask->due_date,
+                    'department' => $departmentId,
+                    'sub_department' => $subdepartment,
+                    'created_by' => auth()->user()->id,
+                    'created_at' => now(),
+                ]);
+            }
+
+            // Send notifications to users
+            $this->sendTaskNotifications($task, $userIds);
+
+            // Optionally, return a response or redirect
+        }
+
+        return redirect()->route('app-task-list')->with('success', 'Recurring tasks for today created successfully.');
+    }
+
+    // Helper method to send notifications
+    protected function sendTaskNotifications($task, $userIds)
+    {
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            // Send notification to the user
+            createNotification(
+                $user->id,
+                $task->id,
+                'New task ' . $task->id . ' assigned to you.',
+                'Created'
+            );
+        }
+    }
 
 }

@@ -414,7 +414,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     Route::get('task/conceptualization', [TaskController::class, 'index'])->name('app-task-get-conceptualization');
     Route::get('task/getAll_conceptualization', [TaskController::class, 'getAll_conceptualization'])->name('app-task-getAll_conceptualization-get');
-
+    Route::get('/check-tasks', [TaskController::class, 'checkAndCreateTasks'])->name('check-tasks');
     Route::get('task/closed', [TaskController::class, 'index'])->name('app-task-get-close');
     Route::get('task/getAll_close', [TaskController::class, 'getAll_close'])->name('app-task-getAll_close-get');
 
