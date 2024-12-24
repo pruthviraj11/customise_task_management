@@ -334,6 +334,9 @@
                 ViewUrl = "{{ route('app-task-kanban-mytask-get') }}";
             } else if (type == 'assign_by_me') {
                 ViewUrl = "{{ route('app-task-kanban-assign_by_me') }}";
+            } else if(type == 'main'){
+                ViewUrl = "{{ route('app-task-kanban-main') }}";
+
             }
             var upDateUrl = "{{ route('app-task-updateTaskFromView-all', ['taskId', 'StatusId']) }}";
         </script>

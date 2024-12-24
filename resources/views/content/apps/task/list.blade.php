@@ -59,7 +59,7 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    @if ($type === 'list')
+                    @if ($type === 'list' || $type === 'main')
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">

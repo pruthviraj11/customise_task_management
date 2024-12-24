@@ -684,17 +684,19 @@ class TaskController extends Controller
         $userId = auth()->user()->id;
 
         // Fetch tasks assigned to the user but created by the authenticated user
-        $tasks = TaskAssignee::with(['task', 'creator','department_data','sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+        $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
             ->where('task_assignees.created_by', $userId)
             ->whereDoesntHave('user', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             });
 
+
+
         if ($request->has('search') && $request->get('search')['value']) {
             $search = $request->get('search')['value'];
 
-           $tasks->where(function ($query) use ($search) {
+            $tasks->where(function ($query) use ($search) {
                 $query->where('tasks.title', 'LIKE', "%{$search}%")
                     ->orWhere('tasks.description', 'LIKE', "%{$search}%")
                     ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
@@ -1030,6 +1032,54 @@ class TaskController extends Controller
         return response()->json($res);
 
     }
+
+    public function getAll_kanban_main()
+    {
+        $status = $this->statusService->getAllstatus();
+        // $tasks = $this->taskService->getAlltask()->toArray();
+        $userId = auth()->user()->id;
+
+        // Retrieve tasks where the user is either the creator or assigned
+        // $tasks = Task::where('created_by', $userId)
+        //     ->whereDoesntHave('assignees', function ($query) use ($userId) {
+        //         $query->where('user_id', $userId);
+        //     })
+        //     ->get();
+        // dd($tasks);
+
+        $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+        ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+        ->where('task_assignees.created_by', $userId)
+        ->whereDoesntHave('user', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        });
+        $tasksTemp = array();
+        foreach ($tasks as $key => $item) {
+            // dd($key, $item);
+            $tasksTemp[$item['task_status']][] = [
+                "id" => encrypt($item['id']),
+                "title" => $item['title'],
+                "comments" => "0",
+                "badge-text" => $item['task_status'],
+                "badge" => "success",
+                "due-date" => date('d F', strtotime($item['due_date'])),
+                "attachments" => "0",
+                "assigned" => [
+                    "avatar-s-1.jpg",
+                    "avatar-s-2.jpg"
+                ],
+                "members" => ["Bruce", "Dianna"]
+            ];
+        }
+
+        $res = [];
+        foreach ($status as $key => $value) {
+            $res[] = ['id' => encrypt($value['id']), 'title' => $value['displayname'], 'item' => (isset($tasksTemp[$value['id']])) ? $tasksTemp[$value['id']] : []];
+        }
+
+        return response()->json($res);
+
+    }
     public function getAll_kanban_assign_by_me()
     {
         // dd('zdf');
@@ -1210,9 +1260,11 @@ class TaskController extends Controller
     }
 
 
-    public function getAll_main()
+    public function getAll_main(Request $request)
     {
         $user = auth()->user();
+
+        $query = Task::query();
 
         if (Auth()->user()->id == 1) {
 
@@ -1225,7 +1277,7 @@ class TaskController extends Controller
             // })
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
-            $tasks = Task::whereNull('deleted_at')->get();
+            $query->whereNull('deleted_at')->get();
 
         } else {
 
@@ -1239,12 +1291,103 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
 
-            $tasks = Task::where('created_by', $user->id)->whereNull('deleted_at')->get();
-
+            $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
 
         }
 
 
+        if ($task_filter = $request->input('task')) {
+            // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
+            $query->where('ticket', $task_filter);
+
+        }
+
+        if ($department_filter = $request->input('department')) {
+            $query->whereHas('taskAssignees', function ($q) use ($department_filter) {
+                $q->where('department', $department_filter);
+            });
+        }
+
+        if ($created_by = $request->input('created_by')) {
+            $query->whereHas('taskAssignees', function ($q) use ($created_by) {
+                $q->where('created_by', $created_by);
+            });
+        }
+
+        if ($assignees = $request->input('assignees')) {
+            $query->whereHas('user', function ($q) use ($assignees) {
+                $q->whereIn('user_id', $assignees);
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $query->whereHas('taskAssignees', function ($q) use ($status) {
+                $q->where('task_status', $status);
+            });
+        }
+
+        // Date filters
+        if ($request->input('dt_date')) {
+            $dtDateRange = parseDateRange($request->input('dt_date'));
+
+            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+                if (!empty($dtDateRange[1])) {
+                    // Both start and end dates are available
+                    $q->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
+                } else {
+                    $inputDate = $request->input('dt_date');
+                    $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                    // Only a single date is provided
+                    $q->whereDate('start_date', $formattedDate);
+                }
+            });
+        }
+
+
+
+        if ($request->input('accepted_task_date')) {
+            $dtDateRange = parseDateRange($request->input('accepted_task_date'));
+            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+                if (!empty($dtDateRange[1])) {
+                    // Both start and end dates are available
+                    $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);
+                } else {
+                    $inputDate = $request->input('accepted_task_date');
+                    $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                    // Only a single date is provided
+                    $query->whereDate('accepted_date', $formattedDate);
+                }
+            });
+        }
+
+
+
+        if ($request->input('end_date')) {
+            $dtDateRange = parseDateRange($request->input('end_date'));
+
+
+
+            if (!empty($dtDateRange[1])) {
+                // Both start and end dates are available
+                $query->whereBetween('due_date', [$dtDateRange[0], $dtDateRange[1]]);
+            } else {
+                $inputDate = $request->input('end_date');
+                $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                // Only a single date is provided
+                $query->whereDate('due_date', $formattedDate);
+            }
+        }
+
+
+
+        // Handle the project filter
+        if ($project = $request->input('project')) {
+            $query->whereHas('task', function ($q) use ($project) {
+                $q->where('project_id', $project); // Filter tasks by their project_id
+            });
+        }
+
+        $tasks = $query->get();
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // $satusData = TaskAssignee::where('')
@@ -1508,17 +1651,17 @@ class TaskController extends Controller
 
         // Modify query based on task_assignees table
         if ($user->id == 1) {
-            $tasks = TaskAssignee::with(['task', 'creator','department_data','sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->whereHas('task', function ($query) {
-                $query->where('status', '1'); // Assuming 'status' is in the Task model
-            });
+            $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->whereHas('task', function ($query) {
+                    $query->where('status', '1'); // Assuming 'status' is in the Task model
+                });
         } else {
-            $tasks = TaskAssignee::with(['task', 'creator','department_data','sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->whereHas('task', function ($query) use ($user) {
-                $query->where('status', '1'); // Assuming 'status' is in the Task model
-            })->where('user_id', $user->id); // Ensure we filter by the logged-in user
+            $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->whereHas('task', function ($query) use ($user) {
+                    $query->where('status', '1'); // Assuming 'status' is in the Task model
+                })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
         // // Apply search filter if provided
@@ -1536,7 +1679,7 @@ class TaskController extends Controller
         if ($request->has('search') && $request->get('search')['value']) {
             $search = $request->get('search')['value'];
 
-           $tasks->where(function ($query) use ($search) {
+            $tasks->where(function ($query) use ($search) {
                 $query->where('tasks.title', 'LIKE', "%{$search}%")
                     ->orWhere('tasks.description', 'LIKE', "%{$search}%")
                     ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
@@ -6724,15 +6867,21 @@ class TaskController extends Controller
             }
         }
     }
-    public function getAll_mytask()
+    public function getAll_mytask(Request $request)
     {
         $userId = auth()->user()->id;
 
         // Query using TaskAssignee model
-        $tasks = TaskAssignee::where('user_id', $userId)  // Focus on task assignees
+        $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+
+            ->where('user_id', $userId)  // Focus on task assignees
             ->where('status', '!=', 2)  // Ensure the task is not deleted (assuming status 2 is deleted)
             ->with([
                 'task',  // Load the related task
+                'creator',
+                'department_data',
+                'sub_department_data',
                 'task.attachments',
                 'task.assignees' => function ($query) {
                     $query->select('task_id', 'status', 'remark'); // Customize as needed
@@ -6749,7 +6898,28 @@ class TaskController extends Controller
                     ->havingRaw('COUNT(task_assignees.user_id) = 1');  // Ensure task has only one assignee
             });
 
-        return DataTables::of($tasks)
+
+        if ($request->has('search') && $request->get('search')['value']) {
+            $search = $request->get('search')['value'];
+            $tasks->where(function ($query) use ($search) {
+                $query->where('tasks.title', 'LIKE', "%{$search}%")
+                    ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                    ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                    ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
+                    ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
+                    ->orWhereHas('creator', function ($creatorQuery) use ($search) {
+                        $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
+                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
+                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+        return DataTables::of($tasks->get())
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
                 $encryptedId = encrypt($row->task_id);

@@ -392,6 +392,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/kanban/all', [TaskController::class, 'getAll_kanban_all'])->name('app-task-kanban-get-all');
     Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
+    Route::get('task/kanban/main', [TaskController::class, 'getAll_kanban_main'])->name('app-task-kanban-main');
+
     // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::post('/subtask/{subtask}', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
     Route::delete('/subtask/{subtask}', [TaskController::class, 'removeUser'])->name('subtask.removeUser');
