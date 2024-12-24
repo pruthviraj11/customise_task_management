@@ -1049,11 +1049,11 @@ class TaskController extends Controller
         // dd($tasks);
 
         $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-        ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-        ->where('task_assignees.created_by', $userId)
-        ->whereDoesntHave('user', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        });
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->where('task_assignees.created_by', $userId)
+            ->whereDoesntHave('user', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            });
         $tasksTemp = array();
         foreach ($tasks as $key => $item) {
             // dd($key, $item);
