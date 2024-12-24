@@ -130,7 +130,7 @@
 
                             {{-- <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="user_id">Assign To</label>
-                              
+
                                 <select disabled id="user_id" class="form-select select2" name="user_id[]" multiple>
                                     <option value="">Select User</option>
                                     @foreach ($users as $user)
@@ -321,6 +321,49 @@
                                 </span>
                             </div>
 
+                            <div class="col-md-12 col-sm-12 mt-3">
+                                <form action="{{ route('comments.store') }}" method="POST">
+                                    @csrf
+                                    @if ($creator == 1)
+                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                    @else
+                                        <input type="hidden" name="task_id" value="{{ $task->task_id }}">
+                                        <input type="hidden" name="task_created_by" value="{{ $task->created_by }}">
+                                    @endif
+
+                                    <div class="mb-3">
+                                        <label for="comment_form" class="form-label">Add Comment</label>
+                                        <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+
+                            @if ($task->created_by == auth()->user()->id)
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="comments_for">Comments For </label><span
+                                    class="red">*</span>
+                                <select id="comments_for" class="form-select select2" name="comments_for[]" multiple
+                                    required>
+                                    <option value="">Select User</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                            <span class="fixed-width">{{ $user->first_name }}
+                                                {{ $user->last_name }}</span>
+                                            |{{ $user->department->department_name ?? '' }}|
+                                            {{ $user->sub_department->sub_department_name ?? '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger">
+                                    @error('comments_for')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                        @endif
+
                             <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                 @foreach ($taskAssigne->comments as $comment)
                                     @php
@@ -383,7 +426,7 @@
                                                     <small
                                                         class="mail-date-time text-muted">{{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y H:i') }}</small>
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="card-body mail-message-wrapper pt-2">
                                                 <div class="mail-message">
                                                     {{ $comment->comment }}
@@ -394,48 +437,9 @@
                                 @endforeach
                             </div>
 
-                            @if ($task->created_by == auth()->user()->id)
-                                <div class="col-md-6 col-sm-12 mb-1">
-                                    <label class="form-label" for="comments_for">Comments For </label><span
-                                        class="red">*</span>
-                                    <select id="comments_for" class="form-select select2" name="comments_for[]" multiple
-                                        required>
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
-                                                <span class="fixed-width">{{ $user->first_name }}
-                                                    {{ $user->last_name }}</span>
-                                                |{{ $user->department->department_name ?? '' }}|
-                                                {{ $user->sub_department->sub_department_name ?? '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <span class="text-danger">
-                                        @error('comments_for')
-                                            {{ $message }}
-                                        @enderror
-                                    </span>
-                                </div>
-                            @endif
 
-                            <div class="col-md-12 col-sm-12 mt-3">
-                                <form action="{{ route('comments.store') }}" method="POST">
-                                    @csrf
-                                    @if ($creator == 1)
-                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                    @else
-                                        <input type="hidden" name="task_id" value="{{ $task->task_id }}">
-                                        <input type="hidden" name="task_created_by" value="{{ $task->created_by }}">
-                                    @endif
 
-                                    <div class="mb-3">
-                                        <label for="comment_form" class="form-label">Add Comment</label>
-                                        <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
+
 
 
                         </div>
