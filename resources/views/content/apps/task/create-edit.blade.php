@@ -69,7 +69,14 @@
                                         @if ($task == '') checked @endif>
                                     <label class="form-check-label" for="task">Task</label>
                                 </div>
+                                <div class="form-check m-2 form-check-success">
+                                    <input type="checkbox" class="form-check-input" id="recurring" name="recurring"
+                                        value="1"
+                                        {{ old('recurring') == '1' || ($task != '' && $task->recurring == 1) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="recurring">Recurring</label>
+                                </div>
                             </div>
+
                             <div class="col-md-6">
                                 @if ($task != '')
                                     <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
@@ -188,7 +195,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-3 col-sm-12 mb-1">
+                            <div class="col-md-3 col-sm-12 mb-1" id="end_date_container">
                                 <label class="form-label" for="due_date_form">End Date</label><span
                                     class="red">*</span>
                                 <input type="date" id="due_date_form" class="form-control" name="due_date_form"
@@ -199,6 +206,25 @@
                                         {{ $message }}
                                     @enderror
                                 </span>
+                            </div>
+
+
+                            <div id="recurring_options" style="display: none;" class="col-md-3 col-sm-12 mb-1">
+                                <label class="form-label" for="recurring_type">Recurring Type</label>
+                                <select id="recurring_type" class="form-control select2" name="recurring_type">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="half_quarterly">Half Quarterly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+
+                            <div id="number_of_time_container" style="display: none;" class="col-md-3 col-sm-12 mb-1">
+                                <label class="form-label" for="number_of_time">Number of Times</label>
+                                <input type="number" id="number_of_time" class="form-control" name="number_of_time"
+                                    placeholder="Enter number of days">
                             </div>
 
                             <div class="col-md-3 col-sm-12 mb-1">
@@ -242,7 +268,7 @@
                                     @enderror
                                 </span>
                             </div>
-                            <div class="col-md-6 col-sm-12 ">
+                            <div class="col-md-12 col-sm-12 ">
                                 <label class="form-label" for="attachments">Attachments</label>
                                 <div class="input-group mb-3 w-100">
                                     <input type="file" class="form-control" id="attachments" name="attachments[]"
@@ -274,7 +300,7 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-12 col-sm-12 mb-1">
                                 <label class="form-label" for="description">Description</label>
                                 <textarea id="description" class="form-control" placeholder="Enter Description" name="description"
                                     @if ($isCreator == false) disabled @endif>{{ old('description') ?? ($task != '' ? html_entity_decode($task->description) : '') }}</textarea>
@@ -287,15 +313,13 @@
 
                             @if ($task != '')
                                 <div class="col-md-12 col-sm-12 mt-3">
-                                    {{-- <form action="{{ route('comments.store') }}" method="POST">
-                                        @csrf --}}
+
                                     <input type="hidden" name="task_id" value="{{ $task->id }}">
                                     <div class="mb-3">
                                         <label for="comment_form" class="form-label">Add Comment</label>
                                         <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
                                     </div>
-                                    {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
-                                    {{-- </form> --}}
+
                                 </div>
                                 @if ($task->created_by == auth()->user()->id)
                                     <div class="col-md-6 col-sm-12 mb-1">
@@ -321,49 +345,7 @@
                                         </span>
                                     </div>
                                 @endif
-                                {{-- <div class="col-12 mt-3">
-                                    @foreach ($task->comments as $comment)
-                                        <div class="card bg-white shadow-lg">
-                                            <div class="card-header email-detail-head">
-                                                <div
-                                                    class="user-details d-flex justify-content-between align-items-center flex-wrap">
-                                                    <div class="avatar me-75">
-                                                        @if (!empty($comment->creator->profile_img))
-                                                            <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-                                                                class="" alt="Profile Image" width="48"
-                                                                height="48">
-                                                        @else
-                                                            <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                                class="" alt="Default Avatar" width="48"
-                                                                height="48">
-                                                        @endif
-                                                    </div>
-                                                    <div class="mail-items">
-                                                        <h5 class="mt-0">{{ $comment->creator->first_name }}</h5>
-                                                        <div class="email-info-dropup dropdown">
-                                                            <span role="button"
-                                                                class="dropdown-toggle font-small-3 text-muted"
-                                                                id="card_top01" data-bs-toggle="dropdown"
-                                                                aria-haspopup="true" aria-expanded="false">
-                                                                {{ $comment->creator->email }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mail-meta-item d-flex align-items-center">
-                                                    <small
-                                                        class="mail-date-time text-muted">{{ $comment->created_at }}</small>
-                                                </div>
-                                            </div>
-                                            <div class="card-body mail-message-wrapper pt-2">
-                                                <div class="mail-message">
-                                                    {{ $comment->comment }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
 
-                                </div> --}}
                                 <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                     @foreach ($getTaskComments as $comment)
                                         @php
@@ -1168,7 +1150,35 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get recurring checkbox and related containers
+            const recurringCheckbox = document.getElementById('recurring');
+            const endDateContainer = document.getElementById('end_date_container');
+            const recurringOptionsContainer = document.getElementById('recurring_options');
+            const numberOfDaysContainer = document.getElementById('number_of_time_container');
 
+            // Initially check the state of the "Recurring" checkbox
+            if (recurringCheckbox.checked) {
+                endDateContainer.style.display = 'none'; // Hide End Date
+                recurringOptionsContainer.style.display = 'block'; // Show Recurring options
+                numberOfDaysContainer.style.display = 'block'; // Show Number of Days input
+            }
+
+            // Toggle End Date visibility based on Recurring checkbox
+            recurringCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    endDateContainer.style.display = 'none'; // Hide End Date when Recurring is selected
+                    recurringOptionsContainer.style.display = 'block'; // Show Recurring options
+                    numberOfDaysContainer.style.display = 'block'; // Show Number of Days input
+                } else {
+                    endDateContainer.style.display = 'block'; // Show End Date if not recurring
+                    recurringOptionsContainer.style.display = 'none'; // Hide Recurring options
+                    numberOfDaysContainer.style.display = 'none'; // Hide Number of Days input
+                }
+            });
+        });
+    </script>
 
 
 

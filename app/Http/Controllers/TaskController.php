@@ -16,6 +16,7 @@ use App\Models\Priority;
 use App\Models\Comments;
 use App\Models\ReopenReason;
 use App\Models\TaskAttachment;
+use App\Models\RecurringTask;
 use App\Models\TaskAssignee;
 use Illuminate\Support\Facades\Storage;
 use App\Services\RoleService;
@@ -741,7 +742,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1429,7 +1430,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -4004,121 +4005,201 @@ class TaskController extends Controller
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
             $status = Status::where('id', $request->get('task_status'))->first();
-
-            // Prepare task data
-            $taskData = [
-                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'subject' => $request->get('subject'),
-                'project_id' => $request->get('project_id'),
-                'project_name' => $project->project_name,
-                'start_date' => $request->get('start_date'),
-                'due_date' => $request->get('due_date_form'),
-                'priority_id' => $request->get('priority_id'),
-                'priority_name' => $priority->priority_name,
-                'task_status' => $request->get('task_status'),
-                'status_name' => $status->status_name,
-                'created_by' => auth()->user()->id,
-            ];
-
-            // Handle status-specific fields (completed_date and close_date)
-            if ($request->get('task_status') == 4) {
-                $taskData['completed_date'] = now();
-            }
-            if ($request->get('task_status') == 7) {
-                $taskData['close_date'] = now();
-            }
-
-            // Create the task
-            $task = $this->taskService->create($taskData);
-            $task->TaskNumber = $task->id;  // Set task number
-            $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
-            // dd($taskCount);
-
-            $task->save();
-
-            // Attach files if any
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $attachment) {
-                    $filenameWithExtension = $attachment->getClientOriginalName();
-                    $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
-                    $extension = $attachment->getClientOriginalExtension();
-                    $storedFilename = $filename . '_' . time() . '.' . $extension;
-
-                    $path = $attachment->storeAs('attachments', $storedFilename);
-
-                    TaskAttachment::create([
-                        'task_id' => $task->id,
-                        'file' => $path,
-                    ]);
-                }
-            }
-
-            // Get the list of users and assign them to the task
-            $userIds = $request->input('user_id', []);
-            $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
-
-            // Sync users to the task (assign task to all users)
-            $task->users()->sync($userIds); // Sync the users
-
-            // Update their pivot table status (0 for others, 1 for the creator)
-            $taskCount = count($task->users); // Get the current number of users associated with the task
-            $startingTaskNumber = 1; // Start from task number 01
-
-            foreach ($userIds as $index => $userId) {
-                // Dynamically generate a task number for each user, starting from 01
-                $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
-                $user = User::find($userId);  // Assuming you have a User model
-                $departmentId = $user->department_id;
-                $subdepartment = $user->subdepartment;
-                // Update pivot with user-specific task number
-                $task->users()->updateExistingPivot($userId, [
-                    'status' => 0,
-                    'task_status' => $request->get('task_status'),
-                    'task_number' => $taskNumber,
-                    'due_date' => $request->get('due_date_form'),
-                    'department' => $departmentId,  // Save department_id
-                    'sub_department' => $subdepartment, // Save subdepartment
-                    'created_by' => auth()->user()->id,
-                    'created_at' => now(),  // Use the current timestamp for created_at
+            if ($request->recurring == 1) {
+                $request->validate([
+                    'recurring_type' => 'required|string',
                 ]);
 
+                $recurringType = $request->input('recurring_type');
+                $numberOfDays = $request->input('number_of_time');
+                $userIds = $request->input('user_id');
+                $startDate = Carbon::parse($request->input('start_date'));
+
+                // Loop to create tasks based on recurring type and number of days
+                $tasks = [];
+                $taskSave = null; // To hold the first task ID for subsequent sub-tasks
+
+                for ($i = 0; $i < $numberOfDays; $i++) {
+
+                    $taskStartDate = clone $startDate;
+                    $taskDueDate = clone $startDate;
+
+                    switch ($recurringType) {
+                        case 'daily':
+                            $taskStartDate->addDays($i);
+                            $taskDueDate->addDays($i + 1); // Assuming tasks last for a day
+                            break;
+                        case 'weekly':
+                            $taskStartDate->addWeeks($i);
+                            $taskDueDate->addWeeks($i + 1); // One week later
+                            break;
+                        case 'monthly':
+                            $taskStartDate->addMonths($i);
+                            $taskDueDate->addMonths($i + 1);
+                            break;
+                        case 'quarterly':
+                            $taskStartDate->addMonths($i * 3);
+                            $taskDueDate->addMonths($i * 3 + 3); // Three months later
+                            break;
+                        case 'half_quarterly':
+                            $taskStartDate->addMonths($i * 6);
+                            $taskDueDate->addMonths($i * 6 + 6); // Six months later
+                            break;
+                        case 'yearly':
+                            $taskStartDate->addYears($i);
+                            $taskDueDate->addYears($i + 1);
+                            break;
+                        default:
+                            break;
+                    }
+                    $assignedUsers = implode(',', $userIds);
+                    // Prepare task data
+                    $taskData = [
+                        'priority_id' => $request->input('priority_id'),
+                        'project_id' => $request->input('project_id'),
+                        'department_id' => $request->input('department_id'),
+                        'task_assignes' => $assignedUsers, // Store assigned users
+                        'sub_department_id' => $request->input('sub_department_id'),
+                        'task_status' => $request->input('task_status'),
+                        'title' => $request->input('title'),
+                        'subject' => $request->input('subject'),
+                        'description' => $request->input('description'),
+                        'start_date' => $taskStartDate,
+                        'due_date' => $taskDueDate,
+                        'recurring_type' => $recurringType,
+                        'number_of_days' => $numberOfDays,
+                        'created_by' => auth()->id(),
+                    ];
+
+                    // If this is the first task, set 'is_sub_task' to null
+                    if ($i == 0) {
+                        $taskData['is_sub_task'] = null;
+                        $taskSave = RecurringTask::create($taskData); // Insert the first task
+                    } else {
+                        // For subsequent tasks, associate them with the first task as a sub-task
+                        $taskData['is_sub_task'] = $taskSave->id;
+                        RecurringTask::create($taskData); // Insert the subsequent tasks
+                    }
+                }
+
+                return redirect()->route('app-task-list')->with('success', 'Recurring tasks created successfully.');
+            } else {
+
+                // Prepare task data
+                $taskData = [
+                    'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                    'title' => $request->get('title'),
+                    'description' => $request->get('description'),
+                    'subject' => $request->get('subject'),
+                    'project_id' => $request->get('project_id'),
+                    'project_name' => $project->project_name,
+                    'start_date' => $request->get('start_date'),
+                    'due_date' => $request->get('due_date_form'),
+                    'priority_id' => $request->get('priority_id'),
+                    'priority_name' => $priority->priority_name,
+                    'task_status' => $request->get('task_status'),
+                    'status_name' => $status->status_name,
+                    'created_by' => auth()->user()->id,
+                ];
+
+                // Handle status-specific fields (completed_date and close_date)
+                if ($request->get('task_status') == 4) {
+                    $taskData['completed_date'] = now();
+                }
+                if ($request->get('task_status') == 7) {
+                    $taskData['close_date'] = now();
+                }
+
+                // Create the task
+                $task = $this->taskService->create($taskData);
+                $task->TaskNumber = $task->id;  // Set task number
+                $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
+                // dd($taskCount);
+
+                $task->save();
+
+                // Attach files if any
+                if ($request->hasFile('attachments')) {
+                    foreach ($request->file('attachments') as $attachment) {
+                        $filenameWithExtension = $attachment->getClientOriginalName();
+                        $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                        $extension = $attachment->getClientOriginalExtension();
+                        $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+                        $path = $attachment->storeAs('attachments', $storedFilename);
+
+                        TaskAttachment::create([
+                            'task_id' => $task->id,
+                            'file' => $path,
+                        ]);
+                    }
+                }
+
+                // Get the list of users and assign them to the task
+                $userIds = $request->input('user_id', []);
+                $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
+
+                // Sync users to the task (assign task to all users)
+                $task->users()->sync($userIds); // Sync the users
+
+                // Update their pivot table status (0 for others, 1 for the creator)
+                $taskCount = count($task->users); // Get the current number of users associated with the task
+                $startingTaskNumber = 1; // Start from task number 01
+
+                foreach ($userIds as $index => $userId) {
+                    // Dynamically generate a task number for each user, starting from 01
+                    $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
+                    $user = User::find($userId);  // Assuming you have a User model
+                    $departmentId = $user->department_id;
+                    $subdepartment = $user->subdepartment;
+                    // Update pivot with user-specific task number
+                    $task->users()->updateExistingPivot($userId, [
+                        'status' => 0,
+                        'task_status' => $request->get('task_status'),
+                        'task_number' => $taskNumber,
+                        'due_date' => $request->get('due_date_form'),
+                        'department' => $departmentId,  // Save department_id
+                        'sub_department' => $subdepartment, // Save subdepartment
+                        'created_by' => auth()->user()->id,
+                        'created_at' => now(),  // Use the current timestamp for created_at
+                    ]);
+
+                }
+                $task = Task::where('id', $task->id)->first();
+                $task->last_task_number = $taskNumber;
+
+                // Save the updated task
+                $task->save();
+
+
+
+                $authenticatedUserId = auth()->user()->id;
+                if (in_array($authenticatedUserId, $userIds)) {
+                    $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
+                }
+
+                // Send notifications to users
+                $loggedInUser = auth()->user();
+                $encryptedId = encrypt($task->id);
+                $task->encryptedId = $encryptedId;
+
+                $html = View::make('emails.task_created', compact('task'))->render();
+                $subject = "New Task Created";
+
+                foreach ($task->users as $user) {
+                    $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+                    createNotification(
+                        $user->id,
+                        $task->id,
+                        'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+                        'Created'
+                    );
+                }
+
+                // Redirect with success message
+                return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
             }
-            $task = Task::where('id', $task->id)->first();
-            $task->last_task_number = $taskNumber;
-
-            // Save the updated task
-            $task->save();
-
-
-
-            $authenticatedUserId = auth()->user()->id;
-            if (in_array($authenticatedUserId, $userIds)) {
-                $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
-            }
-
-            // Send notifications to users
-            $loggedInUser = auth()->user();
-            $encryptedId = encrypt($task->id);
-            $task->encryptedId = $encryptedId;
-
-            $html = View::make('emails.task_created', compact('task'))->render();
-            $subject = "New Task Created";
-
-            foreach ($task->users as $user) {
-                $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
-
-                createNotification(
-                    $user->id,
-                    $task->id,
-                    'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
-                    'Created'
-                );
-            }
-
-            // Redirect with success message
-            return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
         } catch (\Exception $error) {
             // Log any error
             dd($error->getMessage());
@@ -4196,9 +4277,7 @@ class TaskController extends Controller
             // dd($creator);
             if ($creator == 1) {
                 return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
-                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
-                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
                 return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
