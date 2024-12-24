@@ -1508,11 +1508,15 @@ class TaskController extends Controller
 
         // Modify query based on task_assignees table
         if ($user->id == 1) {
-            $tasks = TaskAssignee::whereHas('task', function ($query) {
+            $tasks = TaskAssignee::with(['task', 'creator','department_data','sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->whereHas('task', function ($query) {
                 $query->where('status', '1'); // Assuming 'status' is in the Task model
             });
         } else {
-            $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
+            $tasks = TaskAssignee::with(['task', 'creator','department_data','sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->whereHas('task', function ($query) use ($user) {
                 $query->where('status', '1'); // Assuming 'status' is in the Task model
             })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
@@ -1529,7 +1533,29 @@ class TaskController extends Controller
         //     });
         // }
 
-        return DataTables::of($tasks)
+        if ($request->has('search') && $request->get('search')['value']) {
+            $search = $request->get('search')['value'];
+
+           $tasks->where(function ($query) use ($search) {
+                $query->where('tasks.title', 'LIKE', "%{$search}%")
+                    ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                    ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                    ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
+                    ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
+                    ->orWhereHas('creator', function ($creatorQuery) use ($search) {
+                        $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
+                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
+                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        return DataTables::of($tasks->get())
             ->addColumn('actions', function ($row) {
                 $encryptedId = encrypt($row->task_id);
 
