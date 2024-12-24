@@ -1361,13 +1361,8 @@ class TaskController extends Controller
             });
         }
 
-
-
         if ($request->input('end_date')) {
             $dtDateRange = parseDateRange($request->input('end_date'));
-
-
-
             if (!empty($dtDateRange[1])) {
                 // Both start and end dates are available
                 $query->whereBetween('due_date', [$dtDateRange[0], $dtDateRange[1]]);
@@ -1378,8 +1373,6 @@ class TaskController extends Controller
                 $query->whereDate('due_date', $formattedDate);
             }
         }
-
-
 
         // Handle the project filter
         if ($project = $request->input('project')) {
@@ -1485,7 +1478,6 @@ class TaskController extends Controller
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
-
 
 
     public function getAll_requested()
@@ -1606,7 +1598,6 @@ class TaskController extends Controller
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
     }
-
 
     public function reject_task(Request $request, $encrypted_id)
     {
