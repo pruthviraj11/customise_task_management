@@ -742,7 +742,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1279,7 +1279,6 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
             $query->whereNull('deleted_at')->get();
-
         } else {
 
             // $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -1331,24 +1330,24 @@ class TaskController extends Controller
         if ($request->input('dt_date')) {
             $dtDateRange = parseDateRange($request->input('dt_date'));
 
-            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+            // $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
                 if (!empty($dtDateRange[1])) {
                     // Both start and end dates are available
-                    $q->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
+                    $query->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
                 } else {
                     $inputDate = $request->input('dt_date');
                     $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
                     // Only a single date is provided
-                    $q->whereDate('start_date', $formattedDate);
+                    $query->whereDate('start_date', $formattedDate);
                 }
-            });
+            // });
         }
 
 
 
         if ($request->input('accepted_task_date')) {
             $dtDateRange = parseDateRange($request->input('accepted_task_date'));
-            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+            // $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
                 if (!empty($dtDateRange[1])) {
                     // Both start and end dates are available
                     $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);
@@ -1358,7 +1357,7 @@ class TaskController extends Controller
                     // Only a single date is provided
                     $query->whereDate('accepted_date', $formattedDate);
                 }
-            });
+            // });
         }
 
         if ($request->input('end_date')) {
@@ -1376,9 +1375,7 @@ class TaskController extends Controller
 
         // Handle the project filter
         if ($project = $request->input('project')) {
-            $query->whereHas('task', function ($q) use ($project) {
-                $q->where('project_id', $project); // Filter tasks by their project_id
-            });
+            $query->where('project_id', $project);
         }
 
         $tasks = $query->get();
@@ -1423,7 +1420,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
