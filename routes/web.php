@@ -365,6 +365,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     // Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
     Route::get('task/getAll/main', [TaskController::class, 'getAll_main'])->name('app-task-get-main');
     Route::get('task/getAll/recurring_main', [TaskController::class, 'getAll_recurring_main'])->name('app-task-get-recurring_main');
+    Route::get('task/getAll/due_date_past', [TaskController::class, 'getAll_dueDatePast'])->name('app-task-get-due_date_past');
+
 
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
     Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
@@ -384,6 +386,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/requested', [TaskController::class, 'index'])->name('app-task-requested');
     Route::get('task/main', [TaskController::class, 'index'])->name('app-task-main');
     Route::get('task/recurring_main', [TaskController::class, 'index'])->name('app-task-recurring_main');
+    Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-due_date_past');
+
 
     Route::get('task/accepted/get/all', [TaskController::class, 'getAll'])->name('app-accepted-get-all');
     Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');
@@ -399,6 +403,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
     Route::get('task/kanban/main', [TaskController::class, 'getAll_kanban_main'])->name('app-task-kanban-main');
+    Route::get('task/kanban/due_date_past', [TaskController::class, 'getAll_kanban_dueDatePast'])->name('app-task-kanban-due_date_past');
+
 
     // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
     Route::post('/subtask/{subtask}', [TaskController::class, 'markAsCompleted'])->name('subtask.complete');
@@ -424,8 +430,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/closed', [TaskController::class, 'index'])->name('app-task-get-close');
     Route::get('task/getAll_close', [TaskController::class, 'getAll_close'])->name('app-task-getAll_close-get');
 
-    Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-get-due_date_past');
-    Route::get('task/getAll_due_date_past', [TaskController::class, 'getAll_due_date_past'])->name('app-task-getAll_due_date_past-get');
+    // Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-get-due_date_past');
+    // Route::get('task/getAll_due_date_past', [TaskController::class, 'getAll_due_date_past'])->name('app-task-getAll_due_date_past-get');
 
     Route::get('task/deleted', [TaskController::class, 'index'])->name('app-task-get-deleted');
     Route::get('task/getAll_deleted', [TaskController::class, 'getAll_deleted'])->name('app-task-getAll_deleted-get');

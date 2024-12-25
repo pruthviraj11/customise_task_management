@@ -384,11 +384,14 @@
             @elseif ($type === 'requested') {
                     ajaxUrl = "{{ route('app-task-get-requested') }}";
                 }
-            @elseif ($type === 'main') {
+            @elseif ($type == 'main') {
                     ajaxUrl = "{{ route('app-task-get-main') }}";
                 }
             @elseif ($type === 'recurring_main') {
                     ajaxUrl = "{{ route('app-task-get-recurring_main') }}";
+                }
+            @elseif ($type === 'due_date_past') {
+                    ajaxUrl = "{{ route('app-task-get-due_date_past') }}";
                 }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
@@ -411,9 +414,9 @@
             @elseif ($type == 'close') {
                     ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
                 }
-            @elseif ($type == 'due_date_past') {
-                    ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-                }
+            // @elseif ($type == 'due_date_past') {
+            //         ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
+            //     }
             @elseif ($type == 'scope_defined') {
                     ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
                 }
