@@ -81,6 +81,16 @@
             ]
         },
         {
+            "url": "app/task/due_date_past",
+            "name": "Due Date Past",
+            "icon": "clipboard",
+            "slug": "app-task-due_date_past",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
             "url": "app/roles/list",
             "name": "Roles",
             "icon": "lock",

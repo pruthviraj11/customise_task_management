@@ -384,8 +384,11 @@
             @elseif ($type === 'requested') {
                     ajaxUrl = "{{ route('app-task-get-requested') }}";
                 }
-            @elseif ($type === 'main') {
+            @elseif ($type == 'main') {
                     ajaxUrl = "{{ route('app-task-get-main') }}";
+                }
+            @elseif ($type === 'due_date_past') {
+                    ajaxUrl = "{{ route('app-task-get-due_date_past') }}";
                 }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
@@ -408,9 +411,9 @@
             @elseif ($type == 'close') {
                     ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
                 }
-            @elseif ($type == 'due_date_past') {
-                    ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-                }
+            // @elseif ($type == 'due_date_past') {
+            //         ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
+            //     }
             @elseif ($type == 'scope_defined') {
                     ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
                 }
@@ -529,11 +532,11 @@
                     ajaxUrl =
                         "{{ route('tasks.requested_to_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
-                @elseif ($type == 'tasks.requested_by_us_footer_total' && $user_id != '') {
+            @elseif ($type == 'tasks.requested_by_us_footer_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_by_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
-                @elseif ($type == 'tasks.total_task_footer_total' && $user_id != '') {
+            @elseif ($type == 'tasks.total_task_footer_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.total_task_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }

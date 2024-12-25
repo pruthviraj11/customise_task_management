@@ -337,6 +337,9 @@
             } else if(type == 'main'){
                 ViewUrl = "{{ route('app-task-kanban-main') }}";
 
+            }else if(type == 'due_date_past'){
+                ViewUrl = "{{ route('app-task-kanban-due_date_past') }}";
+
             }
             var upDateUrl = "{{ route('app-task-updateTaskFromView-all', ['taskId', 'StatusId']) }}";
         </script>
