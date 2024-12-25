@@ -1083,7 +1083,55 @@ class TaskController extends Controller
 
     }
 
-    public function getAll_kanban_dueDatePast(){
+    public function getAll_kanban_dueDatePast()
+    {
+
+        $status = $this->statusService->getAllstatus();
+        // $tasks = $this->taskService->getAlltask()->toArray();
+        $userId = auth()->user()->id;
+
+
+        if ($userId == 1) {
+            // Admin fetches tasks by their statuses
+            $tasks= TaskAssignee::whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today())->get();
+        } else {
+            // Retrieve tasks where the user is either the creator or assigned
+            $tasks = TaskAssignee::where('status', 1)->where('due_date', '<', today())
+                ->whereNotIn('task_status', ['4', '7'])
+                ->where(function ($q) use ($userId) {
+                    $q->where('user_id', $userId)
+                        ->whereHas('user', function ($q) {
+                            // Ensure the user is not deleted (i.e., deleted_at is null)
+                            $q->whereNull('deleted_at');
+                        });
+                })->get();
+        }
+        // dd($tasks);
+        $tasksTemp = array();
+        foreach ($tasks as $key => $item) {
+            // dd($key, $item);
+            $tasksTemp[$item['task_status']][] = [
+                "id" => encrypt($item['id']),
+                "title" => $item['title'],
+                "comments" => "0",
+                "badge-text" => $item['task_status'],
+                "badge" => "success",
+                "due-date" => date('d F', strtotime($item['due_date'])),
+                "attachments" => "0",
+                "assigned" => [
+                    "avatar-s-1.jpg",
+                    "avatar-s-2.jpg"
+                ],
+                "members" => ["Bruce", "Dianna"]
+            ];
+        }
+
+        $res = [];
+        foreach ($status as $key => $value) {
+            $res[] = ['id' => encrypt($value['id']), 'title' => $value['displayname'], 'item' => (isset($tasksTemp[$value['id']])) ? $tasksTemp[$value['id']] : []];
+        }
+
+        return response()->json($res);
 
     }
     public function getAll_kanban_assign_by_me()
@@ -1493,18 +1541,18 @@ class TaskController extends Controller
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_status', ['4', '7'])->where('due_date','<',today());
+            $query->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today());
         } else {
             // User-specific task filters
-            $query->where('status', 1)->where('due_date','<',today())
-            ->whereNotIn('task_status', ['4', '7'])
-            ->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)
-                    ->whereHas('user', function ($q) {
-                        // Ensure the user is not deleted (i.e., deleted_at is null)
-                        $q->whereNull('deleted_at');
-                    });
-            });
+            $query->where('status', 1)->where('due_date', '<', today())
+                ->whereNotIn('task_status', ['4', '7'])
+                ->where(function ($q) use ($userId) {
+                    $q->where('user_id', $userId)
+                        ->whereHas('user', function ($q) {
+                            // Ensure the user is not deleted (i.e., deleted_at is null)
+                            $q->whereNull('deleted_at');
+                        });
+                });
         }
 
         $tasks = $query->get();
