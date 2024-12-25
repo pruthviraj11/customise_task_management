@@ -80,6 +80,16 @@
                 "task-create"
             ]
         },
+            {
+                "url": "app/task/recurring_main",
+                "name": "Recurring Main Task",
+                "icon": "clipboard",
+                "slug": "app-task-recurring_main",
+                "permission": [
+                    "task-list",
+                    "task-create"
+                ]
+            },
         {
             "url": "app/roles/list",
             "name": "Roles",

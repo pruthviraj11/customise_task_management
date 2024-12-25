@@ -31,14 +31,32 @@ class TaskService
         $task = $this->taskRepository->findassignees($id);
         return $task;
     }
+
+    public function gettaskrecuring($id)
+    {
+        // dd($id);
+        $task = $this->taskRepository->findtaskrecuring($id);
+        // dd($task);
+        return $task;
+    }
     public function deleteTask($id)
     {
         $deleted = $this->taskRepository->delete($id);
         return $deleted;
     }
+    public function deleteTaskrec($id)
+    {
+        $deleted = $this->taskRepository->deleteTaskrec($id);
+        return $deleted;
+    }
     public function updateTask($id, $taskData)
     {
         $updated = $this->taskRepository->update($id, $taskData);
+        return $updated;
+    }
+    public function updateTaskRecurring($id, $taskData)
+    {
+        $updated = $this->taskRepository->updateTaskRecurring($id, $taskData);
         return $updated;
     }
     public function updateTaskAssigne($id, $taskData)

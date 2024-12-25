@@ -53,4 +53,70 @@ class RecurringTask extends Model
         'completed_date',
         'close_date',
     ];
+
+    public function attachments()
+    {
+        return $this->hasMany(TaskAttachment::class);
+    }
+
+    public function assignees()
+    {
+        return $this->hasMany(TaskAssignee::class);
+    }
+    public function assignees_new()
+    {
+        return $this->hasMany(TaskAssignee::class, 'task_id', 'id');
+    }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'task_assignees')
+            ->whereNull('task_assignees.deleted_at');
+    }
+
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function taskStatus()
+    {
+        return $this->belongsTo(Status::class, 'task_status');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+    public function task_status_data()
+    {
+        return $this->belongsTo(Status::class, 'task_status');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+    public function sub_department()
+    {
+        return $this->belongsTo(SubDepartment::class, 'sub_department_id');
+    }
+    // In Task model
+     public function assignedUsers()
+    {
+        // Assuming task_assignes holds user IDs as a comma-separated string
+        return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id');
+    }
+
+    public function isAcceptedByUser($userId)
+    {
+        return $this->taskAssignees()
+            ->where('user_id', $userId)
+            ->where('status', 1) // Status 1 indicates accepted
+            ->exists(); // Check if any records match
+    }
+
+    public function taskAssignees()
+    {
+        return $this->hasMany(TaskAssignee::class); // Adjust the relationship based on your setup
+    }
 }

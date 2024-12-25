@@ -175,6 +175,18 @@ class TaskController extends Controller
             }
         }
 
+        $tasks = RecurringTask::withTrashed()->get();
+
+        foreach ($tasks as $task) {
+            // Check if TaskNumber is null
+            if (is_null($task->TaskNumber)) {
+                // Assign TaskNumber
+                $task->TaskNumber = $task->id;
+                // Save the changes
+                $task->save();
+            }
+        }
+
     }
 
     public function view($encrypted_id)
@@ -215,6 +227,47 @@ class TaskController extends Controller
                 $hasAcceptedTask = $task->isAcceptedByUser($user->id);
             }
             return view('content.apps.task.view', compact('page_data', 'hasAcceptedTask', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'getTaskComments', 'taskAssigne', 'creator'));
+        } catch (\Exception $error) {
+            dd($error->getMessage());
+            return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
+        }
+
+    }
+
+    public function recview($encrypted_id)
+    {
+        try {
+            $id = decrypt($encrypted_id);
+            // dd($id);
+
+
+            $task = RecurringTask::where('id', $id)->first();
+            // dd($task);
+            $creator = 1;
+
+            $assignedUserIds = explode(',', $task->task_assignes);
+
+
+            $page_data['page_title'] = "Task";
+            $page_data['form_title'] = "Edit Task";
+
+            $projects = Project::where('status', 'on')->get();
+            $departments = Department::where('status', 'on')->get();
+            $Subdepartments = SubDepartment::where('status', 'on')->get();
+            $Status = Status::where('status', 'on')->get();
+            $Prioritys = Priority::where('status', 'on')->get();
+            //            dd($task->department_id);
+            $users = User::where('status', '1')
+                ->where('id', '!=', 1)
+                ->get();
+
+
+            $departmentslist = $this->taskService->getAlltask();
+            $data['department'] = Task::all();
+            $associatedSubDepartmentId = $task->subDepartment->id ?? null;
+            // dd($creator);
+
+            return view('content.apps.task.recview', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds'));
         } catch (\Exception $error) {
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
@@ -1433,6 +1486,155 @@ class TaskController extends Controller
                 // Return the comma-separated user names
                 return $userNames ?: '-';
             })
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->created_at ? \Carbon\Carbon::parse($row->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->start_date ? \Carbon\Carbon::parse($row->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('close_date', function ($row) {
+                return $row->close_date ? Carbon::parse($row->close_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->completed_date ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('project', function ($row) {
+                return $row->project ? $row->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->department && $row->department ? $row->department->department_name : '-';
+            })
+            ->addColumn('sub_department', function ($row) {
+                return $row->sub_department && $row->sub_department ? $row->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
+            ->make(true);
+    }
+
+
+    public function getAll_recurring_main(Request $request)
+    {
+        // dd("sdsd");
+        $user = auth()->user();
+
+        $query = RecurringTask::query();
+        // dd($query->get());
+        // Filter only those tasks where is_sub_task is null
+        $query->whereNull('is_sub_task');
+
+        if (Auth()->user()->id == 1) {
+
+            // $tasks = TaskAssignee::whereHas('task', function ($query) {
+
+            //     // $query->whereHas('assignees', function ($query) {
+            //     $query->where('status', 0)
+            //         // })
+            //         ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
+            // })
+            //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
+            //     ->get();
+            $query->whereNull('deleted_at')->get();
+
+        } else {
+
+            // $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
+
+            //     // $query->whereHas('assignees', function ($query) use ($user) {
+            //     $query->where('user_id', $user->id)->where('status', 0)
+            //         // })
+            //         ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
+            // })
+            //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
+            //     ->get();
+
+            $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
+
+        }
+
+
+
+
+        $tasks = $query->get();
+        return DataTables::of($tasks)->addColumn('actions', function ($row) {
+            $encryptedId = encrypt($row->id);
+            // $satusData = TaskAssignee::where('')
+            $updateButton = '';
+            $deleteButton = '';
+            $acceptButton = '';
+            if (auth()->user()->id == '1') {
+                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-recurringedit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-recurring_destroy' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-recurring_destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-recurringedit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-recurring_destroy' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-recurring_destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            }
+            $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-recview', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+
+            return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+        })
+            ->addColumn('task_id', function ($row) {
+                return $row->id ?? "-";
+            })
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->TaskNumber ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->ticket == 0 ? 'Task' : 'Ticket';
+            })
+            ->addColumn('description', function ($row) {
+                return $row->description ?? '-';
+            })
+
+            ->addColumn('subject', function ($row) {
+                return $row->subject ?? '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->title ?? '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                // Split the task_assignes field into individual user IDs
+                $temps = explode(',', $row->task_assignes);
+                // Initialize an empty array to store usernames
+                $usernames = [];
+
+                // Loop through each user ID
+                foreach ($temps as $temp) {
+                    // Fetch the user data using the user ID
+                    $usernamedata = User::where('id', $temp)->first();
+                    if ($usernamedata) {
+                        // Concatenate first and last name and add to the usernames array
+                        $usernames[] = $usernamedata->first_name . " " . $usernamedata->last_name;
+                    }
+                }
+
+                // Join the usernames with commas and return the result, or return '-' if no usernames are found
+                return !empty($usernames) ? implode(', ', $usernames) : '-';
+            })
+
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
@@ -3684,10 +3886,10 @@ class TaskController extends Controller
             $task->accepted_date = now()->format('Y-m-d H:i:s');
             $task->save();
 
-            return redirect()->route("app-task-requested")->with('success', 'Task Accepted Successfully');
+            return redirect()->back()->with('success', 'Task Accepted Successfully');
         } catch (\Exception $error) {
             // dd($error->getMessage());
-            return redirect()->route("app-task-requested")->with('error', 'Error while Accepting Task');
+            return redirect()->back()->with('error', 'Error while Accepting Task');
         }
     }
 
@@ -4056,6 +4258,7 @@ class TaskController extends Controller
                         'subject' => $request->input('subject'),
                         'description' => $request->input('description'),
                         'start_date' => $taskStartDate,
+                        'ticket' => $request->get('task_type') == '1' ? 1 : 0,
                         'due_date' => $taskDueDate,
                         'recurring_type' => $recurringType,
                         'number_of_days' => $numberOfDays,
@@ -4143,9 +4346,10 @@ class TaskController extends Controller
                     $user = User::find($userId);  // Assuming you have a User model
                     $departmentId = $user->department_id;
                     $subdepartment = $user->subdepartment;
+                    $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
                     // Update pivot with user-specific task number
                     $task->users()->updateExistingPivot($userId, [
-                        'status' => 0,
+                        'status' => $status,
                         'task_status' => $request->get('task_status'),
                         'task_number' => $taskNumber,
                         'due_date' => $request->get('due_date_form'),
@@ -4207,6 +4411,7 @@ class TaskController extends Controller
             if ($task && $task->creator->id == auth()->user()->id) {
                 // dd($task);
                 $creator = 1;
+
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
@@ -4272,6 +4477,47 @@ class TaskController extends Controller
                 return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
+        } catch (\Exception $error) {
+            dd($error->getMessage());
+            return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
+        }
+    }
+
+    public function recurringedit($encrypted_id)
+    {
+        try {
+            $id = decrypt($encrypted_id);
+            // dd($id);
+
+
+            $task = RecurringTask::where('id', $id)->first();
+            // dd($task);
+            $creator = 1;
+
+            $assignedUserIds = explode(',', $task->task_assignes);
+
+
+            $page_data['page_title'] = "Task";
+            $page_data['form_title'] = "Edit Task";
+
+            $projects = Project::where('status', 'on')->get();
+            $departments = Department::where('status', 'on')->get();
+            $Subdepartments = SubDepartment::where('status', 'on')->get();
+            $Status = Status::where('status', 'on')->get();
+            $Prioritys = Priority::where('status', 'on')->get();
+            //            dd($task->department_id);
+            $users = User::where('status', '1')
+                ->where('id', '!=', 1)
+                ->get();
+
+
+            $departmentslist = $this->taskService->getAlltask();
+            $data['department'] = Task::all();
+            $associatedSubDepartmentId = $task->subDepartment->id ?? null;
+            // dd($creator);
+
+            return view('.content.apps.task.recurring-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds'));
+
         } catch (\Exception $error) {
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
@@ -4869,6 +5115,81 @@ class TaskController extends Controller
         }
     }
 
+
+
+    public function recurringUpdate(UpdateTaskRequest $request, $encrypted_id)
+    {
+        try {
+            $id = decrypt($encrypted_id);
+
+            // Retrieve the project, priority, and status
+            $project = Project::where('id', $request->get('project_id'))->first();
+            $priority = Priority::where('id', $request->get('priority_id'))->first();
+            $status = Status::where('id', $request->get('task_status'))->first();
+
+            // Find the recurring task
+            $task = RecurringTask::findOrFail($id);
+
+            // Prepare task data to update
+            $taskData = [
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'task_status' => $request->get('task_status'),
+                'updated_by' => auth()->user()->id,
+            ];
+
+            // Handle user assignees
+            $userIds = $request->input('user_id', []);
+            $currentAssignees = explode(',', $task->task_assignes);
+            $removedUserIds = array_diff($currentAssignees, $userIds);
+
+            if (!empty($removedUserIds)) {
+                TaskAssignee::where('task_id', $task->id)
+                    ->whereIn('user_id', $removedUserIds)
+                    ->whereNull('deleted_at') // Only non-deleted records
+                    ->get()
+                    ->each(function ($assignee) {
+                        $assignee->delete(); // Soft delete removed assignees
+                    });
+            }
+
+            // Update the recurring task itself
+            $updated = $this->taskService->updateTaskRecurring($id, $taskData);
+
+            if ($updated) {
+                // Update subtasks
+                $subtasks = RecurringTask::where('is_sub_task', $task->id)->get();
+
+                foreach ($subtasks as $subtask) {
+                    // Update subtasks with the new task data
+                    $subtaskData = [
+                        'title' => $request->get('title'),
+                        'description' => $request->get('description'),
+                        'subject' => $request->get('subject'),
+                        'task_status' => $request->get('task_status'),
+                        'updated_by' => auth()->user()->id,
+                        'is_sub_task' => $subtask->is_sub_task // Keep the original subtask relationship intact
+                    ];
+
+                    // Assuming you have a service method or direct save
+                    $subtask->update($subtaskData);
+                }
+
+                // Redirect success message
+                return redirect()->back()->with('success', 'Recurring Task and Subtasks Updated Successfully');
+            } else {
+                return redirect()->back()->with('error', 'Error while updating Recurring task');
+            }
+        } catch (\Exception $error) {
+            // Log the error
+            dd($error->getMessage());
+            // Return error message
+            return redirect()->back()->with('error', 'Error while editing Recurring Task');
+        }
+    }
+
+
     public function updateTaskFromView($encrypted_id, $status)
     {
         $res = ['status' => 0, 'message' => ''];
@@ -4895,6 +5216,7 @@ class TaskController extends Controller
 
     public function destroy($encrypted_id)
     {
+        dd("sd");
         try {
             $id = decrypt($encrypted_id);
 
@@ -4908,6 +5230,27 @@ class TaskController extends Controller
             }
         } catch (\Exception $error) {
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
+        }
+    }
+
+
+    public function recurringDestroy($encrypted_id)
+    {
+        // dd("sdeeeeeeeeeeeee");
+        try {
+            $id = decrypt($encrypted_id);
+
+            $taskData['deleted_by'] = Auth()->user()->id;
+            // $updated = $this->taskService->updatetask($id, $taskData);
+            $deleted = $this->taskService->deleteTaskrec($id);
+            if (!empty($deleted)) {
+                return redirect()->route("app-task-recurring_main")->with('success', 'Task Deleted Successfully');
+            } else {
+                return redirect()->back()->with('error', 'Error while Deleting Task');
+            }
+        } catch (\Exception $error) {
+            dd($error->getMessage());
+            return redirect()->route("app-task-recurring_main")->with('error', 'Error while editing Task');
         }
     }
 
@@ -6205,7 +6548,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)
+                $q->where('user_id', $userId)->orWhere('created_by', $userId)
                     ->whereHas('user', function ($q) {
                         // Ensure the user is not deleted (i.e., deleted_at is null)
                         $q->whereNull('deleted_at');
@@ -7256,11 +7599,21 @@ class TaskController extends Controller
 
         // Get all recurring tasks where start_date is today
         $tasksToCreate = RecurringTask::whereDate('start_date', $today)->get();
-        // dd($tasksToCreate);
+
         foreach ($tasksToCreate as $recurringTask) {
-            // Prepare task data (copied from your original example)
+            // Check if a task has already been created today for the recurring task
+            $existingTask = Task::where('ticket', $recurringTask->ticket)
+                ->whereDate('created_at', $today)
+                ->first();
+
+            // If an existing task is found, skip creation for this recurring task
+            if ($existingTask) {
+                continue; // Skip this task and move to the next recurring task
+            }
+
+            // Prepare task data
             $taskData = [
-                'ticket' => 1, // Assuming ticket is stored as part of recurring task
+                'ticket' => $recurringTask->ticket,
                 'title' => $recurringTask->title,
                 'description' => $recurringTask->description,
                 'subject' => $recurringTask->subject,
@@ -7296,9 +7649,14 @@ class TaskController extends Controller
                 $departmentId = $user->department_id;
                 $subdepartment = $user->subdepartment;
 
+                // Check if the created_by user is the same as the assigned user (user_id)
+                $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
+
                 // Update pivot with user-specific task number and additional details
-                $task->users()->updateExistingPivot($userId, [
-                    'status' => 0, // New task
+                TaskAssignee::create([
+                    'task_id' => $task->id,         // Store the task_id
+                    'user_id' => $userId,           // Store the user_id
+                    'status' => $status,            // Set the status based on the created_by vs user_id check
                     'task_status' => $recurringTask->task_status,
                     'task_number' => $taskNumber,
                     'due_date' => $recurringTask->due_date,
@@ -7309,14 +7667,20 @@ class TaskController extends Controller
                 ]);
             }
 
+            // Update the last task number for the task
+            $task->last_task_number = $taskNumber;
+            $task->save();
+
             // Send notifications to users
             $this->sendTaskNotifications($task, $userIds);
-
-            // Optionally, return a response or redirect
         }
 
+        // Redirect with success message
         return redirect()->route('app-task-list')->with('success', 'Recurring tasks for today created successfully.');
     }
+
+
+
 
     // Helper method to send notifications
     protected function sendTaskNotifications($task, $userIds)

@@ -354,18 +354,23 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/add', [TaskController::class, 'create'])->name('app-task-add');
     Route::post('task/store', [TaskController::class, 'store'])->name('app-task-store');
     Route::get('task/edit/{encrypted_id}', [TaskController::class, 'edit'])->name('app-task-edit');
+    Route::get('task/recurringedit/{encrypted_id}', [TaskController::class, 'recurringedit'])->name('app-task-recurringedit');
     Route::get('task/retrive/{encrypted_id}', [TaskController::class, 'retrive'])->name('app-task-retrive');
     Route::put('task/update/{encrypted_id}', [TaskController::class, 'update'])->name('app-task-update');
+    Route::put('task/recurring-update/{encrypted_id}', [TaskController::class, 'recurringUpdate'])->name('app-task-recurring-update');
     Route::get('task/destroy/{encrypted_id}', [TaskController::class, 'destroy'])->name('app-task-destroy');
+    Route::get('task/recurring_destroy/{encrypted_id}', [TaskController::class, 'recurringDestroy'])->name('app-task-recurring_destroy');
     Route::get('task/getAll', [TaskController::class, 'getAll'])->name('app-task-get-all');
     // Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
     // Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
     Route::get('task/getAll/main', [TaskController::class, 'getAll_main'])->name('app-task-get-main');
+    Route::get('task/getAll/recurring_main', [TaskController::class, 'getAll_recurring_main'])->name('app-task-get-recurring_main');
 
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
     Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
     Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');
     Route::get('task/view/{encrypted_id}', [TaskController::class, 'view'])->name('app-task-view');
+    Route::get('task/recview/{encrypted_id}', [TaskController::class, 'recview'])->name('app-task-recview');
     Route::post('task/getAll/reject/{encrypted_id}', [TaskController::class, 'reject_task'])->name('app-task-reject');
     Route::get('task/getAllForView/{type}', [TaskController::class, 'getAllForView'])->name('app-task-getAllForView-all');
     Route::get('task/updateTaskFromView/{encrypted_id}/{status}', [TaskController::class, 'updateTaskFromView'])->name('app-task-updateTaskFromView-all');
@@ -378,6 +383,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
     Route::get('task/requested', [TaskController::class, 'index'])->name('app-task-requested');
     Route::get('task/main', [TaskController::class, 'index'])->name('app-task-main');
+    Route::get('task/recurring_main', [TaskController::class, 'index'])->name('app-task-recurring_main');
 
     Route::get('task/accepted/get/all', [TaskController::class, 'getAll'])->name('app-accepted-get-all');
     Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');

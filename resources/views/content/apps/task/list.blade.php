@@ -387,6 +387,9 @@
             @elseif ($type === 'main') {
                     ajaxUrl = "{{ route('app-task-get-main') }}";
                 }
+            @elseif ($type === 'recurring_main') {
+                    ajaxUrl = "{{ route('app-task-get-recurring_main') }}";
+                }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
                 }
@@ -529,11 +532,11 @@
                     ajaxUrl =
                         "{{ route('tasks.requested_to_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
-                @elseif ($type == 'tasks.requested_by_us_footer_total' && $user_id != '') {
+            @elseif ($type == 'tasks.requested_by_us_footer_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_by_us_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
-                @elseif ($type == 'tasks.total_task_footer_total' && $user_id != '') {
+            @elseif ($type == 'tasks.total_task_footer_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.total_task_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
@@ -851,6 +854,46 @@
             }).then(function(result) {
                 if (result.value) {
                     window.location.href = '/app/task/destroy/' + id;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire({
+                        title: 'Cancelled',
+                        text: 'Your imaginary file is safe :)',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                    });
+                }
+            });
+        });
+
+
+
+         $(document).on("click", ".confirm-recurring_destroy", function(e) {
+            e.preventDefault();
+            var id = $(this).data("idos");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-outline-danger ms-1'
+                },
+                buttonsStyling: false
+            }).then(function(result) {
+                if (result.value) {
+                    window.location.href = '/app/task/recurring_destroy/' + id;
                     Swal.fire({
                         icon: 'success',
                         title: 'Deleted!',
