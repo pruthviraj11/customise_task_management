@@ -40,7 +40,9 @@ class TaskAssignee extends Model
         'created_at',
         'updated_at',
         'accepted_by',
-        'accepted_date'
+        'accepted_date',
+        'feedback',
+        'rating'
     ];
     protected $guarded = [];
 

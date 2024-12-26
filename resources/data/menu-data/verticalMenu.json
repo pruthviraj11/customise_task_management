@@ -93,7 +93,7 @@
         {
             "url": "app/task/due_date_past",
             "name": "Due Date Past",
-            "icon": "clipboard",
+            "icon": "calendar",
             "slug": "app-task-due_date_past",
             "permission": [
                 "task-list",

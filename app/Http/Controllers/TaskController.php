@@ -1094,20 +1094,20 @@ class TaskController extends Controller
         // $tasks = $this->taskService->getAlltask()->toArray();
         $userId = auth()->user()->id;
 
-        // Retrieve tasks where the user is either the creator or assigned
-        // $tasks = Task::where('created_by', $userId)
-        //     ->whereDoesntHave('assignees', function ($query) use ($userId) {
-        //         $query->where('user_id', $userId);
-        //     })
-        //     ->get();
-        // dd($tasks);
+        if (Auth()->user()->id == 1) {
+           $tasks = Task::whereNull('deleted_at')->get();
+        } else {
+            $tasks = Task::where('created_by', $userId)->whereNull('deleted_at')->get();
 
-        $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->where('task_assignees.created_by', $userId)
-            ->whereDoesntHave('user', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get();
+        }
+
+
+        // $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
+        //     ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+        //     ->where('task_assignees.created_by', $userId)
+        //     ->whereDoesntHave('user', function ($query) use ($userId) {
+        //         $query->where('user_id', $userId);
+        //     })->get();
         $tasksTemp = array();
         foreach ($tasks as $key => $item) {
             // dd($key, $item);
@@ -4660,6 +4660,33 @@ class TaskController extends Controller
         }
     }
 
+    public function saveFeedback(Request $request){
+        // $request->validate([
+        //     'subtask_id' => 'required|exists:task_assignees,id',
+        //     'feedback' => 'nullable|string',
+        //     'rating' => 'nullable|numeric|min:0|max:100', // Adjust the range as per your requirements
+        // ]);
+        // Retrieve the TaskAssignee record by subtask_id
+        $subTaskId = $request->subtask_id;
+        $taskAssignee = TaskAssignee::find($subTaskId);
+
+        // Check if the record exists
+        if ($taskAssignee) {
+            // Update feedback and rating
+            $taskAssignee->feedback = $request->feedback;
+            $taskAssignee->rating = $request->rating;
+            $taskAssignee->save();
+
+            return response()->json([
+                'success' => 'Feedback and rating updated successfully.',
+            ], 200);
+        }
+
+        return response()->json([
+            'error' => 'TaskAssignee not found.',
+        ], 404);
+
+    }
     public function recurringedit($encrypted_id)
     {
         try {
