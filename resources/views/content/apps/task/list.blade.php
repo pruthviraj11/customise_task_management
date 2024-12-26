@@ -393,8 +393,11 @@
             @elseif ($type === 'due_date_past') {
                     ajaxUrl = "{{ route('app-task-get-due_date_past') }}";
                 }
-                @elseif ($type === 'pending_task') {
+            @elseif ($type === 'pending_task') {
                     ajaxUrl = "{{ route('app-task-get-pending_task') }}";
+                }
+            @elseif ($type === 'completed_task') {
+                    ajaxUrl = "{{ route('app-task-get-completed_task') }}";
                 }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
@@ -417,9 +420,9 @@
             @elseif ($type == 'close') {
                     ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
                 }
-            // @elseif ($type == 'due_date_past') {
-            //         ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-            //     }
+                // @elseif ($type == 'due_date_past') {
+                //         ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
+                //     }
             @elseif ($type == 'scope_defined') {
                     ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
                 }
@@ -883,7 +886,7 @@
 
 
 
-         $(document).on("click", ".confirm-recurring_destroy", function(e) {
+        $(document).on("click", ".confirm-recurring_destroy", function(e) {
             e.preventDefault();
             var id = $(this).data("idos");
             Swal.fire({

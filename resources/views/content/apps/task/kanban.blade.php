@@ -341,6 +341,8 @@
             }
             else if(type == 'pending_task'){
                 ViewUrl = "{{ route('app-task-kanban-pending_task') }}";
+            }else if(type == 'completed_task'){
+                ViewUrl = "{{ route('app-task-kanban-completed_task') }}";
             }
             var upDateUrl = "{{ route('app-task-updateTaskFromView-all', ['taskId', 'StatusId']) }}";
         </script>
