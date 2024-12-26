@@ -4940,7 +4940,7 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             // dd($creator);
 
-            return view('.content.apps.task.recurring-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds','attachmentsrec'));
+            return view('.content.apps.task.recurring-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds', 'attachmentsrec'));
 
         } catch (\Exception $error) {
             dd($error->getMessage());
@@ -5540,19 +5540,28 @@ class TaskController extends Controller
     }
 
 
-
     public function recurringUpdate(UpdateTaskRequest $request, $encrypted_id)
     {
         try {
+            // Decrypt task ID
             $id = decrypt($encrypted_id);
 
-            // Retrieve the project, priority, and status
+            // Retrieve the recurring task
+            $task = RecurringTask::findOrFail($id);
+            // dd($task);
+            // New number_of_time from the request
+            $newNumberOfTime = $request->get('number_of_time');
+
+            // // Check if the new value for number_of_time is greater than the current value
+            // if ($newNumberOfTime > $task->number_of_days) {
+            //     // Inform the user that the new number_of_time cannot be greater than the current value
+            //     return redirect()->back()->with('error', 'The new number of days cannot exceed the current number of days (' . $task->number_of_days . ')');
+            // }
+
+            // Retrieve project, priority, and status from the request
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
             $status = Status::where('id', $request->get('task_status'))->first();
-
-            // Find the recurring task
-            $task = RecurringTask::findOrFail($id);
 
             // Prepare task data to update
             $taskData = [
@@ -5560,6 +5569,8 @@ class TaskController extends Controller
                 'description' => $request->get('description'),
                 'subject' => $request->get('subject'),
                 'task_status' => $request->get('task_status'),
+                'number_of_days' => $newNumberOfTime,  // Updated number_of_time
+                'recurring_type' => $request->get('recurring_type'),
                 'updated_by' => auth()->user()->id,
             ];
 
@@ -5582,25 +5593,114 @@ class TaskController extends Controller
             $updated = $this->taskService->updateTaskRecurring($id, $taskData);
 
             if ($updated) {
-                // Update subtasks
+                // Delete all current subtasks related to the edited task
                 $subtasks = RecurringTask::where('is_sub_task', $task->id)->get();
-
                 foreach ($subtasks as $subtask) {
-                    // Update subtasks with the new task data
-                    $subtaskData = [
-                        'title' => $request->get('title'),
-                        'description' => $request->get('description'),
-                        'subject' => $request->get('subject'),
-                        'task_status' => $request->get('task_status'),
-                        'updated_by' => auth()->user()->id,
-                        'is_sub_task' => $subtask->is_sub_task // Keep the original subtask relationship intact
-                    ];
-
-                    // Assuming you have a service method or direct save
-                    $subtask->update($subtaskData);
+                    $subtask->delete(); // Delete all existing subtasks
                 }
 
-                // Redirect success message
+                // Create new subtasks based on the updated number_of_time
+                $taskSave = null; // To hold the first task ID for subsequent sub-tasks
+
+                // Calculate the start date based on the main task's start date
+                $startDate = \Carbon\Carbon::parse($task->start_date);
+                $dueDate = \Carbon\Carbon::parse($task->due_date); // Start with the main task's due_date
+                $recurringType = $task->recurring_type;
+                $numberOfDays = $newNumberOfTime; // Use the new number of time
+                if($task->is_completed != 1)
+                {
+                    $numberOfDays = $newNumberOfTime - 1;
+                }
+
+                for ($i = 0; $i < $numberOfDays; $i++) {
+                    $taskStartDate = clone $dueDate; // Set task's start date as the previous due date
+                    $taskDueDate = clone $dueDate; // Set task's due date as the previous due date
+
+                    // Calculate the recurring task dates based on type
+                    switch ($recurringType) {
+                        case 'daily':
+                            $taskStartDate->addDays($i); // Start each day after the previous due date
+                            $taskDueDate->addDays($i + 1); // Add 1 day for the due date
+                            break;
+                        case 'weekly':
+                            $taskStartDate->addWeeks($i); // Add weeks to the previous due date
+                            $taskDueDate->addWeeks($i + 1); // Add 1 week to the due date
+                            break;
+                        case 'monthly':
+                            $taskStartDate->addMonths($i); // Add months to the previous due date
+                            $taskDueDate->addMonths($i + 1); // Add 1 month to the due date
+                            break;
+                        case 'quarterly':value: value: value: 
+                            $taskStartDate->addMonths($i * 3); // Add 3 months per iteration
+                            $taskDueDate->addMonths($i * 3 + 3); // Add 3 months for due date
+                            break;
+                        case 'half_quarterly':
+                            $taskStartDate->addMonths($i * 6); // Add 6 months per iteration
+                            $taskDueDate->addMonths($i * 6 + 6); // Add 6 months for due date
+                            break;
+                        case 'yearly':
+                            $taskStartDate->addYears($i); // Add years to the previous due date
+                            $taskDueDate->addYears($i + 1); // Add 1 year for the due date
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // Prepare task data for the subtask
+                    $assignedUsers = implode(',', $userIds);
+                    $taskData = [
+                        'priority_id' => $request->input('priority_id'),
+                        'project_id' => $request->input('project_id'),
+                        'department_id' => $request->input('department_id'),
+                        'task_assignes' => $assignedUsers, // Store assigned users
+                        'sub_department_id' => $request->input('sub_department_id'),
+                        'task_status' => $request->input('task_status'),
+                        'title' => $request->input('title'),
+                        'subject' => $request->input('subject'),
+                        'description' => $request->input('description'),
+                        'start_date' => $taskStartDate,
+                        'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                        'due_date' => $taskDueDate,
+                        'recurring_type' => $recurringType,
+                        'number_of_days' => $numberOfDays,
+                        'created_by' => auth()->id(),
+                        'is_sub_task' => $id, // Set the edited task ID as the is_sub_task
+                    ];
+
+                    // Create the subtask
+                    $taskSave = RecurringTask::create($taskData); // Insert the new task
+
+                    // Update the task number
+                    $taskSave->TaskNumber = $taskSave->id;
+                    $taskSave->save(); // Save the task with TaskNumber
+
+                    // Handle attachments for the first subtask
+                    if ($request->hasFile('attachments') && $i == 0) { // Only attach for the first subtask
+                        foreach ($request->file('attachments') as $attachment) {
+                            // Get the original file name and its extension
+                            $filenameWithExtension = $attachment->getClientOriginalName();
+                            $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                            $extension = $attachment->getClientOriginalExtension();
+
+                            // Create a unique file name by appending the current timestamp
+                            $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+                            // Store the file in the 'attachments' directory
+                            $path = $attachment->storeAs('attachments', $storedFilename);
+
+                            // Now associate the attachment with the first subtask
+                            RecursiveTaskAttachment::create([
+                                'task_id' => $taskSave->id,  // Use the first task ID for attachments
+                                'file' => $path,
+                            ]);
+                        }
+                    }
+
+                    // Update the due date for the next iteration
+                    $dueDate = $taskDueDate; // Set the last created due date as the new due date for the next iteration
+                }
+
+                // Redirect with success message
                 return redirect()->back()->with('success', 'Recurring Task and Subtasks Updated Successfully');
             } else {
                 return redirect()->back()->with('error', 'Error while updating Recurring task');
@@ -5612,7 +5712,6 @@ class TaskController extends Controller
             return redirect()->back()->with('error', 'Error while editing Recurring Task');
         }
     }
-
 
     public function updateTaskFromView($encrypted_id, $status)
     {
@@ -7715,21 +7814,21 @@ class TaskController extends Controller
             ->where('user_id', $userId)  // Focus on task assignees
             ->where('status', '!=', 2)  // Ensure the task is not deleted (assuming status 2 is deleted)
             ->with([
-                    'task',  // Load the related task
-                    'creator',
-                    'department_data',
-                    'sub_department_data',
-                    'task.attachments',
-                    'task.assignees' => function ($query) {
-                        $query->select('task_id', 'status', 'remark'); // Customize as needed
-                    },
-                    'task.creator',  // Task creator
-                    'task.taskStatus',  // Task status
-                    'task.project',  // Task project
-                    'task.department',  // Task department
-                    'task.sub_department',  // Task sub-department
-                    'task.comments'  // Task comments
-                ])
+                'task',  // Load the related task
+                'creator',
+                'department_data',
+                'sub_department_data',
+                'task.attachments',
+                'task.assignees' => function ($query) {
+                    $query->select('task_id', 'status', 'remark'); // Customize as needed
+                },
+                'task.creator',  // Task creator
+                'task.taskStatus',  // Task status
+                'task.project',  // Task project
+                'task.department',  // Task department
+                'task.sub_department',  // Task sub-department
+                'task.comments'  // Task comments
+            ])
             ->whereHas('task', function ($query) use ($userId) {
                 $query->where('created_by', $userId)  // Ensure the task was created by the current user
                     ->havingRaw('COUNT(task_assignees.user_id) = 1');  // Ensure task has only one assignee
@@ -7967,9 +8066,9 @@ class TaskController extends Controller
         return response()->json([
             'success' => true,
             'subtask' => [
-                    'due_date' => $subtask->due_date ? $subtask->due_date : null,
-                    'status' => $subtask->task_status,
-                ],
+                'due_date' => $subtask->due_date ? $subtask->due_date : null,
+                'status' => $subtask->task_status,
+            ],
             'statuses' => $statuses->map(function ($status) {
                 return [
                     'id' => $status->id,
@@ -8015,7 +8114,6 @@ class TaskController extends Controller
             'subtask' => $subtask, // Optionally, return the updated subtask data
         ]);
     }
-
     public function checkAndCreateTasks()
     {
         // Get today's date
@@ -8023,21 +8121,19 @@ class TaskController extends Controller
 
         // Get all recurring tasks where start_date is today
         $tasksToCreate = RecurringTask::whereDate('start_date', $today)->get();
-      
+
         foreach ($tasksToCreate as $recurringTask) {
-            if($recurringTask->is_sub_task == null) {
+            if ($recurringTask->is_sub_task == null) {
                 $TempAttachments = RecursiveTaskAttachment::where('task_id', $recurringTask->id)->get();
-                // dd($TempAttachments);
-            }
-            else{
-                // dd($TempAttachments);
+            } else {
                 $TempAttachments = RecursiveTaskAttachment::where('task_id', $recurringTask->is_sub_task)->get();
             }
+
             // Check if a task has already been created today for the recurring task
             $existingTask = Task::where('ticket', $recurringTask->ticket)
                 ->whereDate('created_at', $today)
                 ->first();
-          
+
             // If an existing task is found, skip creation for this recurring task
             if ($existingTask) {
                 continue; // Skip this task and move to the next recurring task
@@ -8068,13 +8164,19 @@ class TaskController extends Controller
 
             // Create the task
             $task = Task::create($taskData);
-            foreach($TempAttachments as $attachment)
-            {
+
+            // Store the recursive_task_id on the Task table
+            $task->recursive_task_id = $recurringTask->id;
+            $task->save();
+
+            // Create task attachments
+            foreach ($TempAttachments as $attachment) {
                 TaskAttachment::create([
                     'task_id' => $task->id,
                     'file' => $attachment->file,
                 ]);
             }
+
             // Get user IDs from the recurring task
             $userIds = explode(',', $recurringTask->task_assignes);
 
@@ -8112,11 +8214,17 @@ class TaskController extends Controller
 
             // Send notifications to users
             $this->sendTaskNotifications($task, $userIds);
+
+            // Soft delete the recurring task and mark it as completed
+            $recurringTask->is_completed = 1;
+            $recurringTask->save();
+            // $recurringTask->delete();  // Soft delete from RecurringTask table
         }
 
         // Redirect with success message
         return redirect()->route('app-task-list')->with('success', 'Recurring tasks for today created successfully.');
     }
+
 
 
 

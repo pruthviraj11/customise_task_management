@@ -31,6 +31,7 @@ class RecurringTask extends Model
         'created_by',
         'updated_by',
         'closed',
+        'is_completed',
         'ticket',
         'is_sub_task',
         'close_date',

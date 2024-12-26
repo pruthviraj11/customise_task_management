@@ -34,6 +34,8 @@ class Task extends Model
         'deleted_by',
         'created_by',
         'updated_by',
+        'recursive_task_id',
+        'is_recursive',
         'deleted_at',
         'created_at',
         'updated_at',

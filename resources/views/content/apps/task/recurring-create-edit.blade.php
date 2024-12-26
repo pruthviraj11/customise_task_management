@@ -188,10 +188,10 @@
                                 </div>
 
 
-
+                                <input type="hidden" name="recurring_type" value="{{ $task->recurring_type }}">
                                 <div id="recurring_options" class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="recurring_type">Recurring Type</label>
-                                    <select id="recurring_type" class="form-control select2" name="recurring_type">
+                                    <select id="recurring_type" disabled class="form-control select2" name="recurring_type">
                                         <option value="daily"
                                             {{ old('recurring_type', $task->recurring_type) == 'daily' ? 'selected' : '' }}>
                                             Daily
