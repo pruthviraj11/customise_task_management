@@ -111,6 +111,16 @@
             ]
         },
         {
+            "url": "app/task/completed_task",
+            "name": "Completed Task",
+            "icon": "clipboard",
+            "slug": "app-task-completed_task",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
             "url": "app/roles/list",
             "name": "Roles",
             "icon": "lock",

@@ -35,6 +35,7 @@ return [
     "Inquiry Requests" => 'Inquiry Requests',
     "Due Date Past" => 'Due Date Past',
     "Pending Task" => 'Pending Task',
+    "Completed Task" => 'Completed Task',
     "Inquiry Transfer List" => 'Inquiry Transfer List',
     "Level" => "Level",
     "Package Status List" => "Package Status List",
