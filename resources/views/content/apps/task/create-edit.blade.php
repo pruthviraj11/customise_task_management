@@ -187,6 +187,30 @@
 
 
 
+                            {{-- <div class="col-md-3 col-sm-12 mb-1 position-relative">
+                                <label class="form-label" for="start_date">Start Date</label><span
+                                    class="red">*</span>
+                                <input type="date" id="start_date" class="form-control" name="start_date"
+                                    value="{{ old('start_date') ?? ($task != '' ? $task->start_date : date('Y-m-d')) }}"
+                                    @if ($isCreator == false) readonly @endif required>
+                                <span class="text-danger">
+                                    @error('start_date')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="col-md-3 col-sm-12 mb-1" id="end_date_container">
+                                <label class="form-label" for="due_date_form">End Date</label><span
+                                    class="red">*</span>
+                                <input type="date" id="due_date_form" class="form-control" name="due_date_form"
+                                    value="{{ old('due_date_form') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
+                                    required>
+                                <span class="text-danger">
+                                    @error('due_date_form')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div> --}}
                             <div class="col-md-3 col-sm-12 mb-1 position-relative">
                                 <label class="form-label" for="start_date">Start Date</label><span
                                     class="red">*</span>
@@ -211,7 +235,6 @@
                                     @enderror
                                 </span>
                             </div>
-
 
                             <div id="recurring_options" style="display: none;" class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="recurring_type">Recurring Type</label>
@@ -992,9 +1015,10 @@
 
 
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             var startDateInput = document.getElementById('start_date');
+            // alert(startDateInput);
             var dueDateInput = document.getElementById('due_date');
             var today = new Date().toISOString().split('T')[0];
 
@@ -1011,7 +1035,46 @@
                 dueDateInput.min = this.value;
             });
         });
+    </script> --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var startDateInput = document.getElementById('start_date');
+            var dueDateInput = document.getElementById('due_date_form');
+
+            // Function to format date as 'YYYY-MM-DD'
+            function formatDate(date) {
+                return date.toISOString().split('T')[0];
+            }
+
+            var today = new Date();
+
+            // Calculate the date one week ago
+            var oneWeekAgo = new Date();
+            oneWeekAgo.setDate(today.getDate() - 7);
+
+            // Set the min and max attributes for the start date
+            startDateInput.min = formatDate(oneWeekAgo);
+
+            // Set initial minimum value for due date
+            if (startDateInput.value) {
+                dueDateInput.min = startDateInput.value;
+            }
+
+            // Update due date's minimum when start date changes
+            startDateInput.addEventListener('change', function() {
+                var selectedStartDate = new Date(this.value);
+                dueDateInput.min = formatDate(selectedStartDate); // Update min value
+                dueDateInput.value = ''; // Clear due date if start date changes
+            });
+
+            // Ensure due date cannot be less than start date on load
+            if (dueDateInput.value && new Date(dueDateInput.value) < new Date(startDateInput.value)) {
+                dueDateInput.value = ''; // Clear invalid value
+            }
+        });
     </script>
+
+
     <script>
         $(document).ready(function() {
             // Initialize Select2
