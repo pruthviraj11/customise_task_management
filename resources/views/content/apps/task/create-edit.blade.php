@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/editors/quill/quill.bubble.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/pickers/flatpickr/flatpickr.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/pickers/pickadate/pickadate.css')) }}">
+    <link rel="stylesheet" href="{{ asset(mix('vendors/css/extensions/jquery.rateyo.min.css')) }}">
+    {{-- <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/extensions/ext-component-ratings.css')) }}"> --}}
+
 @endsection
 
 @section('page-style')
@@ -471,6 +474,14 @@
                                                         <i class="feather-icon" data-feather="edit"></i>
                                                     </a>
 
+                                                    @if (in_array($subtask->task_status, [7]) && !isset($subtask->rating))
+                                                        <a class="btn btn-primary btn-sm feedback-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Feedback & Ratings">
+                                                            <i class="feather-icon" data-feather="message-circle"></i>
+                                                        </a>
+                                                    @endif
                                                     {{-- {{ dd($subtask->id); }} --}}
                                                     {{-- <!-- Button to trigger AJAX request to mark as completed -->
                                                     <a class="btn btn-success btn-sm mark-completed-btn"
@@ -578,6 +589,58 @@
         </div>
 
 
+        <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="feedbackModalLabel">Feedback & Ratings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="feedbackForm">
+
+                            <h4>*Please note: Feedback and ratings cannot be changed once submitted.</h4>
+                            <input type="hidden" id="subtaskId" name="subtask_id">
+                            <div class="mb-3">
+                                <label for="feedback_text" class="form-label">Feedback</label>
+                                <textarea id="feedback_text" class="form-control" rows="3"></textarea>
+                            </div>
+                            {{-- <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <input type="number" id="rating" class="form-control" min="1"
+                                    max="5">
+
+                                    <div class="col-md d-flex flex-column align-items-start">
+                                        <p class="card-text fw-semibold mb-25">onChange Event</p>
+                                        <div class="onChange-event-ratings"></div>
+                                        <div class="counter-wrapper mt-1">
+                                            <strong>Ratings:</strong>
+                                            <span class="counter"></span>
+                                        </div>
+                                    </div>
+
+                            </div> --}}
+                            <div class="col-xl-6 col-12">
+                                <div class="col-md d-flex flex-column align-items-start mb-sm-0 mb-1">
+                                    {{-- <p class="card-text fw-semibold mb-25">onSet Event</p> --}}
+                                    <label for="rating" class="form-label">Rating</label>
+
+                                    <div class="onset-event-ratings" id="rating" data-rateyo-half-star="true"></div>
+                                    <input type="hidden" id="eventRating" name="eventRating" value="">
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveFeedback">Save Feedback</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div>
         </div>
     </section>
@@ -596,13 +659,31 @@
     <script src="{{ asset(mix('vendors/js/editors/quill/katex.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/editors/quill/highlight.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/editors/quill/quill.min.js')) }}"></script>
-
+    <script src="{{ asset(mix('vendors/js/extensions/jquery.rateyo.min.js')) }}"></script>
+    <script src="{{ asset(mix('js/scripts/extensions/ext-component-ratings.js')) }}"></script>
 @endsection
 @section('page-script')
+    <script>
+        $(document).ready(function() {
+            var onSetEvents = $(".onset-event-ratings");
+
+            if (onSetEvents.length) {
+                onSetEvents.rateYo({
+                    rtl: false, // Adjust based on your layout
+                    halfStar: true,
+                    onSet: function(rating) {
+                        alert('The rating is set to ' + rating + '!');
+                        $("#eventRating").val(rating); // Save the rating to the hidden input field
+                    }
+                });
+            }
+        });
+    </script>
     <!-- Page js files -->
     <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
     <script src="{{ asset(mix('js/scripts/components/components-tooltips.js')) }}"></script>
     <script src="{{ asset(mix('js/scripts/forms/pickers/form-pickers.js')) }}"></script>
+
     <script>
         // Function to generate a random password
         function generateRandomPassword(length) {
@@ -614,6 +695,85 @@
             }
             return password;
         }
+    </script>
+
+    {{-- <script>
+        $(document).ready(function() {
+            // Initialize RateYo
+            $("#starRating").rateYo({
+                rating: 0, // Default rating
+                fullStar: true, // Enable full-star ratings
+                starWidth: "30px", // Star size
+                ratedFill: "#f39c12", // Filled star color
+                normalFill: "#gray", // Empty star color
+                onSet: function(rating) {
+                    // Update the hidden input value when a rating is selected
+                    $("#rating").val(rating);
+                }
+            });
+        });
+    </script> --}}
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Handle Feedback and Ratings button click
+            $('.feedback-btn').on('click', function() {
+                var subtaskId = $(this).data('subtask-id'); // Get the subtask ID
+
+                // Show SweetAlert confirmation before proceeding
+                Swal.fire({
+                    title: 'Provide Feedback and Ratings',
+                    text: 'You are about to give feedback for this subtask.',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Proceed',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#subtaskId').val(subtaskId);
+                        $('#feedbackModal').modal('show');
+
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $('#saveFeedback').on('click', function() {
+            var feedbackText = $('#feedback_text').val();
+            var rating = $('#eventRating').val();
+            var subtaskId = $('#subtaskId').val(); // Assuming you set the subtask ID to the modal
+            $.ajax({
+                url: '{{ route('subtask.saveFeedback') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}', // Add CSRF token
+                    subtask_id: subtaskId,
+                    feedback: feedbackText,
+                    rating: rating
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire(
+                            'Success!',
+                            'Your feedback has been saved.',
+                            'success'
+                        );
+                        $('#feedbackModal').modal('hide');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'There was an issue saving your feedback.',
+                        'error'
+                    );
+                }
+            });
+        });
     </script>
     <script>
         $(document).ready(function() {
@@ -969,7 +1129,16 @@
 
 
 
-
+        $(document).ready(function() {
+            // Initialize the RateYo rating system
+            $(".onset-event-ratings").rateYo({
+                halfStar: true,
+                onSet: function(rating, rateYoInstance) {
+                    // Set the value of the hidden input field to the selected rating
+                    $('#eventRating').val(rating);
+                }
+            });
+        });
 
         $(document).on('click', '.remove-user-btn', function(e) {
             e.preventDefault();

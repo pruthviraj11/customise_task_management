@@ -22,6 +22,8 @@
 <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/forms/form-quill-editor.css')) }}">
 <link rel="stylesheet" href="{{ asset(mix('css/base/plugins/extensions/ext-component-toastr.css')) }}">
 <link rel="stylesheet" href="{{ asset(mix('css/base/pages/app-email.css')) }}">
+<link rel="stylesheet" href="{{ asset(mix('css/base/plugins/extensions/ext-component-ratings.css')) }}">
+
 {{-- Added Styles for email End --}}
 @php $configData = Helper::applClasses(); @endphp
 

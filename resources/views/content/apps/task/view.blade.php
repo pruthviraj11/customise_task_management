@@ -320,6 +320,15 @@
                                     @enderror
                                 </span>
                             </div>
+                            <div class="col-md-12 col-sm-12 mb-1">
+                                <label class="form-label" for="rating">Rating</label> <br>
+                                {{ old('rating') ?? ($task != '' ? $task->rating : '') }}
+                                <span class="text-danger">
+                                    @error('rating')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
 
                             <div class="col-md-12 col-sm-12 mt-3">
                                 <form action="{{ route('comments.store') }}" method="POST">

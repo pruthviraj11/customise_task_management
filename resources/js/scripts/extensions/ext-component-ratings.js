@@ -95,15 +95,15 @@ $(function () {
   // --------------------------------------------------------------------
 
   // onSet Event
-  if (onSetEvents.length) {
-    onSetEvents
-      .rateYo({
-        rtl: isRtl
-      })
-      .on('rateyo.set', function (e, data) {
-        alert('The rating is set to ' + data.rating + '!');
-      });
-  }
+//   if (onSetEvents.length) {
+//     onSetEvents
+//       .rateYo({
+//         rtl: isRtl
+//       })
+//       .on('rateyo.set', function (e, data) {
+//         alert('The rating is set to ' + data.rating + '!');
+//       });
+//   }
 
   // onChange Event
   if (onChangeEvents.length) {
