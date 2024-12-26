@@ -1094,7 +1094,7 @@ class TaskController extends Controller
         $userId = auth()->user()->id;
 
         if (Auth()->user()->id == 1) {
-           $tasks = Task::whereNull('deleted_at')->get();
+            $tasks = Task::whereNull('deleted_at')->get();
         } else {
             $tasks = Task::where('created_by', $userId)->whereNull('deleted_at')->get();
 
@@ -1145,16 +1145,19 @@ class TaskController extends Controller
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
-            $tasks= TaskAssignee::whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today())->get();
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title')->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today())
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->get();
         } else {
             // Retrieve tasks where the user is either the creator or assigned
-            $tasks = TaskAssignee::where('status', 1)->where('due_date', '<', today())
-                ->whereNotIn('task_status', ['4', '7'])
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')->where('task_assignees.status', 1)->where('task_assignees.due_date', '<', today())
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->whereNotIn('task_assignees.task_status', ['4', '7'])
                 ->where(function ($q) use ($userId) {
-                    $q->where('user_id', $userId)
+                    $q->where('task_assignees.user_id', $userId)
                         ->whereHas('user', function ($q) {
                             // Ensure the user is not deleted (i.e., deleted_at is null)
-                            $q->whereNull('deleted_at');
+                            $q->whereNull('task_assignees.deleted_at');
                         });
                 })->get();
         }
@@ -1163,7 +1166,62 @@ class TaskController extends Controller
         foreach ($tasks as $key => $item) {
             // dd($key, $item);
             $tasksTemp[$item['task_status']][] = [
-                "id" => encrypt($item['id']),
+                "id" => encrypt($item['id_task']),
+                "title" => $item['title'],
+                "comments" => "0",
+                "badge-text" => $item['task_status'],
+                "badge" => "success",
+                "due-date" => date('d F', strtotime($item['due_date'])),
+                "attachments" => "0",
+                "assigned" => [
+                    "avatar-s-1.jpg",
+                    "avatar-s-2.jpg"
+                ],
+                "members" => ["Bruce", "Dianna"]
+            ];
+        }
+
+        $res = [];
+        foreach ($status as $key => $value) {
+            $res[] = ['id' => encrypt($value['id']), 'title' => $value['displayname'], 'item' => (isset($tasksTemp[$value['id']])) ? $tasksTemp[$value['id']] : []];
+        }
+
+
+        return response()->json($res);
+
+    }
+
+    public function getAll_kanban_pendingTask()
+    {
+
+        $status = $this->statusService->getAllstatus();
+        // $tasks = $this->taskService->getAlltask()->toArray();
+        $userId = auth()->user()->id;
+
+
+        if ($userId == 1) {
+            // Admin fetches tasks by their statuses
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->whereNotIn('task_assignees.task_status', ['4', '7'])->get();
+        } else {
+            // Retrieve tasks where the user is either the creator or assigned
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')->whereNotIn('task_assignees.task_status', ['4', '7'])
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->where(function ($q) use ($userId) {
+                    $q->where('task_assignees.user_id', $userId)
+                        ->whereHas('user', function ($q) {
+                            // Ensure the user is not deleted (i.e., deleted_at is null)
+                            $q->whereNull('task_assignees.deleted_at');
+                        });
+                })->get();
+        }
+        // dd($tasks);
+        $tasksTemp = array();
+        foreach ($tasks as $key => $item) {
+            // dd($key, $item);
+            $tasksTemp[$item['task_status']][] = [
+                "id" => encrypt($item['id_task']),
                 "title" => $item['title'],
                 "comments" => "0",
                 "badge-text" => $item['task_status'],
@@ -1186,6 +1244,7 @@ class TaskController extends Controller
         return response()->json($res);
 
     }
+
     public function getAll_kanban_assign_by_me()
     {
         // dd('zdf');
@@ -4787,7 +4846,8 @@ class TaskController extends Controller
         }
     }
 
-    public function saveFeedback(Request $request){
+    public function saveFeedback(Request $request)
+    {
         // $request->validate([
         //     'subtask_id' => 'required|exists:task_assignees,id',
         //     'feedback' => 'nullable|string',

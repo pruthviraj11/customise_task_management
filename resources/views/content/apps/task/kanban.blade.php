@@ -336,10 +336,11 @@
                 ViewUrl = "{{ route('app-task-kanban-assign_by_me') }}";
             } else if(type == 'main'){
                 ViewUrl = "{{ route('app-task-kanban-main') }}";
-
             }else if(type == 'due_date_past'){
                 ViewUrl = "{{ route('app-task-kanban-due_date_past') }}";
-
+            }
+            else if(type == 'pending_task'){
+                ViewUrl = "{{ route('app-task-kanban-pending_task') }}";
             }
             var upDateUrl = "{{ route('app-task-updateTaskFromView-all', ['taskId', 'StatusId']) }}";
         </script>

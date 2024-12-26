@@ -408,6 +408,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/kanban/assign_by_me', [TaskController::class, 'getAll_kanban_assign_by_me'])->name('app-task-kanban-assign_by_me');
     Route::get('task/kanban/main', [TaskController::class, 'getAll_kanban_main'])->name('app-task-kanban-main');
     Route::get('task/kanban/due_date_past', [TaskController::class, 'getAll_kanban_dueDatePast'])->name('app-task-kanban-due_date_past');
+    Route::get('task/kanban/pending_task', [TaskController::class, 'getAll_kanban_pendingTask'])->name('app-task-kanban-pending_task');
+
 
 
     // Route::get('task/kanban/kanban_total_task', [TaskController::class, 'getAll_kanban_total_task'])->name('app-task-kanban-getAll_total_task-get');
