@@ -5823,7 +5823,7 @@ class TaskController extends Controller
                             $taskStartDate->addMonths($i); // Add months to the previous due date
                             $taskDueDate->addMonths($i + 1); // Add 1 month to the due date
                             break;
-                        case 'quarterly':value: value: value: 
+                        case 'quarterly':
                             $taskStartDate->addMonths($i * 3); // Add 3 months per iteration
                             $taskDueDate->addMonths($i * 3 + 3); // Add 3 months for due date
                             break;
