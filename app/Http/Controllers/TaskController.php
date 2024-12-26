@@ -796,7 +796,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1246,6 +1246,59 @@ class TaskController extends Controller
 
     }
 
+    public function getAll_kanban_completedTask()
+    {
+
+        $status = $this->statusService->getAllstatus();
+        // $tasks = $this->taskService->getAlltask()->toArray();
+        $userId = auth()->user()->id;
+
+        if ($userId == 1) {
+            // Admin fetches tasks by their statuses
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->whereIn('task_assignees.task_status', ['4','7'])->get();
+        } else {
+            // Retrieve tasks where the user is either the creator or assigned
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')->whereIn('task_assignees.task_status', ['4','7'])
+                ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+                ->where(function ($q) use ($userId) {
+                    $q->where('task_assignees.user_id', $userId)
+                        ->whereHas('user', function ($q) {
+                            // Ensure the user is not deleted (i.e., deleted_at is null)
+                            $q->whereNull('task_assignees.deleted_at');
+                        });
+                })->get();
+        }
+        // dd($tasks);
+        $tasksTemp = array();
+        foreach ($tasks as $key => $item) {
+            // dd($key, $item);
+            $tasksTemp[$item['task_status']][] = [
+                "id" => encrypt($item['id_task']),
+                "title" => $item['title'],
+                "comments" => "0",
+                "badge-text" => $item['task_status'],
+                "badge" => "success",
+                "due-date" => date('d F', strtotime($item['due_date'])),
+                "attachments" => "0",
+                "assigned" => [
+                    "avatar-s-1.jpg",
+                    "avatar-s-2.jpg"
+                ],
+                "members" => ["Bruce", "Dianna"]
+            ];
+        }
+
+        $res = [];
+        foreach ($status as $key => $value) {
+            $res[] = ['id' => encrypt($value['id']), 'title' => $value['displayname'], 'item' => (isset($tasksTemp[$value['id']])) ? $tasksTemp[$value['id']] : []];
+        }
+
+        return response()->json($res);
+
+    }
+
     public function getAll_kanban_assign_by_me()
     {
         // dd('zdf');
@@ -1585,7 +1638,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -2058,10 +2111,10 @@ class TaskController extends Controller
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
-            $query->where('task_status', 4);
+            $query->whereIn('task_status', ['4','7']);
         } else {
             // User-specific task filters
-            $query->where('task_status', 4)
+            $query->whereIn('task_status', ['4','7'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -4825,6 +4878,8 @@ class TaskController extends Controller
                 }
                 if ($request->get('task_status') == 7) {
                     $taskData['close_date'] = now();
+                    $taskData['completed_date'] = now();
+
                 }
 
                 // Create the task
@@ -5400,10 +5455,15 @@ class TaskController extends Controller
                     // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
                 }
+                // dd($currentStatus_creator,'Hii');
                 // Update close_date if task status is set to 7 and the status has changed
-                if ($request->get('task_status') == 7 && $currentStatus_creator != 7) {
+                if ($request->get('task_status') == 7 &&  $currentStatus_creator == 4) {
                     $taskData['close_date'] = now();  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
+                }elseif($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
+                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_by'] = auth()->user()->id;
+                    $taskData['completed_date'] = now();
                 }
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
@@ -5459,6 +5519,11 @@ class TaskController extends Controller
                 } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
                     // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
+                }elseif($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
+
+                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_by'] = auth()->user()->id;
+                    $taskData['completed_date'] = now();
                 }
 
                 if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
@@ -8151,7 +8216,7 @@ class TaskController extends Controller
 
         // Get all recurring tasks where start_date is today
         $tasksToCreate = RecurringTask::whereDate('start_date', $today)->get();
-      
+
         foreach ($tasksToCreate as $recurringTask) {
             if($recurringTask->is_sub_task == null) {
                 $TempAttachments = RecursiveTaskAttachment::where('task_id', $recurringTask->id)->get();
@@ -8165,7 +8230,7 @@ class TaskController extends Controller
             $existingTask = Task::where('ticket', $recurringTask->ticket)
                 ->whereDate('created_at', $today)
                 ->first();
-          
+
             // If an existing task is found, skip creation for this recurring task
             if ($existingTask) {
                 continue; // Skip this task and move to the next recurring task
