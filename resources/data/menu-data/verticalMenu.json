@@ -40,7 +40,7 @@
                 "task-create"
             ]
         },
-          {
+        {
             "url": "app/rejected-tasks",
             "name": "rejected-tasks",
             "icon": "check-square",
@@ -80,21 +80,31 @@
                 "task-create"
             ]
         },
-            {
-                "url": "app/task/recurring_main",
-                "name": "Recurring Main Task",
-                "icon": "clipboard",
-                "slug": "app-task-recurring_main",
-                "permission": [
-                    "task-list",
-                    "task-create"
-                ]
-            },
+        {
+            "url": "app/task/recurring_main",
+            "name": "Recurring Main Task",
+            "icon": "clipboard",
+            "slug": "app-task-recurring_main",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
         {
             "url": "app/task/due_date_past",
             "name": "Due Date Past",
             "icon": "calendar",
             "slug": "app-task-due_date_past",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
+            "url": "app/task/pending_task",
+            "name": "Pending Task",
+            "icon": "calendar",
+            "slug": "app-task-pending_task",
             "permission": [
                 "task-list",
                 "task-create"

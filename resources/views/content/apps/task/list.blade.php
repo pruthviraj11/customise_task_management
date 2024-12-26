@@ -393,6 +393,9 @@
             @elseif ($type === 'due_date_past') {
                     ajaxUrl = "{{ route('app-task-get-due_date_past') }}";
                 }
+                @elseif ($type === 'pending_task') {
+                    ajaxUrl = "{{ route('app-task-get-pending_task') }}";
+                }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
                 }
