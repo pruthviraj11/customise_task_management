@@ -54,9 +54,9 @@ class RecurringTask extends Model
         'close_date',
     ];
 
-    public function attachments()
+    public function attachmentsrec()
     {
-        return $this->hasMany(TaskAttachment::class);
+        return $this->hasMany(RecursiveTaskAttachment::class);
     }
 
     public function assignees()

@@ -32,7 +32,7 @@
         @csrf
         @method('PUT')
 
-        @endphp
+        {{-- @endphp --}}
         <section id="multiple-column-form">
             <div class="row">
                 <div class="col-12">
@@ -78,7 +78,7 @@
                                     <label class="form-label" for="title">
                                         Title<span class="red">*</span>
                                     </label>
-                                    <input type="text" id="title" class="form-control" placeholder="Enter Task Name"
+                                    <input type="text" readonly id="title" class="form-control" placeholder="Enter Task Name"
                                         name="title" value="{{ old('title') ?? ($task != '' ? $task->title : '') }}"
                                         required>
                                     <span class="text-danger">
@@ -92,7 +92,7 @@
                                     <label class="form-label" for="subject">
                                         Subject<span class="red">*</span>
                                     </label>
-                                    <input type="text" id="subject" class="form-control" placeholder="Enter subject"
+                                    <input type="text" readonly id="subject" class="form-control" placeholder="Enter subject"
                                         name="subject" value="{{ old('subject') ?? ($task != '' ? $task->subject : '') }}"
                                         required>
                                     <span class="text-danger">
@@ -118,8 +118,8 @@
                                     });
                                 </script>
                                 <div class="col-md-6 col-sm-12 mb-1">
-                                    <label class="form-label" for="project_id">Project</label><span class="red">*</span>
-                                    <select id="project_id" class="form-select select2" name="project_id" required>
+                                    <label class="form-label"  for="project_id">Project</label><span class="red">*</span>
+                                    <select id="project_id" disable class="form-select select2" name="project_id" required>
                                         <option value="">Select Project</option>
                                         @foreach ($projects as $project)
                                             <option value="{{ $project->id }}"
@@ -175,9 +175,9 @@
 
 
                                 <div class="col-md-3 col-sm-12 mb-1 position-relative">
-                                    <label class="form-label" for="start_date">Start Date</label><span
+                                    <label class="form-label"  for="start_date">Start Date</label><span
                                         class="red">*</span>
-                                    <input type="date" id="start_date" class="form-control" name="start_date"
+                                    <input type="date" readonly id="start_date" class="form-control" name="start_date"
                                         value="{{ old('start_date') ?? ($task != '' ? $task->start_date : date('Y-m-d')) }}"
                                         required>
                                     <span class="text-danger">
@@ -270,37 +270,37 @@
                                         @enderror
                                     </span>
                                 </div>
-                                {{-- <div class="col-md-12 col-sm-12 ">
-                                <label class="form-label" for="attachments">Attachments</label>
-                                <div class="input-group mb-3 w-100">
-                                    <input type="file" class="form-control" id="attachments" name="attachments[]"
-                                         multiple>
-                                    <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
+                                <div class="col-md-12 col-sm-12 ">
+                                    <label class="form-label" for="attachments">Attachments</label>
+                                    <div class="input-group mb-3 w-100">
+                                        <input type="file" class="form-control" id="attachments" name="attachments[]"
+                                            multiple>
+                                        <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
+                                    </div>
+                                    @if ($task)
+                                        <ul>
+                                            @foreach ($attachmentsrec as $attachment)
+                                                <li>
+
+                                                    <a
+                                                        href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}">
+
+                                                        {{ last(explode('/', $attachment->file)) }}
+
+                                                    </a>
+
+
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    <span class="text-danger">
+                                        @error('attachments')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
-                                @if ($task)
-                                    <ul>
-                                        @foreach ($task->attachments as $attachment)
-                                            <li>
-
-                                                <a
-                                                    href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}">
-
-                                                    {{ last(explode('/', $attachment->file)) }}
-
-                                                </a>
-
-
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                <span class="text-danger">
-                                    @error('attachments')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div> --}}
 
                                 <div class="col-md-12 col-sm-12 mb-1">
                                     <label class="form-label" for="description">Description</label>
@@ -311,116 +311,6 @@
                                         @enderror
                                     </span>
                                 </div>
-
-                                @if ($task != '')
-                                    <div class="col-md-12 col-sm-12 mt-3">
-
-                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                        <div class="mb-3">
-                                            <label for="comment_form" class="form-label">Add Comment</label>
-                                            <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
-                                        </div>
-
-                                    </div>
-                                    @if ($task->created_by == auth()->user()->id)
-                                        <div class="col-md-6 col-sm-12 mb-1">
-                                            <label class="form-label" for="comments_for">Comments For </label><span
-                                                class="red">*</span>
-                                            <select id="comments_for" class="form-select select2" name="comments_for[]"
-                                                multiple required>
-                                                <option value="">Select User</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}"
-                                                        {{ old('comments_for') && in_array($user->id, old('comments_for'))
-                                                            ? 'selected'
-                                                            : ($task && in_array($user->id, $task->task_assignes ? explode(',', $task->task_assignes) : [])
-                                                                ? 'selected'
-                                                                : '') }}>
-                                                        <span class="fixed-width">{{ $user->first_name }}
-                                                            {{ $user->last_name }}</span>
-                                                        |{{ $user->department->department_name ?? '' }}|
-                                                        {{ $user->sub_department->sub_department_name ?? '' }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <span class="text-danger">
-                                                @error('comments_for')
-                                                    {{ $message }}
-                                                @enderror
-                                            </span>
-                                        </div>
-                                    @endif
-
-                                    <?php /*
-                                <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
-                                    @foreach ($getTaskComments as $comment)
-                                        @php
-                                            // Get the logged-in user ID
-                                            $loggedInUserId = auth()->id();
-
-                                            // Split the comma-separated list of users to whom the comment is directed
-                                            $toUserIds = explode(',', $comment->to_user_id); // if comma-separated IDs are stored
-                                        @endphp
-
-                                        {{-- Check if the logged-in user can view the comment --}}
-                                        <div class="card bg-white shadow-lg">
-                                            <div class="card-header email-detail-head">
-                                                <div
-                                                    class="user-details d-flex justify-content-between align-items-center flex-wrap">
-                                                    <div class="avatar me-75">
-                                                        {{-- Check if the comment creator is the logged-in user --}}
-                                                        @if ($loggedInUserId == $comment->created_by)
-                                                            {{-- Display logged-in user's profile image if they are the creator --}}
-                                                            @if (!empty(auth()->user()->profile_img))
-                                                                <img src="{{ asset('storage/' . auth()->user()->profile_img) }}"
-                                                                    alt="Profile Image" width="48" height="48">
-                                                            @else
-                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                                    alt="Default Avatar" width="48" height="48">
-                                                            @endif
-                                                        @else
-                                                            {{-- Display the comment creator's profile image --}}
-                                                            @if (!empty($comment->creator->profile_img))
-                                                                <img src="{{ asset('storage/' . $comment->creator->profile_img) }}"
-                                                                    alt="Profile Image" width="48" height="48">
-                                                            @else
-                                                                <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
-                                                                    alt="Default Avatar" width="48" height="48">
-                                                            @endif
-                                                        @endif
-                                                    </div>
-                                                    <div class="mail-items">
-                                                        <h5 class="mt-0">
-                                                            {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }}
-                                                        </h5>
-                                                        <div class="email-info-dropup dropdown">
-                                                            <span role="button"
-                                                                class="dropdown-toggle font-small-3 text-muted"
-                                                                id="card_top01" data-bs-toggle="dropdown"
-                                                                aria-haspopup="true" aria-expanded="false">
-                                                                {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mail-meta-item d-flex align-items-center">
-                                                    <small
-                                                        class="mail-date-time text-muted">{{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y H:i') }}</small>
-                                                </div>
-                                            </div>
-                                            <div class="card-body mail-message-wrapper pt-2">
-                                                <div class="mail-message">
-                                                    {{ $comment->comment }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                */
-                                    ?>
-                                @endif
-
-
                             </div>
                         </div>
                     </div>
