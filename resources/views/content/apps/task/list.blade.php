@@ -923,10 +923,11 @@
                 }
             });
         });
-
         $(document).on("click", ".accept-task", function(e) {
             e.preventDefault();
             var id = $(this).data("id");
+
+            // First SweetAlert: Confirm task acceptance
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -940,16 +941,72 @@
                 buttonsStyling: false
             }).then(function(result) {
                 if (result.value) {
-                    window.location.href = "{{ route('app-task-accept', ':id') }}".replace(':id', id);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Accepted!',
-                        text: 'Your task has been accepted.',
-                        customClass: {
-                            confirmButton: 'btn btn-success'
+                    // Make an AJAX call to accept the task without refreshing the page
+                    $.ajax({
+                        url: "{{ route('app-task-accept', ':id') }}".replace(':id', id),
+                        method: "GET",
+                        data: {
+                            // Include any necessary data like CSRF token and task data
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // Success message after task is accepted
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Accepted!',
+                                text: 'Your task has been accepted.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                }
+                            }).then(function() {
+                                // Show the second SweetAlert for comment decision
+                                Swal.fire({
+                                    title: 'Do you want to add a comment now or later?',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Add Now',
+                                    cancelButtonText: 'Add Later',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary',
+                                        cancelButton: 'btn btn-outline-danger ms-1'
+                                    },
+                                    buttonsStyling: false
+                                }).then(function(result) {
+                                    if (result.value) {
+                                        // If 'Add Now' is chosen, redirect to the update task page
+                                        window.location.href =
+                                            "{{ route('app-task-edit', ':id') }}"
+                                            .replace(':id', id);
+                                    } else if (result.dismiss === Swal
+                                        .DismissReason.cancel) {
+                                        // If 'Add Later' is chosen, do nothing or handle accordingly
+                                        Swal.fire({
+                                            title: 'You can add a comment later.',
+                                            text: 'The task will remain accepted.',
+                                            icon: 'info',
+                                            customClass: {
+                                                confirmButton: 'btn btn-info'
+                                            }
+                                        }).then(function() {
+                                            // Refresh the page after the message is shown
+                                            location.reload();
+                                        });
+                                    }
+                                });
+                            });
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'There was an error accepting the task. Please try again.',
+                                customClass: {
+                                    confirmButton: 'btn btn-danger'
+                                }
+                            });
                         }
                     });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // If task acceptance is cancelled
                     Swal.fire({
                         title: 'Cancelled',
                         text: 'Your imaginary file is safe :)',
@@ -961,6 +1018,7 @@
                 }
             });
         });
+
 
         $(document).on("click", ".confirm-retrieve", function(e) {
             e.preventDefault();
