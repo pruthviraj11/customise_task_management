@@ -32,7 +32,6 @@
                 <div class="card" style="background-color: #F6F6F6">
                     <div class="card-header">
                         <h4>{{ $page_data['form_title'] }}</h4>
-
                         <button class="btn btn-primary" onclick="printDiv('printableArea')">Print</button>
                         <a href="{{ route('app-task-list') }}" class="col-md-2 btn btn-primary float-end">Task
                             List</a>
@@ -351,29 +350,29 @@
                             </div>
 
                             @if ($task->created_by == auth()->user()->id)
-                                <div class="col-md-6 col-sm-12 mb-1">
-                                    <label class="form-label" for="comments_for">Comments For </label><span
-                                        class="red">*</span>
-                                    <select id="comments_for" class="form-select select2" name="comments_for[]" multiple
-                                        required>
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
-                                                <span class="fixed-width">{{ $user->first_name }}
-                                                    {{ $user->last_name }}</span>
-                                                |{{ $user->department->department_name ?? '' }}|
-                                                {{ $user->sub_department->sub_department_name ?? '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <span class="text-danger">
-                                        @error('comments_for')
-                                            {{ $message }}
-                                        @enderror
-                                    </span>
-                                </div>
-                            @endif
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="comments_for">Comments For </label><span
+                                    class="red">*</span>
+                                <select id="comments_for" class="form-select select2" name="comments_for[]" multiple
+                                    required>
+                                    <option value="">Select User</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                            <span class="fixed-width">{{ $user->first_name }}
+                                                {{ $user->last_name }}</span>
+                                            |{{ $user->department->department_name ?? '' }}|
+                                            {{ $user->sub_department->sub_department_name ?? '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger">
+                                    @error('comments_for')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                        @endif
 
                             <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                 @foreach ($taskAssigne->comments as $comment)
@@ -458,9 +457,15 @@
                 </div>
 
 
+
+
+
+
+
             </div>
         </div>
-
+        </div>
+        </div>
         <div class="card" class="d-none" style="display: none">
             <div class="card-body" id="printableArea">
 
@@ -634,15 +639,13 @@
             return password;
         }
     </script>
-    <script>
+     <script>
         function printDiv(divId) {
             const printContents = document.getElementById(divId).innerHTML;
             const originalContents = document.body.innerHTML;
-
             document.body.innerHTML = printContents;
             window.print();
             document.body.innerHTML = originalContents;
-
             // Restore the original page
             window.location.reload();
         }

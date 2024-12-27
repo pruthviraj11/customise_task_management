@@ -202,7 +202,11 @@ class TaskController extends Controller
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
                 $taskAssigne = $this->taskService->gettask($id);
-                $task = $this->taskService->gettaskAssigne($id)->first();
+                $task = $this->taskService->gettaskAssigne($id); // Fetch the base query.
+                // ->select('task_assignees.*', 'tasks.title','tasks.subject','tasks.project_id','tasks.priority_id','tasks.start_date') // Select fields from both tables.
+                // ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id') // Join tasks table.
+                // ->first();
+
                 $getTaskComments = Comments::where('task_id', $task->task_id)->first();
                 // dd($getTaskComments);
                 $creator = 0;
