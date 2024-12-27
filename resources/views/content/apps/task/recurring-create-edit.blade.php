@@ -223,7 +223,7 @@
                                 <div id="number_of_time_container" class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="number_of_time">Number of Times</label>
                                     <input type="number" id="number_of_time"
-                                        value="{{ old('number_of_days') ?? ($task != '' ? $task->number_of_days : '') }}"
+                                        value="{{ old('number_of_days') ?? ($task != '' ? $NotCompletedtask : '') }}"
                                         class="form-control" name="number_of_time" placeholder="Enter number of days"
                                         required>
                                 </div>
