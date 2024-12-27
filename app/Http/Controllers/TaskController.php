@@ -4983,7 +4983,6 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            // dd($id);
             $task = $this->taskService->gettask($id);
             $Maintask = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
