@@ -196,14 +196,17 @@ class TaskController extends Controller
 
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
-                // dd($task);
                 $creator = 1;
                 $taskAssigne = $this->taskService->gettask($id);
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
                 $taskAssigne = $this->taskService->gettask($id);
-                $task = $this->taskService->gettaskAssigne($id)->first();
+                $task = $this->taskService->gettaskAssigne($id); // Fetch the base query.
+                // ->select('task_assignees.*', 'tasks.title','tasks.subject','tasks.project_id','tasks.priority_id','tasks.start_date') // Select fields from both tables.
+                // ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id') // Join tasks table.
+                // ->first();
+
                 $getTaskComments = Comments::where('task_id', $task->task_id)->first();
                 // dd($getTaskComments);
                 $creator = 0;
@@ -2531,6 +2534,23 @@ class TaskController extends Controller
             ->make(true);
     }
 
+    public function notificationForTodayDueTask(Request $request)
+    {
+        $users = User::whereNull('deleted_at')->get();
+        foreach ($users as $user) {
+            $taskData = Task::where('created_by', $user->id)->where('due_date', today())->get();
+
+            // Send notification to each user
+            foreach ($taskData as $task) {
+                createNotification(
+                    $user->id,
+                    $task->id,
+                    'The Due Date For Task ' . $task->id . ' Is Today.',
+                    'Created'
+                );
+            }
+        }
+    }
 
     public function requestedToUsTasks($user_id, $status_id, $type)
     {
@@ -5052,7 +5072,6 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            // dd($id);
             $task = $this->taskService->gettask($id);
             $Maintask = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
@@ -8513,6 +8532,7 @@ class TaskController extends Controller
     {
         foreach ($userIds as $userId) {
             $user = User::find($userId);
+
             // Send notification to the user
             createNotification(
                 $user->id,
