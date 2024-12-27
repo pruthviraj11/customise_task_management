@@ -196,7 +196,6 @@ class TaskController extends Controller
 
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
-                // dd($task);
                 $creator = 1;
                 $taskAssigne = $this->taskService->gettask($id);
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
@@ -1257,10 +1256,10 @@ class TaskController extends Controller
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
                 ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
-                ->whereIn('task_assignees.task_status', ['4','7'])->get();
+                ->whereIn('task_assignees.task_status', ['4', '7'])->get();
         } else {
             // Retrieve tasks where the user is either the creator or assigned
-            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')->whereIn('task_assignees.task_status', ['4','7'])
+            $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')->whereIn('task_assignees.task_status', ['4', '7'])
                 ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
                 ->where(function ($q) use ($userId) {
                     $q->where('task_assignees.user_id', $userId)
@@ -2111,10 +2110,10 @@ class TaskController extends Controller
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_status', ['4','7']);
+            $query->whereIn('task_status', ['4', '7']);
         } else {
             // User-specific task filters
-            $query->whereIn('task_status', ['4','7'])
+            $query->whereIn('task_status', ['4', '7'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2531,6 +2530,23 @@ class TaskController extends Controller
             ->make(true);
     }
 
+    public function notificationForTodayDueTask(Request $request)
+    {
+        $users = User::whereNull('deleted_at')->get();
+        foreach ($users as $user) {
+            $taskData = Task::where('created_by', $user->id)->where('due_date', today())->get();
+
+            // Send notification to each user
+            foreach ($taskData as $task) {
+                createNotification(
+                    $user->id,
+                    $task->id,
+                    'The Due Date For Task ' . $task->id . ' Is Today.',
+                    'Created'
+                );
+            }
+        }
+    }
 
     public function requestedToUsTasks($user_id, $status_id, $type)
     {
@@ -5456,10 +5472,10 @@ class TaskController extends Controller
                 }
                 // dd($currentStatus_creator,'Hii');
                 // Update close_date if task status is set to 7 and the status has changed
-                if ($request->get('task_status') == 7 &&  $currentStatus_creator == 4) {
+                if ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
                     $taskData['close_date'] = now();  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
-                }elseif($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
+                } elseif ($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
                     $taskData['close_date'] = now();  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
                     $taskData['completed_date'] = now();
@@ -5518,7 +5534,7 @@ class TaskController extends Controller
                 } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
                     // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
-                }elseif($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
+                } elseif ($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
 
                     $taskData['close_date'] = now();  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
@@ -5799,8 +5815,7 @@ class TaskController extends Controller
                 $dueDate = \Carbon\Carbon::parse($task->due_date); // Start with the main task's due_date
                 $recurringType = $task->recurring_type;
                 $numberOfDays = $newNumberOfTime; // Use the new number of time
-                if($task->is_completed != 1)
-                {
+                if ($task->is_completed != 1) {
                     $numberOfDays = $newNumberOfTime - 1;
                 }
 
@@ -8426,6 +8441,7 @@ class TaskController extends Controller
     {
         foreach ($userIds as $userId) {
             $user = User::find($userId);
+
             // Send notification to the user
             createNotification(
                 $user->id,

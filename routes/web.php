@@ -398,6 +398,9 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     Route::get('task/accepted/get/all', [TaskController::class, 'getAll'])->name('app-accepted-get-all');
     Route::get('task/requested/get/all', [TaskController::class, 'getAll'])->name('app-requested-get-all');
+
+    Route::get('task/notification_for_today_due_task', [TaskController::class, 'notificationForTodayDueTask'])->name('app-notification-for-today-due-task');
+
     // Task List End
 
     Route::get('task/mytask', [TaskController::class, 'index'])->name('app-task-get-mytask');

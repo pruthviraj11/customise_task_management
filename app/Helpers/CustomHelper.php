@@ -71,7 +71,7 @@ function createNotification($to = '', $inquiry_id = '',$message, $notification_t
 {
     try {
         $notification = new InternalNotifications();
-        $notification->notification_from = auth()->user()->id;
+        $notification->notification_from = auth()->user()->id??33;
         $notification->notification_to = $to;
         $notification->inquiry_id = $inquiry_id;
         $notification->notification_type = $notification_type;
@@ -79,6 +79,7 @@ function createNotification($to = '', $inquiry_id = '',$message, $notification_t
 
         $notification->message = $message;
         $notification->notification_status = false;
+        // dd($notification);
         $notification->save();
 
         return response(['status' => true, 'message' => 'Notification Successful..']);
