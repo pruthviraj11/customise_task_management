@@ -42,7 +42,9 @@ class TaskAssignee extends Model
         'accepted_by',
         'accepted_date',
         'feedback',
-        'rating'
+        'rating',
+        'is_pinned',
+        'pinned_by'
     ];
     protected $guarded = [];
 

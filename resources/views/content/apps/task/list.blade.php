@@ -164,7 +164,9 @@
                             <tr class="">
 
                                 <th>Actions</th>
-                                <th>Pin Task</th>
+                                @if ($type == 'mytask')
+                                    <th>Pin Task</th>
+                                @endif
                                 <th>Task</th>
                                 <th>Task Number</th>
                                 <th>Task/Ticket</th>
@@ -593,7 +595,10 @@
                     }
                 },
                 order: [
+                    @if ($type == 'mytask')
+
                     [23, 'desc'],
+                    @endif
                     [2, 'desc']
                 ],
                 columns: [{
@@ -601,32 +606,35 @@
                         name: 'actions',
                         searchable: false
                     },
-                    {
-                        data: 'pin_task', // Pin Task column
-                        name: 'pin_task',
-                        searchable: false,
-                        render: function(data, type, row) {
-                            // Check if the task is pinned (assuming 1 means pinned)
-                            if (row.is_pinned) {
-                                return `
+                    @if ($type == 'mytask')
+                        {
+                            data: 'pin_task', // Pin Task column
+                            name: 'pin_task',
+                            searchable: false,
+                            render: function(data, type, row) {
+                                console.log(row.pinned_by);
+                                // Check if the task is pinned and pinned by the current user
+                                if (row.is_pinned) {
+                                    return `
                 <i class="ficon pin-task-icon" data-feather="paperclip"
                    style="cursor: pointer; color: red"
                    title="Pin Task"
                    data-task-id="${row.task_number}">
                 </i>
             `;
-                            } else {
-                                return `
+                                } else {
+                                    return `
                 <i class="ficon pin-task-icon" data-feather="paperclip"
                    style="cursor: pointer;"
                    title="Pin Task"
                    data-task-id="${row.task_number}">
                 </i>
             `;
+                                }
                             }
-                        }
-                    },
-                    {
+                        },
+                    @endif
+                     {
                         data: 'task_id',
                         name: 'task_id',
                         searchable: true,
@@ -741,7 +749,7 @@
                         data: 'is_pinned',
                         name: 'is_pinned',
                         visible: false,
-                        searchable: true,
+                        searchable: false,
                     },
 
                 ],
@@ -891,7 +899,7 @@
             // Show SweetAlert confirmation dialog
             Swal.fire({
                 title: 'Are you sure?',
-                text:isPinned ? "Do you want to unpin this task?" : "Do you want to pin this task?",
+                text: isPinned ? "Do you want to unpin this task?" : "Do you want to pin this task?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: isPinned ? 'Yes unpin it!' : 'Yes, pin it!',
@@ -917,7 +925,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Pinned!',
-                                text: isPinned ? 'The task has been unpinned Successfully' : 'The task has been pinned successfully.',
+                                text: isPinned ?
+                                    'The task has been unpinned Successfully' :
+                                    'The task has been pinned successfully.',
                                 customClass: {
                                     confirmButton: 'btn btn-success'
                                 }

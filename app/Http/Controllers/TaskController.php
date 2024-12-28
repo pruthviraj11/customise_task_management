@@ -6939,9 +6939,11 @@ class TaskController extends Controller
 
             if ($task->is_pinned == 1) {
                 $task->is_pinned = false;
+                $task->pinned_by = auth()->user()->id;
                 $task->save();
             } else {
                 $task->is_pinned = true;
+                $task->pinned_by = auth()->user()->id;
                 $task->save();
             }
 
