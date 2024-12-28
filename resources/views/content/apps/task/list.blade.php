@@ -609,7 +609,7 @@
                             // Check if the task is pinned (assuming 1 means pinned)
                             if (row.is_pinned) {
                                 return `
-                <i class="ficon pin-task-icon" data-feather="map-pin"
+                <i class="ficon pin-task-icon" data-feather="paperclip"
                    style="cursor: pointer; color: red"
                    title="Pin Task"
                    data-task-id="${row.task_number}">
@@ -617,7 +617,7 @@
             `;
                             } else {
                                 return `
-                <i class="ficon pin-task-icon" data-feather="map-pin"
+                <i class="ficon pin-task-icon" data-feather="paperclip"
                    style="cursor: pointer;"
                    title="Pin Task"
                    data-task-id="${row.task_number}">
