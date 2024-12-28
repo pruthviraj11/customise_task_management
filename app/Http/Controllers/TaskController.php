@@ -4802,7 +4802,7 @@ class TaskController extends Controller
                         $taskDueDate = $taskStartDate->copy()->addMonths(3); // Main task due date is one day later
                     } elseif ($i == 0 && $recurringType == 'half_quarterly') {
                         $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addMonths(3); // Main task due date is one day later
+                        $taskDueDate = $taskStartDate->copy()->addMonths(6); // Main task due date is one day later
                     } elseif ($i == 0 && $recurringType == 'yearly') {
                         $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
                         $taskDueDate = $taskStartDate->copy()->addYear(); // Main task due date is one day later

@@ -243,7 +243,7 @@
                                     <option value="weekly">Weekly</option>
                                     <option value="monthly">Monthly</option>
                                     <option value="quarterly">Quarterly</option>
-                                    <option value="half_quarterly">Half Quarterly</option>
+                                    <option value="half_quarterly">Half Yearly</option>
                                     <option value="yearly">Yearly</option>
                                 </select>
                             </div>
