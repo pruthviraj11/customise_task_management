@@ -324,9 +324,12 @@ class UsersController extends Controller
     public function updateProfile(UpdateUserProfileRequest $request, $encrypted_id)
     {
         try {
-            // dd($request->all());
             $id = decrypt($encrypted_id);
+            $selectedColumns = explode(',', $request->input('selected_columns'));
+// dd($selectedColumns);
+
             // $userData['username'] = $request->get('username');
+            $userData['selected_fields'] = json_encode($selectedColumns);
             $userData['first_name'] = $request->get('first_name');
             $userData['last_name'] = $request->get('last_name');
             $userData['email'] = $request->get('email');

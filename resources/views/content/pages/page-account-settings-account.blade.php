@@ -136,140 +136,121 @@
                                     @enderror
                                 </span>
                             </div>
-                            {{-- <div class="col-12 col-sm-6 mb-1">
-                                <label class="form-label" for="accountAddress">Address</label>
-                                <input type="text" value="{{ $data->address }}" class="form-control" id="accountAddress"
-                                    name="address" placeholder="Your Address" />
+                            <input type="hidden" id="selectedColumns" name="selected_columns" value="">
+
+                            <div class="card">
+                                <div class="card-body ">
+                                    <div id="columnVisibilityModal">
+                                        <div class="row">
+                                            @php
+                                            $selectedColumns = json_decode(auth()->user()->selected_fields, true); // Get the selected columns array
+                                        @endphp
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="0"  @if(in_array(0, $selectedColumns)) checked @endif>
+                                                Actions
+                                            </div>
+                                            {{-- @if ($type == 'mytask')
+                                                <div class="list-group-item col">
+                                                    <input type="checkbox" class="column-toggle" data-column="1" checked>
+                                                    Pin Task
+                                                </div>
+                                            @endif --}}
+
+                                            {{-- <div class="list-group-item col">
+                                        <input type="checkbox" class="column-toggle" data-column="2" checked>
+                                        Task ID
+                                    </div> --}}
+
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="3"  @if(in_array(3, $selectedColumns)) checked @endif>
+                                                Task Number
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="4"  @if(in_array(4, $selectedColumns)) checked @endif>
+                                                Task/Ticket
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="5"  @if(in_array(5, $selectedColumns)) checked @endif>
+                                                Title
+                                            </div>
+                                            {{-- <div class="list-group-item col">
+                                        <input type="checkbox" class="column-toggle" data-column="6"  @if(in_array(6, $selectedColumns)) checked @endif>
+                                        Description
+                                    </div> --}}
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="7"  @if(in_array(7, $selectedColumns)) checked @endif>
+                                                Subject
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="8"  @if(in_array(8, $selectedColumns)) checked @endif>
+                                                Assign By
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="9"  @if(in_array(9, $selectedColumns)) checked @endif>
+                                                Assigned To
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="10"  @if(in_array(10, $selectedColumns)) checked @endif>
+                                                Status
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="11"  @if(in_array(11, $selectedColumns)) checked @endif>
+                                                Created Date
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="12"  @if(in_array(12, $selectedColumns)) checked @endif>
+                                                Start Date
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="13"  @if(in_array(13, $selectedColumns)) checked @endif>
+                                                Due Date
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="14"  @if(in_array(14, $selectedColumns)) checked @endif>
+                                                Completed Date
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="15"  @if(in_array(15, $selectedColumns)) checked @endif>
+                                                Accepted Date
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="16"  @if(in_array(16, $selectedColumns)) checked @endif>
+                                                Project
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="17"  @if(in_array(17, $selectedColumns)) checked @endif>
+                                                Department
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="18"  @if(in_array(18, $selectedColumns)) checked @endif>
+                                                Sub Department
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="19"  @if(in_array(19, $selectedColumns)) checked @endif>
+                                                Owner Department
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="20"  @if(in_array(20, $selectedColumns)) checked @endif>
+                                                Owner Sub Department
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="21"  @if(in_array(21, $selectedColumns)) checked @endif>
+                                                Owner Contact Info
+                                            </div>
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="22"  @if(in_array(22, $selectedColumns)) checked @endif>
+                                                Close Date
+                                            </div>
+                                            {{-- @if ($type == 'mytask')
+                                        <div class="list-group-item col">
+                                            <input type="checkbox" class="column-toggle" data-column="23"  @if(in_array(23, $selectedColumns)) checked @endif>
+                                            Is Pinned
+                                        </div>
+                                    @endif --}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 col-sm-6 mb-1">
-                                <label class="form-label" for="accountState">State</label>
-                                <input type="text" class="form-control" id="accountState" name="state"
-                                    placeholder="State" />
-                            </div>
-                            <div class="col-12 col-sm-6 mb-1">
-                                <label class="form-label" for="accountZipCode">Zip Code</label>
-                                <input type="text" class="form-control account-zip-code" id="accountZipCode"
-                                    name="zipCode" placeholder="Code" maxlength="6" />
-                            </div> --}}
-                            {{-- <div class="col-12 col-sm-6 mb-1">
-                                <label class="form-label" for="country">Country</label>
-                                <select id="country" class="select2 form-select">
-                                    <option value="">Select Country</option>
-                                    <option value="Australia">Australia</option>
-                                    <option value="Bangladesh">Bangladesh</option>
-                                    <option value="Belarus">Belarus</option>
-                                    <option value="Brazil">Brazil</option>
-                                    <option value="Canada">Canada</option>
-                                    <option value="China">China</option>
-                                    <option value="France">France</option>
-                                    <option value="Germany">Germany</option>
-                                    <option value="India">India</option>
-                                    <option value="Indonesia">Indonesia</option>
-                                    <option value="Israel">Israel</option>
-                                    <option value="Italy">Italy</option>
-                                    <option value="Japan">Japan</option>
-                                    <option value="Korea">Korea, Republic of</option>
-                                    <option value="Mexico">Mexico</option>
-                                    <option value="Philippines">Philippines</option>
-                                    <option value="Russia">Russian Federation</option>
-                                    <option value="South Africa">South Africa</option>
-                                    <option value="Thailand">Thailand</option>
-                                    <option value="Turkey">Turkey</option>
-                                    <option value="Ukraine">Ukraine</option>
-                                    <option value="United Arab Emirates">United Arab Emirates</option>
-                                    <option value="United Kingdom">United Kingdom</option>
-                                    <option value="United States">United States</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-1">
-                                <label for="language" class="form-label">Language</label>
-                                <select id="language" class="select2 form-select">
-                                    <option value="">Select Language</option>
-                                    <option value="en">English</option>
-                                    <option value="fr">French</option>
-                                    <option value="de">German</option>
-                                    <option value="pt">Portuguese</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-1">
-                                <label for="timeZones" class="form-label">Timezone</label>
-                                <select id="timeZones" class="select2 form-select">
-                                    <option value="">Select Time Zone</option>
-                                    <option value="-12">
-                                        (GMT-12:00) International Date Line West
-                                    </option>
-                                    <option value="-11">
-                                        (GMT-11:00) Midway Island, Samoa
-                                    </option>
-                                    <option value="-10">
-                                        (GMT-10:00) Hawaii
-                                    </option>
-                                    <option value="-9">
-                                        (GMT-09:00) Alaska
-                                    </option>
-                                    <option value="-8">
-                                        (GMT-08:00) Pacific Time (US & Canada)
-                                    </option>
-                                    <option value="-8">
-                                        (GMT-08:00) Tijuana, Baja California
-                                    </option>
-                                    <option value="-7">
-                                        (GMT-07:00) Arizona
-                                    </option>
-                                    <option value="-7">
-                                        (GMT-07:00) Chihuahua, La Paz, Mazatlan
-                                    </option>
-                                    <option value="-7">
-                                        (GMT-07:00) Mountain Time (US & Canada)
-                                    </option>
-                                    <option value="-6">
-                                        (GMT-06:00) Central America
-                                    </option>
-                                    <option value="-6">
-                                        (GMT-06:00) Central Time (US & Canada)
-                                    </option>
-                                    <option value="-6">
-                                        (GMT-06:00) Guadalajara, Mexico City, Monterrey
-                                    </option>
-                                    <option value="-6">
-                                        (GMT-06:00) Saskatchewan
-                                    </option>
-                                    <option value="-5">
-                                        (GMT-05:00) Bogota, Lima, Quito, Rio Branco
-                                    </option>
-                                    <option value="-5">
-                                        (GMT-05:00) Eastern Time (US & Canada)
-                                    </option>
-                                    <option value="-5">
-                                        (GMT-05:00) Indiana (East)
-                                    </option>
-                                    <option value="-4">
-                                        (GMT-04:00) Atlantic Time (Canada)
-                                    </option>
-                                    <option value="-4">
-                                        (GMT-04:00) Caracas, La Paz
-                                    </option>
-                                    <option value="-4">
-                                        (GMT-04:00) Manaus
-                                    </option>
-                                    <option value="-4">
-                                        (GMT-04:00) Santiago
-                                    </option>
-                                    <option value="-3.5">
-                                        (GMT-03:30) Newfoundland
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-1">
-                                <label for="currency" class="form-label">Currency</label>
-                                <select id="currency" class="select2 form-select">
-                                    <option value="">Select Currency</option>
-                                    <option value="usd">USD</option>
-                                    <option value="euro">Euro</option>
-                                    <option value="pound">Pound</option>
-                                    <option value="bitcoin">Bitcoin</option>
-                                </select>
-                            </div> --}}
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary mt-1 me-1">Save changes</button>
                                 <button type="reset" class="btn btn-outline-secondary mt-1">Discard</button>
@@ -360,4 +341,29 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const columnToggles = document.querySelectorAll('.column-toggle');
+            const selectedColumnsField = document.getElementById('selectedColumns');
+
+            // Update the hidden input field on checkbox change
+            columnToggles.forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    const selectedColumns = Array.from(columnToggles)
+                        .filter((checkbox) => checkbox.checked)
+                        .map((checkbox) => checkbox.dataset.column)
+                        .join(',');
+
+                    selectedColumnsField.value = selectedColumns;
+                });
+            });
+
+            // Trigger change event on page load to prepopulate the hidden field
+            columnToggles.forEach((checkbox) => checkbox.dispatchEvent(new Event('change')));
+        });
+    </script>
+
+
+
 @endsection
