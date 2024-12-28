@@ -745,12 +745,15 @@
                         name: 'close_date',
                         searchable: true,
                     },
+                    @if ($type == 'mytask')
+
                     {
                         data: 'is_pinned',
                         name: 'is_pinned',
                         visible: false,
                         searchable: false,
                     },
+                    @endif
 
                 ],
 
