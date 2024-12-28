@@ -549,11 +549,15 @@ class DashboardCUstomizedController extends Controller
     /*------- Rquested By me Flow--------------*/
     public function getRequestedByMeTaskInfo()
     {
+        ini_set('max_execution_time', 500);
         $loggedInUser = auth()->user();
         $userId = $loggedInUser->id;
-
-        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-
+        if ($loggedInUser->id == 1) {
+            $users = User::get();
+        } else {
+            $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        }
+        // dd($users);
 
         //$status = Status::where('status', 'on')->get();
         $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();

@@ -7412,7 +7412,9 @@ class TaskController extends Controller
 
     public function getAll_total_task(Request $request)
     {
+        
         $userId = Auth()->user()->id;
+         ini_set('max_execution_time', 500);
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
         // Common query for all tasks
