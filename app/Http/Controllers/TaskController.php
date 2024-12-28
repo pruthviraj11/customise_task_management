@@ -197,7 +197,7 @@ class TaskController extends Controller
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
                 $creator = 1;
-                dd($task,$id);
+                dd($task, $id);
                 $taskAssigne = $this->taskService->gettask($id);
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
@@ -6928,6 +6928,27 @@ class TaskController extends Controller
                 return $description;
             })->rawColumns(['actions'])->make(true);
 
+    }
+
+    public function pinTask(Request $request)
+    {
+        $taskNumber = $request->input('task_id');
+
+        $task = TaskAssignee::where('user_id', auth()->user()->id)->where('task_number', $taskNumber)->first();
+        if ($task) {
+
+            if ($task->is_pinned == 1) {
+                $task->is_pinned = false;
+                $task->save();
+            } else {
+                $task->is_pinned = true;
+                $task->save();
+            }
+
+            return response()->json(['success' => true, 'message' => 'Task pinned successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Task not found.'], 404);
     }
 
     // public function getAll_total_task()
