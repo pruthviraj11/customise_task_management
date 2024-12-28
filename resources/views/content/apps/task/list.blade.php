@@ -164,6 +164,9 @@
                             <tr class="">
 
                                 <th>Actions</th>
+                                @if ($type == 'mytask')
+                                    <th>Pin Task</th>
+                                @endif
                                 <th>Task</th>
                                 <th>Task Number</th>
                                 <th>Task/Ticket</th>
@@ -185,6 +188,7 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contatinfo</th>
                                 <th>Close Date</th>
+                                {{-- <th>Is Pinned</th> --}}
 
 
                             </tr>
@@ -591,14 +595,46 @@
                     }
                 },
                 order: [
-                    [1, 'desc']
+                    @if ($type == 'mytask')
+
+                    [23, 'desc'],
+                    @endif
+                    [2, 'desc']
                 ],
                 columns: [{
                         data: 'actions',
                         name: 'actions',
                         searchable: false
-                    }, // Non-searchable column
-                    {
+                    },
+                    @if ($type == 'mytask')
+                        {
+                            data: 'pin_task', // Pin Task column
+                            name: 'pin_task',
+                            searchable: false,
+                            render: function(data, type, row) {
+                                console.log(row.pinned_by);
+                                // Check if the task is pinned and pinned by the current user
+                                if (row.is_pinned) {
+                                    return `
+                <i class="ficon pin-task-icon" data-feather="paperclip"
+                   style="cursor: pointer; color: red"
+                   title="Pin Task"
+                   data-task-id="${row.task_number}">
+                </i>
+            `;
+                                } else {
+                                    return `
+                <i class="ficon pin-task-icon" data-feather="paperclip"
+                   style="cursor: pointer;"
+                   title="Pin Task"
+                   data-task-id="${row.task_number}">
+                </i>
+            `;
+                                }
+                            }
+                        },
+                    @endif
+                     {
                         data: 'task_id',
                         name: 'task_id',
                         searchable: true,
@@ -709,6 +745,15 @@
                         name: 'close_date',
                         searchable: true,
                     },
+                    @if ($type == 'mytask')
+
+                    {
+                        data: 'is_pinned',
+                        name: 'is_pinned',
+                        visible: false,
+                        searchable: false,
+                    },
+                    @endif
 
                 ],
 
@@ -770,6 +815,7 @@
                 table.draw();
             });
         });
+
 
 
         $(document).ready(function() {
@@ -845,6 +891,78 @@
 
         });
 
+
+
+        $(document).on("click", ".pin-task-icon", function(e) {
+            e.preventDefault();
+
+            var taskId = $(this).data("task-id"); // Retrieve the task ID from the clicked icon
+            var isPinned = $(this).css('color') === 'rgb(255, 0, 0)';
+
+            // Show SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'Are you sure?',
+                text: isPinned ? "Do you want to unpin this task?" : "Do you want to pin this task?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: isPinned ? 'Yes unpin it!' : 'Yes, pin it!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-outline-danger ms-1'
+                },
+                buttonsStyling: false
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    // Send AJAX request to pin the task
+                    $.ajax({
+                        url: '/app/task/pin', // Update this URL to match your backend endpoint
+                        method: 'POST',
+                        data: {
+                            task_id: taskId,
+                            _token: $('meta[name="csrf-token"]').attr(
+                                'content') // Include CSRF token
+                        },
+                        success: function(response) {
+                            // Handle success
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pinned!',
+                                text: isPinned ?
+                                    'The task has been unpinned Successfully' :
+                                    'The task has been pinned successfully.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                }
+                            });
+                            // Optionally refresh the DataTable to reflect changes
+                            $('#tasks-table').DataTable().ajax.reload(null, false);
+                        },
+                        error: function(xhr) {
+                            // Handle error
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'You Cannot Pin This Task Because It Is Not Assigned To You.',
+                                icon: 'error',
+                                customClass: {
+                                    confirmButton: 'btn btn-danger'
+                                }
+                            });
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Handle cancellation
+                    Swal.fire({
+                        title: 'Cancelled',
+                        text: 'The task was not pinned.',
+                        icon: 'info',
+                        customClass: {
+                            confirmButton: 'btn btn-info'
+                        }
+                    });
+                }
+            });
+        });
 
         $(document).on("click", ".confirm-delete", function(e) {
             e.preventDefault();

@@ -368,7 +368,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll/due_date_past', [TaskController::class, 'getAll_dueDatePast'])->name('app-task-get-due_date_past');
     Route::get('task/getAll/pending_task', [TaskController::class, 'getAll_pendingTask'])->name('app-task-get-pending_task');
     Route::get('task/getAll/completed_task', [TaskController::class, 'getAll_completedTask'])->name('app-task-get-completed_task');
-
+    Route::post('task/pin', [TaskController::class, 'pinTask'])->name('app-task-pin');
 
 
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
