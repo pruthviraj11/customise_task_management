@@ -76,11 +76,10 @@ class TaskController extends Controller
                 $task->save();
             }
         }
-
+        // dd(phpinfo());
         $type = last(explode('-', request()->route()->getName()));
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
-
 
         // $taskAssignees = TaskAssignee::all();
         // foreach ($taskAssignees as $taskAssignee) {
@@ -151,6 +150,34 @@ class TaskController extends Controller
 
         //                 // Save the taskAssignee with the updated department and sub_department
         //                 $taskAssignee->save();
+        //             }
+        //         }
+
+        //         $comments = Comments::where('task_id', $taskAssignee->task_id)->get();
+
+        //         // Loop through each task_assignee and create comments for each user
+        //         foreach ($comments as $comment) {
+        //             // Check if the comment is associated with a user (to_user_id)
+        //             if ($comment->to_user_id === null) {
+        //                 // Loop through all task assignees for this task
+        //                 $taskAssigneesForTask = TaskAssignee::where('task_id', $taskAssignee->task_id)->get();
+
+        //                 // Prepare an array of user_ids
+        //                 $userIds = [];
+
+        //                 foreach ($taskAssigneesForTask as $assignedUser) {
+        //                     // Add user_id to the array
+        //                     $userIds[] = $assignedUser->user_id;
+        //                 }
+
+        //                 // Create a comma-separated list of user_ids
+        //                 $commaSeparatedUserIds = implode(',', $userIds);
+
+        //                 // Update to_user_id with the comma-separated user IDs
+        //                 $comment->to_user_id = $commaSeparatedUserIds;
+
+        //                 // Save the updated comment with the comma-separated user_ids
+        //                 $comment->save();
         //             }
         //         }
         //         // Save the changes
@@ -802,7 +829,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1644,7 +1671,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -7385,7 +7412,9 @@ class TaskController extends Controller
 
     public function getAll_total_task(Request $request)
     {
+        
         $userId = Auth()->user()->id;
+         ini_set('max_execution_time', 500);
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
         // Common query for all tasks
