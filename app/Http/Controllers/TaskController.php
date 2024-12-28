@@ -197,11 +197,7 @@ class TaskController extends Controller
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
                 $creator = 1;
-<<<<<<< HEAD
-                dd($task, $id);
-=======
-                // dd($task,$id);
->>>>>>> 40c5496e4368263a1bbbba394868552f7ca9b07b
+
                 $taskAssigne = $this->taskService->gettask($id);
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
