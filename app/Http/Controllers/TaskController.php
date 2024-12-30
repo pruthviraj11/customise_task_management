@@ -5206,6 +5206,28 @@ class TaskController extends Controller
         ], 404);
 
     }
+
+    public function saveReAssignTo(Request $request){
+        $subTaskId = $request->subtask_id;
+        $reAssignTo = $request->reAssignTo;
+        $olduserId = $request->olduserId;
+        $taskAssignee = TaskAssignee::find($subTaskId);
+
+
+        if ($taskAssignee) {
+            $taskAssignee->user_id = $reAssignTo;
+            $taskAssignee->old_user_id = $olduserId;
+            $taskAssignee->status = 0;
+            $taskAssignee->save();
+
+            // Return a success response
+            return response()->json(['success' => true, 'message' => 'User reassigned successfully.']);
+        } else {
+            // Return an error response if the record is not found
+            return response()->json(['success' => false, 'message' => 'Subtask not found.'], 404);
+        }
+
+    }
     public function recurringedit($encrypted_id)
     {
         try {

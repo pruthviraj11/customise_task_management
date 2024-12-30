@@ -461,7 +461,6 @@
 
         </div>
 
-
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
@@ -503,6 +502,18 @@
                                                         <i class="feather-icon" data-feather="edit"></i>
                                                     </a>
 
+
+                                                    @if (auth()->user()->can('task-reassign') ||
+                                                            (Auth::user()->id === $subtask->created_by && !in_array($subtask->task_status, [7, 4])))
+                                                        <a class="btn btn-warning btn-sm reassign-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-old-user-id="{{ $subtask->user_id }}"
+                                                            data-bs-placement="top" title="Reassign Task"
+                                                            data-bs-target="#reassignTaskModal" data-bs-toggle="modal">
+                                                            <i class="feather-icon" data-feather="users"></i>
+                                                        </a>
+                                                    @endif
                                                     @if (in_array($subtask->task_status, [7]) && !isset($subtask->rating))
                                                         <a class="btn btn-primary btn-sm feedback-btn"
                                                             data-subtask-id="{{ $subtask->id }}"
@@ -527,6 +538,7 @@
                                                             <i class="feather-icon" data-feather="refresh-cw"></i>
                                                         </a>
                                                     @endif --}}
+
 
                                                     @if (in_array($subtask->task_status, [7, 4]))
                                                         <a class="btn btn-warning btn-sm reopen-btn"
@@ -559,83 +571,123 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Due Date -->
-                        <input type="hidden" id="subtaskIdInput" value="">
-                        <div class="mb-3">
-                            <label for="due_date" class="form-label">Due Date</label>
-                            <input type="date" class="form-control" id="due_date_sub" name="due_date">
+            <div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
-
-                        <!-- Status -->
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
-                                <!-- Status options will be populated dynamically -->
-                            </select>
-                        </div>
-
-                        <!-- Comment -->
-                        <div class="mb-3">
-                            <label for="comment" class="form-label">Comment</label>
-                            <textarea class="form-control" id="comment_sub" name="comment" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reasonModalLabel">Enter Reopen Reason</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <textarea class="form-control" name="reason" id="reopen-reason"
-                            placeholder="Enter the reason for reopening the task" rows="4"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitReopenReason">Submit</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="feedbackModalLabel">Feedback & Ratings</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="feedbackForm">
-
-                            <h4>*Please note: Feedback and ratings cannot be changed once submitted.</h4>
-                            <input type="hidden" id="subtaskId" name="subtask_id">
+                        <div class="modal-body">
+                            <!-- Due Date -->
+                            <input type="hidden" id="subtaskIdInput" value="">
                             <div class="mb-3">
-                                <label for="feedback_text" class="form-label">Feedback</label>
-                                <textarea id="feedback_text" class="form-control" rows="3"></textarea>
+                                <label for="due_date" class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="due_date_sub" name="due_date">
                             </div>
-                            {{-- <div class="mb-3">
+
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <!-- Status options will be populated dynamically -->
+                                </select>
+                            </div>
+
+                            <!-- Comment -->
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea class="form-control" id="comment_sub" name="comment" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reasonModalLabel">Enter Reopen Reason</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" name="reason" id="reopen-reason"
+                                placeholder="Enter the reason for reopening the task" rows="4"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="submitReopenReason">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="reassignTaskModal" tabindex="-1" aria-labelledby="reassignTaskModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reassignTaskModalLabel">Reassign Task</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="reassignTaskForm">
+                                <input type="hidden" name="subtask_id" id="reassignSubtaskId">
+                                <input type="hidden" id="olduserId" name="olduserId">
+
+                                <div class="mb-3">
+                                    <label for="re_assign_to" class="form-label">Re Assign To</label>
+                                    <select class="form-select" name="re_assign_to" id="re_assign_to" required>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                {{ old('user_id') && in_array($user->id, old('user_id')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
+                                                <span class="fixed-width">{{ $user->first_name }}
+                                                    {{ $user->last_name }}</span>
+                                                |{{ $user->department->department_name ?? '' }}|
+                                                {{ $user->sub_department->sub_department_name ?? '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+
+                                </div>
+                                <button type="button" class="btn btn-primary" id="saveReassignTask">Reassign
+                                    Task</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog"
+                aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="feedbackModalLabel">Feedback & Ratings</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="feedbackForm">
+
+                                <h4>*Please note: Feedback and ratings cannot be changed once submitted.</h4>
+                                <input type="hidden" id="subtaskId" name="subtask_id">
+                                <div class="mb-3">
+                                    <label for="feedback_text" class="form-label">Feedback</label>
+                                    <textarea id="feedback_text" class="form-control" rows="3"></textarea>
+                                </div>
+                                {{-- <div class="mb-3">
                                 <label for="rating" class="form-label">Rating</label>
                                 <input type="number" id="rating" class="form-control" min="1"
                                     max="5">
@@ -650,25 +702,26 @@
                                     </div>
 
                             </div> --}}
-                            <div class="col-xl-6 col-12">
-                                <div class="col-md d-flex flex-column align-items-start mb-sm-0 mb-1">
-                                    {{-- <p class="card-text fw-semibold mb-25">onSet Event</p> --}}
-                                    <label for="rating" class="form-label">Rating</label>
+                                <div class="col-xl-6 col-12">
+                                    <div class="col-md d-flex flex-column align-items-start mb-sm-0 mb-1">
+                                        {{-- <p class="card-text fw-semibold mb-25">onSet Event</p> --}}
+                                        <label for="rating" class="form-label">Rating</label>
 
-                                    <div class="onset-event-ratings" id="rating" data-rateyo-half-star="true"></div>
-                                    <input type="hidden" id="eventRating" name="eventRating" value="">
+                                        <div class="onset-event-ratings" id="rating" data-rateyo-half-star="true">
+                                        </div>
+                                        <input type="hidden" id="eventRating" name="eventRating" value="">
+                                    </div>
+
                                 </div>
-
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="saveFeedback">Save Feedback</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveFeedback">Save Feedback</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         </div>
         </div>
@@ -742,6 +795,64 @@
             });
         });
     </script> --}}
+
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Handle Feedback and Ratings button click
+            $('.reassign-btn').on('click', function() {
+                var subtaskId = $(this).data('subtask-id'); // Get the subtask ID
+                var olduserId = $(this).data('old-user-id');
+                $('#subtaskId').val(subtaskId);
+                $('#olduserId').val(olduserId);
+                $('#reassignTaskModal').modal('show');
+                // Show SweetAlert confirmation before proceeding
+
+            });
+        });
+    </script>
+
+    <script>
+        $('#saveReassignTask').on('click', function() {
+            var reAssignTo = $('#re_assign_to').val();
+            var subtaskId = $('#subtaskId').val();
+            var olduserId = $('#olduserId').val();
+            alert(olduserId);
+            $.ajax({
+                url: '{{ route('subtask.saveReAssignTo') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}', // Add CSRF token
+                    subtask_id: subtaskId,
+                    reAssignTo: reAssignTo,
+                    olduserId: olduserId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire(
+                            'Success!',
+                            'User Assigned Successfully.',
+                            'success'
+                        );
+                        $('#reassignTaskModal').modal('hide');
+                    }
+                    location.reload(); // Reload the page to see changes
+
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'There was an issue Assigning to user.',
+                        'error'
+                    );
+                }
+            });
+        });
+    </script>
+
+
     <script>
         $(document).ready(function() {
             // Initialize tooltips
