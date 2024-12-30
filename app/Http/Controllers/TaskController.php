@@ -220,7 +220,6 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
                 $creator = 1;
@@ -829,7 +828,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1671,7 +1670,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -5207,6 +5206,28 @@ class TaskController extends Controller
         ], 404);
 
     }
+
+    public function saveReAssignTo(Request $request){
+        $subTaskId = $request->subtask_id;
+        $reAssignTo = $request->reAssignTo;
+        $olduserId = $request->olduserId;
+        $taskAssignee = TaskAssignee::find($subTaskId);
+
+
+        if ($taskAssignee) {
+            $taskAssignee->user_id = $reAssignTo;
+            $taskAssignee->old_user_id = $olduserId;
+            $taskAssignee->status = 0;
+            $taskAssignee->save();
+
+            // Return a success response
+            return response()->json(['success' => true, 'message' => 'User reassigned successfully.']);
+        } else {
+            // Return an error response if the record is not found
+            return response()->json(['success' => false, 'message' => 'Subtask not found.'], 404);
+        }
+
+    }
     public function recurringedit($encrypted_id)
     {
         try {
@@ -7412,7 +7433,7 @@ class TaskController extends Controller
 
     public function getAll_total_task(Request $request)
     {
-        
+
         $userId = Auth()->user()->id;
          ini_set('max_execution_time', 500);
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
@@ -8131,9 +8152,10 @@ class TaskController extends Controller
                 ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
                 ->make(true);
         }
+        $type = last(explode('-', request()->route()->getName()));
 
         // Return the view if not an AJAX request
-        return view('content.apps.task.rejected_tasks'); // Make sure this view path is correct
+        return view('content.apps.task.rejected_tasks',compact('type')); // Make sure this view path is correct
     }
 
     public function importTasks(Request $request)

@@ -58,6 +58,9 @@ class RoleController extends Controller
 //         Permission::create(['name' => 'task-create', 'guard_name' => 'web', 'module_name' => 'Task']);
 //         Permission::create(['name' => 'task-edit', 'guard_name' => 'web', 'module_name' => 'Task']);
 //         Permission::create(['name' => 'task-delete', 'guard_name' => 'web', 'module_name' => 'Task']);
+
+        // Permission::create(['name' => 'task-reassign', 'guard_name' => 'web', 'module_name' => 'Reassign To']);
+
     }
     /**
      * Display a listing of the resource.

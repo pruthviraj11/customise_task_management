@@ -384,6 +384,16 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('users-by-department/{department_id}', [TaskController::class, 'getUsersByDepartment'])->name('app-users-by-department');
     //Task End
 
+     //Location Master start
+    //  Route::get('locations/list', [DepartmentController::class, 'index'])->name('app-locations-list');
+    //  Route::get('locations/add', [DepartmentController::class, 'create'])->name('app-locations-add');
+    //  Route::post('locations/store', [DepartmentController::class, 'store'])->name('app-locations-store');
+    //  Route::get('locations/edit/{encrypted_id}', [DepartmentController::class, 'edit'])->name('app-locations-edit');
+    //  Route::put('locations/update/{encrypted_id}', [DepartmentController::class, 'update'])->name('app-locations-update');
+    //  Route::get('locations/destroy/{encrypted_id}', [DepartmentController::class, 'destroy'])->name('app-locations-destroy');
+    //  Route::get('locations/getAll', [DepartmentController::class, 'getAll'])->name('app-locations-get-all');
+     //Location Master End
+
     // Task List Start
     Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
     Route::get('task/requested', [TaskController::class, 'index'])->name('app-task-requested');
@@ -433,6 +443,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     // Route to save feedback and rating data
     Route::post('save-feedback', [TaskController::class, 'saveFeedback'])
         ->name('subtask.saveFeedback');
+        Route::post('save-reAssignTo', [TaskController::class, 'saveReAssignTo'])
+        ->name('subtask.saveReAssignTo');
 
     ///////////////////////////
     // Update subtask data (for saving the changes)
