@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectStatusController;
@@ -286,6 +287,16 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('department/getAll', [DepartmentController::class, 'getAll'])->name('app-department-get-all');
     //Departments End
 
+    //Location Master start
+    Route::get('locations/list', [LocationController::class, 'index'])->name('app-locations-list');
+    Route::get('locations/add', [LocationController::class, 'create'])->name('app-locations-add');
+    Route::post('locations/store', [LocationController::class, 'store'])->name('app-locations-store');
+    Route::get('locations/edit/{encrypted_id}', [LocationController::class, 'edit'])->name('app-locations-edit');
+    Route::put('locations/update/{encrypted_id}', [LocationController::class, 'update'])->name('app-locations-update');
+    Route::get('locations/destroy/{encrypted_id}', [LocationController::class, 'destroy'])->name('app-locations-destroy');
+    Route::get('locations/getAll', [LocationController::class, 'getAll'])->name('app-locations-get-all');
+    //Location Master End
+
     //Status start
     Route::get('status/list', [StatusController::class, 'index'])->name('app-status-list');
     Route::get('status/add', [StatusController::class, 'create'])->name('app-status-add');
@@ -384,15 +395,6 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('users-by-department/{department_id}', [TaskController::class, 'getUsersByDepartment'])->name('app-users-by-department');
     //Task End
 
-     //Location Master start
-    //  Route::get('locations/list', [DepartmentController::class, 'index'])->name('app-locations-list');
-    //  Route::get('locations/add', [DepartmentController::class, 'create'])->name('app-locations-add');
-    //  Route::post('locations/store', [DepartmentController::class, 'store'])->name('app-locations-store');
-    //  Route::get('locations/edit/{encrypted_id}', [DepartmentController::class, 'edit'])->name('app-locations-edit');
-    //  Route::put('locations/update/{encrypted_id}', [DepartmentController::class, 'update'])->name('app-locations-update');
-    //  Route::get('locations/destroy/{encrypted_id}', [DepartmentController::class, 'destroy'])->name('app-locations-destroy');
-    //  Route::get('locations/getAll', [DepartmentController::class, 'getAll'])->name('app-locations-get-all');
-     //Location Master End
 
     // Task List Start
     Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
@@ -443,7 +445,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     // Route to save feedback and rating data
     Route::post('save-feedback', [TaskController::class, 'saveFeedback'])
         ->name('subtask.saveFeedback');
-        Route::post('save-reAssignTo', [TaskController::class, 'saveReAssignTo'])
+    Route::post('save-reAssignTo', [TaskController::class, 'saveReAssignTo'])
         ->name('subtask.saveReAssignTo');
 
     ///////////////////////////

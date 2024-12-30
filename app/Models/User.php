@@ -43,7 +43,8 @@ class User extends Authenticatable
         'profile_img',
         'G7',
         'updated_at',
-        'selected_fields'
+        'selected_fields',
+        'location_id'
         // Add other fields as necessary
     ];
     public $incrementing = false;

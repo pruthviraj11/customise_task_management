@@ -151,6 +151,16 @@
             ]
         },
         {
+            "url": "app/locations/list",
+            "name": "Locations",
+            "icon": "map-pin",
+            "slug": "app-locations-list",
+            "permission": [
+                "locations-list",
+                "locations-create"
+            ]
+        },
+        {
             "url": "app/status/list",
             "name": "Status",
             "icon": "user",

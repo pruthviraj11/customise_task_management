@@ -230,6 +230,8 @@
                                 </span>
                             </div>
 
+
+
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="sub_department_id">Sub Department </label>
                                 <select id="sub_department_id" class="form-select select2" name="subdepartment">
@@ -250,6 +252,25 @@
                                     @enderror
                                 </span>
                             </div>
+
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="location_id">Locations </label>
+                                <select id="location_id" class="form-select select2" name="location_id">
+                                    <option value="">Select Location</option>
+                                    @foreach ($locations as $location)
+                                        <option value="{{ $location->id }}"
+                                            {{ old('location_id') == $department->id ? 'selected' : ($user ? ($user->location_id == $location->id ? 'selected' : '') : '') }}>
+                                            {{ $location->location_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger">
+                                    @error('department_id')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
 
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="role">

@@ -6,6 +6,7 @@ use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\UpdateUserProfileRequest;
 
+use App\Models\Location;
 use App\Models\Role;
 use App\Models\SubDepartment;
 use App\Models\Department;
@@ -194,9 +195,9 @@ class UsersController extends Controller
         $profile_img = '';
         $userslist = $this->userService->getAllUser();
         $roles = $this->roleService->getAllRoles();
-
+        $locations = Location::where('status', 'on')->get();
         $data['reports_to'] = User::all();
-        return view('.content.apps.user.create-edit', compact('page_data', 'user', 'userslist', 'roles', 'data', 'profile_img', 'departments', 'Subdepartments'));
+        return view('.content.apps.user.create-edit', compact('page_data', 'user', 'userslist', 'roles', 'data', 'profile_img', 'departments', 'Subdepartments','locations'));
     }
 
     /**
@@ -217,6 +218,8 @@ class UsersController extends Controller
             $userData['password'] = Hash::make($request->get('password'));
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
+            $userData['location_id'] = $request->get('location_id');
+
             $userData['designation'] = $request->get('designation');
             $userData['G7'] = $request->get('G7');
             $userData['dob'] = $request->get('dob');
@@ -305,8 +308,10 @@ class UsersController extends Controller
             $user->role = $user->getRoleNames()[0] ?? '';
             $associatedSubDepartmentId = $user->subDepartment->id ?? null;
             // dd($user);
+        $locations = Location::where('status', 'on')->get();
+
             $data['reports_to'] = User::all();
-            return view('/content/apps/user/create-edit', compact('page_data', 'user', 'data', 'roles', 'userslist', 'Subdepartments', 'departments', 'associatedSubDepartmentId'));
+            return view('/content/apps/user/create-edit', compact('page_data', 'user', 'data', 'roles', 'userslist', 'Subdepartments', 'departments', 'associatedSubDepartmentId','locations'));
         } catch (\Exception $error) {
             // dd($error->getMessage());
             return redirect()->route("app-users-list")->with('error', 'Error while editing User');
@@ -326,12 +331,13 @@ class UsersController extends Controller
         try {
             $id = decrypt($encrypted_id);
             $selectedColumns = explode(',', $request->input('selected_columns'));
-// dd($selectedColumns);
+            // dd($selectedColumns);
 
             // $userData['username'] = $request->get('username');
             $userData['selected_fields'] = json_encode($selectedColumns);
             $userData['first_name'] = $request->get('first_name');
             $userData['last_name'] = $request->get('last_name');
+            $userData['location_id'] = $request->get('location_id');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
             if ($request->hasFile('profile_img')) {
@@ -368,6 +374,7 @@ class UsersController extends Controller
             $userData['last_name'] = $request->get('last_name');
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
+            $userData['location_id'] = $request->get('location_id');
             $userData['G7'] = $request->get('G7');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
