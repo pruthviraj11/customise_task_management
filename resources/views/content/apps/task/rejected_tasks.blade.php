@@ -34,6 +34,8 @@
                         <thead>
                             <tr>
                                 <th>Actions</th>
+                                <th>Pin Task</th>
+                                <th>Task</th>
                                 <th>Task Number</th>
                                 <th>Task/Ticket</th>
                                 <th>Title</th>
@@ -64,6 +66,14 @@
         <!-- list and filter end -->
     </section>
     <!-- rejected items list ends -->
+    @php
+    $selectedColumns = json_decode(auth()->user()->selected_fields, true);
+
+    if (empty($selectedColumns)) {
+$selectedColumns = ["0", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
+}
+
+@endphp
 @endsection
 
 @section('vendor-script')
@@ -86,6 +96,12 @@
 @section('page-script')
     <script>
         $(document).ready(function() {
+
+            var type = @json($type);
+            var selectedColumns = @json($selectedColumns);
+            console.log(selectedColumns);
+
+
             $('#rejected-items-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -104,111 +120,178 @@
                 columns: [{
                         data: 'actions',
                         name: 'actions',
-                        searchable: false
-                    }, // Non-searchable column
+                        searchable: false,
+                        visible: selectedColumns.includes("0")
+                    },
+                    {
+                        data: 'pin_task', // Pin Task column
+                        name: 'pin_task',
+                        searchable: false,
+                        visible: {{ $type == 'mytask' ? 'true' : 'false' }},
+                        render: function(data, type, row) {
+                            // Check if the task is pinned and pinned by the current user
+                            if (row.is_pinned) {
+                                return `
+                <i class="ficon pin-task-icon" data-feather="paperclip"
+                   style="cursor: pointer; color: red"
+                   title="Pin Task"
+                   data-task-id="${row.task_number}">
+                </i>
+            `;
+                            } else {
+                                return `
+                <i class="ficon pin-task-icon" data-feather="paperclip"
+                   style="cursor: pointer;"
+                   title="Pin Task"
+                   data-task-id="${row.task_number}">
+                </i>
+            `;
+                            }
+                        }
+                    },
+                    {
+                        data: 'task_id',
+                        name: 'task_id',
+                        searchable: true,
+                        visible: false
+                    },
                     {
                         data: 'Task_number',
                         name: 'Task_number',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("3")
+
                     },
                     {
                         data: 'Task_Ticket',
                         name: 'Task_Ticket',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("4")
+
                     },
-                      {
+                    {
                         data: 'title',
                         name: 'title',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("5")
                     },
                     {
                         data: 'description',
                         name: 'description',
                         searchable: true,
-                        visible:false,
+                        visible: false,
                     },
                     {
                         data: 'subject',
                         name: 'subject',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("7")
                     },
                     {
                         data: 'created_by_username',
                         name: 'created_by_username',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("8")
                     },
                     {
                         data: 'Task_assign_to',
                         name: 'Task_assign_to',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("9")
                     },
-                     {
+                    {
                         data: 'status',
                         name: 'status',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("10")
                     },
-                     {
+                    {
                         data: 'Created_Date',
                         name: 'Created_Date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("11")
+
                     }, {
                         data: 'start_date',
                         name: 'start_date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("12")
+
                     },
-                     {
+                    {
                         data: 'due_date',
                         name: 'due_date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("13")
+
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("14")
                     },
 
                     {
                         data: 'accepted_date',
                         name: 'accepted_date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("15")
                     },
                     {
                         data: 'project',
                         name: 'project',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("16")
                     },
                     {
                         data: 'department',
                         name: 'department',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("17")
                     },
-                     {
+                    {
                         data: 'sub_department',
                         name: 'sub_department',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("18")
                     },
-                     {
+                    {
                         data: 'creator_department',
                         name: 'creator_department',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("19")
                     },
-                     {
+                    {
                         data: 'creator_sub_department',
                         name: 'creator_sub_department',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("20")
                     },
-                     {
+                    {
                         data: 'creator_phone',
                         name: 'creator_phone',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("21")
                     },
-                      {
+                    {
                         data: 'close_date',
                         name: 'close_date',
-                        searchable: true
+                        searchable: true,
+                        visible: selectedColumns.includes("22")
                     },
+                    @if ($type == 'mytask')
+
+                        {
+                            data: 'is_pinned',
+                            name: 'is_pinned',
+                            visible: false,
+                            searchable: false,
+                        },
+                    @endif
 
                 ],
+
                 drawCallback: function() {
                     feather.replace();
                 }

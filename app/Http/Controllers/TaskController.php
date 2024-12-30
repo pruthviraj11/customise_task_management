@@ -8130,9 +8130,10 @@ class TaskController extends Controller
                 ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
                 ->make(true);
         }
+        $type = last(explode('-', request()->route()->getName()));
 
         // Return the view if not an AJAX request
-        return view('content.apps.task.rejected_tasks'); // Make sure this view path is correct
+        return view('content.apps.task.rejected_tasks',compact('type')); // Make sure this view path is correct
     }
 
     public function importTasks(Request $request)
