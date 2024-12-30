@@ -32,7 +32,7 @@
 
 
         </div>
-        {{-- @if (auth()->user()->id != 1) --}}
+        @if (auth()->user()->id != 1)
 
 
 
@@ -197,7 +197,7 @@
 
 
 
-        {{-- @endif --}}
+        @endif
 
     </section>
 
