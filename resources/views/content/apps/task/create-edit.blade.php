@@ -754,7 +754,6 @@
                     rtl: false, // Adjust based on your layout
                     halfStar: true,
                     onSet: function(rating) {
-                        alert('The rating is set to ' + rating + '!');
                         $("#eventRating").val(rating); // Save the rating to the hidden input field
                     }
                 });
@@ -819,7 +818,6 @@
             var reAssignTo = $('#re_assign_to').val();
             var subtaskId = $('#subtaskId').val();
             var olduserId = $('#olduserId').val();
-            alert(olduserId);
             $.ajax({
                 url: '{{ route('subtask.saveReAssignTo') }}',
                 method: 'POST',
