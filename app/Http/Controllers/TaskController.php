@@ -829,7 +829,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1671,7 +1671,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -2355,6 +2355,10 @@ class TaskController extends Controller
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
+             ->addColumn('rejected_date', function ($row) {
+                return $row->rejected_date ? Carbon::parse($row->rejected_date)->format('d/m/Y') : '-';
+            })
+
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
@@ -2400,6 +2404,8 @@ class TaskController extends Controller
                 ->where('task_id', $id)
                 ->update([
                     'status' => 2,
+                    'rejected_date' => now(),
+                    'rejected_by' => auth()->user()->id,
                     'remark' => $request->get('remark'),
                     'updated_at' => now(),
                 ]);
@@ -2424,15 +2430,16 @@ class TaskController extends Controller
         // Modify query based on task_assignees table
         if ($user->id == 1) {
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
                 });
         } else {
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
+    
                 })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
@@ -4787,7 +4794,7 @@ class TaskController extends Controller
 
     public function store(CreateTaskRequest $request)
     {
-        try {
+        // try {
             // dd($request->all());
             // Fetch project, priority, and status
             $project = Project::where('id', $request->get('project_id'))->first();
@@ -5006,7 +5013,7 @@ class TaskController extends Controller
                 $task->TaskNumber = $task->id;  // Set task number
                 $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
                 // dd($taskCount);
-
+          
                 $task->save();
 
                 // Attach files if any
@@ -5059,7 +5066,7 @@ class TaskController extends Controller
                 }
                 $task = Task::where('id', $task->id)->first();
                 $task->last_task_number = $taskNumber;
-
+            // dd($task);
                 // Save the updated task
                 $task->save();
 
@@ -5092,11 +5099,11 @@ class TaskController extends Controller
                 // Redirect with success message
                 return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
             }
-        } catch (\Exception $error) {
-            // Log any error
-            dd($error->getMessage());
-            return redirect()->route("app-task-list")->with('error', 'Error while adding task');
-        }
+        // } catch (\Exception $error) {
+        //     // Log any error
+        //     dd($error->getMessage());
+        //     return redirect()->route("app-task-list")->with('error', 'Error while adding task');
+        // }
     }
     public function edit($encrypted_id)
     {
@@ -8006,27 +8013,6 @@ class TaskController extends Controller
     public function rejected_task(Request $request)
     {
         if ($request->ajax()) {
-            // Get the rejected task assignees
-            // $rejectedTasks = TaskAssignee::select(
-            //     'task_assignees.*',  // Get all fields from task_assignees
-            //     'tasks.description', // Description from the Task model
-            //     'tasks.created_by',  // Created by from the Task model
-            //     'tasks.project_id',  // Project ID from the Task model
-            //     'tasks.task_status', // Task status from Task model
-            //     'tasks.id', // Task status from Task model
-            //     'users.first_name',  // First name of the user (assignee)
-            //     'users.id',  // First name of the user (assignee)
-            //     'users.last_name',   // Last name of the user (assignee)
-            //     'projects.project_name', // Project name
-            //     'task_assignees.remark as rejection_reason' // Rejection reason from task_assignees
-            // )
-            //     ->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')  // Join with tasks
-            //     ->join('users', 'task_assignees.user_id', '=', 'users.id')  // Join with users (assignees)
-            //     ->join('projects', 'tasks.project_id', '=', 'projects.id')  // Join with projects
-            // ->where('task_assignees.status', 2)  // Filter for rejected status (2)
-            // ->orderBy('task_assignees.id', 'desc')  // Order by task_assignees ID in descending order
-            // ->get();
-            // dd($rejectedTasks);
 
             $rejectedTasks = TaskAssignee::where('status', 2)  // Filter for rejected status (2)
                 ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
@@ -8075,6 +8061,12 @@ class TaskController extends Controller
                 })
                 ->addColumn('Task_number', function ($row) {
                     return $row->task_number ?? "-";
+                })
+                ->addColumn('remark', function ($row) {
+                    return $row->remark ?? "-";
+                })
+                ->addColumn('accepted_date', function ($row) {
+                    return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
                 })
                 ->addColumn('Task_Ticket', function ($row) {
                     return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';

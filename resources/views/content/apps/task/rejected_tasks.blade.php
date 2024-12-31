@@ -37,25 +37,15 @@
                                 <th>Pin Task</th>
                                 <th>Task</th>
                                 <th>Task Number</th>
-                                <th>Task/Ticket</th>
-                                <th>Title</th>
+                                <th>Item Name</th>
                                 <th>Description</th>
-                                <th>Subject</th>
-                                <th>Assign By</th>
-                                <th>Task assign to</th>
+                                <th>
+                                    created by
+                                </th>
+                                <th>Submitted By</th>
+                                <th>Rejection Reason</th>
+                                <th>Rejection Date</th>
                                 <th>Status</th>
-                                <th>Created Date</th>
-                                <th>Start Date</th>
-                                <th>Due Date</th>
-                                <th>Completed Date</th>
-                                <th>Accepted task Date</th>
-                                <th>Project</th>
-                                <th>Department</th>
-                                <th>Sub Department</th>
-                                <th>Owner Department</th>
-                                <th>Owner Sub Department</th>
-                                <th>Owner Contatinfo</th>
-                                <th>Close Date</th>
 
                             </tr>
                         </thead>
@@ -67,15 +57,36 @@
     </section>
     <!-- rejected items list ends -->
     @php
-    $selectedColumns = json_decode(auth()->user()->selected_fields, true);
+        $selectedColumns = json_decode(auth()->user()->selected_fields, true);
 
-    if (empty($selectedColumns)) {
-$selectedColumns = ["0", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
-}
+        if (empty($selectedColumns)) {
+            $selectedColumns = [
+                '0',
+                '3',
+                '4',
+                '5',
+                '7',
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+            ];
+        }
 
-$type =last(explode('-', request()->route()->getName()));
+        $type = last(explode('-', request()->route()->getName()));
 
-@endphp
+    @endphp
 @endsection
 
 @section('vendor-script')
@@ -116,7 +127,7 @@ $type =last(explode('-', request()->route()->getName()));
                     filename: 'Rejected_Items',
                     className: 'btn btn-success btn-sm',
                     exportOptions: {
-                        columns: [1, 2, 3, 4]
+                        columns: [1, 2, 3, 4, 5, 6, 7, 8]
                     }
                 }],
                 columns: [{
@@ -164,13 +175,7 @@ $type =last(explode('-', request()->route()->getName()));
                         visible: selectedColumns.includes("3")
 
                     },
-                    {
-                        data: 'Task_Ticket',
-                        name: 'Task_Ticket',
-                        searchable: true,
-                        visible: selectedColumns.includes("4")
 
-                    },
                     {
                         data: 'title',
                         name: 'title',
@@ -183,12 +188,7 @@ $type =last(explode('-', request()->route()->getName()));
                         searchable: true,
                         visible: false,
                     },
-                    {
-                        data: 'subject',
-                        name: 'subject',
-                        searchable: true,
-                        visible: selectedColumns.includes("7")
-                    },
+
                     {
                         data: 'created_by_username',
                         name: 'created_by_username',
@@ -202,86 +202,26 @@ $type =last(explode('-', request()->route()->getName()));
                         visible: selectedColumns.includes("9")
                     },
                     {
+                        data: 'remark',
+                        name: 'remark',
+                        searchable: true,
+                        visible: selectedColumns.includes("11")
+
+                    },
+                    {
+                        data: 'rejected_date',
+                        name: 'rejected_date',
+                        searchable: true,
+                        visible: selectedColumns.includes("10")
+                    },
+                    {
                         data: 'status',
                         name: 'status',
                         searchable: true,
                         visible: selectedColumns.includes("10")
                     },
-                    {
-                        data: 'Created_Date',
-                        name: 'Created_Date',
-                        searchable: true,
-                        visible: selectedColumns.includes("11")
+                    
 
-                    }, {
-                        data: 'start_date',
-                        name: 'start_date',
-                        searchable: true,
-                        visible: selectedColumns.includes("12")
-
-                    },
-                    {
-                        data: 'due_date',
-                        name: 'due_date',
-                        searchable: true,
-                        visible: selectedColumns.includes("13")
-
-                    },
-                    {
-                        data: 'completed_date',
-                        name: 'completed_date',
-                        searchable: true,
-                        visible: selectedColumns.includes("14")
-                    },
-
-                    {
-                        data: 'accepted_date',
-                        name: 'accepted_date',
-                        searchable: true,
-                        visible: selectedColumns.includes("15")
-                    },
-                    {
-                        data: 'project',
-                        name: 'project',
-                        searchable: true,
-                        visible: selectedColumns.includes("16")
-                    },
-                    {
-                        data: 'department',
-                        name: 'department',
-                        searchable: true,
-                        visible: selectedColumns.includes("17")
-                    },
-                    {
-                        data: 'sub_department',
-                        name: 'sub_department',
-                        searchable: true,
-                        visible: selectedColumns.includes("18")
-                    },
-                    {
-                        data: 'creator_department',
-                        name: 'creator_department',
-                        searchable: true,
-                        visible: selectedColumns.includes("19")
-                    },
-                    {
-                        data: 'creator_sub_department',
-                        name: 'creator_sub_department',
-                        searchable: true,
-                        visible: selectedColumns.includes("20")
-                    },
-                    {
-                        data: 'creator_phone',
-                        name: 'creator_phone',
-                        searchable: true,
-                        visible: selectedColumns.includes("21")
-                    },
-                    {
-                        data: 'close_date',
-                        name: 'close_date',
-                        searchable: true,
-                        visible: selectedColumns.includes("22")
-                    },
                     @if ($type == 'mytask')
 
                         {

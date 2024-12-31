@@ -27,6 +27,8 @@ class TaskAssignee extends Model
         'department',
         'sub_department',
         'created_by',
+        'rejected_date',
+        'rejected_by',
         'updated_by',
         'task_number',
         'reopen_date',
