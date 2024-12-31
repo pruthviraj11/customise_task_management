@@ -7482,7 +7482,7 @@ class TaskController extends Controller
 
         if ($request->input('accepted_task_date')) {
             $dtDateRange = parseDateRange($request->input('accepted_task_date'));
-            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+            $query->whereHas('task', function ($q) use ($query,$task_filter, $dtDateRange, $request) {
                 if (!empty($dtDateRange[1])) {
                     // Both start and end dates are available
                     $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);
@@ -8039,7 +8039,7 @@ class TaskController extends Controller
                 // Non-admin users can only see tasks they created
                 $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
             }
-            
+
 
             return datatables()->of($rejectedTasks)
                 ->addColumn('actions', function ($row) {
