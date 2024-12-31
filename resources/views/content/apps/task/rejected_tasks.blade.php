@@ -73,6 +73,8 @@
 $selectedColumns = ["0", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
 }
 
+$type =last(explode('-', request()->route()->getName()));
+
 @endphp
 @endsection
 
@@ -105,7 +107,7 @@ $selectedColumns = ["0", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "
             $('#rejected-items-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('rejected-tasks') }}", // Adjust this route as necessary
+                ajax: "{{ route('rejected-tasks') }}",
                 dom: 'lBfrtip',
                 buttons: [{
                     extend: 'excel',
