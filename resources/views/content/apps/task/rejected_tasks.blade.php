@@ -27,9 +27,9 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Rejected Taks List</h4>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
-                        <label for="filter-dropdown">Filter Tasks</label>
+                        <label for="filter-dropdown" class="fw-bold">Filter Tasks</label>
                         <select id="filter-dropdown" class="form-select select2">
                             <option value="rejected_my_task">Rejected My Task</option>
                             <option value="rejected_by_me">Rejected by Me</option>

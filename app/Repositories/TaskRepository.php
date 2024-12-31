@@ -9,7 +9,13 @@ class TaskRepository
 {
     public function find($id)
     {
+        // dd($id);
         return Task::with(['attachments', 'assignees', 'users'])->where('tasks.id', $id)->first();
+        // return TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.subject', 'tasks.project_id', 'tasks.start_date', 'tasks.priority_id', 'tasks.description')
+        //     ->with(['task.attachments', 'task.assignees', 'task.users'])
+        //     ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+        //     ->where('task_assignees.task_id', $id)
+        //     ->first();
     }
 
 
@@ -22,7 +28,7 @@ class TaskRepository
             ->with(['task.attachments', 'task.assignees', 'task.users'])
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
             ->where('task_assignees.task_id', $id)
-            ->where('task_assignees.user_id', auth()->user()->id)
+            // ->where('task_assignees.user_id', auth()->user()->id)
             ->first();
 
     }
