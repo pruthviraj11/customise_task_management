@@ -552,9 +552,9 @@ class DashboardCUstomizedController extends Controller
         ini_set('max_execution_time', 500);
         $loggedInUser = auth()->user();
         $userId = $loggedInUser->id;
-       
+
             $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-        
+
         // dd($users);
 
         //$status = Status::where('status', 'on')->get();
@@ -1228,3 +1228,4 @@ class DashboardCUstomizedController extends Controller
     }
 
 }
+

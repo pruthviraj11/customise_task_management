@@ -88,6 +88,7 @@
 @section('page-script')
     <script>
         $(document).ready(function() {
+            $('#filter-dropdown').select2();
 
             var filterValue = $('#filter-dropdown').val(); // Correctly get the default filter value
 
