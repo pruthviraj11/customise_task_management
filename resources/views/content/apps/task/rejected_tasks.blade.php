@@ -44,7 +44,6 @@
                         <thead>
                             <tr>
                                 <th>Actions</th>
-                                <th>Pin Task</th>
                                 <th>Task</th>
                                 <th>Task Number</th>
                                 <th>Item Name</th>
@@ -66,37 +65,7 @@
         <!-- list and filter end -->
     </section>
     <!-- rejected items list ends -->
-    @php
-        $selectedColumns = json_decode(auth()->user()->selected_fields, true);
 
-        if (empty($selectedColumns)) {
-            $selectedColumns = [
-                '0',
-                '3',
-                '4',
-                '5',
-                '7',
-                '8',
-                '9',
-                '10',
-                '11',
-                '12',
-                '13',
-                '14',
-                '15',
-                '16',
-                '17',
-                '18',
-                '19',
-                '20',
-                '21',
-                '22',
-            ];
-        }
-
-        $type = last(explode('-', request()->route()->getName()));
-
-    @endphp
 @endsection
 
 @section('vendor-script')
@@ -120,8 +89,6 @@
     <script>
         $(document).ready(function() {
 
-            var type = @json($type);
-            var selectedColumns = @json($selectedColumns);
             var filterValue = $('#filter-dropdown').val(); // Correctly get the default filter value
 
             var table = $('#rejected-items-table').DataTable({
@@ -148,33 +115,6 @@
                         data: 'actions',
                         name: 'actions',
                         searchable: false,
-                        visible: selectedColumns.includes("0")
-                    },
-                    {
-                        data: 'pin_task', // Pin Task column
-                        name: 'pin_task',
-                        searchable: false,
-                        visible: {{ $type == 'mytask' ? 'true' : 'false' }},
-                        render: function(data, type, row) {
-                            // Check if the task is pinned and pinned by the current user
-                            if (row.is_pinned) {
-                                return `
-                <i class="ficon pin-task-icon" data-feather="paperclip"
-                   style="cursor: pointer; color: red"
-                   title="Pin Task"
-                   data-task-id="${row.task_number}">
-                </i>
-            `;
-                            } else {
-                                return `
-                <i class="ficon pin-task-icon" data-feather="paperclip"
-                   style="cursor: pointer;"
-                   title="Pin Task"
-                   data-task-id="${row.task_number}">
-                </i>
-            `;
-                            }
-                        }
                     },
                     {
                         data: 'task_id',
@@ -186,7 +126,6 @@
                         data: 'Task_number',
                         name: 'Task_number',
                         searchable: true,
-                        visible: selectedColumns.includes("3")
 
                     },
 
@@ -194,39 +133,33 @@
                         data: 'title',
                         name: 'title',
                         searchable: true,
-                        visible: selectedColumns.includes("5")
                     },
                     {
                         data: 'description',
                         name: 'description',
                         searchable: true,
-                        visible: false,
                     },
 
                     {
                         data: 'created_by_username',
                         name: 'created_by_username',
                         searchable: true,
-                        visible: selectedColumns.includes("8")
                     },
                     {
                         data: 'Task_assign_to',
                         name: 'Task_assign_to',
                         searchable: true,
-                        visible: selectedColumns.includes("9")
                     },
                     {
                         data: 'remark',
                         name: 'remark',
                         searchable: true,
-                        visible: selectedColumns.includes("11")
 
                     },
                     {
                         data: 'rejected_date',
                         name: 'rejected_date',
                         searchable: true,
-                        visible: selectedColumns.includes("10"),
                         render: function(data, type, row) {
                             // Check if data exists and is a valid date
                             if (data) {
@@ -252,19 +185,7 @@
                         data: 'status',
                         name: 'status',
                         searchable: true,
-                        visible: selectedColumns.includes("10")
                     },
-
-
-                    @if ($type == 'mytask')
-
-                        {
-                            data: 'is_pinned',
-                            name: 'is_pinned',
-                            visible: false,
-                            searchable: false,
-                        },
-                    @endif
 
                 ],
 
