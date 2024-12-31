@@ -27,7 +27,17 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Rejected Taks List</h4>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="filter-dropdown">Filter Tasks</label>
+                        <select id="filter-dropdown" class="form-select select2">
+                            <option value="rejected_my_task">Rejected My Task</option>
+                            <option value="rejected_by_me">Rejected by Me</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
                     <table class="rejected-list-table table" id="rejected-items-table">
@@ -112,13 +122,17 @@
 
             var type = @json($type);
             var selectedColumns = @json($selectedColumns);
-            console.log(selectedColumns);
+            var filterValue = $('#filter-dropdown').val(); // Correctly get the default filter value
 
-
-            $('#rejected-items-table').DataTable({
+            var table = $('#rejected-items-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('rejected-tasks') }}",
+                ajax: {
+                    url: "{{ route('rejected-tasks') }}", // Update route to handle filtering
+                    data: function(d) {
+                        d.filter = filterValue; // Dynamically pass the filter value
+                    }
+                },
                 dom: 'lBfrtip',
                 buttons: [{
                     extend: 'excel',
@@ -212,7 +226,27 @@
                         data: 'rejected_date',
                         name: 'rejected_date',
                         searchable: true,
-                        visible: selectedColumns.includes("10")
+                        visible: selectedColumns.includes("10"),
+                        render: function(data, type, row) {
+                            // Check if data exists and is a valid date
+                            if (data) {
+                                // Convert to Date object if it's a valid date string
+                                let date = new Date(data);
+
+                                // Check if it's a valid date object
+                                if (!isNaN(date)) {
+                                    // Format as dd/mm/yyyy
+                                    let day = String(date.getDate()).padStart(2, '0');
+                                    let month = String(date.getMonth() + 1).padStart(2,
+                                        '0'); // months are 0-indexed
+                                    let year = date.getFullYear();
+
+                                    return `${day}/${month}/${year}`;
+                                }
+                            }
+                            // Return default value if no valid date
+                            return '-';
+                        }
                     },
                     {
                         data: 'status',
@@ -220,7 +254,7 @@
                         searchable: true,
                         visible: selectedColumns.includes("10")
                     },
-                    
+
 
                     @if ($type == 'mytask')
 
@@ -237,6 +271,11 @@
                 drawCallback: function() {
                     feather.replace();
                 }
+            });
+            // Attach event listener to the filter dropdown
+            $('#filter-dropdown').change(function() {
+                filterValue = $(this).val(); // Get the selected value from the dropdown
+                table.ajax.reload(); // Reload the DataTable with the new filter
             });
         });
 

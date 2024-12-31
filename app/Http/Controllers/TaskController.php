@@ -2355,9 +2355,10 @@ class TaskController extends Controller
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
 
-             ->addColumn('rejected_date', function ($row) {
+            ->addColumn('rejected_date', function ($row) {
                 return $row->rejected_date ? Carbon::parse($row->rejected_date)->format('d/m/Y') : '-';
             })
+
 
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
@@ -4795,310 +4796,310 @@ class TaskController extends Controller
     public function store(CreateTaskRequest $request)
     {
         // try {
-            // dd($request->all());
-            // Fetch project, priority, and status
-            $project = Project::where('id', $request->get('project_id'))->first();
-            $priority = Priority::where('id', $request->get('priority_id'))->first();
-            $status = Status::where('id', $request->get('task_status'))->first();
-            if ($request->recurring == 1) {
-                $request->validate([
-                    'recurring_type' => 'required|string',
+        // dd($request->all());
+        // Fetch project, priority, and status
+        $project = Project::where('id', $request->get('project_id'))->first();
+        $priority = Priority::where('id', $request->get('priority_id'))->first();
+        $status = Status::where('id', $request->get('task_status'))->first();
+        if ($request->recurring == 1) {
+            $request->validate([
+                'recurring_type' => 'required|string',
+            ]);
+
+            $recurringType = $request->input('recurring_type');
+            $numberOfDays = $request->input('number_of_time'); // e.g., 5
+            $userIds = $request->input('user_id');
+            $startDate = Carbon::parse($request->input('start_date'));
+
+            // Initialize task variables
+            $taskSave = null; // To hold the main task ID for subsequent sub-tasks
+            $prevStartDate = clone $startDate; // To track the start date of the previous task
+
+            // Loop to create tasks based on recurring type and number of days
+            for ($i = 0; $i <= $numberOfDays; $i++) {  // Loop includes 0 to $numberOfDays (total 6 tasks when $numberOfDays = 5)
+
+                // For sub-tasks, calculate the start and due date.
+                $taskStartDate = clone $prevStartDate;
+                $taskDueDate = clone $taskStartDate;
+
+                // Handle the first task (main task) separately
+                if ($i == 0 && $recurringType == 'daily') {
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate; // Main task due date is one day later
+                } elseif ($i == 0 && $recurringType == 'weekly') {
+
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate->copy()->addWeek(); // Main task due date is one day later
+                }
+                if ($i == 0 && $recurringType == 'monthly') {
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate->copy()->addMonth(); // Main task due date is one day later
+
+                } elseif ($i == 0 && $recurringType == 'quarterly') {
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate->copy()->addMonths(3); // Main task due date is one day later
+                } elseif ($i == 0 && $recurringType == 'half_quarterly') {
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate->copy()->addMonths(6); // Main task due date is one day later
+                } elseif ($i == 0 && $recurringType == 'yearly') {
+                    $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
+                    $taskDueDate = $taskStartDate->copy()->addYear(); // Main task due date is one day later
+                } elseif ($i != 0) {
+                    // For subsequent tasks, increment the start date based on the recurring type
+                    switch ($recurringType) {
+                        case 'daily':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate;  // First sub-task starts on the same day as the main task
+                                $taskDueDate = $taskStartDate;
+                            } else {
+                                $taskStartDate->addDay(); // Increment by 1 day for each sub-task
+                                $taskDueDate = $taskStartDate; // Due date is 1 day after the start date
+                            }
+                            break;
+
+                        case 'weekly':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate;
+                                // First sub-task starts on the same day as the main task
+                                $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week later
+                            } else {
+                                $taskStartDate = $prevStartDate->addWeek(); // Increment by 1 week for each sub-task
+                                // dd($taskStartDate);
+                                $taskStartDate->addDay(1);
+
+                                $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week after the start date
+                            }
+                            break;
+
+                        case 'monthly':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
+                                $taskDueDate = $taskStartDate->copy()->addMonth(); // Due date is 1 month later
+                            } else {
+                                $taskStartDate->addMonth(); // Increment by 1 month for each sub-task
+                                $taskStartDate->addDay(1);
+                                $taskDueDate = $taskStartDate->copy()->addMonth(); // Due date is 1 month after the start date
+                            }
+                            break;
+
+                        case 'quarterly':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
+                                $taskDueDate = $taskStartDate->copy()->addMonths(3); // Due date is 3 months later
+                            } else {
+                                $taskStartDate->addMonths(3); // Increment by 3 months for each sub-task
+                                $taskStartDate->addDay(1);
+                                $taskDueDate = $taskStartDate->copy()->addMonths(3); // Due date is 3 months after the start date
+                            }
+                            break;
+
+                        case 'half_quarterly':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
+                                $taskDueDate = $taskStartDate->copy()->addMonths(6); // Due date is 6 months later
+                            } else {
+                                $taskStartDate->addMonths(6); // Increment by 6 months for each sub-task
+                                $taskStartDate->addDay(1);
+                                $taskDueDate = $taskStartDate->copy()->addMonths(6); // Due date is 6 months after the start date
+                            }
+                            break;
+
+                        case 'yearly':
+                            if ($i == 1) {
+                                $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
+                                $taskDueDate = $taskStartDate->copy()->addYear(); // Due date is 1 year later
+                            } else {
+                                $taskStartDate->addYear(); // Increment by 1 year for each sub-task
+                                $taskStartDate->addDay(1);
+                                $taskDueDate = $taskStartDate->copy()->addYear(); // Due date is 1 year after the start date
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                // Prepare the task data for the current iteration (either main task or subtask)
+                $taskData = [
+                    'priority_id' => $request->input('priority_id'),
+                    'project_id' => $request->input('project_id'),
+                    'department_id' => $request->input('department_id'),
+                    'task_assignes' => implode(',', $userIds), // Store assigned users
+                    'sub_department_id' => $request->input('sub_department_id'),
+                    'task_status' => $request->input('task_status'),
+                    'title' => $request->input('title'),
+                    'subject' => $request->input('subject'),
+                    'description' => $request->input('description'),
+                    'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                    'start_date' => $taskStartDate,
+                    'due_date' => $taskDueDate,
+                    'recurring_type' => $recurringType,
+                    'number_of_days' => $numberOfDays,
+                    'created_by' => auth()->id(),
+                ];
+                // dd($taskData);
+                // If it's the first task, create the main task
+                if ($i == 0) {
+                    $taskData['is_sub_task'] = null;  // Main task has no parent
+                    $taskSave = RecurringTask::create($taskData);  // Create the main task
+
+                    // Store the task number for the main task
+                    $taskSave->TaskNumber = $taskSave->id;
+                    $taskSave->save();  // Save the main task with TaskNumber
+
+                    // Handle attachments for the main task only (first task)
+                    if ($request->hasFile('attachments')) {
+                        foreach ($request->file('attachments') as $attachment) {
+                            // Handle file storage
+                            $filenameWithExtension = $attachment->getClientOriginalName();
+                            $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                            $extension = $attachment->getClientOriginalExtension();
+                            $storedFilename = $filename . '_' . time() . '.' . $extension;
+                            $path = $attachment->storeAs('attachments', $storedFilename);
+
+                            // Associate the attachment with the main task
+                            RecursiveTaskAttachment::create([
+                                'task_id' => $taskSave->id,  // First task ID for attachments
+                                'file' => $path,
+                            ]);
+                        }
+                    }
+                } else {
+                    // If it's not the first task, create a sub-task
+                    $taskData['is_sub_task'] = $taskSave->id;  // Link sub-task to the main task
+                    $subTask = RecurringTask::create($taskData);  // Create sub-task
+
+                    // Store the task number for the sub-task
+                    $subTask->TaskNumber = $subTask->id;
+                    $subTask->save();  // Save sub-task with TaskNumber
+                }
+
+                // Set the previous start date for the next loop iteration
+                $prevStartDate = $taskStartDate;
+            }
+
+            return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
+        } else {
+
+            // Prepare task data
+            $taskData = [
+                'ticket' => $request->get('task_type') == '1' ? 1 : 0,
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'subject' => $request->get('subject'),
+                'project_id' => $request->get('project_id'),
+                'project_name' => $project->project_name,
+                'start_date' => $request->get('start_date'),
+                'due_date' => $request->get('due_date_form'),
+                'priority_id' => $request->get('priority_id'),
+                'priority_name' => $priority->priority_name,
+                'task_status' => $request->get('task_status'),
+                'status_name' => $status->status_name,
+                'created_by' => auth()->user()->id,
+            ];
+
+            // Handle status-specific fields (completed_date and close_date)
+            if ($request->get('task_status') == 4) {
+                $taskData['completed_date'] = now();
+            }
+            if ($request->get('task_status') == 7) {
+                $taskData['close_date'] = now();
+                $taskData['completed_date'] = now();
+
+            }
+
+            // Create the task
+            $task = $this->taskService->create($taskData);
+            $task->TaskNumber = $task->id;  // Set task number
+            $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
+            // dd($taskCount);
+
+            $task->save();
+
+            // Attach files if any
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $attachment) {
+                    $filenameWithExtension = $attachment->getClientOriginalName();
+                    $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                    $extension = $attachment->getClientOriginalExtension();
+                    $storedFilename = $filename . '_' . time() . '.' . $extension;
+
+                    $path = $attachment->storeAs('attachments', $storedFilename);
+
+                    TaskAttachment::create([
+                        'task_id' => $task->id,
+                        'file' => $path,
+                    ]);
+                }
+            }
+
+            // Get the list of users and assign them to the task
+            $userIds = $request->input('user_id', []);
+            $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
+
+            // Sync users to the task (assign task to all users)
+            $task->users()->sync($userIds); // Sync the users
+
+            // Update their pivot table status (0 for others, 1 for the creator)
+            $taskCount = count($task->users); // Get the current number of users associated with the task
+            $startingTaskNumber = 1; // Start from task number 01
+
+            foreach ($userIds as $index => $userId) {
+                // Dynamically generate a task number for each user, starting from 01
+                $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
+                $user = User::find($userId);  // Assuming you have a User model
+                $departmentId = $user->department_id;
+                $subdepartment = $user->subdepartment;
+                $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
+                // Update pivot with user-specific task number
+                $task->users()->updateExistingPivot($userId, [
+                    'status' => $status,
+                    'task_status' => $request->get('task_status'),
+                    'task_number' => $taskNumber,
+                    'due_date' => $request->get('due_date_form'),
+                    'department' => $departmentId,  // Save department_id
+                    'sub_department' => $subdepartment, // Save subdepartment
+                    'created_by' => auth()->user()->id,
+                    'created_at' => now(),  // Use the current timestamp for created_at
                 ]);
 
-                $recurringType = $request->input('recurring_type');
-                $numberOfDays = $request->input('number_of_time'); // e.g., 5
-                $userIds = $request->input('user_id');
-                $startDate = Carbon::parse($request->input('start_date'));
-
-                // Initialize task variables
-                $taskSave = null; // To hold the main task ID for subsequent sub-tasks
-                $prevStartDate = clone $startDate; // To track the start date of the previous task
-
-                // Loop to create tasks based on recurring type and number of days
-                for ($i = 0; $i <= $numberOfDays; $i++) {  // Loop includes 0 to $numberOfDays (total 6 tasks when $numberOfDays = 5)
-
-                    // For sub-tasks, calculate the start and due date.
-                    $taskStartDate = clone $prevStartDate;
-                    $taskDueDate = clone $taskStartDate;
-
-                    // Handle the first task (main task) separately
-                    if ($i == 0 && $recurringType == 'daily') {
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate; // Main task due date is one day later
-                    } elseif ($i == 0 && $recurringType == 'weekly') {
-
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addWeek(); // Main task due date is one day later
-                    }
-                    if ($i == 0 && $recurringType == 'monthly') {
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addMonth(); // Main task due date is one day later
-
-                    } elseif ($i == 0 && $recurringType == 'quarterly') {
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addMonths(3); // Main task due date is one day later
-                    } elseif ($i == 0 && $recurringType == 'half_quarterly') {
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addMonths(6); // Main task due date is one day later
-                    } elseif ($i == 0 && $recurringType == 'yearly') {
-                        $taskStartDate = clone $startDate;  // Main task starts on the user-defined start date
-                        $taskDueDate = $taskStartDate->copy()->addYear(); // Main task due date is one day later
-                    } elseif ($i != 0) {
-                        // For subsequent tasks, increment the start date based on the recurring type
-                        switch ($recurringType) {
-                            case 'daily':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate;  // First sub-task starts on the same day as the main task
-                                    $taskDueDate = $taskStartDate;
-                                } else {
-                                    $taskStartDate->addDay(); // Increment by 1 day for each sub-task
-                                    $taskDueDate = $taskStartDate; // Due date is 1 day after the start date
-                                }
-                                break;
-
-                            case 'weekly':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate;
-                                    // First sub-task starts on the same day as the main task
-                                    $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week later
-                                } else {
-                                    $taskStartDate = $prevStartDate->addWeek(); // Increment by 1 week for each sub-task
-                                    // dd($taskStartDate);
-                                    $taskStartDate->addDay(1);
-
-                                    $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week after the start date
-                                }
-                                break;
-
-                            case 'monthly':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
-                                    $taskDueDate = $taskStartDate->copy()->addMonth(); // Due date is 1 month later
-                                } else {
-                                    $taskStartDate->addMonth(); // Increment by 1 month for each sub-task
-                                    $taskStartDate->addDay(1);
-                                    $taskDueDate = $taskStartDate->copy()->addMonth(); // Due date is 1 month after the start date
-                                }
-                                break;
-
-                            case 'quarterly':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
-                                    $taskDueDate = $taskStartDate->copy()->addMonths(3); // Due date is 3 months later
-                                } else {
-                                    $taskStartDate->addMonths(3); // Increment by 3 months for each sub-task
-                                    $taskStartDate->addDay(1);
-                                    $taskDueDate = $taskStartDate->copy()->addMonths(3); // Due date is 3 months after the start date
-                                }
-                                break;
-
-                            case 'half_quarterly':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
-                                    $taskDueDate = $taskStartDate->copy()->addMonths(6); // Due date is 6 months later
-                                } else {
-                                    $taskStartDate->addMonths(6); // Increment by 6 months for each sub-task
-                                    $taskStartDate->addDay(1);
-                                    $taskDueDate = $taskStartDate->copy()->addMonths(6); // Due date is 6 months after the start date
-                                }
-                                break;
-
-                            case 'yearly':
-                                if ($i == 1) {
-                                    $taskStartDate = clone $startDate; // First sub-task starts on the same date as main task
-                                    $taskDueDate = $taskStartDate->copy()->addYear(); // Due date is 1 year later
-                                } else {
-                                    $taskStartDate->addYear(); // Increment by 1 year for each sub-task
-                                    $taskStartDate->addDay(1);
-                                    $taskDueDate = $taskStartDate->copy()->addYear(); // Due date is 1 year after the start date
-                                }
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-
-                    // Prepare the task data for the current iteration (either main task or subtask)
-                    $taskData = [
-                        'priority_id' => $request->input('priority_id'),
-                        'project_id' => $request->input('project_id'),
-                        'department_id' => $request->input('department_id'),
-                        'task_assignes' => implode(',', $userIds), // Store assigned users
-                        'sub_department_id' => $request->input('sub_department_id'),
-                        'task_status' => $request->input('task_status'),
-                        'title' => $request->input('title'),
-                        'subject' => $request->input('subject'),
-                        'description' => $request->input('description'),
-                        'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-                        'start_date' => $taskStartDate,
-                        'due_date' => $taskDueDate,
-                        'recurring_type' => $recurringType,
-                        'number_of_days' => $numberOfDays,
-                        'created_by' => auth()->id(),
-                    ];
-                    // dd($taskData);
-                    // If it's the first task, create the main task
-                    if ($i == 0) {
-                        $taskData['is_sub_task'] = null;  // Main task has no parent
-                        $taskSave = RecurringTask::create($taskData);  // Create the main task
-
-                        // Store the task number for the main task
-                        $taskSave->TaskNumber = $taskSave->id;
-                        $taskSave->save();  // Save the main task with TaskNumber
-
-                        // Handle attachments for the main task only (first task)
-                        if ($request->hasFile('attachments')) {
-                            foreach ($request->file('attachments') as $attachment) {
-                                // Handle file storage
-                                $filenameWithExtension = $attachment->getClientOriginalName();
-                                $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
-                                $extension = $attachment->getClientOriginalExtension();
-                                $storedFilename = $filename . '_' . time() . '.' . $extension;
-                                $path = $attachment->storeAs('attachments', $storedFilename);
-
-                                // Associate the attachment with the main task
-                                RecursiveTaskAttachment::create([
-                                    'task_id' => $taskSave->id,  // First task ID for attachments
-                                    'file' => $path,
-                                ]);
-                            }
-                        }
-                    } else {
-                        // If it's not the first task, create a sub-task
-                        $taskData['is_sub_task'] = $taskSave->id;  // Link sub-task to the main task
-                        $subTask = RecurringTask::create($taskData);  // Create sub-task
-
-                        // Store the task number for the sub-task
-                        $subTask->TaskNumber = $subTask->id;
-                        $subTask->save();  // Save sub-task with TaskNumber
-                    }
-
-                    // Set the previous start date for the next loop iteration
-                    $prevStartDate = $taskStartDate;
-                }
-
-                return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
-            } else {
-
-                // Prepare task data
-                $taskData = [
-                    'ticket' => $request->get('task_type') == '1' ? 1 : 0,
-                    'title' => $request->get('title'),
-                    'description' => $request->get('description'),
-                    'subject' => $request->get('subject'),
-                    'project_id' => $request->get('project_id'),
-                    'project_name' => $project->project_name,
-                    'start_date' => $request->get('start_date'),
-                    'due_date' => $request->get('due_date_form'),
-                    'priority_id' => $request->get('priority_id'),
-                    'priority_name' => $priority->priority_name,
-                    'task_status' => $request->get('task_status'),
-                    'status_name' => $status->status_name,
-                    'created_by' => auth()->user()->id,
-                ];
-
-                // Handle status-specific fields (completed_date and close_date)
-                if ($request->get('task_status') == 4) {
-                    $taskData['completed_date'] = now();
-                }
-                if ($request->get('task_status') == 7) {
-                    $taskData['close_date'] = now();
-                    $taskData['completed_date'] = now();
-
-                }
-
-                // Create the task
-                $task = $this->taskService->create($taskData);
-                $task->TaskNumber = $task->id;  // Set task number
-                $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
-                // dd($taskCount);
-          
-                $task->save();
-
-                // Attach files if any
-                if ($request->hasFile('attachments')) {
-                    foreach ($request->file('attachments') as $attachment) {
-                        $filenameWithExtension = $attachment->getClientOriginalName();
-                        $filename = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
-                        $extension = $attachment->getClientOriginalExtension();
-                        $storedFilename = $filename . '_' . time() . '.' . $extension;
-
-                        $path = $attachment->storeAs('attachments', $storedFilename);
-
-                        TaskAttachment::create([
-                            'task_id' => $task->id,
-                            'file' => $path,
-                        ]);
-                    }
-                }
-
-                // Get the list of users and assign them to the task
-                $userIds = $request->input('user_id', []);
-                $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
-
-                // Sync users to the task (assign task to all users)
-                $task->users()->sync($userIds); // Sync the users
-
-                // Update their pivot table status (0 for others, 1 for the creator)
-                $taskCount = count($task->users); // Get the current number of users associated with the task
-                $startingTaskNumber = 1; // Start from task number 01
-
-                foreach ($userIds as $index => $userId) {
-                    // Dynamically generate a task number for each user, starting from 01
-                    $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
-                    $user = User::find($userId);  // Assuming you have a User model
-                    $departmentId = $user->department_id;
-                    $subdepartment = $user->subdepartment;
-                    $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
-                    // Update pivot with user-specific task number
-                    $task->users()->updateExistingPivot($userId, [
-                        'status' => $status,
-                        'task_status' => $request->get('task_status'),
-                        'task_number' => $taskNumber,
-                        'due_date' => $request->get('due_date_form'),
-                        'department' => $departmentId,  // Save department_id
-                        'sub_department' => $subdepartment, // Save subdepartment
-                        'created_by' => auth()->user()->id,
-                        'created_at' => now(),  // Use the current timestamp for created_at
-                    ]);
-
-                }
-                $task = Task::where('id', $task->id)->first();
-                $task->last_task_number = $taskNumber;
-            // dd($task);
-                // Save the updated task
-                $task->save();
-
-
-
-                $authenticatedUserId = auth()->user()->id;
-                if (in_array($authenticatedUserId, $userIds)) {
-                    $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
-                }
-
-                // Send notifications to users
-                $loggedInUser = auth()->user();
-                $encryptedId = encrypt($task->id);
-                $task->encryptedId = $encryptedId;
-
-                $html = View::make('emails.task_created', compact('task'))->render();
-                $subject = "New Task Created";
-
-                foreach ($task->users as $user) {
-                    $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
-
-                    createNotification(
-                        $user->id,
-                        $task->id,
-                        'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
-                        'Created'
-                    );
-                }
-
-                // Redirect with success message
-                return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
             }
+            $task = Task::where('id', $task->id)->first();
+            $task->last_task_number = $taskNumber;
+            // dd($task);
+            // Save the updated task
+            $task->save();
+
+
+
+            $authenticatedUserId = auth()->user()->id;
+            if (in_array($authenticatedUserId, $userIds)) {
+                $task->users()->updateExistingPivot($authenticatedUserId, ['status' => 1]);
+            }
+
+            // Send notifications to users
+            $loggedInUser = auth()->user();
+            $encryptedId = encrypt($task->id);
+            $task->encryptedId = $encryptedId;
+
+            $html = View::make('emails.task_created', compact('task'))->render();
+            $subject = "New Task Created";
+
+            foreach ($task->users as $user) {
+                $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+                createNotification(
+                    $user->id,
+                    $task->id,
+                    'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+                    'Created'
+                );
+            }
+
+            // Redirect with success message
+            return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
+        }
         // } catch (\Exception $error) {
         //     // Log any error
         //     dd($error->getMessage());
@@ -8013,18 +8014,33 @@ class TaskController extends Controller
     public function rejected_task(Request $request)
     {
         if ($request->ajax()) {
-
+         
             $rejectedTasks = TaskAssignee::where('status', 2)  // Filter for rejected status (2)
                 ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
                 ->get();
+
             // Check if the current user is admin (id = 1)
             if (auth()->user()->id == 1) {
                 // Admin can view all rejected tasks
                 $rejectedTasks = $rejectedTasks;
             } else {
-                // Non-admin users can only see tasks they created
-                $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
+                // dd($request->all());
+                if ($request->filter == 'rejected_my_task') {
+                    // If the filter is 'rejected_by_me', show tasks created by the current user
+                    $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
+                    // dd("A");
+                } else {
+                    // dd("B");
+                    $rejectedTasks = $rejectedTasks->where('user_id', auth()->user()->id);
+                   
+                }
             }
+          
+            // Exclude tasks where both 'created_by' and 'user_id' are the logged-in user
+            $rejectedTasks = $rejectedTasks->filter(function ($task) {
+                return !($task->created_by == auth()->user()->id && $task->user_id == auth()->user()->id);
+            });
+
 
 
             return datatables()->of($rejectedTasks)
