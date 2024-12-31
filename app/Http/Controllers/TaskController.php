@@ -5118,7 +5118,7 @@ class TaskController extends Controller
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
-                $task = $this->taskService->gettaskAssigne($id)->first();
+                $task = $this->taskService->gettaskAssigne($id);
                 $getTaskComments = Comments::where('task_id', $task->task_id)->get();
                 // dd($getTaskComments);
                 $creator = 0;
