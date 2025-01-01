@@ -2042,7 +2042,9 @@ class TaskController extends Controller
                 $acceptButton = '';
                 if (auth()->user()->id == '1') {
                     if ($row->status == 0) {
-                        $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                        $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
+
+                        // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
@@ -4475,11 +4477,14 @@ class TaskController extends Controller
             // Taskassignee::find($task_ass->id)->update(['status' => 1]);
             $task = Task::where('id', $id)->first();
             // 27-06
-            $task_ass = TaskAssignee::where('user_id', $userId)
-                ->where('task_id', $id)->get();
-            $task_ass = TaskAssignee::where('user_id', $userId)
-                ->where('task_id', $id)
-                ->get();
+
+            if (auth()->user()->id == 1) {
+                $task_ass = TaskAssignee::where('task_id', $id)->get();
+            } else {
+                $task_ass = TaskAssignee::where('user_id', $userId)
+                    ->where('task_id', $id)
+                    ->get();
+            }
             foreach ($task_ass as $task_assignee) {
                 $task_assignee->update([
                     'status' => 1,
@@ -5010,13 +5015,13 @@ class TaskController extends Controller
 
             }
 
-                // Create the task
-                $task = $this->taskService->create($taskData);
-                $task->TaskNumber = $task->id;  // Set task number
-                $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
-                // dd($taskCount);
+            // Create the task
+            $task = $this->taskService->create($taskData);
+            $task->TaskNumber = $task->id;  // Set task number
+            $taskCount = Task::where('id', $task->id)->count(); // Count how many tasks with the same task_id exist
+            // dd($taskCount);
 
-                $task->save();
+            $task->save();
 
             // Attach files if any
             if ($request->hasFile('attachments')) {
@@ -7491,7 +7496,7 @@ class TaskController extends Controller
 
         if ($request->input('accepted_task_date')) {
             $dtDateRange = parseDateRange($request->input('accepted_task_date'));
-            $query->whereHas('task', function ($q) use ($query,$task_filter, $dtDateRange, $request) {
+            $query->whereHas('task', function ($q) use ($query, $task_filter, $dtDateRange, $request) {
                 if (!empty($dtDateRange[1])) {
                     // Both start and end dates are available
                     $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);

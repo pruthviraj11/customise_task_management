@@ -1084,7 +1084,6 @@
         $(document).on("click", ".accept-task", function(e) {
             e.preventDefault();
             var id = $(this).data("id");
-
             // First SweetAlert: Confirm task acceptance
             Swal.fire({
                 title: 'Are you sure?',
