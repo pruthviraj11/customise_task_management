@@ -27,7 +27,7 @@
 
 @section('content')
 
-    <form action="{{ route('app-task-update', encrypt($task->task_id)) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('app-task-update', encrypt($taskAss->task_id)) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -39,10 +39,10 @@
                         <div class="card-header">
                             <h4>{{ $page_data['form_title'] }}</h4>
                             <div class="col-md-6">
-                                @if ($task != '')
-                                    <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
-                                    <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
-                                        {{ $task->creator->last_name }}</a>
+                                @if ($taskAss != '')
+                                    <a class=" btn-sm btn-primary "> Task # {{ $taskAss->id }}</a>
+                                    <a class=" btn-sm btn-primary "> Task Created By {{ $taskAss->creator->first_name }}
+                                        {{ $taskAss->creator->last_name }}</a>
                                 @endif
 
                             </div>
@@ -54,12 +54,12 @@
                             <div class="row">
 
 
-                                <input type="hidden" name="task_created_by" value="{{ $task->created_by }}">
+                                <input type="hidden" name="task_created_by" value="{{ $taskAss->created_by }}">
                                 <div class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="due_date_form">End Date</label><span
                                         class="red">*</span>
                                     <input type="date" id="due_date_form" class="form-control" name="due_date_form"
-                                        value="{{ old('due_date_form') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
+                                        value="{{ old('due_date_form') ?? ($taskAss != '' ? $taskAss->due_date : date('Y-m-d')) }}"
                                         required>
                                     <span class="text-danger">
                                         @error('due_date_form')
@@ -74,13 +74,13 @@
                                 <div class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="task_status">Status</label><span class="red">*</span>
                                     <select id="task_status" class="form-select select2" name="task_status"
-                                        {{ $task ? ($task->task_status == 7 ? 'disabled' : '') : '' }} required>
+                                        {{ $taskAss ? ($taskAss->task_status == 7 ? 'disabled' : '') : '' }} required>
                                         {{-- <option value="">Select Status</option> --}}
                                         @foreach ($Status as $Statu)
                                             <option value="{{ $Statu->id }}"
-                                                @php $isDisabled = $Statu->disabled == true && ($task == ' ' || (is_object($task) && $task->created_by != auth()->user()->id)); @endphp
-                                                {{ $isDisabled ? 'disabled' : '' }} {{-- {{ $Statu->disabled == true && ($task && $task->created_by != auth()->user()->id) ? 'disabled' : '' }} --}}
-                                                {{ old('task_status') == $Statu->id ? 'selected' : ($task ? ($task->task_status == $Statu->id ? 'selected' : '') : '') }}>
+                                                @php $isDisabled = $Statu->disabled == true && ($taskAss == ' ' || (is_object($taskAss) && $taskAss->created_by != auth()->user()->id)); @endphp
+                                                {{ $isDisabled ? 'disabled' : '' }} {{-- {{ $Statu->disabled == true && ($taskAss && $taskAss->created_by != auth()->user()->id) ? 'disabled' : '' }} --}}
+                                                {{ old('task_status') == $Statu->id ? 'selected' : ($taskAss ? ($taskAss->task_status == $Statu->id ? 'selected' : '') : '') }}>
                                                 {{ $Statu->displayname }}
                                             </option>
                                         @endforeach
@@ -93,12 +93,12 @@
                                 </div>
 
 
-                                @if ($task != '')
+                                @if ($taskAss != '')
                                     <div class="col-md-12 col-sm-12 mt-3">
                                         {{-- <form action="{{ route('comments.store') }}" method="POST">
                                         @csrf --}}
-                                        {{-- {{ dd($task); }} --}}
-                                        <input type="hidden" name="task_id" value="{{ $task->task_id }}">
+                                        {{-- {{ dd($taskAss); }} --}}
+                                        <input type="hidden" name="task_id" value="{{ $taskAss->task_id }}">
                                         <div class="mb-3">
                                             <label for="comment_form" class="form-label">Add Comment</label>
                                             <textarea class="form-control" id="comment_form" name="comment_form" rows="4"></textarea>
@@ -120,7 +120,7 @@
                                             @if (
                                                 $loggedInUserId == $comment->created_by || // Show for comment creator
                                                     in_array($loggedInUserId, $toUserIds) || // Show for users the comment is directed to
-                                                    $loggedInUserId == $task->created_by)
+                                                    $loggedInUserId == $taskAss->created_by)
                                                 {{-- // Show for task creator --}}
                                                 <div class="card bg-white shadow-lg">
                                                     <div class="card-header email-detail-head">

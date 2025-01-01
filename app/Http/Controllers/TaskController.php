@@ -5126,6 +5126,7 @@ class TaskController extends Controller
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
                 $task = $this->taskService->gettaskAssigne($id);
+                $taskAss = $this->taskService->gettaskAssigneAss($id);
                 $getTaskComments = Comments::where('task_id', $task->task_id)->get();
                 // dd($getTaskComments);
                 $creator = 0;
@@ -5182,9 +5183,9 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             // dd($creator);
             if ($creator == 1) {
-                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
+                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data','taskAss', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
-                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
+                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task','taskAss', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
         } catch (\Exception $error) {
