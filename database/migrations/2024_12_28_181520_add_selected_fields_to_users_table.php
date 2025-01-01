@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->json('selected_fields')->nullable();
+            $table->json('selected_fields')->default(json_encode([]));
+
         });
     }
 
@@ -27,7 +28,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('selected_fields');
+            //
         });
     }
 };
