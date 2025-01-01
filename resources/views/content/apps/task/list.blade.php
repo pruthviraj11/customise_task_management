@@ -63,84 +63,98 @@
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
+                            <!-- New Dropdown for Selecting Filter -->
                             <div class="mb-1 col-3">
-                                <label class="form-label" for="filter-status">Task Or Ticket</label>
+                                <label class="form-label" for="select-filter">Select Filter</label>
+                                <select id="select-filter" class="form-select ">
+                                    <option value="">Select a Filter</option>
+                                    <option value="task">Task or Ticket</option>
+                                    <option value="status">Filter by Status</option>
+                                    <option value="project">Filter by Project</option>
+                                    <option value="created-by">Filter by Created By</option>
+                                    <option value="assignee">Filter by Task Assign To</option>
+                                    <option value="department">Filter by Department</option>
+                                    <option value="start-date">Start Date By</option>
+                                    <option value="end-date">End Date By</option>
+                                    <option value="accepted-task-date">Accepted Task Date</option>
+                                </select>
+                            </div>
+
+                            <!-- Existing Filter Dropdowns -->
+                            <div class="mb-1 col-3 filter-item" id="filter-task-div" style="display: none;">
+                                <label class="form-label" for="task">Task or Ticket</label>
                                 <select id="task" class="form-select select2">
                                     <option value="">ALL</option>
                                     <option value="0">Task</option>
                                     <option value="1">Ticket</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 ">
-                                <label class="form-label" for="filter-status">Filter by Status
-                                    By</label>
-                                <select class="  form-select select2" id="filter-status">
+                            <div class="mb-1 col-3 filter-item" id="filter-status-div" style="display: none;">
+                                <label class="form-label" for="filter-status">Filter by Status</label>
+                                <select id="filter-status" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 ">
+                            <div class="mb-1 col-3 filter-item" id="filter-project-div" style="display: none;">
                                 <label class="form-label" for="filter-project">Filter by Project</label>
-                                <select class="form-select select2" id="filter-project">
+                                <select id="filter-project" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-
-
-                            <div class="mb-1 col-3 ">
-                                <label class="form-label" for="filter-created-by">Filter by Created
-                                    By</label>
+                            <div class="mb-1 col-3 filter-item" id="filter-created-by-div" style="display: none;">
+                                <label class="form-label" for="filter-created-by">Filter by Created By</label>
                                 <select id="filter-created-by" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3">
+                            <div class="mb-1 col-3 filter-item" id="filter-assignee-div" style="display: none;">
                                 <label class="form-label" for="filter-assignee">Filter by Task Assign To</label>
                                 <select id="filter-assignee" class="form-select select2" multiple>
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 ">
-                                <label class="form-label" for="filter-department">Filter by department</label>
-                                <select id="filter-department"class=" form-select select2">
-                                    <option value="">ALL </option>
+                            <div class="mb-1 col-3 filter-item" id="filter-department-div" style="display: none;">
+                                <label class="form-label" for="filter-department">Filter by Department</label>
+                                <select id="filter-department" class="form-select select2">
+                                    <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 ">
-                                <label class="form-label" for="dt_date">Start Date
-                                    By</label>
-                                <input type="text" class="form-control dt-date flatpickr-range dt-input"
-                                    data-mb-1column="5" id="dt_date" placeholder="StartDate to EndDate"
-                                    data-mb-1column-index="4" name="dt_date" />
-                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
-                                    data-column-index="4" name="value_from_start_date" />
+
+                            <div class="mb-1 col-3 filter-item" id="filter-start-date-div" style="display: none;">
+                                <label class="form-label" for="dt_date">Start Date By</label>
+                                <input type="text" class="form-control dt-date flatpickr-range dt-input" id="dt_date"
+                                    placeholder="Start Date to End Date" name="dt_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input"
+                                    name="value_from_start_date" />
                                 <input type="hidden" class="form-control dt-date end_date dt-input"
-                                    name="value_from_end_date" data-column="5" data-column-index="4" />
-                            </div>
-                            <div class="mb-1  col-3">
-                                <label class="form-label" for="end_date">End Date</label>
-                                <input type="text" class="form-control dt-date flatpickr-range dt-input" data-column="5"
-                                    id="end_date" placeholder="StartDate to EndDate" data-column-index="4"
-                                    name="end_date" />
-                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
-                                    data-column-index="4" name="value_from_start_date" />
-                                <input type="hidden" class="form-control dt-date end_date dt-input"
-                                    name="value_from_end_date" data-column="5" data-column-index="4" />
+                                    name="value_from_end_date" />
                             </div>
 
-                            <div class="mb-1 col-3">
+                            <!-- End Date By -->
+                            <div class="mb-1 col-3 filter-item" id="filter-end-date-div" style="display: none;">
+                                <label class="form-label" for="end_date">End Date By</label>
+                                <input type="text" class="form-control dt-date flatpickr-range dt-input"
+                                    id="end_date" placeholder="Start Date to End Date" name="end_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input"
+                                    name="value_from_start_date" />
+                                <input type="hidden" class="form-control dt-date end_date dt-input"
+                                    name="value_from_end_date" />
+                            </div>
+
+
+                            <div class="mb-1 col-3 filter-item" id="filter-accepted-task-date-div"
+                                style="display: none;">
                                 <label class="form-label" for="accepted_task_date">Accepted Task Date</label>
                                 <input type="text" class="form-control dt-date flatpickr-range dt-input"
-                                    data-column="5" id="accepted_task_date" placeholder="Start Date to End Date"
-                                    data-column-index="4" name="accepted_task_date" />
-                                <input type="hidden" class="form-control dt-date start_date dt-input" data-column="5"
-                                    data-column-index="4" name="value_from_accepted_task_start_date" />
+                                    id="accepted_task_date" placeholder="Start Date to End Date"
+                                    name="accepted_task_date" />
+                                <input type="hidden" class="form-control dt-date start_date dt-input"
+                                    name="value_from_accepted_task_start_date" />
                                 <input type="hidden" class="form-control dt-date end_date dt-input"
-                                    name="value_from_accepted_task_end_date" data-column="5" data-column-index="4" />
+                                    name="value_from_accepted_task_end_date" />
                             </div>
 
-
-                            {{-- <input type="date" id="filter-start-date" class="col  form-control"
-                                placeholder="Filter by Start Date"> --}}
+                            <!-- Apply Filters Button -->
                             <div class="col-md-12 text-end">
                                 <button id="apply-filters" class="mt-2 col btn btn-primary">Apply Filters</button>
                             </div>
@@ -261,11 +275,32 @@
     </div> --}}
     <!-- users list ends -->
     @php
-                $selectedColumns = json_decode(auth()->user()->selected_fields, true);
+        $selectedColumns = json_decode(auth()->user()->selected_fields, true);
 
-                if (empty($selectedColumns)) {
-    $selectedColumns = ["0", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"];
-}
+        if (empty($selectedColumns)) {
+            $selectedColumns = [
+                '0',
+                '3',
+                '4',
+                '5',
+                '7',
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+            ];
+        }
 
     @endphp
 @endsection
@@ -295,6 +330,27 @@
 @section('page-script')
     <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
 
+    <script>
+        document.getElementById('select-filter').addEventListener('change', function() {
+            const selectedValue = this.value;
+            const filterItems = document.querySelectorAll('.filter-item');
+
+            // Hide all filter dropdowns
+            filterItems.forEach(item => {
+                item.style.display = 'none';
+            });
+
+
+
+            // Show the selected filter dropdown
+            if (selectedValue) {
+                const selectedFilter = document.getElementById(`filter-${selectedValue}-div`);
+                if (selectedFilter) {
+                    selectedFilter.style.display = 'block';
+                }
+            }
+        });
+    </script>
     <script>
         // Datepicker for advanced filter
         var separator = ' - ',
