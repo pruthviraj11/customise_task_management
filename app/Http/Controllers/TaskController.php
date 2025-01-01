@@ -774,6 +774,7 @@ class TaskController extends Controller
         // Fetch tasks assigned to the user but created by the authenticated user
         $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->whereNotIn('task_assignees.task_status', ['4', '7'])
             ->where('task_assignees.created_by', $userId)
             ->whereDoesntHave('user', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -912,6 +913,7 @@ class TaskController extends Controller
         $tasks = Task::select('tasks.*')->leftJoin('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
             ->where('task_assignees.user_id', $userId)
             ->where('task_assignees.status', 0)
+            ->whereNotIn('task_assignees.task_status', ['4', '7'])
             ->where('tasks.created_by', '!=', $userId);
 
         // dd($tasks);
@@ -1529,7 +1531,7 @@ class TaskController extends Controller
             // })
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
-            $query->whereNull('deleted_at')->get();
+            $query->whereNotIn('task_status', ['4', '7'])->whereNull('deleted_at')->get();
         } else {
 
             // $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -1542,7 +1544,7 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
 
-            $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
+            $query->whereNotIn('task_status', ['4', '7'])->where('created_by', $user->id)->whereNull('deleted_at')->get();
 
         }
 
@@ -8014,7 +8016,7 @@ class TaskController extends Controller
     {
         if ($request->ajax()) {
 
-            $rejectedTasks = TaskAssignee::where('status', 2)  // Filter for rejected status (2)
+            $rejectedTasks = TaskAssignee::whereNotIn('task_status', ['4', '7'])->where('status', 2)  // Filter for rejected status (2)
                 ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
                 ->get();
 
