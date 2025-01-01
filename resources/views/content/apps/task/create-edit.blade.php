@@ -54,7 +54,7 @@
                     <div class="card-header">
                         <h4>{{ $page_data['form_title'] }}</h4>
                         <a href="{{ route('app-task-list') }}" class="col-md-2 btn btn-primary float-end">Task List</a>
-                        <a href="{{ route('check-tasks') }}" class="btn btn-primary">Check and Create Today's Tasks</a>
+                        {{-- <a href="{{ route('check-tasks') }}" class="btn btn-primary">Check and Create Today's Tasks</a> --}}
 
                         {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
 
