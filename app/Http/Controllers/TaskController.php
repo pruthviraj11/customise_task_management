@@ -830,7 +830,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1672,7 +1672,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -2443,7 +2443,7 @@ class TaskController extends Controller
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
-
+    
                 })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
@@ -5121,7 +5121,7 @@ class TaskController extends Controller
             if ($task && $task->creator->id == auth()->user()->id) {
                 // dd($task);
                 $creator = 1;
-
+                $taskAss = $this->taskService->gettaskAssigneAss($id);
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
             } else {
@@ -5183,9 +5183,9 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             // dd($creator);
             if ($creator == 1) {
-                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data','taskAss', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
+                return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'taskAss', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
-                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task','taskAss', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
+                return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'taskAss', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
 
             }
         } catch (\Exception $error) {
