@@ -66,7 +66,7 @@
                             <!-- New Dropdown for Selecting Filter -->
                             <div class="mb-1 col-3">
                                 <label class="form-label" for="select-filter">Select Filter</label>
-                                <select id="select-filter" class="form-select ">
+                                <select id="select-filter" name="select-filter" class="form-select ">
                                     <option value="">Select a Filter</option>
                                     <option value="task">Task or Ticket</option>
                                     <option value="status">Filter by Status</option>
@@ -341,12 +341,14 @@
             });
 
 
-
             // Show the selected filter dropdown
             if (selectedValue) {
                 const selectedFilter = document.getElementById(`filter-${selectedValue}-div`);
+                console.log(selectedFilter);
+
                 if (selectedFilter) {
                     selectedFilter.style.display = 'block';
+
                 }
             }
         });
@@ -653,6 +655,7 @@
                         d.department = $('#filter-department').val();
                         d.assignees = $('#filter-assignee').val();
                         d.dt_date = $('#dt_date').val();
+                        d.fild_search=$('#select-filter').val();
                         d.task = $('#task').val();
                         d.accepted_task_date = $('#accepted_task_date').val();
                         d.end_date = $('#end_date').val();

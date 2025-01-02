@@ -7449,92 +7449,99 @@ class TaskController extends Controller
             })
                 ->whereIn('task_status', ['1', '3', '5', '6']); // Add the status condition here for users
         }
-
-
-        if ($task_filter = $request->input('task')) {
+        // dd($request->input(key: 'fild_search'));
+        if ($task_filter = $request->input('task') && $request->input(key: 'fild_search') == 'task') {
             // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
             $query->whereHas('task', function ($q) use ($task_filter) {
                 $q->where('ticket', $task_filter);
             });
         }
-
-        if ($department_filter = $request->input('department')) {
-            $query->where('department', $department_filter);
+        if ($request->input(key: 'fild_search') == 'department') {
+            if ($department_filter = $request->input('department')) {
+                $query->where('department', $department_filter);
+            }
         }
 
-        if ($created_by = $request->input('created_by')) {
-            $query->where('created_by', $created_by);
+        if ($request->input(key: 'fild_search') == 'created-by') {
+            if ($created_by = $request->input('created_by')) {
+                $query->where('created_by', $created_by);
+            }
         }
 
-        if ($assignees = $request->input('assignees')) {
-            $query->whereHas('user', function ($q) use ($assignees) {
-                $q->whereIn('user_id', $assignees);
-            });
+        if ($request->input(key: 'fild_search') == 'assignee') {
+            if ($assignees = $request->input('assignees')) {
+                $query->whereHas('user', function ($q) use ($assignees) {
+                    $q->whereIn('user_id', $assignees);
+                });
+            }
         }
-
-        if ($status = $request->input('status')) {
-            $query->where('task_status', $status);
+        if ($status = $request->input('status') && $request->input(key: 'fild_search') == 'status') {
+            $query->where('task_status', $request->input('status'));
         }
 
         // Date filters
-        if ($request->input('dt_date')) {
-            $dtDateRange = parseDateRange($request->input('dt_date'));
+        if ($request->input(key: 'fild_search') == 'start-date') {
+            if ($request->input('dt_date')) {
+                $dtDateRange = parseDateRange($request->input('dt_date'));
 
-            $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
-                if (!empty($dtDateRange[1])) {
-                    // Both start and end dates are available
-                    $q->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
-                } else {
-                    $inputDate = $request->input('dt_date');
-                    $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
-                    // Only a single date is provided
-                    $q->whereDate('start_date', $formattedDate);
-                }
-            });
-        }
-
-
-
-        if ($request->input('accepted_task_date')) {
-            $dtDateRange = parseDateRange($request->input('accepted_task_date'));
-            $query->whereHas('task', function ($q) use ($query, $task_filter, $dtDateRange, $request) {
-                if (!empty($dtDateRange[1])) {
-                    // Both start and end dates are available
-                    $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);
-                } else {
-                    $inputDate = $request->input('accepted_task_date');
-                    $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
-                    // Only a single date is provided
-                    $query->whereDate('accepted_date', $formattedDate);
-                }
-            });
-        }
-
-
-
-        if ($request->input('end_date')) {
-            $dtDateRange = parseDateRange($request->input('end_date'));
-
-
-
-            if (!empty($dtDateRange[1])) {
-                // Both start and end dates are available
-                $query->whereBetween('due_date', [$dtDateRange[0], $dtDateRange[1]]);
-            } else {
-                $inputDate = $request->input('end_date');
-                $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
-                // Only a single date is provided
-                $query->whereDate('due_date', $formattedDate);
+                $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
+                    if (!empty($dtDateRange[1])) {
+                        // Both start and end dates are available
+                        $q->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
+                    } else {
+                        $inputDate = $request->input('dt_date');
+                        $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                        // Only a single date is provided
+                        $q->whereDate('start_date', $formattedDate);
+                    }
+                });
             }
         }
 
 
+        if ($request->input(key: 'fild_search') == 'accepted-task-date') {
+            if ($request->input('accepted_task_date')) {
+                $dtDateRange = parseDateRange($request->input('accepted_task_date'));
+                $query->whereHas('task', function ($q) use ($query, $task_filter, $dtDateRange, $request) {
+                    if (!empty($dtDateRange[1])) {
+                        // Both start and end dates are available
+                        $query->whereBetween('accepted_date', [$dtDateRange[0], $dtDateRange[1]]);
+                    } else {
+                        $inputDate = $request->input('accepted_task_date');
+                        $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                        // Only a single date is provided
+                        $query->whereDate('accepted_date', $formattedDate);
+                    }
+                });
+            }
+        }
+
+        if ($request->input(key: 'fild_search') == 'end-date') {
+            if ($request->input('end_date')) {
+                $dtDateRange = parseDateRange($request->input('end_date'));
+
+
+
+                if (!empty($dtDateRange[1])) {
+                    // Both start and end dates are available
+                    $query->whereBetween('due_date', [$dtDateRange[0], $dtDateRange[1]]);
+                } else {
+                    $inputDate = $request->input('end_date');
+                    $formattedDate = Carbon::createFromFormat('d/m/Y', $inputDate)->format('Y-m-d');
+                    // Only a single date is provided
+                    $query->whereDate('due_date', $formattedDate);
+                }
+            }
+        }
+
 
         // Handle the project filter
-        if ($project = $request->input('project')) {
-            $query->whereHas('task', function ($q) use ($project) {
-                $q->where('project_id', $project); // Filter tasks by their project_id
-            });
+        if ($request->input(key: 'fild_search') == 'project') {
+            if ($project = $request->input('project')) {
+                $query->whereHas('task', function ($q) use ($project) {
+                    $q->where('project_id', $project); // Filter tasks by their project_id
+                });
+            }
         }
 
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
