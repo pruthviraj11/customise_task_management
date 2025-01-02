@@ -355,7 +355,7 @@
                                         <select id="comments_for" class="form-select select2" name="comments_for[]"
                                             multiple @if ($isCreator == false) disabled @endif required>
                                             <option value="">Select User</option>
-                                            @foreach ($users as $user)
+                                            @foreach ($task->users as $user)
                                                 <option value="{{ $user->id }}"
                                                     {{ old('comments_for') && in_array($user->id, old('comments_for')) ? 'selected' : ($task && $task->users->pluck('id')->contains($user->id) ? 'selected' : '') }}>
                                                     <span class="fixed-width">{{ $user->first_name }}
