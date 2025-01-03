@@ -830,7 +830,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1672,7 +1672,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -2443,7 +2443,7 @@ class TaskController extends Controller
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
-    
+
                 })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
@@ -4489,7 +4489,7 @@ class TaskController extends Controller
                 $task_assignee->update([
                     'status' => 1,
                     'accepted_by' => $userId, // Replace with the appropriate value or variable
-                    'accepted_date' => now()
+                    'accepted_date' => now()->format('Y-m-d H:i:s')
                 ]);
             }
             $task->accepted_date = now()->format('Y-m-d H:i:s');
@@ -5007,11 +5007,11 @@ class TaskController extends Controller
 
             // Handle status-specific fields (completed_date and close_date)
             if ($request->get('task_status') == 4) {
-                $taskData['completed_date'] = now();
+                $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
             }
             if ($request->get('task_status') == 7) {
-                $taskData['close_date'] = now();
-                $taskData['completed_date'] = now();
+                $taskData['close_date'] = now()->format('Y-m-d H:i:s');
+                $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
 
             }
 
@@ -5582,7 +5582,7 @@ class TaskController extends Controller
                 // }
                 // Check if the task status has changed to 4 or 7 and update dates accordingly
                 if ($request->get('task_status') == 4 && $currentStatus_creator != 4) {
-                    $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 4
+                    $taskData['completed_date'] = now()->format('Y-m-d H:i:s');  // Update completed_date only if the status is set to 4
                 } elseif ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
                     // $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 7
                 } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
@@ -5592,12 +5592,12 @@ class TaskController extends Controller
                 // dd($currentStatus_creator,'Hii');
                 // Update close_date if task status is set to 7 and the status has changed
                 if ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
-                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
                 } elseif ($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
-                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
-                    $taskData['completed_date'] = now();
+                    $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
                 }
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
@@ -5646,7 +5646,7 @@ class TaskController extends Controller
                 //     $taskData['close_by'] = auth()->user()->id;
                 // }
                 if ($request->get('task_status') == 4 && $currentStatus_Assigne != 4) {
-                    $taskData['completed_date'] = now();
+                    $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
                     $taskData['completed_by'] = auth()->user()->id; // Update completed_date only if the status is set to 4
                 } elseif ($request->get('task_status') == 7 && $currentStatus_Assigne == 4) {
                     // $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 7
@@ -5655,16 +5655,16 @@ class TaskController extends Controller
                     $taskData['completed_date'] = null;
                 } elseif ($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
 
-                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
-                    $taskData['completed_date'] = now();
+                    $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
                 }
 
                 if ($request->get('closed') == 'on' && $task->created_by == auth()->user()->id) {
                     $taskData['task_status'] = 7;
                 }
                 if ($request->get('task_status') == 7 && $currentStatus_Assigne != 7) {
-                    $taskData['close_date'] = now();  // Only update close_date when changing to status 7
+                    $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
                 }
                 // Update the task with restricted fields
@@ -8392,7 +8392,7 @@ class TaskController extends Controller
                 // dd($task, $user);
                 // Update the subtask status
                 $subtask->task_status = $request->status;
-                $subtask->reopen_date = now();
+                $subtask->reopen_date = now()->format('Y-m-d H:i:s');
                 $subtask->reopen_by = auth()->user()->id;
                 // dd($subtask);
                 $subtask->save();
@@ -8400,7 +8400,7 @@ class TaskController extends Controller
                 // dd($request->all());
                 $reopenReason = new ReopenReason();
                 $reopenReason->reason = $request->reason;  // Reopen reason from the frontend
-                $reopenReason->reopen_date = now();
+                $reopenReason->reopen_date = now()->format('Y-m-d H:i:s');
                 $reopenReason->reopen_by = auth()->user()->id;
                 $reopenReason->user_id = $user->id;
                 $reopenReason->created_by = auth()->user()->id;
@@ -8530,10 +8530,10 @@ class TaskController extends Controller
             ];
 
             if ($recurringTask->task_status == 4) {
-                $taskData['completed_date'] = now();
+                $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
             }
             if ($recurringTask->task_status == 7) {
-                $taskData['close_date'] = now();
+                $taskData['close_date'] = now()->format('Y-m-d H:i:s');
             }
 
             // Create the task
