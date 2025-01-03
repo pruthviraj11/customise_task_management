@@ -64,9 +64,9 @@
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
                             <!-- New Dropdown for Selecting Filter -->
-                            <div class="mb-1 col-3">
+                            <div class="mb-1 col-md-3">
                                 <label class="form-label" for="select-filter">Select Filter</label>
-                                <select id="select-filter" name="select-filter" class="form-select ">
+                                <select id="select-filter" name="select-filter" class="form-select">
                                     <option value="">Select a Filter</option>
                                     <option value="task">Task or Ticket</option>
                                     <option value="status">Filter by Status</option>
@@ -81,7 +81,7 @@
                             </div>
 
                             <!-- Existing Filter Dropdowns -->
-                            <div class="mb-1 col-3 filter-item" id="filter-task-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-task-div" style="display: none;">
                                 <label class="form-label" for="task">Task or Ticket</label>
                                 <select id="task" class="form-select select2">
                                     <option value="">ALL</option>
@@ -89,38 +89,38 @@
                                     <option value="1">Ticket</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 filter-item" id="filter-status-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-status-div" style="display: none;">
                                 <label class="form-label" for="filter-status">Filter by Status</label>
                                 <select id="filter-status" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 filter-item" id="filter-project-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-project-div" style="display: none;">
                                 <label class="form-label" for="filter-project">Filter by Project</label>
                                 <select id="filter-project" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 filter-item" id="filter-created-by-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-created-by-div" style="display: none;">
                                 <label class="form-label" for="filter-created-by">Filter by Created By</label>
                                 <select id="filter-created-by" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 filter-item" id="filter-assignee-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-assignee-div" style="display: none;">
                                 <label class="form-label" for="filter-assignee">Filter by Task Assign To</label>
                                 <select id="filter-assignee" class="form-select select2" multiple>
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-                            <div class="mb-1 col-3 filter-item" id="filter-department-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-department-div" style="display: none;">
                                 <label class="form-label" for="filter-department">Filter by Department</label>
                                 <select id="filter-department" class="form-select select2">
                                     <option value="">ALL</option>
                                 </select>
                             </div>
 
-                            <div class="mb-1 col-3 filter-item" id="filter-start-date-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-start-date-div" style="display: none;">
                                 <label class="form-label" for="dt_date">Start Date By</label>
                                 <input type="text" class="form-control dt-date flatpickr-range dt-input" id="dt_date"
                                     placeholder="Start Date to End Date" name="dt_date" />
@@ -131,7 +131,7 @@
                             </div>
 
                             <!-- End Date By -->
-                            <div class="mb-1 col-3 filter-item" id="filter-end-date-div" style="display: none;">
+                            <div class="mb-1 col-md-3 filter-item" id="filter-end-date-div" style="display: none;">
                                 <label class="form-label" for="end_date">End Date By</label>
                                 <input type="text" class="form-control dt-date flatpickr-range dt-input"
                                     id="end_date" placeholder="Start Date to End Date" name="end_date" />
@@ -142,7 +142,7 @@
                             </div>
 
 
-                            <div class="mb-1 col-3 filter-item" id="filter-accepted-task-date-div"
+                            <div class="mb-1 col-md-3 filter-item" id="filter-accepted-task-date-div"
                                 style="display: none;">
                                 <label class="form-label" for="accepted_task_date">Accepted Task Date</label>
                                 <input type="text" class="form-control dt-date flatpickr-range dt-input"
@@ -175,7 +175,7 @@
                     </div>
 
 
-                    <table class="user-list-table table " id="tasks-table">
+                    <table class="user-list-table table table-responsive" id="tasks-table">
                         <thead>
                             <tr class="">
 
@@ -630,6 +630,7 @@
                 // pageLength: 10,
                 filter: true,
                 deferRender: true,
+                responsive: true,
                 // scrollY: 200,
                 scrollCollapse: true,
                 scroller: true,

@@ -89,7 +89,7 @@
                                 @endif
 
                             </div>
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-6 col-sm-12 mb-1 mt-1">
                                 <label class="form-label" for="title">
                                     Title<span class="red">*</span>
                                 </label>
@@ -103,7 +103,7 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-6 col-sm-12 mb-1 mt-1">
                                 <label class="form-label" for="subject">
                                     Subject<span class="red">*</span>
                                 </label>
@@ -470,102 +470,38 @@
                         @if ($SubTaskData == [])
                             <p>No subtasks found.</p>
                         @else
-                            <div class="table-responsive">
-                                <table class="table table-bordered text-center mx-auto">
-                                    <thead>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center mx-auto" id="sub_tasks_list">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Task Number</th>
+                                        <th>Assigned To</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($SubTaskData as $subtask)
                                         <tr>
-                                            <th>Task Number</th>
-                                            {{-- <th>Assigned by</th> --}}
-                                            <th>Assigned To</th>
-                                            <th>Due Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
+                                            <td>
+                                                <!-- Action buttons here -->
+                                                <!-- Example: -->
+                                                <a class="btn btn-primary btn-sm edit-btn" data-subtask-id="{{ $subtask->id }}" title="Edit">
+                                                    <i class="feather-icon" data-feather="edit"></i>
+                                                </a>
+                                            </td>
+                                            <td>{{ $subtask->task_number }}</td>
+                                            <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}</td>
+                                            <td>{{ $subtask->taskStatus->displayname }}</td>
+
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($SubTaskData as $subtask)
-                                            <tr>
-                                                <td>{{ $subtask->task_number }}</td>
-                                                {{-- <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
-                                                </td> --}}
-                                                <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}
-                                                </td>
-                                                <td>{{ $subtask->taskStatus->displayname }}</td>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
-                                                <td>
-                                                    <!-- Button to trigger edit action -->
-                                                    <a class="btn btn-primary btn-sm edit-btn"
-                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="Edit Subtask">
-                                                        <i class="feather-icon" data-feather="edit"></i>
-                                                    </a>
-
-
-                                                    @if (auth()->user()->can('task-reassign') ||
-                                                            (Auth::user()->id === $subtask->created_by && !in_array($subtask->task_status, [7, 4])))
-                                                        <a class="btn btn-warning btn-sm reassign-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-old-user-id="{{ $subtask->user_id }}"
-                                                            data-bs-placement="top" title="Reassign Task"
-                                                            data-bs-target="#reassignTaskModal" data-bs-toggle="modal">
-                                                            <i class="feather-icon" data-feather="users"></i>
-                                                        </a>
-                                                    @endif
-                                                    @if (in_array($subtask->task_status, [7]) && !isset($subtask->rating))
-                                                        <a class="btn btn-primary btn-sm feedback-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Feedback & Ratings">
-                                                            <i class="feather-icon" data-feather="message-circle"></i>
-                                                        </a>
-                                                    @endif
-                                                    {{-- {{ dd($subtask->id); }} --}}
-                                                    {{-- <!-- Button to trigger AJAX request to mark as completed -->
-                                                    <a class="btn btn-success btn-sm mark-completed-btn"
-                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="Mark as Completed">
-                                                        <i class="feather-icon" data-feather="check-circle"></i>
-                                                    </a> --}}
-                                                    <!-- Button to reopen the task when status is 7 or 4 -->
-                                                    {{-- @if (in_array($subtask->task_status, [7, 4]))
-                                                        <a class="btn btn-warning btn-sm reopen-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Reopen Task">
-                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
-                                                        </a>
-                                                    @endif --}}
-
-
-                                                    @if (in_array($subtask->task_status, [7, 4]))
-                                                        <a class="btn btn-warning btn-sm reopen-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Reopen Task">
-                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
-                                                        </a>
-                                                    @endif
-                                                    <!-- Button to remove user from task (only visible to creator) -->
-                                                    @if (Auth::user()->id === $subtask->created_by)
-                                                        <a class="btn btn-danger btn-sm remove-user-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-user-id="{{ $subtask->user->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Remove User">
-                                                            <i class="feather-icon" data-feather="user-x"></i>
-
-                                                        </a>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-
-                                </table>
-                            </div>
 
                     </div>
                     @endif
@@ -745,6 +681,23 @@
     <script src="{{ asset(mix('js/scripts/extensions/ext-component-ratings.js')) }}"></script>
 @endsection
 @section('page-script')
+<script>
+$(document).ready(function () {
+    $('#sub_tasks_list').DataTable({
+        responsive: true, // Enables responsive design
+        autoWidth: true, // Prevents fixed column widths
+        columnDefs: [
+            { orderable: false, targets: -1 }, // Makes the last column non-sortable
+        ],
+        language: {
+            search: "Search Tasks:", // Customizes the search input placeholder
+            lengthMenu: "Show _MENU_ entries per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ tasks",
+        },
+    });
+});
+
+</script>
     <script>
         $(document).ready(function() {
             var onSetEvents = $(".onset-event-ratings");

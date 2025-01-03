@@ -56,10 +56,10 @@
                                     <label class="form-check-label" for="task">Task</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6  d-md-block d-flex col-sm-12 ">
                                 @if ($task != '')
-                                    <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
-                                    <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
+                                    <a class=" btn-sm btn-primary me-1"> Task # {{ $task->id }}</a>
+                                    <a class=" btn-sm btn-primary me-1"> Task Created By {{ $task->creator->first_name }}
                                         {{ $task->creator->last_name }}</a>
                                 @endif
                                 @if ($hasAcceptedTask)
@@ -81,7 +81,7 @@
 
                             </div>
 
-                            <div class="col-md-6 col-sm-12 mb-1">
+                            <div class="col-md-6 col-sm-12 mb-1 mt-1">
                                 <label class="form-label" for="title">
                                     Title<span class="red">*</span></label>
                                 <input readonly type="text" id="title" class="form-control"
