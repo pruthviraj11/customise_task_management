@@ -88,6 +88,7 @@
                                     <a class=" btn-sm btn-primary "> Task # {{ $task->id }}</a>
                                     <a class=" btn-sm btn-primary "> Task Created By {{ $task->creator->first_name }}
                                         {{ $task->creator->last_name }}</a>
+                                    <a class=" btn-sm btn-primary "> Task Created At : {{ $task->created_at }}</a>
                                 @endif
 
                             </div>
@@ -1166,8 +1167,9 @@
             });
         });
     </script> --}}
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var startDateInput = document.getElementById('start_date');
             var dueDateInput = document.getElementById('due_date_form');
 
@@ -1182,25 +1184,33 @@
             var oneWeekAgo = new Date();
             oneWeekAgo.setDate(today.getDate() - 7);
 
-            // Set the min and max attributes for the start date
+            // Check if this is creating a new task or editing
+            var isNewTask = <?= json_encode($page_data['form_title'] == 'Add New Task'); ?>;
+
+            // Set the min attribute for the start date
             startDateInput.min = formatDate(oneWeekAgo);
 
-            // Set initial minimum value for due date
-            if (startDateInput.value) {
-                dueDateInput.min = startDateInput.value;
+            // Set restrictions for due date based on the task mode
+            if (isNewTask) {
+                dueDateInput.min = formatDate(oneWeekAgo); // Restrict to the last 7 days
+            } else {
+                dueDateInput.min = ""; // No restriction for edit mode
             }
 
-            // Update due date's minimum when start date changes
-            startDateInput.addEventListener('change', function() {
+            // Update due date's minimum when start date changes (for new tasks only)
+            startDateInput.addEventListener('change', function () {
                 var selectedStartDate = new Date(this.value);
-                dueDateInput.min = formatDate(selectedStartDate); // Update min value
-                dueDateInput.value = ''; // Clear due date if start date changes
+                if (isNewTask) {
+                    dueDateInput.min = formatDate(selectedStartDate); // Update min value
+                }
             });
 
-            // Ensure due date cannot be less than start date on load
-            if (dueDateInput.value && new Date(dueDateInput.value) < new Date(startDateInput.value)) {
-                dueDateInput.value = ''; // Clear invalid value
-            }
+            // Optional: Reset invalid due date if it conflicts with start date
+            dueDateInput.addEventListener('blur', function () {
+                if (this.value && new Date(this.value) < new Date(startDateInput.value)) {
+                    this.value = ''; // Clear invalid value
+                }
+            });
         });
     </script>
 

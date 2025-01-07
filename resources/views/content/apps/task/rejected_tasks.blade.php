@@ -40,7 +40,7 @@
 
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    <table class="rejected-list-table table dt-responsive" id="rejected-items-table">
+                    <table class="rejected-list-table table " id="rejected-items-table">
                         <thead>
                             <tr>
                                 <th>Actions</th>

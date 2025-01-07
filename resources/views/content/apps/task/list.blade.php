@@ -630,9 +630,9 @@
                 // pageLength: 10,
                 filter: true,
                 deferRender: true,
-                responsive: true,
+                // responsive: true,
                 // scrollY: 200,
-                scrollCollapse: true,
+                // scrollCollapse: true,
                 scroller: true,
                 "searching": true,
                 buttons: [{

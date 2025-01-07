@@ -78,7 +78,6 @@
                                     </a>
                                 @endif
 
-
                             </div>
 
                             <div class="col-md-6 col-sm-12 mb-1 mt-1">
