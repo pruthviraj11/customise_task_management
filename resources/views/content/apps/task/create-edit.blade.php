@@ -487,12 +487,70 @@
                                         @foreach ($SubTaskData as $subtask)
                                             <tr>
                                                 <td>
-                                                    <!-- Action buttons here -->
-                                                    <!-- Example: -->
+                                                    <!-- Button to trigger edit action -->
                                                     <a class="btn btn-primary btn-sm edit-btn"
-                                                        data-subtask-id="{{ $subtask->id }}" title="Edit">
+                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Edit Subtask">
                                                         <i class="feather-icon" data-feather="edit"></i>
                                                     </a>
+
+
+                                                    @if (auth()->user()->can('task-reassign') ||
+                                                            (Auth::user()->id === $subtask->created_by && !in_array($subtask->task_status, [7, 4])))
+                                                        <a class="btn btn-warning btn-sm reassign-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-old-user-id="{{ $subtask->user_id }}"
+                                                            data-bs-placement="top" title="Reassign Task"
+                                                            data-bs-target="#reassignTaskModal" data-bs-toggle="modal">
+                                                            <i class="feather-icon" data-feather="users"></i>
+                                                        </a>
+                                                    @endif
+                                                    @if (in_array($subtask->task_status, [7]) && !isset($subtask->rating))
+                                                        <a class="btn btn-primary btn-sm feedback-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Feedback & Ratings">
+                                                            <i class="feather-icon" data-feather="message-circle"></i>
+                                                        </a>
+                                                    @endif
+                                                    {{-- {{ dd($subtask->id); }} --}}
+                                                    {{-- <!-- Button to trigger AJAX request to mark as completed -->
+                                                    <a class="btn btn-success btn-sm mark-completed-btn"
+                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Mark as Completed">
+                                                        <i class="feather-icon" data-feather="check-circle"></i>
+                                                    </a> --}}
+                                                    <!-- Button to reopen the task when status is 7 or 4 -->
+                                                    {{-- @if (in_array($subtask->task_status, [7, 4]))
+                                                        <a class="btn btn-warning btn-sm reopen-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Reopen Task">
+                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
+                                                        </a>
+                                                    @endif --}}
+
+
+                                                    @if (in_array($subtask->task_status, [7, 4]))
+                                                        <a class="btn btn-warning btn-sm reopen-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Reopen Task">
+                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
+                                                        </a>
+                                                    @endif
+                                                    <!-- Button to remove user from task (only visible to creator) -->
+                                                    @if (Auth::user()->id === $subtask->created_by)
+                                                        <a class="btn btn-danger btn-sm remove-user-btn"
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            data-user-id="{{ $subtask->user->id }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Remove User">
+                                                            <i class="feather-icon" data-feather="user-x"></i>
+
+                                                        </a>
+                                                    @endif
                                                 </td>
                                                 <td>{{ $subtask->task_number }}</td>
                                                 <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}</td>
