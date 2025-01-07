@@ -39,11 +39,11 @@
     @endif
     @php
         if ($page_data['form_title'] == 'Add New Task') {
-            // $isCreator = $task && $task->creator->id == auth()->user()->id;
+            // If the page title is 'Add New Task', grant access unconditionally
             $isCreator = true;
         } else {
-            // $isCreator = true;
-            $isCreator = $task && $task->creator->id == auth()->user()->id;
+            // Check if the user is the creator of the task, or if the user has ID 1 (admin)
+            $isCreator = auth()->user()->id == 1 || ($task && $task->creator->id == auth()->user()->id);
         }
 
     @endphp
@@ -470,37 +470,38 @@
                         @if ($SubTaskData == [])
                             <p>No subtasks found.</p>
                         @else
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center mx-auto" id="sub_tasks_list">
-                                <thead>
-                                    <tr>
-                                        <th>Action</th>
-                                        <th>Task Number</th>
-                                        <th>Assigned To</th>
-                                        <th>Due Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($SubTaskData as $subtask)
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center mx-auto" id="sub_tasks_list">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <!-- Action buttons here -->
-                                                <!-- Example: -->
-                                                <a class="btn btn-primary btn-sm edit-btn" data-subtask-id="{{ $subtask->id }}" title="Edit">
-                                                    <i class="feather-icon" data-feather="edit"></i>
-                                                </a>
-                                            </td>
-                                            <td>{{ $subtask->task_number }}</td>
-                                            <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}</td>
-                                            <td>{{ $subtask->taskStatus->displayname }}</td>
-
+                                            <th>Action</th>
+                                            <th>Task Number</th>
+                                            <th>Assigned To</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($SubTaskData as $subtask)
+                                            <tr>
+                                                <td>
+                                                    <!-- Action buttons here -->
+                                                    <!-- Example: -->
+                                                    <a class="btn btn-primary btn-sm edit-btn"
+                                                        data-subtask-id="{{ $subtask->id }}" title="Edit">
+                                                        <i class="feather-icon" data-feather="edit"></i>
+                                                    </a>
+                                                </td>
+                                                <td>{{ $subtask->task_number }}</td>
+                                                <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}</td>
+                                                <td>{{ $subtask->taskStatus->displayname }}</td>
+
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
 
 
                     </div>
@@ -681,23 +682,24 @@
     <script src="{{ asset(mix('js/scripts/extensions/ext-component-ratings.js')) }}"></script>
 @endsection
 @section('page-script')
-<script>
-$(document).ready(function () {
-    $('#sub_tasks_list').DataTable({
-        responsive: true, // Enables responsive design
-        autoWidth: true, // Prevents fixed column widths
-        columnDefs: [
-            { orderable: false, targets: -1 }, // Makes the last column non-sortable
-        ],
-        language: {
-            search: "Search Tasks:", // Customizes the search input placeholder
-            lengthMenu: "Show _MENU_ entries per page",
-            info: "Showing _START_ to _END_ of _TOTAL_ tasks",
-        },
-    });
-});
-
-</script>
+    <script>
+        $(document).ready(function() {
+            $('#sub_tasks_list').DataTable({
+                responsive: true, // Enables responsive design
+                autoWidth: true, // Prevents fixed column widths
+                columnDefs: [{
+                        orderable: false,
+                        targets: -1
+                    }, // Makes the last column non-sortable
+                ],
+                language: {
+                    search: "Search Tasks:", // Customizes the search input placeholder
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ tasks",
+                },
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             var onSetEvents = $(".onset-event-ratings");

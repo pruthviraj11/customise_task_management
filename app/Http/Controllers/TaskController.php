@@ -830,7 +830,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -898,7 +898,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
 
     }
@@ -1677,7 +1677,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -1733,7 +1733,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
 
@@ -2405,7 +2405,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
 
@@ -2465,7 +2465,7 @@ class TaskController extends Controller
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
-
+    
                 })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
@@ -2596,7 +2596,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
 
@@ -5143,21 +5143,17 @@ class TaskController extends Controller
             $id = decrypt($encrypted_id);
             $task = $this->taskService->gettask($id);
             $Maintask = $this->taskService->gettask($id);
-            if ($task && $task->creator->id == auth()->user()->id) {
+            if (($task && $task->creator->id == auth()->user()->id)) {
                 // dd($task);
                 $creator = 1;
                 $taskAss = '';
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
-            } elseif(auth()->user()->id == 1) {
-                // dd('hii');
-                $task = $this->taskService->gettaskAssigne($id);
-                $taskAss = $this->taskService->gettaskAssigneAssOne($id);
-                $getTaskComments = Comments::where('task_id', $task->task_id)->get();
-                // dd($getTaskComments);
+            } elseif (auth()->user()->id == 1) {
                 $creator = 1;
-                // dd($task);
-            }else{
+                $taskAss = '';
+                $getTaskComments = Comments::where('task_id', $task->id)->get();
+            } else {
                 $task = $this->taskService->gettaskAssigne($id);
                 $taskAss = $this->taskService->gettaskAssigneAss($id);
                 $getTaskComments = Comments::where('task_id', $task->task_id)->get();
@@ -5166,31 +5162,40 @@ class TaskController extends Controller
             }
 
             // dd($task);
+            if (auth()->user()->id == 1) {
+                $SubTaskData = TaskAssignee::where('task_id', $task->id)
+
+                    ->where(function ($query) use ($task) {
+                        // Include tasks assigned to or created by the task creator
+                        $query->orWhere('created_by', $task->creator->id)
+                            ->orWhere('user_id', $task->creator->id);
+                    })
+                    // Exclude tasks where user_id is the logged-in user
+                    // ->where('user_id', '!=', Auth::user()->id)
+                    ->get()
+                    ->unique('task_number') // Remove duplicate subtasks based on task_number
+                    ->sortBy(function ($subtask) {
+                        // Remove hyphen and cast the task number to integer for correct sorting
+                        return (int) str_replace('-', '', $subtask->task_number);
+                    });
+
+            } else {
+                $SubTaskData = TaskAssignee::where('task_id', $task->id)
+                    ->where(function ($query) {
+                        $query->where('created_by', Auth::user()->id)
+                            ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
+                    })
+                    // ->where('user_id', '!=', Auth::user()->id)  // Exclude tasks where user_id is the logged-in user
+                    ->get()
+                    ->unique('task_number')  // Remove duplicate subtasks based on task_number
+                    ->sortBy(function ($subtask) {
+                        // Remove hyphen and cast the task number to integer for correct sorting
+                        return (int) str_replace('-', '', $subtask->task_number);
+                    });
+            }
 
 
-            // $SubTaskData = TaskAssignee::where('task_id', $task->id)
-            //     ->where(function ($query) {
-            //         $query->where('created_by', Auth::user()->id)
-            //             ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
-            //     })
-            //     ->get()
-            //     ->unique('task_number')  // Remove duplicate subtasks based on task_number
-            //     ->sortBy(function ($subtask) {
-            //         // Remove hyphen and cast the task number to integer for correct sorting
-            //         return (int) str_replace('-', '', $subtask->task_number);
-            //     });
-            $SubTaskData = TaskAssignee::where('task_id', $task->id)
-                ->where(function ($query) {
-                    $query->where('created_by', Auth::user()->id)
-                        ->orWhere('user_id', Auth::user()->id); // Check for either created_by or user_id
-                })
-                ->where('user_id', '!=', Auth::user()->id)  // Exclude tasks where user_id is the logged-in user
-                ->get()
-                ->unique('task_number')  // Remove duplicate subtasks based on task_number
-                ->sortBy(function ($subtask) {
-                    // Remove hyphen and cast the task number to integer for correct sorting
-                    return (int) str_replace('-', '', $subtask->task_number);
-                });
+
 
 
             // dd($SubTaskData);
@@ -5578,7 +5583,7 @@ class TaskController extends Controller
             $task = Task::findOrFail($id);
             $currentStatus_creator = $task->task_status;
             // Prepare task data
-            if ($task && $task->creator->id == auth()->user()->id) {
+            if (($task && $task->creator->id == auth()->user()->id) || auth()->user()->id == 1) {
                 // dd($request->get('due_date'));
                 $taskData = [
                     'ticket' => $request->get('task_type') == '1' ? 1 : 0,
@@ -7673,7 +7678,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
 
@@ -8183,7 +8188,7 @@ class TaskController extends Controller
                 ->addColumn('pin_task', function ($row) {
                     return '-';
                 })
-                ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+                ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
                 ->make(true);
         }
 
@@ -8366,7 +8371,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
     public function markAsCompleted(Request $request, $subtaskId)
