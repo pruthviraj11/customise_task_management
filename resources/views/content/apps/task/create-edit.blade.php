@@ -73,12 +73,14 @@
                                         @if ($task == '') checked @endif>
                                     <label class="form-check-label" for="task">Task</label>
                                 </div>
-                                <div class="form-check m-2 form-check-success">
-                                    <input type="checkbox" class="form-check-input" id="recurring" name="recurring"
-                                        value="1"
-                                        {{ old('recurring') == '1' || ($task != '' && $task->recurring == 1) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="recurring">Recurring</label>
-                                </div>
+                                @if ($page_data['form_title'] == 'Add New Task')
+                                    <div class="form-check m-2 form-check-success">
+                                        <input type="checkbox" class="form-check-input" id="recurring" name="recurring"
+                                            value="1"
+                                            {{ old('recurring') == '1' || ($task != '' && $task->recurring == 1) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="recurring">Recurring</label>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="col-md-6">
