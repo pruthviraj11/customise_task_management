@@ -47,6 +47,20 @@ class TaskRepository
 
     }
 
+    public function gettaskAssigneAssOne($id)
+    {
+
+        // return Task::with(['attachments', 'assignees', 'users'])->where('tasks.id', $id)->first();   // dd($id);
+        // return TaskAssignee::where('task_id', $id)->where('user_id', auth()->user()->id);
+        return TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.subject', 'tasks.project_id', 'tasks.start_date', 'tasks.priority_id', 'tasks.description')
+            ->with(['task.attachments', 'task.assignees', 'task.users'])
+            ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->where('task_assignees.task_id', $id)
+            // ->where('task_assignees.user_id', auth()->user()->id)
+            ->first();
+
+    }
+
     public function findtaskrecuring($id)
     {
         // dd($id);

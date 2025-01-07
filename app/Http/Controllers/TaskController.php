@@ -5149,13 +5149,20 @@ class TaskController extends Controller
                 $taskAss = '';
                 $getTaskComments = Comments::where('task_id', $task->id)->get();
                 // $getTaskComments = Task::where('id', $task->task_id)->first();
-            } else {
+            } elseif(auth()->user()->id == 1) {
+                // dd('hii');
+                $task = $this->taskService->gettaskAssigne($id);
+                $taskAss = $this->taskService->gettaskAssigneAssOne($id);
+                $getTaskComments = Comments::where('task_id', $task->task_id)->get();
+                // dd($getTaskComments);
+                $creator = 1;
+                // dd($task);
+            }else{
                 $task = $this->taskService->gettaskAssigne($id);
                 $taskAss = $this->taskService->gettaskAssigneAss($id);
                 $getTaskComments = Comments::where('task_id', $task->task_id)->get();
                 // dd($getTaskComments);
                 $creator = 0;
-                // dd($task);
             }
 
             // dd($task);

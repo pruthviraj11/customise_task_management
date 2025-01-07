@@ -36,6 +36,10 @@ class TaskService
     {
         $task = $this->taskRepository->findassigneesAss($id);
         return $task;
+    } public function gettaskAssigneAssOne($id)
+    {
+        $task = $this->taskRepository->gettaskAssigneAssOne($id);
+        return $task;
     }
 
     public function gettaskrecuring($id)
