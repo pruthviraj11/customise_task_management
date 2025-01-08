@@ -78,9 +78,9 @@
                                     <label class="form-label" for="title">
                                         Title<span class="red">*</span>
                                     </label>
-                                    <input type="text" readonly id="title" class="form-control" placeholder="Enter Task Name"
-                                        name="title" value="{{ old('title') ?? ($task != '' ? $task->title : '') }}"
-                                        required>
+                                    <input type="text" readonly id="title" class="form-control"
+                                        placeholder="Enter Task Name" name="title"
+                                        value="{{ old('title') ?? ($task != '' ? $task->title : '') }}" required>
                                     <span class="text-danger">
                                         @error('title')
                                             {{ $message }}
@@ -92,9 +92,9 @@
                                     <label class="form-label" for="subject">
                                         Subject<span class="red">*</span>
                                     </label>
-                                    <input type="text" readonly id="subject" class="form-control" placeholder="Enter subject"
-                                        name="subject" value="{{ old('subject') ?? ($task != '' ? $task->subject : '') }}"
-                                        required>
+                                    <input type="text" readonly id="subject" class="form-control"
+                                        placeholder="Enter subject" name="subject"
+                                        value="{{ old('subject') ?? ($task != '' ? $task->subject : '') }}" required>
                                     <span class="text-danger">
                                         @error('subject')
                                             {{ $message }}
@@ -118,7 +118,7 @@
                                     });
                                 </script>
                                 <div class="col-md-6 col-sm-12 mb-1">
-                                    <label class="form-label"  for="project_id">Project</label><span class="red">*</span>
+                                    <label class="form-label" for="project_id">Project</label><span class="red">*</span>
                                     <select id="project_id" disable class="form-select select2" name="project_id" required>
                                         <option value="">Select Project</option>
                                         @foreach ($projects as $project)
@@ -175,9 +175,10 @@
 
 
                                 <div class="col-md-3 col-sm-12 mb-1 position-relative">
-                                    <label class="form-label"  for="start_date">Start Date</label><span
+                                    <label class="form-label" for="start_date">Start Date</label><span
                                         class="red">*</span>
-                                    <input type="date" readonly id="start_date" class="form-control" name="start_date"
+                                    <input type="date" readonly id="start_date" class="form-control"
+                                        name="start_date"
                                         value="{{ old('start_date') ?? ($task != '' ? $task->start_date : date('Y-m-d')) }}"
                                         required>
                                     <span class="text-danger">
@@ -191,7 +192,8 @@
                                 <input type="hidden" name="recurring_type" value="{{ $task->recurring_type }}">
                                 <div id="recurring_options" class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="recurring_type">Recurring Type</label>
-                                    <select id="recurring_type" disabled class="form-control select2" name="recurring_type">
+                                    <select id="recurring_type" disabled class="form-control select2"
+                                        name="recurring_type">
                                         <option value="daily"
                                             {{ old('recurring_type', $task->recurring_type) == 'daily' ? 'selected' : '' }}>
                                             Daily
@@ -311,6 +313,14 @@
                                         @enderror
                                     </span>
                                 </div>
+                                <div class="col-md-12 col-sm-12 mb-1">
+
+                                <a class="btn btn-danger btn-sm cancel-btn" data-task-id="{{ $task->id }}"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel">Cancel
+                                    <i class="feather-icon" data-feather="x-circle"></i>
+                                </a>
+                                <div class="col-md-12 col-sm-12 mb-1">
+
                             </div>
                         </div>
                     </div>
@@ -362,6 +372,56 @@
             }
             return password;
         }
+    </script>
+
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            $('#status').select2();
+
+            $('.cancel-btn').on('click', function() {
+                var subtaskId = $(this).data('task-id'); // Get the subtask ID
+                // Set the subtask ID in the hidden field or any element you want to store it
+                $('#subtaskIdInput').val(subtaskId); // Save the subtask ID to the hidden input
+
+                // Show SweetAlert confirmation before proceeding
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You are about to Cancel this task.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Cancel it!',
+                    cancelButtonText: 'No, Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route('app-task-recurring_cancel', ['encrypted_id' => 'subtaskId']) }}'
+                            .replace('subtaskId', subtaskId),
+                            method: 'GET',
+                            success: function(response) {
+                                if (response.success) {
+                                Swal.fire(
+                                    'Cancelled!',
+                                    'The Recurring Task has been canceled.',
+                                    'success'
+                                );
+                                // Reload the page after success
+                                location.reload();
+                            }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an issue fetching the subtask data.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
     </script>
     <script>
         $(document).ready(function() {

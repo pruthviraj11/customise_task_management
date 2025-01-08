@@ -121,6 +121,16 @@
             ]
         },
         {
+            "url": "app/task/overall_task",
+            "name": "OverAll Task",
+            "icon": "clipboard",
+            "slug": "app-task-overall_task",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
             "url": "app/roles/list",
             "name": "Roles",
             "icon": "lock",

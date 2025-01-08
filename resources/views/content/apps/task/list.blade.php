@@ -472,6 +472,9 @@
             @elseif ($type === 'completed_task') {
                     ajaxUrl = "{{ route('app-task-get-completed_task') }}";
                 }
+            @elseif ($type === 'overall_task') {
+                    ajaxUrl = "{{ route('app-task-get-overall_task') }}";
+                }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
                 }
@@ -656,7 +659,7 @@
                         d.department = $('#filter-department').val();
                         d.assignees = $('#filter-assignee').val();
                         d.dt_date = $('#dt_date').val();
-                        d.fild_search=$('#select-filter').val();
+                        d.fild_search = $('#select-filter').val();
                         d.task = $('#task').val();
                         d.accepted_task_date = $('#accepted_task_date').val();
                         d.end_date = $('#end_date').val();
