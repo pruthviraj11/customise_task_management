@@ -314,13 +314,11 @@
                                     </span>
                                 </div>
                                 <div class="col-md-12 col-sm-12 mb-1">
-
-                                <a class="btn btn-danger btn-sm cancel-btn" data-task-id="{{ $task->id }}"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel">Cancel
-                                    <i class="feather-icon" data-feather="x-circle"></i>
-                                </a>
-                                <div class="col-md-12 col-sm-12 mb-1">
-
+                                    <a class="btn btn-danger btn-sm cancel-btn" data-task-id="{{ $task->id }}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel">Cancel
+                                        <i class="feather-icon" data-feather="x-circle"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -397,18 +395,18 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             url: '{{ route('app-task-recurring_cancel', ['encrypted_id' => 'subtaskId']) }}'
-                            .replace('subtaskId', subtaskId),
+                                .replace('subtaskId', subtaskId),
                             method: 'GET',
                             success: function(response) {
                                 if (response.success) {
-                                Swal.fire(
-                                    'Cancelled!',
-                                    'The Recurring Task has been canceled.',
-                                    'success'
-                                );
-                                // Reload the page after success
-                                location.reload();
-                            }
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        'The Recurring Task has been canceled.',
+                                        'success'
+                                    );
+                                    // Reload the page after success
+                                    location.reload();
+                                }
                             },
                             error: function(xhr, status, error) {
                                 Swal.fire(

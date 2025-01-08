@@ -5437,11 +5437,9 @@ class TaskController extends Controller
                 ->where('id', '!=', 1)
                 ->get();
 
-
             $departmentslist = $this->taskService->getAlltask();
             $data['department'] = Task::all();
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
-            // dd($creator);
 
             return view('.content.apps.task.recurring-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds', 'attachmentsrec', 'NotCompletedtask'));
 
