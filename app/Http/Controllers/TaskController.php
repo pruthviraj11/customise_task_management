@@ -6,6 +6,7 @@ use App\Http\Requests\Task\CreateTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\Project;
+use Cache;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Department;
@@ -2307,12 +2308,11 @@ class TaskController extends Controller
 
         if ($userId == 1) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_status', ['4', '7']);
+            $query->whereNull('deleted_at');
         } else {
             // User-specific task filters
             $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
         }
-
         $tasks = $query->get();
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
