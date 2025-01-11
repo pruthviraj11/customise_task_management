@@ -831,7 +831,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+    
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1636,7 +1636,7 @@ class TaskController extends Controller
             $query->where('project_id', $project);
         }
 
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // $satusData = TaskAssignee::where('')
@@ -1678,7 +1678,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-
+    
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -1781,7 +1781,7 @@ class TaskController extends Controller
 
 
 
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // $satusData = TaskAssignee::where('')
@@ -1916,7 +1916,7 @@ class TaskController extends Controller
                 });
         }
 
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
@@ -2047,7 +2047,7 @@ class TaskController extends Controller
                 });
         }
 
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
@@ -2178,7 +2178,7 @@ class TaskController extends Controller
                 });
         }
 
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
@@ -2313,7 +2313,7 @@ class TaskController extends Controller
             // User-specific task filters
             $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
         }
-        $tasks = $query->get();
+        $tasks = $query;
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
@@ -2430,8 +2430,7 @@ class TaskController extends Controller
                     // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
-                ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
-                ->get();
+                ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         } else {
 
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -2441,8 +2440,7 @@ class TaskController extends Controller
                     // })
                     ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
             })
-                ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
-                ->get();
+                ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         }
 
 
@@ -2600,7 +2598,7 @@ class TaskController extends Controller
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
-
+    
                 })->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
@@ -2638,7 +2636,7 @@ class TaskController extends Controller
             });
         }
 
-        return DataTables::of($tasks->get())
+        return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 $encryptedId = encrypt($row->task_id);
 
@@ -7761,7 +7759,7 @@ class TaskController extends Controller
         }
 
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
-        $tasks = $query->get();
+        $tasks = $query;
         // Return the data using DataTables, add custom columns
         return DataTables::of($tasks)
 
@@ -8249,35 +8247,56 @@ class TaskController extends Controller
     {
         if ($request->ajax()) {
 
-            $rejectedTasks = TaskAssignee::whereNotIn('task_status', ['4', '7'])->where('status', 2)  // Filter for rejected status (2)
-                ->orderBy('id', 'desc')  // Order by task_assignees ID in descending order
-                ->get();
+            // $rejectedTasks = TaskAssignee::whereNotIn('task_status', ['4', '7'])->where('status', 2)  // Filter for rejected status (2)
+            //     ->orderBy('id', 'desc'); // Order by task_assignees ID in descending order
+
+
+            // // Check if the current user is admin (id = 1)
+            // if (auth()->user()->id == 1) {
+            //     // Admin can view all rejected tasks
+            //     $rejectedTasks = $rejectedTasks;
+            // } else {
+            //     // dd($request->all());
+            //     if ($request->filter == 'rejected_my_task') {
+            //         // If the filter is 'rejected_by_me', show tasks created by the current user
+            //         $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
+            //         // dd("A");
+            //     } else {
+            //         // dd("B");
+            //         $rejectedTasks = $rejectedTasks->where('user_id', auth()->user()->id);
+
+            //     }
+            // }
+
+            // // Exclude tasks where both 'created_by' and 'user_id' are the logged-in user
+            // $rejectedTasks = $rejectedTasks->filter(function ($task) {
+            //     return !($task->created_by == auth()->user()->id && $task->user_id == auth()->user()->id);
+            // });
+
+
+            // Start building the query
+            $rejectedTasks = TaskAssignee::whereNotIn('task_status', ['4', '7']) // Filter for tasks with task_status not 4 or 7
+                ->where('status', 2)  // Filter for tasks with status 2 (rejected)
+                ->orderBy('id', 'desc'); // Order by task_assignees ID in descending order
 
             // Check if the current user is admin (id = 1)
-            if (auth()->user()->id == 1) {
-                // Admin can view all rejected tasks
-                $rejectedTasks = $rejectedTasks;
-            } else {
-                // dd($request->all());
+            if (auth()->user()->id != 1) {
+                // Non-admin users need to apply additional filters
                 if ($request->filter == 'rejected_my_task') {
-                    // If the filter is 'rejected_by_me', show tasks created by the current user
+                    // Filter for tasks created by the current user
                     $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
-                    // dd("A");
                 } else {
-                    // dd("B");
+                    // Filter for tasks assigned to the current user
                     $rejectedTasks = $rejectedTasks->where('user_id', auth()->user()->id);
-
                 }
             }
 
             // Exclude tasks where both 'created_by' and 'user_id' are the logged-in user
-            $rejectedTasks = $rejectedTasks->filter(function ($task) {
-                return !($task->created_by == auth()->user()->id && $task->user_id == auth()->user()->id);
+            $rejectedTasks = $rejectedTasks->where(function ($query) {
+                $query->where('created_by', '!=', auth()->user()->id)
+                    ->orWhere('user_id', '!=', auth()->user()->id);
             });
-
-
-
-            return datatables()->of($rejectedTasks)
+            return DataTables::of($rejectedTasks)
                 ->addColumn('actions', function ($row) {
                     $encryptedId = encrypt($row->task_id);
 
