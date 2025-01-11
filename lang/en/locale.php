@@ -3,6 +3,8 @@
 return [
     "Apps & Pages" => "Apps & Pages",
     "Dashboards" => "Dashboards",
+    "Reports" => "Reports",
+
     "Department" => "Department",
     "Locations" => "Locations",
     "Task Accepted" => "Task Accepted",
