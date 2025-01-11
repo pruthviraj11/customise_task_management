@@ -401,6 +401,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     //Reports
     Route::get('/reports/g7-data', [ReportsController::class, 'getG7Data'])->name('reports.g7-data');
+    Route::get('/reports/userwise-data', [ReportsController::class, 'userWiseData'])->name('reports.userwise-data');
 
     //
 
