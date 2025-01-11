@@ -115,6 +115,14 @@ class ReportsController extends Controller
             $overDuePercentage[$user->id] = ($overdueCounts[$user->id] / $totalTaskCounts[$user->id]) * 100;
         }
 
+        /// Task Added On Reporting Date
+        foreach ($usersWithG7 as $user) {
+            $task_added_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
+            ->where('user_id', $user->id)
+            ->where('status', 1)
+            ->count();
+        }
+
 
 
         $data = $usersWithG7->map(function ($user) use ($conceptualizationCounts, $scopeDefineCounts, $inExecutionCounts, $overdueCounts, $completedCounts, $totalTaskCounts, $completedPercentage, $overDuePercentage, $task_added_reporting_date) {
