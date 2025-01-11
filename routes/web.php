@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectStatusController;
 use App\Http\Controllers\TaskController;
@@ -233,6 +234,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     // Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard-index');
 
     Route::get('dashboard_customized', [DashboardCUstomizedController::class, 'index'])->name('dashboard-index');
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports-index');
 
     Route::get('activity', [DashboardController::class, 'activity'])->name('activity-index');
 
@@ -397,6 +399,10 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('users-by-department/{department_id}', [TaskController::class, 'getUsersByDepartment'])->name('app-users-by-department');
     //Task End
 
+    //Reports
+    Route::get('/reports/g7-data', [ReportsController::class, 'getG7Data'])->name('reports.g7-data');
+
+    //
 
     // Task List Start
     Route::get('task/accepted', [TaskController::class, 'index'])->name('app-task-accepted');
