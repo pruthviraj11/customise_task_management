@@ -208,7 +208,6 @@ class UsersController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
-        // dd($request->all());
         try {
             $userData['username'] = $request->get('username');
             $userData['first_name'] = $request->get('first_name');
@@ -221,7 +220,7 @@ class UsersController extends Controller
             $userData['location_id'] = $request->get('location_id');
 
             $userData['designation'] = $request->get('designation');
-            $userData['G7'] = $request->get('G7');
+            $userData['Grad'] = $request->get('Grad');
             $userData['dob'] = $request->get('dob');
             $userData['address'] = $request->get('address');
             $userData['branch'] = $request->get('branch');
@@ -368,6 +367,8 @@ class UsersController extends Controller
     public function update(UpdateUserRequest $request, $encrypted_id)
     {
         try {
+        // dd($request->all());
+
             $id = decrypt($encrypted_id);
             $userData['username'] = $request->get('username');
             $userData['first_name'] = $request->get('first_name');
@@ -375,7 +376,7 @@ class UsersController extends Controller
             $userData['subdepartment'] = $request->get('subdepartment');
             $userData['department_id'] = $request->get('department_id');
             $userData['location_id'] = $request->get('location_id');
-            $userData['G7'] = $request->get('G7');
+            $userData['Grad'] = $request->get('Grad');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
             if ($request->get('password') != null && $request->get('password') != '') {

@@ -28,7 +28,7 @@ class DashboardCUstomizedController extends Controller
     {
 
         $userId = auth()->user()->id;
-        $usersWithG7 = User::where('G7', 1)->get();
+        $usersWithG7 = User::where('Grad', operator: 'G7')->get();
         $user = auth()->user();
         $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
         $task_count['conceptualization'] = Task::where('task_status', 1)

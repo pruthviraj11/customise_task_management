@@ -41,7 +41,7 @@ class User extends Authenticatable
         'dob',
         'created_at',
         'profile_img',
-        'G7',
+        'Grad',
         'updated_at',
         'selected_fields',
         'location_id'

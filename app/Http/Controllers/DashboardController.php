@@ -25,7 +25,7 @@ class DashboardController extends Controller
     {
 
         $userId = auth()->user()->id;
-        $usersWithG7 = User::where('G7', 1)->get();
+        $usersWithG7 = User::where('Grad', operator: 'G7')->get();
 
 
         $user = auth()->user();

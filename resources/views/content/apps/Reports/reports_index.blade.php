@@ -100,6 +100,7 @@
                 <thead>
                     <tr>
                         <th>G7 Name</th>
+                        <th>Users Status</th>
                         <th>Total Task</th>
                         <th>Total Completed Task</th>
                         <th>Completion %</th>
@@ -334,8 +335,7 @@
                         <td>Scope Defined</td>
                         @foreach ($table_data as $users)
                             @php
-                                $totals['totalTasksScopeDefined'] +=
-                                    $users['totalTasksScopeDefined'];
+                                $totals['totalTasksScopeDefined'] += $users['totalTasksScopeDefined'];
                             @endphp
                             <td>{{ $users['totalTasksScopeDefined'] }}</td>
                         @endforeach
@@ -396,6 +396,24 @@
                 columns: [{
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        "data": 'users_status',
+                        "name": 'users_status',
+                        "render": function(data, type, row, meta) {
+                            // Check if the users_status is 1 (active)
+                            if (data == 1) {
+                                return '<span class="badge bg-success">Active</span>';
+                            }
+                            // Check if the data is an empty value
+                            else if (data === '') {
+                                return ''; // Return an empty string if no value is present
+                            }
+                            // If the data is not 1 (active), show inactive
+                            else {
+                                return '<span class="badge bg-danger">Inactive</span>';
+                            }
+                        }
                     },
                     {
                         data: 'total_task',

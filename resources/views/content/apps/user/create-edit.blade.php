@@ -328,13 +328,39 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-3 col-sm-12 mb-1">
+                            {{-- <div class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="G7">
                                     Select User As a G7 : </label>
                                 <input type="checkbox" id="G7" name="G7" class="form-check-input"
                                     value="1" {{ old('G7', $user->G7 ?? 0) == 1 ? 'checked' : '' }}>
                                 <span class="text-danger">
                                     @error('G7')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div> --}}
+                            <div class="col-md-3 col-sm-12 mb-1">
+                                <label class="form-label" for="Grad">
+                                    Select Grade:
+                                </label>
+                                <select id="Grad" name="Grad" class="form-select">
+                                    <option value="G1" {{ old('Grad', $user->Grad ?? '') == 'G1' ? 'selected' : '' }}>
+                                        G1</option>
+                                    <option value="G2" {{ old('Grad', $user->Grad ?? '') == 'G2' ? 'selected' : '' }}>
+                                        G2</option>
+                                    <option value="G3" {{ old('Grad', $user->Grad ?? '') == 'G3' ? 'selected' : '' }}>
+                                        G3</option>
+                                    <option value="G4" {{ old('Grad', $user->Grad ?? '') == 'G4' ? 'selected' : '' }}>
+                                        G4</option>
+                                    <option value="G5" {{ old('Grad', $user->Grad ?? '') == 'G5' ? 'selected' : '' }}>
+                                        G5</option>
+                                    <option value="G6" {{ old('Grad', $user->Grad ?? '') == 'G6' ? 'selected' : '' }}>
+                                        G6</option>
+                                    <option value="G7" {{ old('Grad', $user->Grad ?? '') == 'G7' ? 'selected' : '' }}>
+                                        G7</option>
+                                </select>
+                                <span class="text-danger">
+                                    @error('Grad')
                                         {{ $message }}
                                     @enderror
                                 </span>
