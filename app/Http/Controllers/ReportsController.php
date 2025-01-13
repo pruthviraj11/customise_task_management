@@ -166,46 +166,22 @@ class ReportsController extends Controller
         foreach ($usersWithG7 as $user) {
             // Conceptualization Counts
             $conceptualizationCounts[$user->id] = TaskAssignee::where('task_status', 1)
-               ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+               ->where('user_id',$user->id)
                 ->count();
 
             // Scope Define Counts
             $scopeDefineCounts[$user->id] = TaskAssignee::where('task_status', 3)
-               ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->count();
 
             // In Execution Counts
             $inExecutionCounts[$user->id] = TaskAssignee::where('task_status', 5)
-               ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->count();
 
             // Completed Task Counts
             $completedCounts[$user->id] = TaskAssignee::whereIn('task_status', [4, 7])
-               ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->count();
 
             // Overdue Counts
@@ -221,25 +197,13 @@ class ReportsController extends Controller
 
             // Task Added Today
             $task_added_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-               ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->where('status', 1)
                 ->count();
 
             // Task Completed Today
             $task_completed_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-                ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->where('status', 1)
                 ->whereIn('task_status', [4, 7])
                 ->count();
@@ -248,13 +212,7 @@ class ReportsController extends Controller
             // Task pending - Opning and Closing Today
 
             $task_closing_opening_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-                ->where(function ($query) use ($user) {
-                    $query->where('created_by', $user->id)
-                        ->where('user_id', $user->id);
-                })
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                ->where('user_id', $user->id)
                 ->where('status', 1)
                 ->whereNotIn('task_status', [4, 7])
                 ->count();
