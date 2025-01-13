@@ -82,119 +82,123 @@ class TaskController extends Controller
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
 
-        $taskAssignees = TaskAssignee::all();
-        foreach ($taskAssignees as $taskAssignee) {
-            // Get the task by task_id from task_assignees, ensuring created_by is not null
-            $task = Task::whereNotNull('task_status')
-                ->whereNotNull('created_by') // Ensure created_by is not null in the tasks table
-                ->where('id', $taskAssignee->task_id)
-                ->first();
+        // $taskAssignees = TaskAssignee::all();
+        // foreach ($taskAssignees as $taskAssignee) {
+        //     // Get the task by task_id from task_assignees, ensuring created_by is not null
+        //     $task = Task::whereNotNull('task_status')
+        //         ->whereNotNull('created_by') // Ensure created_by is not null in the tasks table
+        //         ->where('id', $taskAssignee->task_id)
+        //         ->first();
 
-            if ($task != null) {
-                // Check if task_status in task_assignees is null
-                // if ($task->task_status) {
-                //     // Update the task_status in task_assignees from tasks table
-                //     $taskAssignee->task_status = $task->task_status;
-                // }
-            
-                // Check and set created_at and updated_at in task_assignees if they are null
-                if ($taskAssignee->created_at === null) {
-                    // Set the created_at from task's created_at
-                    $taskAssignee->created_at = $task->created_at;
-                }
+        //     if ($task != null) {
+        //         // Check if task_status in task_assignees is null
+        //         if ($task->task_status) {
+        //             // Update the task_status in task_assignees from tasks table
+        //             $taskAssignee->task_status = $task->task_status;
+        //         }
+        //         if ($taskAssignee->created_by === null) {
+        //             // Update the created_by in task_assignees from tasks table
+        //             $taskAssignee->created_by = $task->created_by;
+        //         }
 
-                if ($taskAssignee->updated_at === null) {
-                    // Set the updated_at from task's updated_at
-                    $taskAssignee->updated_at = $task->updated_at;
-                }
-                // Check if created_by in task_assignees is null
-                if ($taskAssignee->created_by === null) {
-                    // Update the created_by in task_assignees from tasks table
-                    $taskAssignee->created_by = $task->created_by;
-                }
+        //         // Check and set created_at and updated_at in task_assignees if they are null
+        //         if ($taskAssignee->created_at === null) {
+        //             // Set the created_at from task's created_at
+        //             $taskAssignee->created_at = $task->created_at;
+        //         }
 
-                // if ($taskAssignee->task_number === null) {
-                //     // Get all task_assignees for the same task_id, ordered by user_id
-                //     $existingTaskAssignees = TaskAssignee::where('task_id', $taskAssignee->task_id)
-                //         ->orderBy('user_id') // Or any other field to order by (e.g., task_id, created_at, etc.)
-                //         ->get();
+        //         if ($taskAssignee->updated_at === null) {
+        //             // Set the updated_at from task's updated_at
+        //             $taskAssignee->updated_at = $task->updated_at;
+        //         }
+        //         // Check if created_by in task_assignees is null
+        //         if ($taskAssignee->created_by === null) {
+        //             // Update the created_by in task_assignees from tasks table
+        //             $taskAssignee->created_by = $task->created_by;
+        //         }
 
-                //     // Get the index of the current taskAssignee in the ordered list
-                //     $userIndex = $existingTaskAssignees->search(function ($item) use ($taskAssignee) {
-                //         return $item->id === $taskAssignee->id;
-                //     });
+        //         if ($taskAssignee->task_number === null) {
+        //             // Get all task_assignees for the same task_id, ordered by user_id
+        //             $existingTaskAssignees = TaskAssignee::where('task_id', $taskAssignee->task_id)
+        //                 ->orderBy('user_id') // Or any other field to order by (e.g., task_id, created_at, etc.)
+        //                 ->get();
 
-                //     // Increment task number based on the user's position in the task_assignees list
-                //     $newTaskNumber = $userIndex + 1; // Indexing starts from 0, so we add 1 to make it start from 1
+        //             // Get the index of the current taskAssignee in the ordered list
+        //             $userIndex = $existingTaskAssignees->search(function ($item) use ($taskAssignee) {
+        //                 return $item->id === $taskAssignee->id;
+        //             });
 
-                //     // Generate a task number (task_id + userIndex), padding it to 2 digits
-                //     $taskNumber = $taskAssignee->task_id . '-' . str_pad($newTaskNumber, 2, '0', STR_PAD_LEFT);
+        //             // Increment task number based on the user's position in the task_assignees list
+        //             $newTaskNumber = $userIndex + 1; // Indexing starts from 0, so we add 1 to make it start from 1
 
-                //     // Update the task number for the current taskAssignee
-                //     $taskAssignee->task_number = $taskNumber;
+        //             // Generate a task number (task_id + userIndex), padding it to 2 digits
+        //             $taskNumber = $taskAssignee->task_id . '-' . str_pad($newTaskNumber, 2, '0', STR_PAD_LEFT);
 
-                //     // Save the updated taskAssignee
-                //     $taskAssignee->save();
-                // }
-                // if ($taskAssignee->due_date == null) {
-                //     // Store the task due_date on task_assignee
-                //     $taskAssignee->due_date = $task->due_date;
+        //             // Update the task number for the current taskAssignee
+        //             $taskAssignee->task_number = $taskNumber;
 
-                //     $taskAssignee->save();
-                // }
-                // if ($taskAssignee->accepted_date == null) {
-                //     // Store the task accepted_date on task_assignee
-                //     $taskAssignee->accepted_date = $task->accepted_date;
+        //             // Save the updated taskAssignee
+        //             $taskAssignee->save();
+        //         }
+        //         if ($taskAssignee->due_date == null) {
+        //             // Store the task due_date on task_assignee
+        //             $taskAssignee->due_date = $task->due_date;
 
-                //     $taskAssignee->save();
-                // }
-                // $user = User::find($taskAssignee->user_id);
+        //             $taskAssignee->save();
+        //         }
+        //         if ($taskAssignee->accepted_date == null) {
+        //             // Store the task accepted_date on task_assignee
+        //             $taskAssignee->accepted_date = $task->accepted_date;
+
+        //             $taskAssignee->save();
+        //         }
+        //         $user = User::find($taskAssignee->user_id);
 
 
 
-                // if ($user != null) {
-                //     // Check if department and sub_department are null, and if so, update them
-                //     if ($taskAssignee->department === null && $taskAssignee->sub_department === null) {
-                //         // Update department and sub_department from the user table
-                //         $taskAssignee->department = $user->department_id;
-                //         $taskAssignee->sub_department = $user->subdepartment;
+        //         if ($user != null) {
+        //             // Check if department and sub_department are null, and if so, update them
+        //             if ($taskAssignee->department === null && $taskAssignee->sub_department === null) {
+        //                 // Update department and sub_department from the user table
+        //                 $taskAssignee->department = $user->department_id;
+        //                 $taskAssignee->sub_department = $user->subdepartment;
 
-                //         // Save the taskAssignee with the updated department and sub_department
-                //         $taskAssignee->save();
-                //     }
-                // }
+        //                 // Save the taskAssignee with the updated department and sub_department
+        //                 $taskAssignee->save();
+        //             }
+        //         }
 
-                // $comments = Comments::where('task_id', $taskAssignee->task_id)->get();
+        //         $comments = Comments::where('task_id', $taskAssignee->task_id)->get();
 
-                // // Loop through each task_assignee and create comments for each user
-                // foreach ($comments as $comment) {
-                //     // Check if the comment is associated with a user (to_user_id)
-                //     if ($comment->to_user_id === null) {
-                //         // Loop through all task assignees for this task
-                //         $taskAssigneesForTask = TaskAssignee::where('task_id', $taskAssignee->task_id)->get();
+        //         // Loop through each task_assignee and create comments for each user
+        //         foreach ($comments as $comment) {
+        //             // Check if the comment is associated with a user (to_user_id)
+        //             if ($comment->to_user_id === null) {
+        //                 // Loop through all task assignees for this task
+        //                 $taskAssigneesForTask = TaskAssignee::where('task_id', $taskAssignee->task_id)->get();
 
-                //         // Prepare an array of user_ids
-                //         $userIds = [];
+        //                 // Prepare an array of user_ids
+        //                 $userIds = [];
 
-                //         foreach ($taskAssigneesForTask as $assignedUser) {
-                //             // Add user_id to the array
-                //             $userIds[] = $assignedUser->user_id;
-                //         }
+        //                 foreach ($taskAssigneesForTask as $assignedUser) {
+        //                     // Add user_id to the array
+        //                     $userIds[] = $assignedUser->user_id;
+        //                 }
 
-                //         // Create a comma-separated list of user_ids
-                //         $commaSeparatedUserIds = implode(',', $userIds);
+        //                 // Create a comma-separated list of user_ids
+        //                 $commaSeparatedUserIds = implode(',', $userIds);
 
-                //         // Update to_user_id with the comma-separated user IDs
-                //         $comment->to_user_id = $commaSeparatedUserIds;
+        //                 // Update to_user_id with the comma-separated user IDs
+        //                 $comment->to_user_id = $commaSeparatedUserIds;
 
-                //         // Save the updated comment with the comma-separated user_ids
-                //         $comment->save();
-                //     }
-                // }
-                // Save the changes
-                $taskAssignee->save();
-            }
-        }
+        //                 // Save the updated comment with the comma-separated user_ids
+        //                 $comment->save();
+        //             }
+        //         }
+        //         // Save the changes
+        //         $taskAssignee->save();
+        //     }
+        // }
 
         return view('content.apps.task.list', compact('data', 'type', 'user_id', 'status_id', 'route_type'));
     }
