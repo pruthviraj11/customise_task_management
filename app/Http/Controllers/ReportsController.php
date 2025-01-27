@@ -48,7 +48,7 @@ class ReportsController extends Controller
             $departmentName = $user->department->department_name ?? 'No Department';
 
             $totalTasksTillYesterday = TaskAssignee::where('user_id', $user->id)
-                ->whereDate('created_at', '<=', now()->subDay())
+                // ->whereDate('created_at', '<=', now()->subDay())
                 ->count();
 
             $totalPendingTasksTillYesterday = TaskAssignee::where('user_id', $user->id)
@@ -305,29 +305,121 @@ class ReportsController extends Controller
         // Push total row
         $data->push($totals);
 
-        // Prepare inactive row
-        // $inactiveRow = [
-        //     'name' => 'Inactive',
-        //     'total_task' => $inactiveTotalTasks,
-        //     'total_completed_task' => $inactiveCompleted,
-        //     'completion_percent' => number_format(($inactiveCompleted / $inactiveTotalTasks) * 100, 2) . '%',
-        //     'total_pending_yesterday' => '-',
-        //     'tasks_added_today' => $inactiveTaskAddedToday,
-        //     'tasks_completed_today' => $inactiveCompletedreport,
-        //     'total_pending_closing' => '-',
-        //     'overdue_task' => $inactiveOverdue,
-        //     'percent_overdue' => number_format(($inactiveOverdue / $inactiveTotalTasks) * 100, 2) . '%',
-        //     'conceptualization' => $inactiveConceptualization,
-        //     'scope_defined' => $inactiveScopeDefine,
-        //     'in_execution' => $inactiveInExecution,
-        // ];
-
-        // Add inactive row
-        // $data->push($inactiveRow);
-
-        // Return data as JSON for DataTables
+        
         return DataTables::of($data)->make(true);
     }
+
+
+
+    public function reportsweek()
+    {
+        // Get the previous week's start (Monday) and end (Sunday)
+        $startOfLastWeek = now()->startOfWeek()->subWeek(); // Last Monday
+        $endOfLastWeek = now()->endOfWeek()->subWeek(); // Last Sunday
+
+
+
+        $startOfDuringWeek = now()->startOfWeek(); // Last Monday
+        $endOfDuringWeek = now()->endOfWeek(); // Last Sunday
+        // dd($startOfDuringWeek,$endOfDuringWeek);
+
+        // $userId = auth()->user()->id;
+        $usersWithG7 = User::where('Grad', 'G7')->get();
+        $user = auth()->user();
+        $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
+
+        $table_data = [];
+        $statusinfos = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
+
+        $loggedInUser = auth()->user();
+        $userId = $loggedInUser->id;
+
+        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+
+        // Prepare the table data
+        $table_data = [];
+
+        foreach ($users as $user) {
+            $departmentName = $user->department->department_name ?? 'No Department';
+
+            // Modify queries to get data from last Monday to Sunday (Previous Week)
+            $totalTasksLastWeek = TaskAssignee::where('user_id', $user->id) // Tasks created since last Monday
+                // ->whereDate('created_at', '<=', $endOfLastWeek) // Tasks created until last Sunday
+                ->count();
+
+            $totalPendingTasksLastWeek = TaskAssignee::where('user_id', $user->id)
+                ->whereDate('created_at', '<=', $endOfLastWeek)
+                ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed, deleted, and canceled
+                ->count();
+
+            $tasksAddedLastWeek = TaskAssignee::where('user_id', $user->id)
+                ->whereDate('created_at', '>=', $startOfDuringWeek)
+                ->whereDate('created_at', '<=', $endOfDuringWeek)
+                ->count();
+
+            $tasksCompletedLastWeek = TaskAssignee::where('user_id', $user->id)
+                ->where('task_status', 4) // Completed tasks (status 4)
+                ->whereDate('created_at', '>=', $startOfDuringWeek)
+                ->whereDate('created_at', '<=', $endOfDuringWeek)
+                ->count();
+
+            $taskReportDate = TaskAssignee::where('user_id', $user->id)
+                // ->whereDate('created_at', today())
+                ->count();
+
+            $totalPendingTask = TaskAssignee::where('user_id', $user->id)
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->count();
+
+            $totalOverdueTasksLastWeek = TaskAssignee::where('user_id', $user->id)
+                ->whereDate('due_date', '<', now()->subDay())
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->count();
+
+            $totalTasksConceptualization = TaskAssignee::where('user_id', $user->id)
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->where('task_status', 1) // Conceptualization (status 1)
+                ->count();
+
+            $totalTasksScopeDefined = TaskAssignee::where('user_id', $user->id)
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->where('task_status', 3) // Scope Defined (status 3)
+                ->count();
+
+            $totalTasksInExecution = TaskAssignee::where('user_id', $user->id)
+                ->where('task_status', 5) // Execution tasks (status 5)
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->count();
+
+            $totalStatusCount = TaskAssignee::where('user_id', $user->id)
+                ->whereNotIn('task_status', [4, 7, 6])
+                ->whereIn('task_status', [1, 3, 5])
+                ->count();
+
+            // Add the user data to the table_data array
+            $table_data[] = [
+                'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')',
+                'total_tasks_last_week' => $totalTasksLastWeek,
+                'total_pending_tasks_last_week' => $totalPendingTasksLastWeek,
+                'tasks_added_last_week' => $tasksAddedLastWeek,
+                'tasks_completed_last_week' => $tasksCompletedLastWeek,
+                'task_report_date' => $taskReportDate,
+                'total_pending_task' => $totalPendingTask,
+                'total_overdue_tasks_last_week' => $totalOverdueTasksLastWeek,
+                'totalTasksConceptualization' => $totalTasksConceptualization,
+                'totalTasksScopeDefined' => $totalTasksScopeDefined,
+                'totalTasksInExecution' => $totalTasksInExecution,
+                'totalStatusCount' => $totalStatusCount
+            ];
+        }
+
+        return view('content.apps.reports.reports_reportsweek', compact('usersWithG7', 'table_data'));
+    }
+
+
+
+
+
 
 
 

@@ -11,13 +11,35 @@
             ]
         },
         {
-            "url": "app/reports",
+            "url": "",
             "name": "Reports",
             "icon": "lock",
             "slug": "reports-index",
             "permission": [
                 "task-list",
                 "task-create"
+            ],
+            "submenu": [
+                {
+                    "url": "app/reports",
+                    "name": "Reports",
+                    "icon": "lock",
+                    "slug": "reports-index",
+                    "permission": [
+                        "task-list",
+                        "task-create"
+                    ]
+                },
+                {
+                    "url": "app/reportsweek",
+                    "name": "reportsweek",
+                    "icon": "lock",
+                    "slug": "reports-reportsweek",
+                    "permission": [
+                        "task-list",
+                        "task-create"
+                    ]
+                }
             ]
         },
         {

@@ -235,6 +235,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
 
     Route::get('dashboard_customized', [DashboardCUstomizedController::class, 'index'])->name('dashboard-index');
     Route::get('reports', [ReportsController::class, 'index'])->name('reports-index');
+    Route::get('reportsweek', [ReportsController::class, 'reportsweek'])->name('reports-reportsweek');
 
     Route::get('activity', [DashboardController::class, 'activity'])->name('activity-index');
 

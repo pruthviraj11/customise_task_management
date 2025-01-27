@@ -4,6 +4,7 @@ return [
     "Apps & Pages" => "Apps & Pages",
     "Dashboards" => "Dashboards",
     "Reports" => "Reports",
+    "reportsweek" => "Weekly G7 report",
 
     "Department" => "Department",
     "Locations" => "Locations",
