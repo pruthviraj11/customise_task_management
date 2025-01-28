@@ -27,14 +27,47 @@
 
         <!-- list and filter start -->
         <div class="card">
+
             <div class="card-header">
-                <h4 class="card-title">Master Reports</h4>
-              <div class="row">
-                <div class="col-md-6">  <p><strong>MEETING BUCKET</strong> - <strong>WEDNESDAY</strong> - BLOCK 2</p></div>
-              </div>
+
+
             </div>
 
             <div class="card-body border-bottom">
+                <div class="row d-flex align-items-center">
+                    <div class="row col-md-6">
+                        <div class="col-md-12">
+                            <p class="btn btn-primary btn-sm w-100"><strong>MEETING BUCKET</strong> -
+                                <strong>WEDNESDAY</strong> -
+                                BLOCK 2
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="btn btn-primary btn-sm"><strong>Total Pending Tasks:</strong> {{ $pendingTasksCount }}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="btn btn-primary btn-sm"><strong>Total Overdue Tasks:</strong> {{ $overdueTasksCount }}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="btn btn-primary btn-sm"><strong>Pace Rate:</strong>
+                                {{ number_format($paceRate * 100, 2) }}%</p>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Select2 Dropdown -->
+                        <label for="projectSelect"><strong>Select Project</strong></label>
+                        <select id="projectSelect" class="form-control select2 mb-0 w-100">
+                            <!-- Dynamically populated options from the backend -->
+                            <option value="">All</option>
+                            @foreach ($projectOptions as $project)
+                                <option value="{{ $project->id }}">{{ $project->project_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="card-datatable table-responsive pt-0">
                     <table class="user-list-table table dt-responsive" id="masters_report-table">
                         <thead>
@@ -99,10 +132,17 @@
                         modifier: {
                             length: -1 // Exports all rows
                         },
-                        columns: [0] // Export specific columns (adjust indexes as needed)
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,
+                            9] // Export specific columns (adjust indexes as needed)
                     }
                 }],
-                ajax: "{{ route('app-masters_report-get-all') }}", // URL to fetch data via AJAX
+                ajax: {
+                    url: "{{ route('app-masters_report-get-all') }}", // URL to fetch data via AJAX
+                    data: function(d) {
+                        // Add selected project ID to the request data
+                        d.project_id = $('#projectSelect').val(); // Send selected project ID
+                    }
+                },
                 columns: [{
                         data: 'Task_number',
                         name: 'Task_number',
@@ -147,7 +187,14 @@
                     feather.replace(); // Replace Feather icons after each draw
                 }
             });
+            // Initialize Select2 for the project dropdown
+            $('#projectSelect').select2();
 
+            // Listen for changes on the project dropdown
+            $('#projectSelect').on('change', function() {
+                // Redraw the DataTable with the selected project filter
+                $('#masters_report-table').DataTable().ajax.reload();
+            });
             // Custom Excel export action function
             function newexportaction(e, dt, button, config) {
                 var self = this;
@@ -197,6 +244,7 @@
             }
         });
     </script>
+
     {{-- Page js files --}}
 @endsection
 
@@ -205,4 +253,3 @@
 <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
 
 @yield('js_load')
->

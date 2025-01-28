@@ -13,6 +13,7 @@ use App\Models\Task;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\Department;
+use App\Models\Project;
 use App\Models\TaskAssignee;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
@@ -166,7 +167,7 @@ class ReportsController extends Controller
         foreach ($usersWithG7 as $user) {
             // Conceptualization Counts
             $conceptualizationCounts[$user->id] = TaskAssignee::where('task_status', 1)
-               ->where('user_id',$user->id)
+                ->where('user_id', $user->id)
                 ->count();
 
             // Scope Define Counts
@@ -265,7 +266,7 @@ class ReportsController extends Controller
         $data = $usersWithG7->map(function ($user) use ($conceptualizationCounts, $scopeDefineCounts, $inExecutionCounts, $overdueCounts, $completedCounts, $totalTaskCounts, $completedPercentage, $overDuePercentage, $task_added_reporting_date, $task_completed_reporting_date, $task_closing_opening_reporting_date) {
 
             return [
-              
+
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'users_status' => $user->status,
                 'total_task' => $totalTaskCounts[$user->id] ?? 0,
@@ -290,10 +291,10 @@ class ReportsController extends Controller
             'total_task' => array_sum($totalTaskCounts),
             'total_completed_task' => array_sum($completedCounts), // Added missing comma here
             'completion_percent' => number_format((array_sum($completedCounts)) / (array_sum($totalTaskCounts)) * 100, 2) . '%',
-            'total_pending_yesterday' =>array_sum($task_closing_opening_reporting_date),
+            'total_pending_yesterday' => array_sum($task_closing_opening_reporting_date),
             'tasks_added_today' => array_sum($task_added_reporting_date),
             'tasks_completed_today' => array_sum($task_completed_reporting_date),
-            'total_pending_closing' =>array_sum($task_closing_opening_reporting_date),
+            'total_pending_closing' => array_sum($task_closing_opening_reporting_date),
             'overdue_task' => array_sum($overdueCounts),
             'percent_overdue' => number_format((array_sum($overdueCounts)) / (array_sum($totalTaskCounts)) * 100, 2) . '%',
             'conceptualization' => array_sum($conceptualizationCounts),
@@ -305,7 +306,7 @@ class ReportsController extends Controller
         // Push total row
         $data->push($totals);
 
-        
+
         return DataTables::of($data)->make(true);
     }
 
@@ -430,10 +431,44 @@ class ReportsController extends Controller
 
     public function masters_report()
     {
-        return view('content.apps.reports.master_report_list');
+        $userId = Auth()->user()->id;
+        $projectOptions = Project::get(); // Fetch all projects
+        $loggedInUser = auth()->user();
+        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser)); // Merge logged-in user and their subordinates
+        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
+
+        // Pending tasks count
+        $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereNotIn('task_status', [4, 7, 6])
+            ->count(); // Get the count of pending tasks
+
+        // Overdue tasks count
+        $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
+            ->whereNotIn('task_status', [4, 7, 6])
+            ->count(); // Get the count of overdue tasks
+
+        // Calculate pace rate: (pending - overdue) / pending
+        $paceRate = 0; // Default to 0 to avoid division by zero
+        if ($pendingTasksCount > 0) {
+            $paceRate = ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount;
+        }
+
+        // Query for TaskAssignee with user-specific filtering
+        $query = TaskAssignee::query();
+        if ($userId == 1) {
+            $query->whereNull('deleted_at');
+        } else {
+            // User-specific task filters
+            $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
+        }
+
+        // Return the view with the required variables
+        return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate'));
     }
 
-    public function masters_reportgetAll()
+
+    public function masters_reportgetAll(Request $request)
     {
         $userId = Auth()->user()->id;
         $loggedInUser = auth()->user();
@@ -442,18 +477,28 @@ class ReportsController extends Controller
 
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-        $query = TaskAssignee::query();
-        // dd(today());
 
+        $query = TaskAssignee::query();
+        // Admin fetches tasks by their statuses
         if ($userId == 1) {
-            // Admin fetches tasks by their statuses
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->orderBy('created_at', 'desc');
         } else {
             // User-specific task filters
-            $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
+            $query->whereIn('user_id', $hierarchyUserIds)
+                ->whereNull('deleted_at')
+                ->orderBy('created_at', 'desc');
         }
+
+
+        // Apply project filter if provided
+        if ($request->has('project_id') && !empty($request->project_id)) {
+            $query->whereHas('task', function ($q) use ($request) {
+                $q->where('project_id', $request->project_id);
+            });
+        }
+
         $tasks = $query;
-        // dd($tasks->get());
+
         return DataTables::of($tasks)
             ->addColumn('Task_number', function ($row) {
                 return $row->task_number ?? "-";
@@ -488,7 +533,8 @@ class ReportsController extends Controller
             ->addColumn('department', function ($row) {
                 return ($row->department && $row->department_data) ? $row->department_data->department_name : '-';
             })
-            ->rawColumns(['title'])
+            ->rawColumns(['title', 'Task_number', 'description', 'subject', 'created_by_username', 'Task_assign_to', 'status', 'start_date', 'due_date', 'project', 'department'])
             ->make(true);
     }
+
 }
