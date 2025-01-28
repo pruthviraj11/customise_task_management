@@ -39,6 +39,16 @@
                         "task-list",
                         "task-create"
                     ]
+                },
+                {
+                    "url": "app/masters_report/list",
+                    "name": "masters_report",
+                    "icon": "lock",
+                    "slug": "app-masters_report-list",
+                    "permission": [
+                        "task-list",
+                        "task-create"
+                    ]
                 }
             ]
         },

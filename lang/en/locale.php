@@ -5,6 +5,7 @@ return [
     "Dashboards" => "Dashboards",
     "Reports" => "Reports",
     "reportsweek" => "Weekly G7 report",
+    "masters_report" => "Master report",
 
     "Department" => "Department",
     "Locations" => "Locations",

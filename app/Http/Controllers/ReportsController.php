@@ -416,13 +416,6 @@ class ReportsController extends Controller
         return view('content.apps.reports.reports_reportsweek', compact('usersWithG7', 'table_data'));
     }
 
-
-
-
-
-
-
-
     public function getAllSubordinates($user)
     {
         $subordinates = $user->subordinates;
@@ -434,4 +427,68 @@ class ReportsController extends Controller
         return $subordinates;
     }
 
+
+    public function masters_report()
+    {
+        return view('content.apps.reports.master_report_list');
+    }
+
+    public function masters_reportgetAll()
+    {
+        $userId = Auth()->user()->id;
+        $loggedInUser = auth()->user();
+
+        ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
+
+        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+        $query = TaskAssignee::query();
+        // dd(today());
+
+        if ($userId == 1) {
+            // Admin fetches tasks by their statuses
+            $query->whereNull('deleted_at');
+        } else {
+            // User-specific task filters
+            $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
+        }
+        $tasks = $query;
+        // dd($tasks->get());
+        return DataTables::of($tasks)
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('description', function ($row) {
+                return ($row->task && $row->task->description) ? $row->task->description : '-';
+            })
+            ->addColumn('subject', function ($row) {
+                return ($row->task && $row->task->subject) ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('created_by_username', function ($row): string {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+            })
+            ->addColumn('status', function ($row) {
+                return ($row->task && $row->task->task_status) ? $row->task->taskStatus->status_name : "-";
+            })
+            ->addColumn('start_date', function ($row) {
+                return ($row->task && $row->task->start_date) ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('project', function ($row) {
+                return ($row->task && $row->task->project) ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return ($row->department && $row->department_data) ? $row->department_data->department_name : '-';
+            })
+            ->rawColumns(['title'])
+            ->make(true);
+    }
 }
