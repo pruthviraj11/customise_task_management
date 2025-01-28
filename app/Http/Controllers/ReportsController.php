@@ -413,7 +413,7 @@ class ReportsController extends Controller
             ];
         }
 
-        return view('content.apps.reports.reports_reportsweek', compact('usersWithG7', 'table_data'));
+        return view('content.apps.reports.reports-reportsweek', compact('usersWithG7', 'table_data'));
     }
 
     public function getAllSubordinates($user)
