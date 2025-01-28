@@ -1199,7 +1199,8 @@ class TaskController extends Controller
         $userId = auth()->user()->id;
 
 
-        if ($userId == 1) {
+         $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title')->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today())
                 ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
@@ -1254,8 +1255,8 @@ class TaskController extends Controller
         // $tasks = $this->taskService->getAlltask()->toArray();
         $userId = auth()->user()->id;
 
-
-        if ($userId == 1) {
+ $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
                 ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
@@ -1308,7 +1309,8 @@ class TaskController extends Controller
         // $tasks = $this->taskService->getAlltask()->toArray();
         $userId = auth()->user()->id;
 
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
                 ->leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
@@ -1914,7 +1916,8 @@ class TaskController extends Controller
         $query = TaskAssignee::query();
         // dd(today());
 
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today());
         } else {
@@ -2046,7 +2049,8 @@ class TaskController extends Controller
         $query = TaskAssignee::query();
         // dd(today());
 
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereNotIn('task_status', ['4', '7']);
         } else {
@@ -2177,7 +2181,8 @@ class TaskController extends Controller
         $query = TaskAssignee::query();
         // dd(today());
 
-        if ($userId == 1) {
+         $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereIn('task_status', ['4', '7']);
         } else {
@@ -2320,7 +2325,8 @@ class TaskController extends Controller
         $query = TaskAssignee::query();
         // dd(today());
 
-        if ($userId == 1) {
+         $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereNull('deleted_at');
         } else {
@@ -6379,7 +6385,8 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
                 // ->where('status', 1);
             });
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 1);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
@@ -6445,7 +6452,8 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
                 // ->where('status', 7);
             });
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 7);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
@@ -6624,7 +6632,8 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
                 // ->where('status', 1);
             });
-        if ($userId == 1) {
+         $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 3);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
@@ -6691,7 +6700,8 @@ class TaskController extends Controller
                 $query->where('user_id', $userId);
                 // ->where('status', 1);
             });
-        if ($userId == 1) {
+         $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 4);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
@@ -6951,7 +6961,8 @@ class TaskController extends Controller
     public function getAll_deleted()
     {
         $userId = auth()->user()->id;
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::onlyTrashed()->get();
         } else {
             $tasks = Task::onlyTrashed()->where('created_by', $userId)->get();
@@ -7670,7 +7681,8 @@ class TaskController extends Controller
         // Common query for all tasks
         $query = TaskAssignee::query();
 
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereIn('task_status', ['1', '3', '5', '6']); // Use a single query for all statuses
         } else {

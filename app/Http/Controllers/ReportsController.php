@@ -193,7 +193,7 @@ class ReportsController extends Controller
 
             // Total Task Counts
             $totalTaskCounts[$user->id] = TaskAssignee::where('user_id', $user->id)
-                ->where('status', 1)
+                // ->where('status', 1)
                 ->count();
 
             // Task Added Today
@@ -433,6 +433,7 @@ class ReportsController extends Controller
     {
         $userId = Auth()->user()->id;
         $projectOptions = Project::get(); // Fetch all projects
+        $statusOptions = Status::where('status','on')->where('disabled',0)->get(); // Fetch all projects
         $loggedInUser = auth()->user();
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser)); // Merge logged-in user and their subordinates
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
@@ -456,7 +457,8 @@ class ReportsController extends Controller
 
         // Query for TaskAssignee with user-specific filtering
         $query = TaskAssignee::query();
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $query->whereNull('deleted_at');
         } else {
             // User-specific task filters
@@ -464,7 +466,7 @@ class ReportsController extends Controller
         }
 
         // Return the view with the required variables
-        return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate'));
+        return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate','statusOptions'));
     }
 
 
@@ -480,7 +482,8 @@ class ReportsController extends Controller
 
         $query = TaskAssignee::query();
         // Admin fetches tasks by their statuses
-        if ($userId == 1) {
+        $loggedInUser = auth()->user();
+        if ($loggedInUser->hasRole('Super Admin')) {
             $query->whereNull('deleted_at')->orderBy('created_at', 'desc');
         } else {
             // User-specific task filters
@@ -491,10 +494,41 @@ class ReportsController extends Controller
 
 
         // Apply project filter if provided
-        if ($request->has('project_id') && !empty($request->project_id)) {
+        if ($request->has('project_ids') && !empty($request->project_ids)) {
             $query->whereHas('task', function ($q) use ($request) {
-                $q->where('project_id', $request->project_id);
+                $q->whereIn('project_id', $request->project_ids); // Use whereIn for multiple project IDs
             });
+        }
+
+        // Apply status filter directly on TaskAssignee model if provided
+        if ($request->has('status_ids') && !empty($request->status_ids)) {
+            $query->whereIn('task_status', $request->status_ids); // Directly filter TaskAssignee by task_status
+        }
+        // Pending tasks count
+        $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->when($request->has('project_ids'), function ($q) use ($request) {
+                $q->whereHas('task', function ($q) use ($request) {
+                    $q->whereIn('project_id', $request->project_ids); // Filter by project IDs
+                });
+            })
+            ->count();
+
+        // Overdue tasks count
+        $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
+            ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->when($request->has('project_ids'), function ($q) use ($request) {
+                $q->whereHas('task', function ($q) use ($request) {
+                    $q->whereIn('project_id', $request->project_ids); // Filter by project IDs
+                });
+            })
+            ->count();
+
+        // Calculate pace rate: (pending - overdue) / pending
+        $paceRate = 0; // Default to 0 to avoid division by zero
+        if ($pendingTasksCount > 0) {
+            $paceRate = ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount;
         }
 
         $tasks = $query;
@@ -535,6 +569,46 @@ class ReportsController extends Controller
             })
             ->rawColumns(['title', 'Task_number', 'description', 'subject', 'created_by_username', 'Task_assign_to', 'status', 'start_date', 'due_date', 'project', 'department'])
             ->make(true);
+    }
+    public function getTaskCounts(Request $request)
+    {
+        $projectIds = $request->input('project_ids', []);
+        $loggedInUser = auth()->user();
+        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+        // Pending tasks count
+        $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->when(count($projectIds) > 0, function ($q) use ($projectIds) {
+                $q->whereHas('task', function ($q) use ($projectIds) {
+                    $q->whereIn('project_id', $projectIds); // Filter by project IDs
+                });
+            })
+            ->count();
+
+        // Overdue tasks count
+        $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
+            ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
+            ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->when(count($projectIds) > 0, function ($q) use ($projectIds) {
+                $q->whereHas('task', function ($q) use ($projectIds) {
+                    $q->whereIn('project_id', $projectIds); // Filter by project IDs
+                });
+            })
+            ->count();
+
+        // Calculate pace rate: (pending - overdue) / pending
+        $paceRate = 0; // Default to 0 to avoid division by zero
+        if ($pendingTasksCount > 0) {
+            $paceRate = ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount;
+        }
+
+        // Return the counts and pace rate as JSON response
+        return response()->json([
+            'pendingTasksCount' => $pendingTasksCount,
+            'overdueTasksCount' => $overdueTasksCount,
+            'paceRate' => number_format($paceRate * 100, 2)
+        ]);
     }
 
 }

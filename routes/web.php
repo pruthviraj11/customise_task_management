@@ -405,6 +405,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/reports/userwise-data', [ReportsController::class, 'userWiseData'])->name('reports.userwise-data');
     Route::get('masters_report/getAll', [ReportsController::class, 'masters_reportgetAll'])->name(name: 'app-masters_report-get-all');
     Route::get('masters_report/list', [ReportsController::class, 'masters_report'])->name('app-masters_report-list');
+    Route::post('/get-task-counts', [ReportsController::class, 'getTaskCounts'])->name('get.task.counts');
     //
 
     // Task List Start

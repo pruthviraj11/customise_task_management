@@ -35,39 +35,54 @@
 
             <div class="card-body border-bottom">
                 <div class="row d-flex align-items-center">
-                    <div class="row col-md-6">
-                        <div class="col-md-12">
-                            <p class="btn btn-primary btn-sm w-100"><strong>MEETING BUCKET</strong> -
-                                <strong>WEDNESDAY</strong> -
-                                BLOCK 2
-                            </p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="btn btn-primary btn-sm"><strong>Total Pending Tasks:</strong> {{ $pendingTasksCount }}
-                            </p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="btn btn-primary btn-sm"><strong>Total Overdue Tasks:</strong> {{ $overdueTasksCount }}
-                            </p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="btn btn-primary btn-sm"><strong>Pace Rate:</strong>
-                                {{ number_format($paceRate * 100, 2) }}%</p>
-                        </div>
-
-                    </div>
                     <div class="col-md-6">
-                        <!-- Select2 Dropdown -->
-                        <label for="projectSelect"><strong>Select Project</strong></label>
-                        <select id="projectSelect" class="form-control select2 mb-0 w-100">
-                            <!-- Dynamically populated options from the backend -->
-                            <option value="">All</option>
-                            @foreach ($projectOptions as $project)
-                                <option value="{{ $project->id }}">{{ $project->project_name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="btn btn-primary btn-sm w-100"><strong>MEETING BUCKET</strong> -
+                                    <strong>WEDNESDAY</strong> -
+                                    BLOCK 2
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="btn btn-primary btn-sm pending-tasks-count"><strong>Total Pending Tasks:</strong>
+                                    {{ $pendingTasksCount }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="btn btn-primary btn-sm overdue-tasks-count"><strong>Total Overdue Tasks:</strong>
+                                    {{ $overdueTasksCount }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="btn btn-primary btn-sm pace-rate"><strong>Pace Rate:</strong>
+                                    {{ number_format($paceRate * 100, 2) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="projectSelect"><strong>Select Project</strong></label>
+                                <select id="projectSelect" class="form-control select2 w-100" multiple="multiple">
+                                    <option value="">All</option>
+                                    @foreach ($projectOptions as $project)
+                                        <option value="{{ $project->id }}">{{ $project->project_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="statusSelect"><strong>Select Status</strong></label>
+                                <select id="statusSelect" class="form-control select2 w-100" multiple="multiple">
+                                    <option value="">All</option>
+                                    @foreach ($statusOptions as $status)
+                                        <option value="{{ $status->id }}">{{ $status->displayname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div class="card-datatable table-responsive pt-0">
                     <table class="user-list-table table dt-responsive" id="masters_report-table">
                         <thead>
@@ -115,6 +130,39 @@
 @endsection
 
 @section('page-script')
+
+    <script>
+        $(document).ready(function() {
+            // Trigger when the selection changes
+            $('#projectSelect').on('change', function() {
+                var selectedProjectIds = $(this).val(); // Get selected project IDs
+
+                // Make AJAX request to fetch the task counts
+                $.ajax({
+                    url: '{{ route('get.task.counts') }}', // The route we defined earlier
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}', // CSRF token
+                        project_ids: selectedProjectIds // Pass the selected project IDs
+                    },
+                    success: function(response) {
+                        // Append the returned data to the buttons
+                        $('.pending-tasks-count').text('Total Pending Tasks: ' + response
+                            .pendingTasksCount);
+                        $('.overdue-tasks-count').text('Total Overdue Tasks: ' + response
+                            .overdueTasksCount);
+                        $('.pace-rate').text('Pace Rate: ' + response.paceRate + '%');
+                    },
+                    error: function(error) {
+                        console.error('Error fetching task counts:', error);
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
     <script>
         $(document).ready(function() {
             $('#masters_report-table').DataTable({
@@ -133,14 +181,18 @@
                             length: -1 // Exports all rows
                         },
                         columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,
-                            9] // Export specific columns (adjust indexes as needed)
+                            9
+                        ] // Export specific columns (adjust indexes as needed)
                     }
                 }],
                 ajax: {
                     url: "{{ route('app-masters_report-get-all') }}", // URL to fetch data via AJAX
                     data: function(d) {
-                        // Add selected project ID to the request data
-                        d.project_id = $('#projectSelect').val(); // Send selected project ID
+                        // Add selected project IDs to the request data (as an array)
+                        d.project_ids = $('#projectSelect')
+                            .val(); // Send selected project IDs as an array
+                        d.status_ids = $('#statusSelect')
+                            .val(); // Send selected project IDs as an array
                     }
                 },
                 columns: [{
@@ -187,11 +239,24 @@
                     feather.replace(); // Replace Feather icons after each draw
                 }
             });
-            // Initialize Select2 for the project dropdown
-            $('#projectSelect').select2();
+            $('#projectSelect').select2({
+                placeholder: 'Select Projects',
+                allowClear: true
+            });
 
             // Listen for changes on the project dropdown
             $('#projectSelect').on('change', function() {
+                // Redraw the DataTable with the selected project filter
+                $('#masters_report-table').DataTable().ajax.reload();
+            });
+
+            $('#statusSelect').select2({
+                placeholder: 'Select Status',
+                allowClear: true
+            });
+
+            // Listen for changes on the project dropdown
+            $('#statusSelect').on('change', function() {
                 // Redraw the DataTable with the selected project filter
                 $('#masters_report-table').DataTable().ajax.reload();
             });
