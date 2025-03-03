@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->json('selected_fields')->default(json_encode([]));
-
+            // $table->json('selected_fields')->default(json_encode([]));
+            $table->json('selected_fields')->nullable(
+                
+            );
         });
     }
 

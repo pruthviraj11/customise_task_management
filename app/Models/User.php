@@ -50,6 +50,15 @@ class User extends Authenticatable
     public $incrementing = false;
     protected $guarded = [];
 
+    protected $casts = [
+        'selected_fields' => 'array',
+        'email_verified_at' => 'datetime',
+    ];
+    
+    protected $attributes = [
+        'selected_fields' => '[]',
+    ];
+
 
 
     public function getActivitylogOptions(): LogOptions
@@ -75,9 +84,9 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    // ];
 
     public function tasks()
     {

@@ -2322,16 +2322,23 @@ class TaskController extends Controller
 
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-        $query = TaskAssignee::query();
+        // $query = TaskAssignee::query();
         // dd(today());
+        $query = TaskAssignee::whereIn('task_id', function ($subquery) {
+            $subquery->select('id')
+                     ->from('tasks')
+                     ->whereNull('deleted_at'); // Ensures task is not soft deleted
+        });
+        
+        
 
          $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->whereNot('status',2);
         } else {
             // User-specific task filters
-            $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
+            $query->whereIn('user_id', $hierarchyUserIds)->whereNot('status',2)->whereNull('deleted_at');
         }
         $tasks = $query;
         return DataTables::of($tasks)
@@ -5248,7 +5255,9 @@ class TaskController extends Controller
 
             foreach ($userIds as $index => $userId) {
                 // Dynamically generate a task number for each user, starting from 01
-                $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
+                // $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT); // Increment task number per user
+                $taskNumber = $task->id . '-' . str_pad($startingTaskNumber + $index, 2, '0', STR_PAD_LEFT);
+
                 $user = User::find($userId);  // Assuming you have a User model
                 $departmentId = $user->department_id;
                 $subdepartment = $user->subdepartment;
