@@ -2323,24 +2323,30 @@ $encryptedId = encrypt($row->task_id);
         $userId = Auth()->user()->id;
         $loggedInUser = auth()->user();
 
-        ini_set('memory_limit', '5G'); // Increase memory limit
+        ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-
         $query = TaskAssignee::query();
+        // dd(today());
+        // $query = TaskAssignee::whereIn('task_id', function ($subquery) {
+        //     $subquery->select('id')
+        //              ->from('tasks')
+        //              ->whereNull('deleted_at'); // Ensures task is not soft deleted
+        // });
 
+
+
+         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
-            // Admin fetches all tasks except those with status = 2
-            $query->whereNull('deleted_at')->whereNot('status', 2);
+            // Admin fetches tasks by their statuses
+            $query->whereNull('deleted_at')->whereNot('status',2);
         } else {
-            // Fetch tasks assigned to the user and their subordinates
-            $query->whereIn('user_id', $hierarchyUserIds)->whereNot('status', 2)->whereNull('deleted_at');
+            // User-specific task filters
+            $query->whereIn('user_id', $hierarchyUserIds)->whereNot('status',2)->whereNull('deleted_at');
         }
-
-        // return DataTables::of($query->limit(500)->get())
-        return DataTables::eloquent($query)
-
+        $tasks = $query;
+        return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task=  encrypt($row->id);
