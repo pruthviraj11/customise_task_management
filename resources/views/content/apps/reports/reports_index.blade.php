@@ -124,6 +124,7 @@
     </div>
 
 
+    @endif
 
     <div class="card table-responsive">
         <div class="card-header">
@@ -270,7 +271,6 @@
             </table>
         </div>
     </div>
-@endif
     <div class="card table-responsive">
         <div class="card-header">
             <div class="row text-center mt-2">
