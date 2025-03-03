@@ -13,10 +13,13 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    protected $commands = [
+        \App\Console\Commands\CreateRecurringTasks::class,
+    ];
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-
+        $schedule->command('recurring-tasks:generate')->dailyAt('09:00');
         $schedule->command('task:notify-today-due')->dailyAt('09:00');
     }
 
