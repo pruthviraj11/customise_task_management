@@ -2327,15 +2327,15 @@ $encryptedId = encrypt($row->task_id);
 
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-        $query = TaskAssignee::query();
+        // $query = TaskAssignee::query();
         // dd(today());
-        // $query = TaskAssignee::whereIn('task_id', function ($subquery) {
-        //     $subquery->select('id')
-        //              ->from('tasks')
-        //              ->whereNull('deleted_at'); // Ensures task is not soft deleted
-        // });
-
-
+        $query = TaskAssignee::whereIn('task_id', function ($subquery) {
+            $subquery->select('id')
+                     ->from('tasks')
+                     ->whereNull('deleted_at'); // Ensures task is not soft deleted
+        });
+        
+        
 
          $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
@@ -2346,7 +2346,7 @@ $encryptedId = encrypt($row->task_id);
             $query->whereIn('user_id', $hierarchyUserIds)->whereNot('status',2)->whereNull('deleted_at');
         }
         $tasks = $query;
-        return DataTables::of($tasks)
+              return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task=  encrypt($row->id);
