@@ -589,6 +589,7 @@
                         "{{ route('tasks.total_task_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
             @endif
+            let ajaxRequest; 
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
                 processing: true,
@@ -612,9 +613,7 @@
                         modifier: {
                             length: -1
                         },
-                        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20,
-                            21
-                        ]
+                        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,23, 13, 14, 15, 16, 17, 18, 19, 20,21,22]
                     }
                 }],
 
@@ -1242,6 +1241,11 @@
                 }
             });
         });
+        $(window).on("beforeunload", function () {
+    if (ajaxRequest) {
+        ajaxRequest.abort();
+    }
+});
     </script>
     {{-- Page js files --}}
 @endsection
@@ -1259,6 +1263,7 @@
         }
         return false;
     }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 

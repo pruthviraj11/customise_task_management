@@ -171,6 +171,15 @@
                 "task-list",
                 "task-create"
             ]
+        }, {
+            "url": "app/task/deleted",
+            "name": "Deleted Task",
+            "icon": "trash",
+            "slug": "app-task-get-deleted",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
         },
         {
             "url": "app/roles/list",
