@@ -11,6 +11,17 @@
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/responsive.bootstrap5.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/buttons.bootstrap5.min.css')) }}">
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/rowGroup.bootstrap5.min.css')) }}">
+   <!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+<!-- DataTables and Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+
 
 @endsection
 
@@ -589,12 +600,11 @@
                         "{{ route('tasks.total_task_footer_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'total_task']) }}";
                 }
             @endif
-            let ajaxRequest; 
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
                 processing: true,
                 serverSide: true,
-                // pageLength: 10,
+                pageLength: 10,
                 filter: true,
                 deferRender: true,
                 // responsive: true,
@@ -610,11 +620,13 @@
                     filename: 'Task',
                     className: 'btn btn-success btn-sm',
                     exportOptions: {
-                        modifier: {
-                            length: -1
-                        },
-                        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,23, 13, 14, 15, 16, 17, 18, 19, 20,21,22]
-                    }
+    modifier: {
+        search: 'applied',
+        order: 'applied'
+    },
+    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+}
+
                 }],
 
                 ajax: {
@@ -828,53 +840,84 @@
                     column.visible($(this).prop('checked'));
                 });
             });
+// 03-03-2025
+            // function newexportaction(e, dt, button, config) {
+            //     var self = this;
+            //     var oldStart = dt.settings()[0]._iDisplayStart;
+            //     dt.one('preXhr', function(e, s, data) {
+            //         // Just this once, load all data from the server...
+            //         data.start = 0;
+            //         data.length = 2147483647;
+            //         dt.one('preDraw', function(e, settings) {
+            //             // Call the original action function
+            //             if (button[0].className.indexOf('buttons-copy') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button,
+            //                     config);
+            //             } else if (button[0].className.indexOf('buttons-excel') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt,
+            //                         button, config) :
+            //                     $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt,
+            //                         button, config);
+            //             } else if (button[0].className.indexOf('buttons-csv') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button,
+            //                         config) :
+            //                     $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button,
+            //                         config);
+            //             } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
+            //                     $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
+            //                         config) :
+            //                     $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button,
+            //                         config);
+            //             } else if (button[0].className.indexOf('buttons-print') >= 0) {
+            //                 $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
+            //             }
+            //             dt.one('preXhr', function(e, s, data) {
+            //                 settings._iDisplayStart = oldStart;
+            //                 data.start = oldStart;
+            //             });
+            //             // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
+            //             setTimeout(dt.ajax.reload, 0);
+            //             // Prevent rendering of the full data to the DOM
+            //             return false;
+            //         });
+            //     });
+            //     // Requery the server with the new one-time export settings
+            //     dt.ajax.reload();
+            // }
+// 03-03-2025
+function newexportaction(e, dt, button, config) {
+    var self = this;
+    var oldStart = dt.settings()[0]._iDisplayStart;
 
-            function newexportaction(e, dt, button, config) {
-                var self = this;
-                var oldStart = dt.settings()[0]._iDisplayStart;
-                dt.one('preXhr', function(e, s, data) {
-                    // Just this once, load all data from the server...
-                    data.start = 0;
-                    data.length = 2147483647;
-                    dt.one('preDraw', function(e, settings) {
-                        // Call the original action function
-                        if (button[0].className.indexOf('buttons-copy') >= 0) {
-                            $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button,
-                                config);
-                        } else if (button[0].className.indexOf('buttons-excel') >= 0) {
-                            $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
-                                $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt,
-                                    button, config) :
-                                $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt,
-                                    button, config);
-                        } else if (button[0].className.indexOf('buttons-csv') >= 0) {
-                            $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
-                                $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button,
-                                    config) :
-                                $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button,
-                                    config);
-                        } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
-                            $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
-                                $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
-                                    config) :
-                                $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button,
-                                    config);
-                        } else if (button[0].className.indexOf('buttons-print') >= 0) {
-                            $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
-                        }
-                        dt.one('preXhr', function(e, s, data) {
-                            settings._iDisplayStart = oldStart;
-                            data.start = oldStart;
-                        });
-                        // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
-                        setTimeout(dt.ajax.reload, 0);
-                        // Prevent rendering of the full data to the DOM
-                        return false;
-                    });
-                });
-                // Requery the server with the new one-time export settings
-                dt.ajax.reload();
+    dt.one('preXhr', function(e, s, data) {
+        data.start = 0;
+        data.length = dt.page.info().recordsTotal; // Fetch all records
+
+        dt.one('preDraw', function(e, settings) {
+            // Perform export
+            if (button.hasClass('buttons-excel')) {
+                $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
+            } else if (button.hasClass('buttons-csv')) {
+                $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button, config);
+            } else if (button.hasClass('buttons-pdf')) {
+                $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button, config);
             }
+
+            // Restore previous pagination
+            settings._iDisplayStart = oldStart;
+            setTimeout(function() {
+                dt.ajax.reload();
+            }, 0);
+        });
+    });
+
+    dt.ajax.reload(); // Do not remove this, ensures export is performed after full data load
+}
+
+
 
             // Apply Filters
             $('#apply-filters').on('click', function() {
@@ -1241,11 +1284,7 @@
                 }
             });
         });
-        $(window).on("beforeunload", function () {
-    if (ajaxRequest) {
-        ajaxRequest.abort();
-    }
-});
+
     </script>
     {{-- Page js files --}}
 @endsection

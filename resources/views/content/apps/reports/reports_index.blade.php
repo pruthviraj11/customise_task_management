@@ -95,6 +95,7 @@
         <div class="card-header">
             <h4>Task Report</h4>
         </div>
+        @if (auth()->user()->hasRole('Super Admin'))
         <div class="card-body ">
             <table id="g7-table" class="table table-bordered w-100">
                 <thead>
@@ -269,7 +270,7 @@
             </table>
         </div>
     </div>
-
+@endif
     <div class="card table-responsive">
         <div class="card-header">
             <div class="row text-center mt-2">
