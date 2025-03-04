@@ -8553,7 +8553,7 @@ class TaskController extends Controller
                     });
             });
         }
-        dd($tasks->get());
+        // dd($tasks->get());
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
