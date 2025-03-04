@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 
+use App\Exports\DashboardTaskExport;
 use App\Models\TaskAssignee;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ use App\Models\Task;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\Department;
+use Maatwebsite\Excel\Facades\Excel;
 
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
@@ -200,6 +202,11 @@ class DashboardCUstomizedController extends Controller
 
         // dd('heare');
         return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos', 'total_task_count'));
+    }
+
+    public function dashboardTaskExport()
+    {
+        return Excel::download(new DashboardTaskExport, 'tasks.xlsx');
     }
     public function activity()
     {

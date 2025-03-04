@@ -387,6 +387,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::post('task/pin', [TaskController::class, 'pinTask'])->name('app-task-pin');
 
 
+    Route::get('/export-dashboard_tasks', [DashboardCUstomizedController::class, 'dashboardTaskExport'])->name('export.dashboard_total_tasks');
+
     Route::get('task/getAll/requested', [TaskController::class, 'getAll_requested'])->name('app-task-get-requested');
     Route::get('task/getAll/accepted', [TaskController::class, 'getAll_accepted'])->name('app-task-get-accepted');
     Route::get('task/getAll/{encrypted_id}', [TaskController::class, 'accept_task'])->name('app-task-accept');

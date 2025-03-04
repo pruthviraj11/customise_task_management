@@ -42,6 +42,9 @@
                             </span>
                         </div>
                     </div>
+                    <div class="card-footer text-center">
+                        <a href="{{ route('export.dashboard_total_tasks') }}" class="btn btn-success">Export to Excel</a>
+                    </div>
                 </div>
             </div>
 
