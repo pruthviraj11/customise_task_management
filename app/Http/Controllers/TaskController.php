@@ -2310,9 +2310,9 @@ class TaskController extends Controller
 
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks->whereNull('deleted_at')->whereNot('status', 2);
+            $tasks->whereNull('deleted_at')->where('status', 1);
         } else {
-            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNot('status', 2)->whereNull('deleted_at');
+            $tasks->whereIn('user_id', $hierarchyUserIds)->where('status', 1)->whereNull('deleted_at');
         }
 
         // Search functionality

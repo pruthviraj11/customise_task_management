@@ -96,34 +96,32 @@
             <h4>Task Report</h4>
         </div>
         @if (auth()->user()->hasRole('Super Admin'))
-        <div class="card-body ">
-            <table id="g7-table" class="table table-bordered w-100">
-                <thead>
-                    <tr>
-                        <th>G7 Name</th>
-                        <th>Users Status</th>
-                        <th>Total Task</th>
-                        <th>Total Completed Task</th>
-                        <th>Completion %</th>
-                        <th>Total Pending Tasks till Yesterday (Opening for today)</th>
-                        <th>Tasks Added On the Reporting Date</th>
-                        <th>Tasks Completed on the Reporting Date</th>
-                        <th>Total Pending Tasks till Yesterday (Closing for today)</th>
-                        <th>Overdue Task as on Date</th>
-                        <th>% Overdue Task</th>
-                        <th>Conceptualization</th>
-                        <th>Scope Defined</th>
-                        <th>In Execution</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="card-body ">
+                <table id="g7-table" class="table table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>G7 Name</th>
+                            <th>Users Status</th>
+                            <th>Total Task</th>
+                            <th>Total Completed Task</th>
+                            <th>Completion %</th>
+                            <th>Total Pending Tasks till Yesterday (Opening for today)</th>
+                            <th>Tasks Added On the Reporting Date</th>
+                            <th>Tasks Completed on the Reporting Date</th>
+                            <th>Total Pending Tasks till Yesterday (Closing for today)</th>
+                            <th>Overdue Task as on Date</th>
+                            <th>% Overdue Task</th>
+                            <th>Conceptualization</th>
+                            <th>Scope Defined</th>
+                            <th>In Execution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
     </div>
-
-
     @endif
 
     <div class="card table-responsive">
@@ -151,11 +149,11 @@
                         <th>Particulars</th>
                         @foreach ($table_data as $users)
                             <th>
-                                @if ($loop->first)
-                                    Self
-                                @else
-                                    {{ $users['user_name'] }}
-                                @endif
+                                {{-- @if ($loop->first) --}}
+                                {{-- Self --}}
+                                {{-- @else --}}
+                                {{ $users['user_name'] }}
+                                {{-- @endif --}}
                             </th>
                         @endforeach
                         <th>Total</th> <!-- Add the Total column header -->
@@ -296,11 +294,8 @@
                         <th>Particulars</th>
                         @foreach ($table_data as $users)
                             <th>
-                                @if ($loop->first)
-                                    Self
-                                @else
-                                    {{ $users['user_name'] }}
-                                @endif
+
+                                {{ $users['user_name'] }}
                             </th>
                         @endforeach
                         <th>Total</th> <!-- Add the Total column header -->

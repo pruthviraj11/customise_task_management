@@ -48,58 +48,80 @@ class ReportsController extends Controller
         foreach ($users as $user) {
             $departmentName = $user->department->department_name ?? 'No Department';
 
-            $totalTasksTillYesterday = TaskAssignee::where('user_id', $user->id)
+            $totalTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
                 // ->whereDate('created_at', '<=', now()->subDay())
                 ->count();
 
-            $totalPendingTasksTillYesterday = TaskAssignee::where('user_id', $user->id)
+            $totalPendingTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
                 ->whereDate('created_at', '<=', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->count();
 
-            $tasksAddedToday = TaskAssignee::where('user_id', $user->id)
+            $tasksAddedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->count();
 
-            $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)
+            $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->where('task_status', 4)
                 ->whereDate('created_at', today())
                 ->count();
 
-            $taskReportDate = TaskAssignee::where('user_id', $user->id)
+            $taskReportDate = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 // ->whereDate('created_at', today())
                 ->count();
 
-            $totalPendingTask = TaskAssignee::where('user_id', $user->id)
+            $totalPendingTask = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->whereDate('created_at', today())
                 ->count();
 
-            $totalOverdueTasksTillReportDate = TaskAssignee::where('user_id', $user->id)
+            $totalOverdueTasksTillReportDate = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('due_date', '<', now()->subDay())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->count();
 
-            $totalTasksConceptualization = TaskAssignee::where('user_id', $user->id)
+            $totalTasksConceptualization = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->where('task_status', 1)
                 ->count();
 
-            $totalTasksScopeDefined = TaskAssignee::where('user_id', $user->id)
+            $totalTasksScopeDefined = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->where('task_status', 3)
                 ->count();
 
-            $totalTasksInExecution = TaskAssignee::where('user_id', $user->id)
+            $totalTasksInExecution = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->where('task_status', 5)
                 ->whereNotIn('task_status', [4, 7, 6])
 
                 ->count();
 
-            $totalStatusCount = TaskAssignee::where('user_id', $user->id)
+            $totalStatusCount = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->whereIn('task_status', [1, 3, 5])
@@ -433,7 +455,7 @@ class ReportsController extends Controller
     {
         $userId = Auth()->user()->id;
         $projectOptions = Project::get(); // Fetch all projects
-        $statusOptions = Status::where('status','on')->where('disabled',0)->get(); // Fetch all projects
+        $statusOptions = Status::where('status', 'on')->where('disabled', 0)->get(); // Fetch all projects
         $loggedInUser = auth()->user();
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser)); // Merge logged-in user and their subordinates
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
@@ -466,7 +488,7 @@ class ReportsController extends Controller
         }
 
         // Return the view with the required variables
-        return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate','statusOptions'));
+        return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate', 'statusOptions'));
     }
 
 
@@ -610,5 +632,4 @@ class ReportsController extends Controller
             'paceRate' => number_format($paceRate * 100, 2)
         ]);
     }
-
 }
