@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 
+use App\Models\TaskAssignee;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
@@ -13,7 +14,6 @@ use App\Models\Task;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\Department;
-use App\Models\TaskAssignee;
 
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
@@ -192,9 +192,14 @@ class DashboardCUstomizedController extends Controller
         $statusinfos = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
 
 
+        $total_task_count = TaskAssignee::leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
+            ->whereNull('task_assignees.deleted_at')->where('task_assignees.status',1)->count();
 
         // dd('heare');
-        return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos'));
+        return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos', 'total_task_count'));
     }
     public function activity()
     {
@@ -553,7 +558,7 @@ class DashboardCUstomizedController extends Controller
         $loggedInUser = auth()->user();
         $userId = $loggedInUser->id;
 
-            $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
 
         // dd($users);
 
