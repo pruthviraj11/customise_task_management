@@ -51,7 +51,7 @@ class ReportsController extends Controller
             $totalTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })
-                // ->whereDate('created_at', '<=', now()->subDay())
+                ->whereDate('created_at', '<', now()->startOfDay()) // Ensures only tasks created before today
                 ->count();
 
             $totalPendingTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
@@ -74,17 +74,17 @@ class ReportsController extends Controller
                 ->whereDate('created_at', today())
                 ->count();
 
-            $taskReportDate = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
-                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-            })->where('status', 1)
-                // ->whereDate('created_at', today())
+            $taskReportDate = TaskAssignee::where('user_id', $user->id)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })->where('status', 1)
                 ->count();
 
             $totalPendingTask = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
                 ->whereNotIn('task_status', [4, 7, 6])
-                ->whereDate('created_at', today())
+                // ->whereDate('created_at', today())
                 ->count();
 
             $totalOverdueTasksTillReportDate = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
@@ -97,7 +97,7 @@ class ReportsController extends Controller
             $totalTasksConceptualization = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereDate('created_at', today())
+                // ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->where('task_status', 1)
                 ->count();
@@ -105,7 +105,7 @@ class ReportsController extends Controller
             $totalTasksScopeDefined = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereDate('created_at', today())
+                // ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->where('task_status', 3)
                 ->count();
@@ -113,16 +113,22 @@ class ReportsController extends Controller
             $totalTasksInExecution = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereDate('created_at', today())
+                // ->whereDate('created_at', today())
                 ->where('task_status', 5)
                 ->whereNotIn('task_status', [4, 7, 6])
 
+                ->count();
+            $totalTasksHold = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->where('status', 1)
+                // ->whereDate('created_at', today())
+                ->where('task_status', 6)
                 ->count();
 
             $totalStatusCount = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereDate('created_at', today())
+                // ->whereDate('created_at', today())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->whereIn('task_status', [1, 3, 5])
                 ->count();
@@ -141,6 +147,7 @@ class ReportsController extends Controller
                 'totalTasksConceptualization' => $totalTasksConceptualization,
                 'totalTasksScopeDefined' => $totalTasksScopeDefined,
                 'totalTasksInExecution' => $totalTasksInExecution,
+                'totalTasksHold' => $totalTasksHold,
                 'totalStatusCount' => $totalStatusCount
             ];
         }
@@ -391,7 +398,7 @@ class ReportsController extends Controller
                 ->count();
 
             $totalPendingTask = TaskAssignee::where('user_id', $user->id)
-                ->whereNotIn('task_status', [4, 7, 6])
+                ->whereNotIn('task_status', [4, 7])
                 ->count();
 
             $totalOverdueTasksLastWeek = TaskAssignee::where('user_id', $user->id)
