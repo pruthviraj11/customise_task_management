@@ -556,8 +556,7 @@
             var table = $('#tasks-table').DataTable({
                 dom: '<"export-buttons"B>lfrtip',
                 processing: true,
-                // serverSide: true,
-                serverSide: false,
+                serverSide: true,
                 pageLength: 10,
                 filter: true,
                 deferRender: true,

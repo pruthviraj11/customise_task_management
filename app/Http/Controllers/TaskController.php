@@ -783,7 +783,7 @@ class TaskController extends Controller
         // Fetch tasks assigned to the user but created by the authenticated user
         $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->whereNotIn('task_assignees.task_status', ['4', '7'])
+            // ->whereNotIn('task_assignees.task_status', ['4', '7'])
             ->where('task_assignees.created_by', $userId)
             ->whereDoesntHave('user', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -812,6 +812,7 @@ class TaskController extends Controller
                     });
             });
         }
+        // dd($tasks->get());
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 $encryptedId_sub_task =  encrypt($row->id);
@@ -8517,7 +8518,7 @@ class TaskController extends Controller
                 'task.assignees' => function ($query) {
                     $query->select('task_id', 'status', 'remark'); // Customize as needed
                 },
-                'task.creator',  // Task creator
+                // 'task.creator',  // Task creator
                 'task.taskStatus',  // Task status
                 'task.project',  // Task project
                 'task.department',  // Task department
@@ -8550,6 +8551,7 @@ class TaskController extends Controller
                     });
             });
         }
+        dd($tasks->get());
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
