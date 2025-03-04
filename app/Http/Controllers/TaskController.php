@@ -40,6 +40,7 @@ use App\Exports\TotalTasksExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Imports\TaskUpdateImport;
+
 class TaskController extends Controller
 {
     protected TaskService $taskService;
@@ -228,7 +229,6 @@ class TaskController extends Controller
                 $task->save();
             }
         }
-
     }
 
     public function view($encrypted_id)
@@ -279,7 +279,6 @@ class TaskController extends Controller
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
-
     }
 
     public function recview($encrypted_id)
@@ -320,7 +319,6 @@ class TaskController extends Controller
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
         }
-
     }
 
     public function kanban($type = null)
@@ -355,7 +353,7 @@ class TaskController extends Controller
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1 '  href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
             // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -375,7 +373,6 @@ class TaskController extends Controller
             } else {
                 return "-";
             }
-
         })->addColumn('task_status_name', function ($row) {
             return $row->taskStatus->status_name ?? "-";
         })
@@ -384,11 +381,9 @@ class TaskController extends Controller
             })
             ->addColumn('department_name', function ($row) {
                 return $row->department->department_name ?? "";
-
             })->addColumn('sub_department_name', function ($row) {
 
                 return $row->sub_department->sub_department_name ?? "-";
-
             })
 
             ->addColumn('created_by_department', function ($row) {
@@ -412,9 +407,7 @@ class TaskController extends Controller
             })->addColumn('description', function ($row) {
                 $description = html_entity_decode($row->description);
                 return $description;
-
             })->rawColumns(['actions'])->make(true);
-
     }
     /*25-10
         public function getAll_mytask()
@@ -437,7 +430,7 @@ class TaskController extends Controller
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
                 // Delete Button
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -522,7 +515,7 @@ class TaskController extends Controller
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
             // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete btn-sm' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -629,7 +622,7 @@ class TaskController extends Controller
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
             // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm mx-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete btn-sm mx-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -705,12 +698,12 @@ class TaskController extends Controller
     //     // dd($tasks);
     //     return DataTables::of($tasks)->addColumn('actions', function ($row) {
     //         $encryptedId_sub_task=  encrypt($row->id);
-// $encryptedId = encrypt($row->task_id);
+    // $encryptedId = encrypt($row->task_id);
     //         // Update Button
     //         $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
     //         // Delete Button
-    //         $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //         $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
     //         $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
     //         $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
@@ -821,8 +814,8 @@ class TaskController extends Controller
         }
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
 
                 $updateButton = '';
                 $deleteButton = '';
@@ -832,21 +825,19 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
 
                 // Update Button
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
-                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
@@ -917,7 +908,6 @@ $encryptedId = encrypt($row->task_id);
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
-
     }
 
     public function getAll_requested_me()
@@ -943,7 +933,7 @@ $encryptedId = encrypt($row->task_id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
 
             // Delete Button
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
@@ -1022,7 +1012,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
     public function getAll_kanban_total_task()
     {
@@ -1066,7 +1055,6 @@ $encryptedId = encrypt($row->task_id);
                         $q->whereIn('user_id', $addedUserIds);
                     });
             });
-
         }
 
         $tasks = $query->select('tasks.*')->get();
@@ -1097,7 +1085,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
     public function getAll_kanban_mytask()
     {
@@ -1142,7 +1129,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
 
     public function getAll_kanban_main()
@@ -1155,7 +1141,6 @@ $encryptedId = encrypt($row->task_id);
             $tasks = Task::whereNull('deleted_at')->get();
         } else {
             $tasks = Task::where('created_by', $userId)->whereNull('deleted_at')->get();
-
         }
 
 
@@ -1190,7 +1175,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
 
     public function getAll_kanban_dueDatePast()
@@ -1201,7 +1185,7 @@ $encryptedId = encrypt($row->task_id);
         $userId = auth()->user()->id;
 
 
-         $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title')->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today())
@@ -1247,7 +1231,6 @@ $encryptedId = encrypt($row->task_id);
 
 
         return response()->json($res);
-
     }
 
     public function getAll_kanban_pendingTask()
@@ -1257,7 +1240,7 @@ $encryptedId = encrypt($row->task_id);
         // $tasks = $this->taskService->getAlltask()->toArray();
         $userId = auth()->user()->id;
 
- $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $tasks = TaskAssignee::select('task_assignees.*', 'tasks.title', 'tasks.id as id_task')
@@ -1301,7 +1284,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
 
     public function getAll_kanban_completedTask()
@@ -1355,7 +1337,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
 
     public function getAll_kanban_assign_by_me()
@@ -1397,7 +1378,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
     public function getAll_kanban_accepted()
     {
@@ -1440,7 +1420,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
     public function getAll_kanban_requested()
     {
@@ -1490,7 +1469,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
     public function getAll_kanban_all()
     {
@@ -1534,7 +1512,6 @@ $encryptedId = encrypt($row->task_id);
         }
 
         return response()->json($res);
-
     }
 
 
@@ -1569,13 +1546,11 @@ $encryptedId = encrypt($row->task_id);
             //     ->get();
 
             $query->whereNotIn('task_status', ['4', '7'])->where('created_by', $user->id)->whereNull('deleted_at')->get();
-
         }
 
         if ($task_filter = $request->input('task')) {
             // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
             $query->where('ticket', $task_filter);
-
         }
 
         if ($department_filter = $request->input('department')) {
@@ -1663,10 +1638,10 @@ $encryptedId = encrypt($row->task_id);
             $acceptButton = '';
             if (auth()->user()->id == '1') {
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             }
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -1779,7 +1754,6 @@ $encryptedId = encrypt($row->task_id);
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
             $query->whereNull('deleted_at')->get();
-
         } else {
 
             // $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -1793,7 +1767,6 @@ $encryptedId = encrypt($row->task_id);
             //     ->get();
 
             $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
-
         }
 
 
@@ -1939,8 +1912,8 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -1950,17 +1923,15 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -2072,8 +2043,8 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -2085,17 +2056,15 @@ $encryptedId = encrypt($row->task_id);
                         // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -2185,7 +2154,7 @@ $encryptedId = encrypt($row->task_id);
         $query = TaskAssignee::query();
         // dd(today());
 
-         $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereIn('task_status', ['4', '7']);
@@ -2205,8 +2174,8 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($query)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -2216,17 +2185,15 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -2320,37 +2287,70 @@ $encryptedId = encrypt($row->task_id);
     }
     public function getAll_overallTask(Request $request)
     {
-        $userId = Auth()->user()->id;
         $loggedInUser = auth()->user();
-
-        ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-        // $query = TaskAssignee::query();
-        // dd(today());
-        $query = TaskAssignee::whereIn('task_id', function ($subquery) {
-            $subquery->select('id')
-                     ->from('tasks')
-                     ->whereNull('deleted_at'); // Ensures task is not soft deleted
-        });
-        
-        
 
-         $loggedInUser = auth()->user();
+        // Base query
+        $tasks = TaskAssignee::with([
+            'task',
+            'creator',
+            'user',
+            'taskStatus',
+            'department_data',
+            'sub_department_data',
+            'task.project',
+            'creator.department',
+            'creator.sub_department'
+        ])->whereIn('task_id', function ($subquery) {
+            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        });
+
+        // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            // Admin fetches tasks by their statuses
-            $query->whereNull('deleted_at')->whereNot('status',2);
+            $tasks->whereNull('deleted_at')->whereNot('status', 2);
         } else {
-            // User-specific task filters
-            $query->whereIn('user_id', $hierarchyUserIds)->whereNot('status',2)->whereNull('deleted_at');
+            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNot('status', 2)->whereNull('deleted_at');
         }
-        $tasks = $query;
-              return DataTables::of($tasks)
+
+        // Search functionality
+        if ($request->has('search') && $request->get('search')['value']) {
+            $search = $request->get('search')['value'];
+
+            $tasks->where(function ($query) use ($search) {
+                $query->whereHas('task', function ($taskQuery) use ($search) {
+                    $taskQuery->where('title', 'LIKE', "%{$search}%")
+                        ->orWhere('description', 'LIKE', "%{$search}%")
+                        ->orWhere('subject', 'LIKE', "%{$search}%");
+                })
+                    ->orWhere('task_number', 'LIKE', "%{$search}%")
+                    ->orWhere('remark', 'LIKE', "%{$search}%")
+                    // ->orWhereHas('creator', function ($creatorQuery) use ($search) {
+                    //     $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
+                    //         ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    // })
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
+                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
+                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('task.project', function ($projectQuery) use ($search) {
+                        $projectQuery->where('project_name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -2360,17 +2360,15 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -2450,6 +2448,9 @@ $encryptedId = encrypt($row->task_id);
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
+
+
+
     public function getAll_requested()
     {
         $user = auth()->user();
@@ -2481,7 +2482,7 @@ $encryptedId = encrypt($row->task_id);
 
 
             $encryptedId = encrypt($row->task->id);
-            $encryptedId_sub_task=  encrypt($row->id);
+            $encryptedId_sub_task =  encrypt($row->id);
             // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
             $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
@@ -2489,7 +2490,7 @@ $encryptedId = encrypt($row->task_id);
             $rejectButton = "<a href='#' class='btn-sm  btn-danger btn-sm me-1 reject-btn' data-bs-toggle='tooltip' data-bs-placement='top' title='Reject Task' data-id='$encryptedId' data-toggle='modal' data-target='#exampleModal'><i class='ficon' data-feather='x-circle'></i></a>";
 
 
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
 
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
@@ -2671,8 +2672,8 @@ $encryptedId = encrypt($row->task_id);
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
 
                 $updateButton = '';
                 $deleteButton = '';
@@ -2682,19 +2683,17 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success accept-task me-1' data-idos='" . $encryptedId . "' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -2814,19 +2813,18 @@ $encryptedId = encrypt($row->task_id);
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -2916,35 +2914,31 @@ $encryptedId = encrypt($row->task_id);
         // dd($type);
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
-
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
-
         } elseif ($type == 'total_task') {
             $tasks_A = TaskAssignee::where('user_id', $user)->where('task_status', $status_id)->where('created_by', $user_id)->get();
 
             $tasks_B = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
 
             $tasks = $tasks_A->merge($tasks_B);
-
         }
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3055,25 +3049,23 @@ $encryptedId = encrypt($row->task_id);
                 ->get();
 
             $tasks = $tasks_A->merge($tasks_B);
-
         }
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3179,7 +3171,6 @@ $encryptedId = encrypt($row->task_id);
                 ->whereNotIn('task_status', [4, 7])
                 ->whereDate('due_date', '<', $cdate)
                 ->get();
-
         } elseif ($type == 'requested_by_me') {
             // $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user_id)
             //     ->where('created_by', $user)
@@ -3239,19 +3230,18 @@ $encryptedId = encrypt($row->task_id);
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3348,7 +3338,6 @@ $encryptedId = encrypt($row->task_id);
                 ->whereNotIn('task_status', [4, 7])
                 ->whereDate('due_date', '=', $cdate)
                 ->get();
-
         } elseif ($type == 'requested_by_me') {
 
             $tasksData = TaskAssignee::where('user_id', $user_id)
@@ -3356,7 +3345,6 @@ $encryptedId = encrypt($row->task_id);
                 ->whereNotIn('task_status', [4, 7])
                 ->whereDate('due_date', '=', $cdate)
                 ->get();
-
         } elseif ($type == 'total_task') {
             $today_tasks_A = TaskAssignee::where('user_id', $user)
                 ->where('created_by', $user_id)
@@ -3372,25 +3360,23 @@ $encryptedId = encrypt($row->task_id);
                 ->get();
 
             $tasksData = $today_tasks_A->merge($today_tasks_B);
-
         }
         return DataTables::of($tasksData)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3503,26 +3489,23 @@ $encryptedId = encrypt($row->task_id);
                 ->get();
 
             $tasks = $tasks_A->merge($tasks_B);
-
-
         }
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3633,26 +3616,23 @@ $encryptedId = encrypt($row->task_id);
                 ->get();
 
             $tasks = $tasks_A->merge($tasks_B);
-
-
         }
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -3775,12 +3755,8 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 2) //
         {
-
-
         } elseif ($status_id == 3) //Scope Defined
         {
 
@@ -3794,7 +3770,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 4) //In Execution
         {
             foreach ($user_ids as $user_id) {
@@ -3819,7 +3794,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 6)  //pending
         {
 
@@ -3833,7 +3807,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 7) //For OverDue
         {
 
@@ -3866,8 +3839,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 9)     // For Completed
         {
             foreach ($user_ids as $user_id) {
@@ -3921,19 +3892,18 @@ $encryptedId = encrypt($row->task_id);
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -4013,8 +3983,6 @@ $encryptedId = encrypt($row->task_id);
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
-
-
     }
 
     public function requestedByUsFooterTotalTasks($user_id, $status_id, $type)
@@ -4053,12 +4021,8 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 2) //
         {
-
-
         } elseif ($status_id == 3) //Scope Defined
         {
 
@@ -4072,7 +4036,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 4) //In Execution
         {
             foreach ($user_ids as $user_id) {
@@ -4097,7 +4060,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 6)  //pending
         {
 
@@ -4111,7 +4073,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 7) //For OverDue
         {
 
@@ -4144,8 +4105,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 9)     // For Completed
         {
             foreach ($user_ids as $user_id) {
@@ -4201,19 +4160,18 @@ $encryptedId = encrypt($row->task_id);
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -4282,8 +4240,6 @@ $encryptedId = encrypt($row->task_id);
 
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
-
-
     }
 
     public function totalTaskFooterTotalTasks($user_id, $status_id, $type)
@@ -4339,12 +4295,8 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 2) //
         {
-
-
         } elseif ($status_id == 3) //Scope Defined
         {
 
@@ -4370,7 +4322,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 4) //In Execution
         {
             foreach ($user_ids as $user_id) {
@@ -4408,7 +4359,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 6)  //pending
         {
 
@@ -4428,7 +4378,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         } elseif ($status_id == 7) //For OverDue
         {
 
@@ -4477,8 +4426,6 @@ $encryptedId = encrypt($row->task_id);
                 $tasksData = $tasksDataA->merge($tasksDataB);
                 $tasks = $tasks->merge($tasksData);
             }
-
-
         } elseif ($status_id == 9)     // For Completed
         {
             foreach ($user_ids as $user_id) {
@@ -4557,7 +4504,6 @@ $encryptedId = encrypt($row->task_id);
 
                 $tasks = $tasks->merge($tasksData);
             }
-
         }
 
 
@@ -4565,19 +4511,18 @@ $encryptedId = encrypt($row->task_id);
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -4657,8 +4602,6 @@ $encryptedId = encrypt($row->task_id);
 
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username'])
             ->make(true);
-
-
     }
 
     // 27-06
@@ -4684,7 +4627,7 @@ $encryptedId = encrypt($row->task_id);
     //         return redirect()->route("app-task-requested")->with('error', 'Error while Accepting Task');
     //     }
     // }
-// 27-06
+    // 27-06
     public function accept_task($encrypted_id)
     {
         try {
@@ -5231,7 +5174,6 @@ $encryptedId = encrypt($row->task_id);
             if ($request->get('task_status') == 7) {
                 $taskData['close_date'] = now()->format('Y-m-d H:i:s');
                 $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
-
             }
 
             // Create the task
@@ -5290,7 +5232,6 @@ $encryptedId = encrypt($row->task_id);
                     'created_by' => auth()->user()->id,
                     'created_at' => now(),  // Use the current timestamp for created_at
                 ]);
-
             }
             $task = Task::where('id', $task->id)->first();
             $task->last_task_number = $taskNumber;
@@ -5373,7 +5314,6 @@ $encryptedId = encrypt($row->task_id);
                         // Remove hyphen and cast the task number to integer for correct sorting
                         return (int) str_replace('-', '', $subtask->task_number);
                     });
-
             } else {
                 $SubTaskData = TaskAssignee::where('task_id', $task->id)
                     ->where(function ($query) {
@@ -5417,7 +5357,6 @@ $encryptedId = encrypt($row->task_id);
                 return view('.content.apps.task.create-edit', compact('page_data', 'task', 'data', 'taskAss', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
             } else {
                 return view('.content.apps.task.assigne-create-edit', compact('page_data', 'task', 'taskAss', 'data', 'departmentslist', 'projects', 'Maintask', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'SubTaskData', 'getTaskComments'));
-
             }
         } catch (\Exception $error) {
             dd($error->getMessage());
@@ -5451,7 +5390,6 @@ $encryptedId = encrypt($row->task_id);
         return response()->json([
             'error' => 'TaskAssignee not found.',
         ], 404);
-
     }
     public function recurringedit($encrypted_id)
     {
@@ -5486,7 +5424,6 @@ $encryptedId = encrypt($row->task_id);
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
 
             return view('.content.apps.task.recurring-create-edit', compact('page_data', 'task', 'data', 'departmentslist', 'projects', 'users', 'departments', 'Subdepartments', 'Status', 'Prioritys', 'associatedSubDepartmentId', 'assignedUserIds', 'attachmentsrec', 'NotCompletedtask'));
-
         } catch (\Exception $error) {
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
@@ -5977,7 +5914,6 @@ $encryptedId = encrypt($row->task_id);
                         'updated_at' => Carbon::now(),
                     ]);
                     $lastSequentialNumber++;
-
                 }
 
                 // Increment the sequential number for the next user
@@ -6087,7 +6023,6 @@ $encryptedId = encrypt($row->task_id);
             } else {
                 return redirect()->back()->with('error', 'Error while updating task');
             }
-
         } catch (\Exception $error) {
             dd($error->getMessage());
             return redirect()->route("app-task-list")->with('error', 'Error while editing Task');
@@ -6153,8 +6088,6 @@ $encryptedId = encrypt($row->task_id);
             'message' => 'Task canceled successfully',
             'subtask' => $recurring_task, // Include the updated task details
         ]);
-
-
     }
 
     public function recurringUpdate(UpdateTaskRequest $request, $encrypted_id)
@@ -6359,7 +6292,7 @@ $encryptedId = encrypt($row->task_id);
             // $taskData['deleted_by'] = Auth()->user()->id;
             // $updated = $this->taskService->updatetask($id, $taskData);
             // $deleted = $this->taskService->deletetask($id);\
-       $deleted  = TaskAssignee::where('id', $id)->delete();
+            $deleted  = TaskAssignee::where('id', $id)->delete();
 
             // Delete the task
             // $task->delete();
@@ -6423,7 +6356,7 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6490,7 +6423,7 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6602,7 +6535,7 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6663,14 +6596,14 @@ $encryptedId = encrypt($row->task_id);
                 $query->where('user_id', $userId);
                 // ->where('status', 1);
             });
-         $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 3);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6731,14 +6664,14 @@ $encryptedId = encrypt($row->task_id);
                 $query->where('user_id', $userId);
                 // ->where('status', 1);
             });
-         $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = Task::where('task_status', 4);
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6806,7 +6739,7 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6868,15 +6801,13 @@ $encryptedId = encrypt($row->task_id);
             $tasks = Task::where('task_status', 6)
                 ->whereHas('assignees', function ($query) use ($userId) {
                     $query->where('user_id', $userId);
-
                 });
-
         }
 
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete d-none me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -6927,7 +6858,6 @@ $encryptedId = encrypt($row->task_id);
                 $description = html_entity_decode($row->description);
                 return $description;
             })->rawColumns(['actions'])->make(true);
-
     }
 
     public function getAll_admin_acc()
@@ -6939,11 +6869,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
-
         })->addColumn('created_by_username', function ($row) {
             return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
         })->addColumn('task_Assign', function ($row) {
@@ -6987,7 +6916,6 @@ $encryptedId = encrypt($row->task_id);
                 $description = html_entity_decode($row->description);
                 return $description;
             })->rawColumns(['actions'])->make(true);
-
     }
     public function getAll_deleted()
     {
@@ -7020,12 +6948,11 @@ $encryptedId = encrypt($row->task_id);
         //         'task.sub_department',
         //         'task.comments'
         //     ]);
- if ($loggedInUser->hasRole('Super Admin')) {
+        if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = TaskAssignee::withTrashed();
-
         } else {
- $tasks=TaskAssignee::withTrashed()->where('created_by',$userId);
-    }
+            $tasks = TaskAssignee::withTrashed()->where('created_by', $userId);
+        }
 
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
@@ -7033,132 +6960,130 @@ $encryptedId = encrypt($row->task_id);
 
             $buttons = $updateButton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
+        })
+            // ->addColumn('created_by_username', function ($row) {
+            //     if ($row->creator) {
+            //         return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
+            //     } else {
+            //         return '-';
+            //     }
 
-        })
-        // ->addColumn('created_by_username', function ($row) {
-        //     if ($row->creator) {
-        //         return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
-        //     } else {
-        //         return '-';
-        //     }
 
+            // })->addColumn('task_Assign', function ($row) {
+            //     // Get all names assigned to this task
+            //     $assignedNames = $row->users->map(function ($user) {
+            //         return $user->first_name . ' ' . $user->last_name;
+            //     })->implode(', ');
 
-        // })->addColumn('task_Assign', function ($row) {
-        //     // Get all names assigned to this task
-        //     $assignedNames = $row->users->map(function ($user) {
-        //         return $user->first_name . ' ' . $user->last_name;
-        //     })->implode(', ');
+            //     return $assignedNames ?? '-';
+            // })->addColumn('task_status_name', function ($row) {
+            //     return $row->taskStatus->status_name ?? "-";
+            // })
+            //     ->addColumn('project_name', function ($row) {
+            //         return $row->project->project_name ?? "-";
+            //     })
+            //     ->addColumn('project_name', function ($row) {
+            //         return $row->project->project_name ?? "-";
+            //     })
+            //     ->addColumn('department_name', function ($row) {
+            //         return $row->department->department_name ?? "-";
+            //     })
+            //     ->addColumn('sub_department_name', function ($row) {
 
-        //     return $assignedNames ?? '-';
-        // })->addColumn('task_status_name', function ($row) {
-        //     return $row->taskStatus->status_name ?? "-";
-        // })
-        //     ->addColumn('project_name', function ($row) {
-        //         return $row->project->project_name ?? "-";
-        //     })
-        //     ->addColumn('project_name', function ($row) {
-        //         return $row->project->project_name ?? "-";
-        //     })
-        //     ->addColumn('department_name', function ($row) {
-        //         return $row->department->department_name ?? "-";
-        //     })
-        //     ->addColumn('sub_department_name', function ($row) {
+            //         return $row->sub_department->sub_department_name ?? "-";
+            //     })->addColumn('created_by_department', function ($row) {
+            //         if ($row->creator && $row->creator->department) {
+            //             return $row->creator->department->department_name ?? '-';
+            //         } else {
+            //             return "-";
+            //         }
+            //     })->addColumn('created_by_sub_department', function ($row) {
+            //         if ($row->creator && $row->creator->sub_department) {
+            //             return $row->creator->sub_department->sub_department_name ?? '-';
+            //         } else {
+            //             return "-";
+            //         }
+            //     })->addColumn('created_by_phone_no', function ($row) {
+            //         if ($row->creator && $row->creator->phone_no) {
+            //             return $row->creator->phone_no ?? '-';
+            //         } else {
+            //             return "-";
+            //         }
+            //     })->addColumn('description', function ($row) {
+            //         $description = html_entity_decode($row->description);
+            //         return $description;
+            //     })->rawColumns(['actions'])->make(true);
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+            })
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
 
-        //         return $row->sub_department->sub_department_name ?? "-";
-        //     })->addColumn('created_by_department', function ($row) {
-        //         if ($row->creator && $row->creator->department) {
-        //             return $row->creator->department->department_name ?? '-';
-        //         } else {
-        //             return "-";
-        //         }
-        //     })->addColumn('created_by_sub_department', function ($row) {
-        //         if ($row->creator && $row->creator->sub_department) {
-        //             return $row->creator->sub_department->sub_department_name ?? '-';
-        //         } else {
-        //             return "-";
-        //         }
-        //     })->addColumn('created_by_phone_no', function ($row) {
-        //         if ($row->creator && $row->creator->phone_no) {
-        //             return $row->creator->phone_no ?? '-';
-        //         } else {
-        //             return "-";
-        //         }
-        //     })->addColumn('description', function ($row) {
-        //         $description = html_entity_decode($row->description);
-        //         return $description;
-        //     })->rawColumns(['actions'])->make(true);
-        ->addColumn('created_by_username', function ($row) {
-            return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
-        })
-        ->addColumn('Task_number', function ($row) {
-            return $row->task_number ?? "-";
-        })
-        ->addColumn('Task_Ticket', function ($row) {
-            return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
-        })
-        ->addColumn('description', function ($row) {
-            return $row->task && $row->task->description ? $row->task->description : '-';
-        })
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
+            })
 
-        ->addColumn('subject', function ($row) {
-            return $row->task && $row->task->subject ? $row->task->subject : '-';
-        })
-        ->addColumn('title', function ($row) {
-            return $row->task && $row->task->title ? $row->task->title : '-';
-        })
-        ->addColumn('Task_assign_to', function ($row) {
-            return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
-        })
+            ->addColumn('status', function ($row) {
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
 
-        ->addColumn('status', function ($row) {
-            return $row->task_status ? $row->taskStatus->status_name : "-";
-        })
-        ->addColumn('Created_Date', function ($row) {
-            return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
-        })
-        ->addColumn('start_date', function ($row) {
-            return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
-        })
-        ->addColumn('due_date', function ($row) {
-            return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
-        })
+            ->addColumn('close_date', function ($row) {
+                return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            })
 
-        ->addColumn('close_date', function ($row) {
-            return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
-        })
-        ->addColumn('completed_date', function ($row) {
-            return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
-        })
-        ->addColumn('accepted_date', function ($row) {
-            return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
-        })
-        ->addColumn('project', function ($row) {
-            return $row->task && $row->task->project ? $row->task->project->project_name : '-';
-        })
-        ->addColumn('department', function ($row) {
-            return $row->department && $row->department_data ? $row->department_data->department_name : '-';
-        })
+            ->addColumn('sub_department', function ($row) {
+                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
 
-        ->addColumn('sub_department', function ($row) {
-            return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
-        })
-        ->addColumn('creator_department', function ($row) {
-            return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
-        })
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
 
-        ->addColumn('creator_sub_department', function ($row) {
-            return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
-        })
-        ->addColumn('creator_phone', function ($row) {
-            return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
-        })
-
-        ->addColumn('pin_task', function ($row) {
-            return '-';
-        })
-        ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
-        ->make(true);
-
+            ->addColumn('pin_task', function ($row) {
+                return '-';
+            })
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
+            ->make(true);
     }
     public function getAll_admin_req()
     {
@@ -7169,11 +7094,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
-
         })->addColumn('created_by_username', function ($row) {
             return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
         })->addColumn('task_Assign', function ($row) {
@@ -7217,7 +7141,6 @@ $encryptedId = encrypt($row->task_id);
                 $description = html_entity_decode($row->description);
                 return $description;
             })->rawColumns(['actions'])->make(true);
-
     }
 
     public function getAll_admin_rej()
@@ -7229,11 +7152,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
-
         })->addColumn('created_by_username', function ($row) {
             if ($row->creator) {
                 return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
@@ -7242,7 +7164,7 @@ $encryptedId = encrypt($row->task_id);
             }
         })->addColumn('task_Assign', function ($row) {
             // Get all names assigned to this task
-//    dd(implode(', ' ,$row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray()));
+            //    dd(implode(', ' ,$row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray()));
             $assignedNames = implode(', ', $row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray()) ?? "-";
 
             return $assignedNames ?? '-';
@@ -7280,7 +7202,6 @@ $encryptedId = encrypt($row->task_id);
                 $description = html_entity_decode($row->description);
                 return $description;
             })->rawColumns(['actions'])->make(true);
-
     }
 
     public function getAll_admin_total()
@@ -7292,11 +7213,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+            $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
-
         })->addColumn('created_by_username', function ($row) {
             if ($row->creator) {
                 return $row->creator->first_name . " " . $row->creator->last_name ?? '-';
@@ -7344,7 +7264,6 @@ $encryptedId = encrypt($row->task_id);
                 $description = html_entity_decode($row->description);
                 return $description;
             })->rawColumns(['actions'])->make(true);
-
     }
 
     public function pinTask(Request $request)
@@ -7411,7 +7330,7 @@ $encryptedId = encrypt($row->task_id);
     //     return DataTables::of($tasks)->addColumn('actions', function ($row) {
     //         $encryptedId = encrypt($row->id);
     //         $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' traget=_blank><i class='ficon' data-feather='edit'></i></a>";
-    //         $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //         $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
     //         $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
     //         $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
     //         return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -7462,7 +7381,7 @@ $encryptedId = encrypt($row->task_id);
     //         })->rawColumns(['actions'])->make(true);
 
     // }
-// 04-06
+    // 04-06
     // public function getAll_total_task()
     // {
     //     $userId = auth()->user()->id;
@@ -7510,7 +7429,7 @@ $encryptedId = encrypt($row->task_id);
     //             $encryptedId = encrypt($row->id);
     //             // Define action buttons
     //             $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' traget=_blank><i class='ficon' data-feather='edit'></i></a>";
-    //             $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //             $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
     //             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
     //             // Concatenate buttons
     //             $buttons = $updateButton . " " . $deleteButton . " " . $viewbutton;
@@ -7559,242 +7478,242 @@ $encryptedId = encrypt($row->task_id);
     // 04-06
 
     //    3-sep-2024
-//    public function getAll_total_task(Request $request)
-//    {
-//        $userId = auth()->user()->id;
-//        $user = auth()->user();
-//        $tasks = [];
-//        ini_set('memory_limit', '256M');
-//
-//
-//        // Function to recursively retrieve the hierarchy
-//        function getHierarchy($userId, &$allUsers, &$addedUserIds)
-//        {
-//            $reportingUsers = User::where('report_to', $userId)->get();
-//            foreach ($reportingUsers as $user) {
-//                if (!in_array($user->id, $addedUserIds)) {
-//                    $allUsers[$user->id] = $user;
-//                    $addedUserIds[] = $user->id;
-//                    getHierarchy($user->id, $allUsers, $addedUserIds);
-//                }
-//            }
-//        }
-//
-//        $allUsers = [];
-//        $addedUserIds = [$userId];
-//        getHierarchy($userId, $allUsers, $addedUserIds);
-//
-//        $query = Task::query();
-//
-//        // Apply filters
-//        // if ($request->has('title') && $request->title != '') {
-//        //     // dd( $request->title);
-//        //     $query->where('title', 'like', '%' . $request->title . '%');
-//
-//        // }
-//        if ($request->has('assignees') && !empty($request->assignees)) {
-//            // dd($request->assignees);
-//            $query->whereHas('assignees', function ($q) use ($request) {
-//                $q->whereIn('user_id', $request->assignees);
-//            });
-//        }
-//        if ($request->has('status') && $request->status != '') {
-//            $query->where('task_status', $request->status);
-//        }
-//        if ($request->has('task') && $request->task != '') {
-//            $query->where('ticket', $request->task);
-//        }
-//
-//        if ($request->has('dt_date') && $request->dt_date != '') {
-//            $startDateParts = explode(' to ', $request->dt_date);
-//
-//            if (count($startDateParts) === 2) {
-//                $startDate = trim($startDateParts[0]);
-//                $endDate = trim($startDateParts[1]);
-//
-//                // Specify the format when parsing the dates
-//                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                // dd($endDate);
-//
-//                $query->whereDate('start_date', '>=', $startDate)->whereDate('start_date', '<=', $endDate);
-//            }
-//        }
-//        if ($request->has('end_date') && $request->end_date != '') {
-//            $dueDateParts = explode(' to ', $request->end_date);
-//
-//            if (count($dueDateParts) === 2) {
-//                $startDate = trim($dueDateParts[0]);
-//                $endDate = trim($dueDateParts[1]);
-//
-//                // Specify the format when parsing the dates
-//                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                $query->whereDate('due_date', '>=', $startDate)->whereDate('due_date', '<=', $endDate);
-//            }
-//        }
-//        if ($request->has('accepted_task_date') && $request->accepted_task_date != '') {
-//            $acceptedDateParts = explode(' to ', $request->accepted_task_date);
-//
-//            if (count($acceptedDateParts) === 2) {
-//                $startDate = trim($acceptedDateParts[0]);
-//                $endDate = trim($acceptedDateParts[1]);
-//
-//                // Specify the format when parsing the dates
-//                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                $query->whereDate('accepted_date', '>=', $startDate)->whereDate('accepted_date', '<=', $endDate);
-//            }
-//        }
-//
-//        if ($request->has('created_by') && $request->created_by != '') {
-//            $query->where('created_by', $request->created_by);
-//        }
-//        if ($request->has('department') && $request->department != '') {
-//            $query->where('department_id', $request->department);
-//        }
-//        if ($request->has('start_date') && $request->start_date != '') {
-//            $query->whereDate('start_date', $request->start_date);
-//        }
-//
-//        if ($userId == 1 || auth()->user()->hasRole('Super Admin')) {
-//            $query->where('task_status', '!=', 2);
-//        } else {
-//
-//            $query = Task::query();
-//
-//            if ($request->has('assignees') && !empty($request->assignees)) {
-//
-//                $query->whereHas('assignees', function ($q) use ($request) {
-//                    $q->whereIn('user_id', $request->assignees);
-//                });
-//            }
-//            if ($request->has('status') && $request->status != '') {
-//                $query->where('task_status', $request->status);
-//            }
-//            if ($request->has('task') && $request->task != '') {
-//                $query->where('ticket', $request->task);
-//            }
-//
-//            if ($request->has('dt_date') && $request->dt_date != '') {
-//                $startDateParts = explode(' to ', $request->dt_date);
-//
-//                if (count($startDateParts) === 2) {
-//                    $startDate = trim($startDateParts[0]);
-//                    $endDate = trim($startDateParts[1]);
-//
-//                    // Specify the format when parsing the dates
-//                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                    // dd($endDate);
-//
-//                    $query->whereDate('start_date', '>=', $startDate)->whereDate('start_date', '<=', $endDate);
-//                }
-//            }
-//            if ($request->has('end_date') && $request->end_date != '') {
-//                $dueDateParts = explode(' to ', $request->end_date);
-//
-//                if (count($dueDateParts) === 2) {
-//                    $startDate = trim($dueDateParts[0]);
-//                    $endDate = trim($dueDateParts[1]);
-//
-//                    // Specify the format when parsing the dates
-//                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                    $query->whereDate('due_date', '>=', $startDate)->whereDate('due_date', '<=', $endDate);
-//                }
-//            }
-//            if ($request->has('accepted_task_date') && $request->accepted_task_date != '') {
-//                $acceptedDateParts = explode(' to ', $request->accepted_task_date);
-//
-//                if (count($acceptedDateParts) === 2) {
-//                    $startDate = trim($acceptedDateParts[0]);
-//                    $endDate = trim($acceptedDateParts[1]);
-//
-//                    // Specify the format when parsing the dates
-//                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-//                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
-//
-//                    $query->whereDate('accepted_date', '>=', $startDate)->whereDate('accepted_date', '<=', $endDate);
-//                }
-//            }
-//
-//            if ($request->has('created_by') && $request->created_by != '') {
-//                $query->where('created_by', $request->created_by);
-//            }
-//            if ($request->has('department') && $request->department != '') {
-//                $query->where('department_id', $request->department);
-//            }
-//            if ($request->has('start_date') && $request->start_date != '') {
-//                $query->whereDate('start_date', $request->start_date);
-//            }
-//
-//
-//
-//            $query->where(function ($query) use ($addedUserIds) {
-//                $query->whereIn('created_by', $addedUserIds)
-//                    ->orWhereHas('assignees', function ($q) use ($addedUserIds) {
-//                        $q->whereIn('user_id', $addedUserIds);
-//                    });
-//            });
-//
-//            // $query->where(function ($query) use ($addedUserIds) {
-//            //     $query->where('task_status', '!=', 2)
-//            //         ->whereIn('created_by', $addedUserIds);
-//            // })->orWhereHas('assignees', function ($q) use ($addedUserIds) {
-//            //     $q->whereIn('user_id', $addedUserIds);
-//            // });
-//        }
-//
-//        $tasks = $query->select('tasks.*');
-//
-//        return DataTables::of($tasks)
-//            ->addColumn('actions', function ($row) {
-//                $encryptedId = encrypt($row->id);
-//                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' traget=_blank><i class='ficon' data-feather='edit'></i></a>";
-//                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-//                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-//                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
-//            })
-//            ->addColumn('created_by_username', function ($row) {
-//                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name ?? '-' : "-";
-//            })
-//            ->addColumn('task_Assign', function ($row) {
-//                return $row->users ? implode(', ', $row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray()) : "-";
-//            })
-//            ->addColumn('task_status_name', function ($row) {
-//                return $row->taskStatus ? $row->taskStatus->status_name : "-";
-//            })
-//            ->addColumn('project_name', function ($row) {
-//                return $row->project ? $row->project->project_name : "-";
-//            })
-//            ->addColumn('department_name', function ($row) {
-//                return $row->department ? $row->department->department_name : "-";
-//            })
-//            ->addColumn('sub_department_name', function ($row) {
-//                return $row->sub_department ? $row->sub_department->sub_department_name : "-";
-//            })
-//            ->addColumn('created_by_department', function ($row) {
-//                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
-//            })
-//            ->addColumn('created_by_sub_department', function ($row) {
-//                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
-//            })
-//            ->addColumn('created_by_phone_no', function ($row) {
-//                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
-//            })
-//            ->filterColumn('task_number', function ($query, $keyword) {
-//                $query->where('task_number', 'like', "%{$keyword}%");
-//            })
-//            ->rawColumns(['actions'])
-//            ->make(true);
-//    }
-// 3-sep-2024
+    //    public function getAll_total_task(Request $request)
+    //    {
+    //        $userId = auth()->user()->id;
+    //        $user = auth()->user();
+    //        $tasks = [];
+    //        ini_set('memory_limit', '256M');
+    //
+    //
+    //        // Function to recursively retrieve the hierarchy
+    //        function getHierarchy($userId, &$allUsers, &$addedUserIds)
+    //        {
+    //            $reportingUsers = User::where('report_to', $userId)->get();
+    //            foreach ($reportingUsers as $user) {
+    //                if (!in_array($user->id, $addedUserIds)) {
+    //                    $allUsers[$user->id] = $user;
+    //                    $addedUserIds[] = $user->id;
+    //                    getHierarchy($user->id, $allUsers, $addedUserIds);
+    //                }
+    //            }
+    //        }
+    //
+    //        $allUsers = [];
+    //        $addedUserIds = [$userId];
+    //        getHierarchy($userId, $allUsers, $addedUserIds);
+    //
+    //        $query = Task::query();
+    //
+    //        // Apply filters
+    //        // if ($request->has('title') && $request->title != '') {
+    //        //     // dd( $request->title);
+    //        //     $query->where('title', 'like', '%' . $request->title . '%');
+    //
+    //        // }
+    //        if ($request->has('assignees') && !empty($request->assignees)) {
+    //            // dd($request->assignees);
+    //            $query->whereHas('assignees', function ($q) use ($request) {
+    //                $q->whereIn('user_id', $request->assignees);
+    //            });
+    //        }
+    //        if ($request->has('status') && $request->status != '') {
+    //            $query->where('task_status', $request->status);
+    //        }
+    //        if ($request->has('task') && $request->task != '') {
+    //            $query->where('ticket', $request->task);
+    //        }
+    //
+    //        if ($request->has('dt_date') && $request->dt_date != '') {
+    //            $startDateParts = explode(' to ', $request->dt_date);
+    //
+    //            if (count($startDateParts) === 2) {
+    //                $startDate = trim($startDateParts[0]);
+    //                $endDate = trim($startDateParts[1]);
+    //
+    //                // Specify the format when parsing the dates
+    //                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                // dd($endDate);
+    //
+    //                $query->whereDate('start_date', '>=', $startDate)->whereDate('start_date', '<=', $endDate);
+    //            }
+    //        }
+    //        if ($request->has('end_date') && $request->end_date != '') {
+    //            $dueDateParts = explode(' to ', $request->end_date);
+    //
+    //            if (count($dueDateParts) === 2) {
+    //                $startDate = trim($dueDateParts[0]);
+    //                $endDate = trim($dueDateParts[1]);
+    //
+    //                // Specify the format when parsing the dates
+    //                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                $query->whereDate('due_date', '>=', $startDate)->whereDate('due_date', '<=', $endDate);
+    //            }
+    //        }
+    //        if ($request->has('accepted_task_date') && $request->accepted_task_date != '') {
+    //            $acceptedDateParts = explode(' to ', $request->accepted_task_date);
+    //
+    //            if (count($acceptedDateParts) === 2) {
+    //                $startDate = trim($acceptedDateParts[0]);
+    //                $endDate = trim($acceptedDateParts[1]);
+    //
+    //                // Specify the format when parsing the dates
+    //                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                $query->whereDate('accepted_date', '>=', $startDate)->whereDate('accepted_date', '<=', $endDate);
+    //            }
+    //        }
+    //
+    //        if ($request->has('created_by') && $request->created_by != '') {
+    //            $query->where('created_by', $request->created_by);
+    //        }
+    //        if ($request->has('department') && $request->department != '') {
+    //            $query->where('department_id', $request->department);
+    //        }
+    //        if ($request->has('start_date') && $request->start_date != '') {
+    //            $query->whereDate('start_date', $request->start_date);
+    //        }
+    //
+    //        if ($userId == 1 || auth()->user()->hasRole('Super Admin')) {
+    //            $query->where('task_status', '!=', 2);
+    //        } else {
+    //
+    //            $query = Task::query();
+    //
+    //            if ($request->has('assignees') && !empty($request->assignees)) {
+    //
+    //                $query->whereHas('assignees', function ($q) use ($request) {
+    //                    $q->whereIn('user_id', $request->assignees);
+    //                });
+    //            }
+    //            if ($request->has('status') && $request->status != '') {
+    //                $query->where('task_status', $request->status);
+    //            }
+    //            if ($request->has('task') && $request->task != '') {
+    //                $query->where('ticket', $request->task);
+    //            }
+    //
+    //            if ($request->has('dt_date') && $request->dt_date != '') {
+    //                $startDateParts = explode(' to ', $request->dt_date);
+    //
+    //                if (count($startDateParts) === 2) {
+    //                    $startDate = trim($startDateParts[0]);
+    //                    $endDate = trim($startDateParts[1]);
+    //
+    //                    // Specify the format when parsing the dates
+    //                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                    // dd($endDate);
+    //
+    //                    $query->whereDate('start_date', '>=', $startDate)->whereDate('start_date', '<=', $endDate);
+    //                }
+    //            }
+    //            if ($request->has('end_date') && $request->end_date != '') {
+    //                $dueDateParts = explode(' to ', $request->end_date);
+    //
+    //                if (count($dueDateParts) === 2) {
+    //                    $startDate = trim($dueDateParts[0]);
+    //                    $endDate = trim($dueDateParts[1]);
+    //
+    //                    // Specify the format when parsing the dates
+    //                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                    $query->whereDate('due_date', '>=', $startDate)->whereDate('due_date', '<=', $endDate);
+    //                }
+    //            }
+    //            if ($request->has('accepted_task_date') && $request->accepted_task_date != '') {
+    //                $acceptedDateParts = explode(' to ', $request->accepted_task_date);
+    //
+    //                if (count($acceptedDateParts) === 2) {
+    //                    $startDate = trim($acceptedDateParts[0]);
+    //                    $endDate = trim($acceptedDateParts[1]);
+    //
+    //                    // Specify the format when parsing the dates
+    //                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+    //                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+    //
+    //                    $query->whereDate('accepted_date', '>=', $startDate)->whereDate('accepted_date', '<=', $endDate);
+    //                }
+    //            }
+    //
+    //            if ($request->has('created_by') && $request->created_by != '') {
+    //                $query->where('created_by', $request->created_by);
+    //            }
+    //            if ($request->has('department') && $request->department != '') {
+    //                $query->where('department_id', $request->department);
+    //            }
+    //            if ($request->has('start_date') && $request->start_date != '') {
+    //                $query->whereDate('start_date', $request->start_date);
+    //            }
+    //
+    //
+    //
+    //            $query->where(function ($query) use ($addedUserIds) {
+    //                $query->whereIn('created_by', $addedUserIds)
+    //                    ->orWhereHas('assignees', function ($q) use ($addedUserIds) {
+    //                        $q->whereIn('user_id', $addedUserIds);
+    //                    });
+    //            });
+    //
+    //            // $query->where(function ($query) use ($addedUserIds) {
+    //            //     $query->where('task_status', '!=', 2)
+    //            //         ->whereIn('created_by', $addedUserIds);
+    //            // })->orWhereHas('assignees', function ($q) use ($addedUserIds) {
+    //            //     $q->whereIn('user_id', $addedUserIds);
+    //            // });
+    //        }
+    //
+    //        $tasks = $query->select('tasks.*');
+    //
+    //        return DataTables::of($tasks)
+    //            ->addColumn('actions', function ($row) {
+    //                $encryptedId = encrypt($row->id);
+    //                $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' traget=_blank><i class='ficon' data-feather='edit'></i></a>";
+    //                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+    //                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+    //            })
+    //            ->addColumn('created_by_username', function ($row) {
+    //                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name ?? '-' : "-";
+    //            })
+    //            ->addColumn('task_Assign', function ($row) {
+    //                return $row->users ? implode(', ', $row->users()->selectRaw("CONCAT(first_name, ' ', last_name) as full_name")->pluck('full_name')->toArray()) : "-";
+    //            })
+    //            ->addColumn('task_status_name', function ($row) {
+    //                return $row->taskStatus ? $row->taskStatus->status_name : "-";
+    //            })
+    //            ->addColumn('project_name', function ($row) {
+    //                return $row->project ? $row->project->project_name : "-";
+    //            })
+    //            ->addColumn('department_name', function ($row) {
+    //                return $row->department ? $row->department->department_name : "-";
+    //            })
+    //            ->addColumn('sub_department_name', function ($row) {
+    //                return $row->sub_department ? $row->sub_department->sub_department_name : "-";
+    //            })
+    //            ->addColumn('created_by_department', function ($row) {
+    //                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+    //            })
+    //            ->addColumn('created_by_sub_department', function ($row) {
+    //                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+    //            })
+    //            ->addColumn('created_by_phone_no', function ($row) {
+    //                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+    //            })
+    //            ->filterColumn('task_number', function ($query, $keyword) {
+    //                $query->where('task_number', 'like', "%{$keyword}%");
+    //            })
+    //            ->rawColumns(['actions'])
+    //            ->make(true);
+    //    }
+    // 3-sep-2024
 
 
 
@@ -7919,10 +7838,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
 
-                $encryptedId_sub_task=  encrypt($row->id);
+                $encryptedId_sub_task =  encrypt($row->id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -7931,20 +7850,17 @@ $encryptedId = encrypt($row->task_id);
                     if ($row->status == 0) {
                         // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
-
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
 
@@ -8160,8 +8076,6 @@ $encryptedId = encrypt($row->task_id);
         } else {
             abort(404, 'File not found.');
         }
-
-
     }
     public function getAll_team_and_mytask(Request $request)
     {
@@ -8243,7 +8157,7 @@ $encryptedId = encrypt($row->task_id);
             ->addColumn('actions', function ($row) {
                 $encryptedId = encrypt($row->id);
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
@@ -8304,9 +8218,9 @@ $encryptedId = encrypt($row->task_id);
                 $query->whereIn('created_by', $addedUserIds)
                     ->where('created_by', '!=', $userId)
                     ->orWhereHas('assignees', function ($q) use ($addedUserIds, $userId) {
-                    $q->whereIn('user_id', $addedUserIds)
-                        ->where('user_id', '!=', $userId);
-                });
+                        $q->whereIn('user_id', $addedUserIds)
+                            ->where('user_id', '!=', $userId);
+                    });
             });
 
         // Return the data using DataTables with added columns
@@ -8314,7 +8228,7 @@ $encryptedId = encrypt($row->task_id);
             ->addColumn('actions', function ($row) {
                 $encryptedId = encrypt($row->id);
                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
@@ -8455,9 +8369,9 @@ $encryptedId = encrypt($row->task_id);
             });
             return DataTables::of($rejectedTasks)
                 ->addColumn('actions', function ($row) {
-                    $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
-                $encryptedId_sub_task=  encrypt($row->id);
+                    $encryptedId_sub_task =  encrypt($row->id);
+                    $encryptedId = encrypt($row->task_id);
+                    $encryptedId_sub_task =  encrypt($row->id);
 
                     $updateButton = '';
                     $deleteButton = '';
@@ -8467,19 +8381,17 @@ $encryptedId = encrypt($row->task_id);
                             $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                         }
                         $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                     } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                     } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                         $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                        $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                     }
 
                     // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning btn-sm me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete d-none btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                     $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                     $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                     return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -8641,10 +8553,10 @@ $encryptedId = encrypt($row->task_id);
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
-                $encryptedId_sub_task=  encrypt($row->id);
-$encryptedId = encrypt($row->task_id);
+                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
 
-                $encryptedId_sub_task=  encrypt($row->id);
+                $encryptedId_sub_task =  encrypt($row->id);
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
@@ -8653,20 +8565,18 @@ $encryptedId = encrypt($row->task_id);
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     }
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
-                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete d-none' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
@@ -8937,7 +8847,7 @@ $encryptedId = encrypt($row->task_id);
                 'due_date' => $recurringTask->due_date,
                 'priority_id' => $recurringTask->priority_id,
                 'task_status' => $recurringTask->task_status,
-                'created_by' => auth()->user()->id,
+                'created_by' => $recurringTask->created_by,
                 'is_recursive' => 1,
             ];
 
@@ -8977,7 +8887,7 @@ $encryptedId = encrypt($row->task_id);
                 $subdepartment = $user->subdepartment;
 
                 // Check if the created_by user is the same as the assigned user (user_id)
-                $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
+                $status = ($recurringTask->created_by == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
 
                 // Update pivot with user-specific task number and additional details
                 TaskAssignee::create([
@@ -8989,7 +8899,7 @@ $encryptedId = encrypt($row->task_id);
                     'due_date' => $recurringTask->due_date,
                     'department' => $departmentId,
                     'sub_department' => $subdepartment,
-                    'created_by' => auth()->user()->id,
+                    'created_by' => $recurringTask->created_by,
                     'created_at' => now(),
                 ]);
             }
@@ -9030,5 +8940,4 @@ $encryptedId = encrypt($row->task_id);
             );
         }
     }
-
 }
