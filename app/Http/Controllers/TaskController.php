@@ -2624,13 +2624,15 @@ class TaskController extends Controller
         // Modify query based on task_assignees table
         if ($user->id == 1) {
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
                 });
         } else {
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
-                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')->whereNotIn('tasks.task_status', [4, 7])
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+                ->whereNotIn('tasks.task_status', [4, 7])
                 ->whereHas('task', function ($query) use ($user) {
                     $query->where('status', '1'); // Assuming 'status' is in the Task model
 
