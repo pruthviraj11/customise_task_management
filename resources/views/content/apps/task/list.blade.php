@@ -562,7 +562,6 @@
                 deferRender: true,
 
                 scroller: true,
-                "searching": true,
                 buttons: [{
                     extend: 'excel',
                     text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
@@ -598,6 +597,8 @@
                         d.start_date = $('#filter-start-date').val();
                     }
                 },
+                searching: true,
+
                 order: [
                     @if ($type == 'mytask')
 

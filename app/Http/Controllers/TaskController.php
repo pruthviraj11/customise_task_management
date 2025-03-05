@@ -815,7 +815,7 @@ class TaskController extends Controller
         // dd($tasks->get());
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
 
                 $updateButton = '';
@@ -1913,7 +1913,7 @@ class TaskController extends Controller
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -2044,7 +2044,7 @@ class TaskController extends Controller
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -2175,7 +2175,7 @@ class TaskController extends Controller
         return DataTables::of($query)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -2350,7 +2350,7 @@ class TaskController extends Controller
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -2483,7 +2483,7 @@ class TaskController extends Controller
 
 
             $encryptedId = encrypt($row->task->id);
-            $encryptedId_sub_task =  encrypt($row->id);
+            $encryptedId_sub_task = encrypt($row->id);
             // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
             $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
@@ -2675,7 +2675,7 @@ class TaskController extends Controller
 
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
 
                 $updateButton = '';
@@ -2816,7 +2816,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -2930,7 +2930,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3057,7 +3057,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3233,7 +3233,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3368,7 +3368,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3497,7 +3497,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3624,7 +3624,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -3895,7 +3895,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -4163,7 +4163,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -4514,7 +4514,7 @@ class TaskController extends Controller
 
             ->addColumn('actions', function ($row) {
                 // dd($row);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
@@ -6295,7 +6295,7 @@ class TaskController extends Controller
             // $taskData['deleted_by'] = Auth()->user()->id;
             // $updated = $this->taskService->updatetask($id, $taskData);
             // $deleted = $this->taskService->deletetask($id);\
-            $deleted  = TaskAssignee::where('id', $id)->delete();
+            $deleted = TaskAssignee::where('id', $id)->delete();
 
             // Delete the task
             // $task->delete();
@@ -7735,7 +7735,7 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_status', ['1', '3', '5', '6']); // Use a single query for all statuses
+            $query->whereIn('task_assignees.task_status', ['1', '3', '5', '6']); // Use a single query for all statuses
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
@@ -7745,7 +7745,7 @@ class TaskController extends Controller
                         $q->whereNull('deleted_at');
                     });
             })
-                ->whereIn('task_status', ['1', '3', '5', '6']); // Add the status condition here for users
+                ->whereIn('task_assignees.task_status', ['1', '3', '5', '6']); // Add the status condition here for users
         }
 
 
@@ -7837,24 +7837,60 @@ class TaskController extends Controller
 
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
         $tasks = $query;
-        // Return the data using DataTables, add custom columns
 
-        // if (!empty($request->search['value'])) {
-        //     // $tasks = Task::query();
-        //     $searchTerm = $request->search['value'];
-        //     $tasks->where(function ($query) use ($searchTerm) {
-        //         $query->where('TaskNumber', 'like', '%' . $searchTerm . '%')
-        //             ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
-        //             ->orWhere('title', 'like', '%' . $searchTerm . '%');
-        //     });
-        // }
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+            ->leftJoin('status','task_assignees.task_status','status.id')
+            ->leftJoin('projects','projects.id','tasks.project_id')
+            ->leftJoin('departments','departments.id','tasks.department_id')
+
+                ->select('task_assignees.*', 'tasks.title', 'tasks.subject', 'tasks.description', 'status.status_name', 'projects.project_name','departments.department_name');
+
+                // dd($tasks->get());
+        }
         return DataTables::of($tasks)
 
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search')['value']) {
+                $search = $request->input('search')['value'];
+
+                $query->where(function ($q) use ($search) {
+                    $q->
+                    where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                        ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                        ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                        ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                        ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                        ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+
+
+
+                        ->orWhereHas('user', function ($q) use ($search) {
+                            $q->where('first_name', 'LIKE', "%{$search}%")
+                              ->orWhere('last_name', 'LIKE', "%{$search}%");
+                        })
+                        ->orWhereHas('creator', function ($q) use ($search) {
+                            $q->where('first_name', 'LIKE', "%{$search}%")
+                              ->orWhere('last_name', 'LIKE', "%{$search}%");
+                        })
+
+
+                        ->orWhereHas('sub_department_data', function ($q) use ($search) {
+                            $q->where('sub_department_name', 'LIKE', "%{$search}%");
+                        });
+                });
+            }
+        })
             ->addColumn('actions', function ($row) {
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
 
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
@@ -8231,9 +8267,9 @@ class TaskController extends Controller
                 $query->whereIn('created_by', $addedUserIds)
                     ->where('created_by', '!=', $userId)
                     ->orWhereHas('assignees', function ($q) use ($addedUserIds, $userId) {
-                        $q->whereIn('user_id', $addedUserIds)
-                            ->where('user_id', '!=', $userId);
-                    });
+                    $q->whereIn('user_id', $addedUserIds)
+                        ->where('user_id', '!=', $userId);
+                });
             });
 
         // Return the data using DataTables with added columns
@@ -8382,9 +8418,9 @@ class TaskController extends Controller
             });
             return DataTables::of($rejectedTasks)
                 ->addColumn('actions', function ($row) {
-                    $encryptedId_sub_task =  encrypt($row->id);
+                    $encryptedId_sub_task = encrypt($row->id);
                     $encryptedId = encrypt($row->task_id);
-                    $encryptedId_sub_task =  encrypt($row->id);
+                    $encryptedId_sub_task = encrypt($row->id);
 
                     $updateButton = '';
                     $deleteButton = '';
@@ -8567,10 +8603,10 @@ class TaskController extends Controller
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
 
-                $encryptedId_sub_task =  encrypt($row->id);
+                $encryptedId_sub_task = encrypt($row->id);
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
