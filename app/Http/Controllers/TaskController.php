@@ -866,7 +866,7 @@ class TaskController extends Controller
                 return $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
             ->addColumn('status', function ($row) {
-                return ($row->task && $row->task->task_status) ? $row->task->taskStatus->status_name : "-";
+                return ($row->task_status) ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
                 return ($row->task && $row->task->created_at) ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
@@ -8473,7 +8473,7 @@ class TaskController extends Controller
                     return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
                 })
                 ->addColumn('status', function ($row) {
-                    return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
+                    return $row->task_status ? $row->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
                 })
                 ->addColumn('Created_Date', function ($row) {
                     return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
