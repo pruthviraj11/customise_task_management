@@ -5,33 +5,35 @@ namespace App\Exports;
 use App\Models\TaskAssignee;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class DashboardTaskExport implements FromCollection, WithHeadings
+class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting
 {
     public function collection()
     {
-        return TaskAssignee::leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
-            ->leftJoin('users', 'users.id', 'task_assignees.user_id')
-            ->leftJoin('departments', 'task_assignees.department', 'departments.id')
-            ->leftJoin('sub_departments', 'task_assignees.sub_department', 'sub_departments.id')
-            ->leftJoin('users as task_creator', 'task_assignees.created_by', 'task_creator.id')
-            ->leftJoin('projects', 'tasks.project_id', 'projects.id')
-            ->leftJoin('departments as user_department', 'users.department_id', 'user_department.id')
-            ->leftJoin('sub_departments as user_sub_department', 'users.subdepartment', 'user_sub_department.id')
-
+        return TaskAssignee::leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
+            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+            ->leftJoin('departments', 'task_assignees.department', '=', 'departments.id')
+            ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
+            ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+            ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+            ->leftJoin('status', 'task_assignees.task_status', '=', 'status.id')
             ->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })
             ->whereNull('task_assignees.deleted_at')
-            ->where('task_assignees.status', 1)
             ->select(
                 'task_assignees.task_number',
                 'tasks.ticket',
                 'tasks.title',
                 'tasks.subject',
-                'task_creator.first_name',
-                'users.first_name',
-                'task_assignees.task_status',
+                'assigner.first_name as assign_by', // Task assigned by
+                'assignee.first_name as assign_to', // Task assigned to
+                'status.status_name',
                 'tasks.created_at',
                 'tasks.start_date',
                 'task_assignees.due_date',
@@ -40,25 +42,23 @@ class DashboardTaskExport implements FromCollection, WithHeadings
                 'projects.project_name',
                 'departments.department_name',
                 'sub_departments.sub_department_name',
-                'user_department.department_name as creator_department_name',
-                'user_sub_department.sub_department_name as creator_sub_department_name',
-                'users.phone_no',
+                'owner_department.department_name as owner_department_name',
+                'owner_sub_department.sub_department_name as owner_sub_department_name',
+                'assignee.phone_no as owner_contact_info',
                 'tasks.close_date'
             )
             ->get();
     }
 
-    // Add this method to define column headers
     public function headings(): array
     {
         return [
-
             'Task Number',
             'Task/Ticket',
             'Title',
             'Subject',
-            'AssignBy',
-            'Task Assign To',
+            'Assigned By',
+            'Assigned To',
             'Status',
             'Created Date',
             'Start Date',
@@ -72,7 +72,48 @@ class DashboardTaskExport implements FromCollection, WithHeadings
             'Owner Sub Department',
             'Owner Contact Info',
             'Close Date'
+        ];
+    }
 
+    public function map($row): array
+    {
+        return [
+            $row->task_number,
+            $row->ticket == 0 ? 'Task' : 'Ticket',
+            $row->title,
+            $row->subject,
+            $row->assign_by,
+            $row->assign_to,
+            $row->status_name,
+            $this->formatDate($row->created_at),
+            $this->formatDate($row->start_date),
+            $this->formatDate($row->due_date),
+            $this->formatDate($row->completed_date),
+            $this->formatDate($row->accepted_date),
+            $row->project_name,
+            $row->department_name,
+            $row->sub_department_name,
+            $row->owner_department_name,
+            $row->owner_sub_department_name,
+            $row->owner_contact_info,
+            $this->formatDate($row->close_date)
+        ];
+    }
+
+    private function formatDate($date)
+    {
+        return $date ? \PhpOffice\PhpSpreadsheet\Shared\Date::dateTimeToExcel(new \DateTime($date)) : null;
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Created Date
+            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Start Date
+            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Due Date
+            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Completed Date
+            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Accepted Task Date
+            'S' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Close Date
         ];
     }
 }
