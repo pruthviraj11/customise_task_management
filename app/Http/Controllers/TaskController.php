@@ -7839,15 +7839,15 @@ class TaskController extends Controller
         $tasks = $query;
         // Return the data using DataTables, add custom columns
 
-        if (!empty($request->search['value'])) {
-            // $tasks = Task::query();
-            $searchTerm = $request->search['value'];
-            $tasks->where(function ($query) use ($searchTerm) {
-                $query->where('TaskNumber', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('title', 'like', '%' . $searchTerm . '%');
-            });
-        }
+        // if (!empty($request->search['value'])) {
+        //     // $tasks = Task::query();
+        //     $searchTerm = $request->search['value'];
+        //     $tasks->where(function ($query) use ($searchTerm) {
+        //         $query->where('TaskNumber', 'like', '%' . $searchTerm . '%')
+        //             ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
+        //             ->orWhere('title', 'like', '%' . $searchTerm . '%');
+        //     });
+        // }
         return DataTables::of($tasks)
 
             ->addColumn('actions', function ($row) {
