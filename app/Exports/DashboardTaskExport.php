@@ -109,10 +109,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     {
         return [
             'H' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Created Date
-            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Start Date
-            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Due Date
-            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Completed Date
-            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Accepted Task Date
+            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Start Date
+            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Due Date
+            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Completed Date
+            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Accepted Task Date
             'S' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Close Date
         ];
     }
