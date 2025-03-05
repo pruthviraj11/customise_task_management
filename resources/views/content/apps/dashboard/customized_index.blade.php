@@ -28,6 +28,7 @@
             @if (session('success'))
                 <p>{{ session('success') }}</p>
             @endif
+            @if (auth()->user()->hasRole('Super Admin'))
 
             <div class="col-lg-6 col-sm-6">
                 <div class="card">
@@ -47,7 +48,7 @@
                     </div>
                 </div>
             </div>
-
+@endif
 
         </div>
         @if (auth()->user()->id != 1)

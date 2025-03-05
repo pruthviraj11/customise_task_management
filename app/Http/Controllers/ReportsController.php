@@ -28,7 +28,6 @@ class ReportsController extends Controller
 
     public function index()
     {
-
         // $userId = auth()->user()->id;
         $usersWithG7 = User::where('Grad', operator: 'G7')->get();
         $user = auth()->user();
@@ -57,7 +56,8 @@ class ReportsController extends Controller
             $totalPendingTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })
-                ->whereDate('created_at', '<=', today())
+                // ->whereDate('created_at', '<=', today())
+                ->whereDate('created_at', '<', now()->startOfDay())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->count();
 
@@ -70,7 +70,7 @@ class ReportsController extends Controller
             $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->where('task_status', 4)
+                ->whereIn('task_status', [4,7])
                 ->whereDate('created_at', today())
                 ->count();
 
@@ -78,6 +78,7 @@ class ReportsController extends Controller
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })->where('status', 1)
+                // ->whereIn('task_status', [4,7])
                 ->count();
 
             $totalPendingTask = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
@@ -90,7 +91,8 @@ class ReportsController extends Controller
             $totalOverdueTasksTillReportDate = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereDate('due_date', '<', now()->subDay())
+                // ->whereDate('due_date', '<', now()->subDay())
+                ->whereDate('due_date', '<', Carbon::now()->toDateString())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->count();
 
