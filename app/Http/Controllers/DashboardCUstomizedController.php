@@ -198,7 +198,9 @@ class DashboardCUstomizedController extends Controller
             ->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })
-            ->whereNull('task_assignees.deleted_at')->where('task_assignees.status',1)->count();
+            ->whereNull('task_assignees.deleted_at')
+            // ->where('task_assignees.status',1)
+            ->count();
 
         // dd('heare');
         return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos', 'total_task_count'));
