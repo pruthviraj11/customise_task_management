@@ -71,7 +71,8 @@ class ReportsController extends Controller
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
                 ->whereIn('task_status', [4,7])
-                ->whereDate('created_at', today())
+                // ->whereDate('close_date', today())
+                ->whereDate('completed_date', today())
                 ->count();
 
             $taskReportDate = TaskAssignee::where('user_id', $user->id)

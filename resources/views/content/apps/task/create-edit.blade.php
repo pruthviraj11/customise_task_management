@@ -1180,11 +1180,11 @@
             var today = new Date();
 
             // Calculate the date one week ago
-            var oneWeekAgo = new Date();
-            oneWeekAgo.setDate(today.getDate() - 7);
+            // var oneWeekAgo = new Date();
+            // oneWeekAgo.setDate(today.getDate() - 7);
 
-            // Set the min and max attributes for the start date
-            startDateInput.min = formatDate(oneWeekAgo);
+            // // Set the min and max attributes for the start date
+            // startDateInput.min = formatDate(oneWeekAgo);
 
             // Set initial minimum value for due date
             if (startDateInput.value) {

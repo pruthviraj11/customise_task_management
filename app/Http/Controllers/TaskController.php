@@ -2723,7 +2723,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
             ->addColumn('status', function ($row) {
-                return $row->task_status ? $row->task->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
+                return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
                 return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
@@ -7842,50 +7842,50 @@ class TaskController extends Controller
             $searchTerm = $request->search['value'];
 
             $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
-            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
-            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
-            ->leftJoin('status','task_assignees.task_status','status.id')
-            ->leftJoin('projects','projects.id','tasks.project_id')
-            ->leftJoin('departments','departments.id','tasks.department_id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
 
-                ->select('task_assignees.*', 'tasks.title', 'tasks.subject', 'tasks.description', 'status.status_name', 'projects.project_name','departments.department_name');
+                ->select('task_assignees.*', 'tasks.title', 'tasks.subject', 'tasks.description', 'status.status_name', 'projects.project_name', 'departments.department_name');
 
-                // dd($tasks->get());
+            // dd($tasks->get());
         }
         return DataTables::of($tasks)
 
-        ->filter(function ($query) use ($request) {
-            if ($request->has('search') && $request->input('search')['value']) {
-                $search = $request->input('search')['value'];
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
 
-                $query->where(function ($q) use ($search) {
-                    $q->
-                    where('tasks.TaskNumber', 'LIKE', "%{$search}%")
-                        ->orWhere('tasks.title', 'LIKE', "%{$search}%")
-                        ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
-                        ->orWhere('tasks.description', 'LIKE', "%{$search}%")
-                        ->orWhere('status.status_name', 'LIKE', "%{$search}%")
-                        ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
-                        ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
-
-
-
-                        ->orWhereHas('user', function ($q) use ($search) {
-                            $q->where('first_name', 'LIKE', "%{$search}%")
-                              ->orWhere('last_name', 'LIKE', "%{$search}%");
-                        })
-                        ->orWhereHas('creator', function ($q) use ($search) {
-                            $q->where('first_name', 'LIKE', "%{$search}%")
-                              ->orWhere('last_name', 'LIKE', "%{$search}%");
-                        })
+                    $query->where(function ($q) use ($search) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
 
 
-                        ->orWhereHas('sub_department_data', function ($q) use ($search) {
-                            $q->where('sub_department_name', 'LIKE', "%{$search}%");
-                        });
-                });
-            }
-        })
+
+                            ->orWhereHas('user', function ($q) use ($search) {
+                                $q->where('first_name', 'LIKE', "%{$search}%")
+                                    ->orWhere('last_name', 'LIKE', "%{$search}%");
+                            })
+                            ->orWhereHas('creator', function ($q) use ($search) {
+                                $q->where('first_name', 'LIKE', "%{$search}%")
+                                    ->orWhere('last_name', 'LIKE', "%{$search}%");
+                            })
+
+
+                            ->orWhereHas('sub_department_data', function ($q) use ($search) {
+                                $q->where('sub_department_name', 'LIKE', "%{$search}%");
+                            });
+                    });
+                }
+            })
             ->addColumn('actions', function ($row) {
                 $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
