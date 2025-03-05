@@ -40,7 +40,7 @@
                             <h4>{{ $page_data['form_title'] }}</h4>
                             <div class="col-md-6">
                                 @if ($taskAss != '')
-                                    <a class=" btn-sm btn-primary "> Task # {{ $taskAss->id }}</a>
+                                    <a class=" btn-sm btn-primary "> Task # {{ $taskAss->task_id }}</a>
                                     <a class=" btn-sm btn-primary "> Task Created By {{ $taskAss->creator->first_name }}
                                         {{ $taskAss->creator->last_name }}</a>
                                 @endif
