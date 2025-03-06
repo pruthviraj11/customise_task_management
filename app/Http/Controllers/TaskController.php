@@ -1726,6 +1726,7 @@ class TaskController extends Controller
         }
 
         $tasks = $query;
+
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // $satusData = TaskAssignee::where('')
@@ -2010,7 +2011,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftjoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
@@ -2232,7 +2233,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
@@ -2452,7 +2453,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
@@ -2681,7 +2682,7 @@ class TaskController extends Controller
 
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks->whereNull('deleted_at')->where('task_assignees.status', 1);
+            $tasks->whereNull('task_assignees.deleted_at')->where('task_assignees.status', 1);
         } else {
             $tasks->whereIn('user_id', $hierarchyUserIds)->where('task_assignees.status', 1)->whereNull('task_assignees.deleted_at');
         }
@@ -2722,7 +2723,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
@@ -7584,7 +7585,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
@@ -8553,7 +8554,7 @@ class TaskController extends Controller
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
-            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
                 ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
                 ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
                 ->leftJoin('status', 'task_assignees.task_status', 'status.id')
