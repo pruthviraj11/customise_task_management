@@ -1643,7 +1643,30 @@ class TaskController extends Controller
 
             $query->whereNotIn('task_status', ['4', '7'])->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
+        if (!empty($request->search['value'])) {
+            $search = $request->search['value'];
 
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                    ->orWhere('TaskNumber', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhere('subject', 'LIKE', "%{$search}%")
+                    ->orWhere('ticket', 'LIKE', "%{$search}%")
+                    ->orWhereHas('creator', function ($q) use ($search) {
+                        $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                         ->orwhere('phone_no', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('taskStatus', function ($q) use ($search) {
+                        $q->where('status_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('project', function ($q) use ($search) {
+                        $q->where('project_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('department', function ($q) use ($search) {
+                        $q->where('department_name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
         if ($task_filter = $request->input('task')) {
             // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
             $query->where('ticket', $task_filter);
@@ -1690,8 +1713,6 @@ class TaskController extends Controller
             // });
         }
 
-
-
         if ($request->input('accepted_task_date')) {
             $dtDateRange = parseDateRange($request->input('accepted_task_date'));
             // $query->whereHas('task', function ($q) use ($task_filter, $dtDateRange, $request) {
@@ -1726,6 +1747,8 @@ class TaskController extends Controller
         }
 
         $tasks = $query;
+
+
 
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
@@ -2427,9 +2450,7 @@ class TaskController extends Controller
         $userId = Auth()->user()->id;
         // ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
-        // Common query for all tasks
         $query = TaskAssignee::query();
-        // dd(today());
 
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
@@ -2441,15 +2462,12 @@ class TaskController extends Controller
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
-                            // Ensure the user is not deleted (i.e., deleted_at is null)
                             $q->whereNull('deleted_at');
                         });
                 });
         }
 
         $tasks = $query;
-
-
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
@@ -2482,10 +2500,7 @@ class TaskController extends Controller
                     'assignee.first_name as assign_to', // Task assigned to
                     'tasks.close_date'
                 );
-
-            // dd($tasks->get());
         }
-
 
         return DataTables::of($tasks)
             ->filter(function ($query) use ($request) {
@@ -2532,17 +2547,13 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
 
             ->addColumn('actions', function ($row) {
-                // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
-                // $satusData = TaskAssignee::where('')
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
@@ -2574,12 +2585,9 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
             })
-
-
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
             })
-
             ->addColumn('subject', function ($row) {
                 return $row->task && $row->task->subject ? $row->task->subject : '-';
             })
@@ -2589,7 +2597,6 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
-
             ->addColumn('status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
@@ -2602,7 +2609,6 @@ class TaskController extends Controller
             ->addColumn('due_date', function ($row) {
                 return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
-
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
@@ -2619,21 +2625,18 @@ class TaskController extends Controller
             ->addColumn('accepted_date', function ($row) {
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
-
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
                 return $row->department && $row->department_data ? $row->department_data->department_name : '-';
             })
-
             ->addColumn('sub_department', function ($row) {
                 return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
             })
-
             ->addColumn('creator_sub_department', function ($row) {
                 return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
             })
