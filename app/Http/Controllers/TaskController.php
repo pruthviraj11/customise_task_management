@@ -791,29 +791,117 @@ class TaskController extends Controller
 
 
 
-        if ($request->has('search') && $request->get('search')['value']) {
-            $search = $request->get('search')['value'];
+        // if ($request->has('search') && $request->get('search')['value']) {
+        //     $search = $request->get('search')['value'];
 
-            $tasks->where(function ($query) use ($search) {
-                $query->where('tasks.title', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.description', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
-                    ->orWhereHas('creator', function ($creatorQuery) use ($search) {
-                        $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
-                            ->orWhere('last_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
-                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
-                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
-                    });
-            });
-        }
+        //     $tasks->where(function ($query) use ($search) {
+        //         $query->where('tasks.title', 'LIKE', "%{$search}%")
+        //             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+        //             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+        //             ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
+        //             ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
+        //             ->orWhereHas('creator', function ($creatorQuery) use ($search) {
+        //                 $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
+        //                     ->orWhere('last_name', 'LIKE', "%{$search}%");
+        //             })
+        //             ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
+        //                 $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
+        //             })
+        //             ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
+        //                 $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
+        //             });
+        //     });
+        // }
+
         // dd($tasks->get());
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+        }
+
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
@@ -1902,11 +1990,11 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_status', ['4', '7'])->where('due_date', '<', today());
+            $query->whereNotIn('task_assignees.task_status', ['4', '7'])->where('task_assignees.due_date', '<', today());
         } else {
             // User-specific task filters
-            $query->where('status', 1)->where('due_date', '<', today())
-                ->whereNotIn('task_status', ['4', '7'])
+            $query->where('task_assignees.status', 1)->where('task_assignees.due_date', '<', today())
+                ->whereNotIn('task_assignees.task_status', ['4', '7'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -1917,7 +2005,98 @@ class TaskController extends Controller
         }
 
         $tasks = $query;
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
+
+
+
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
@@ -2034,10 +2213,10 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_status', ['4', '7']);
+            $query->whereNotIn('task_assignees.task_status', ['4', '7']);
         } else {
             // User-specific task filters
-            $query->whereNotIn('task_status', ['4', '7'])
+            $query->whereNotIn('task_assignees.task_status', ['4', '7'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2048,7 +2227,96 @@ class TaskController extends Controller
         }
 
         $tasks = $query;
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
+
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
@@ -2165,10 +2433,10 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_status', ['4', '7']);
+            $query->whereIn('task_assignees.task_status', ['4', '7']);
         } else {
             // User-specific task filters
-            $query->whereIn('task_status', ['4', '7'])
+            $query->whereIn('task_assignees.task_status', ['4', '7'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2178,8 +2446,97 @@ class TaskController extends Controller
                 });
         }
 
-        // $tasks = $query;
-        return DataTables::of($query)
+        $tasks = $query;
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
+
+        return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
@@ -2324,44 +2681,133 @@ class TaskController extends Controller
 
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks->whereNull('deleted_at')->where('status', 1);
+            $tasks->whereNull('deleted_at')->where('task_assignees.status', 1);
         } else {
-            $tasks->whereIn('user_id', $hierarchyUserIds)->where('status', 1)->whereNull('deleted_at');
+            $tasks->whereIn('user_id', $hierarchyUserIds)->where('task_assignees.status', 1)->whereNull('task_assignees.deleted_at');
         }
 
-        // Search functionality
-        if ($request->has('search') && $request->get('search')['value']) {
-            $search = $request->get('search')['value'];
+        // // Search functionality
+        // if ($request->has('search') && $request->get('search')['value']) {
+        //     $search = $request->get('search')['value'];
 
-            $tasks->where(function ($query) use ($search) {
-                $query->whereHas('task', function ($taskQuery) use ($search) {
-                    $taskQuery->where('title', 'LIKE', "%{$search}%")
-                        ->orWhere('description', 'LIKE', "%{$search}%")
-                        ->orWhere('subject', 'LIKE', "%{$search}%");
-                })
-                    ->orWhere('task_number', 'LIKE', "%{$search}%")
-                    ->orWhere('remark', 'LIKE', "%{$search}%")
-                    // ->orWhereHas('creator', function ($creatorQuery) use ($search) {
-                    //     $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
-                    //         ->orWhere('last_name', 'LIKE', "%{$search}%");
-                    // })
-                    ->orWhereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('first_name', 'LIKE', "%{$search}%")
-                            ->orWhere('last_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
-                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
-                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('task.project', function ($projectQuery) use ($search) {
-                        $projectQuery->where('project_name', 'LIKE', "%{$search}%");
-                    });
-            });
+        //     $tasks->where(function ($query) use ($search) {
+        //         $query->whereHas('task', function ($taskQuery) use ($search) {
+        //             $taskQuery->where('title', 'LIKE', "%{$search}%")
+        //                 ->orWhere('description', 'LIKE', "%{$search}%")
+        //                 ->orWhere('subject', 'LIKE', "%{$search}%");
+        //         })
+        //             ->orWhere('task_number', 'LIKE', "%{$search}%")
+        //             ->orWhere('remark', 'LIKE', "%{$search}%")
+        //             // ->orWhereHas('creator', function ($creatorQuery) use ($search) {
+        //             //     $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
+        //             //         ->orWhere('last_name', 'LIKE', "%{$search}%");
+        //             // })
+        //             ->orWhereHas('user', function ($userQuery) use ($search) {
+        //                 $userQuery->where('first_name', 'LIKE', "%{$search}%")
+        //                     ->orWhere('last_name', 'LIKE', "%{$search}%");
+        //             })
+        //             ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
+        //                 $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
+        //             })
+        //             ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
+        //                 $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
+        //             })
+        //             ->orWhereHas('task.project', function ($projectQuery) use ($search) {
+        //                 $projectQuery->where('project_name', 'LIKE', "%{$search}%");
+        //             });
+        //     });
+        // }
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
         }
+
+
 
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
@@ -2473,7 +2919,7 @@ class TaskController extends Controller
 
 
 
-    public function getAll_requested()
+    public function getAll_requested(Request $request)
     {
         $user = auth()->user();
 
@@ -2482,9 +2928,9 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) {
 
                 // $query->whereHas('assignees', function ($query) {
-                $query->where('status', 0)
+                $query->where('task_assignees.status', 0)
                     // })
-                    ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
+                    ->where('task_assignees.task_status', '!=', 7);
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         } else {
@@ -2492,15 +2938,53 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
 
                 // $query->whereHas('assignees', function ($query) use ($user) {
-                $query->where('user_id', $user->id)->where('status', 0)
+                $query->where('user_id', $user->id)->where('task_assignees.status', 0)
                     // })
-                    ->where('task_status', '!=', 7); // Use 'task_status' from tasks table
+                    ->where('task_assignees.task_status', '!=', 7); // Use 'task_status' from tasks table
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         }
 
 
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->leftjoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
+
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
+
 
 
             $encryptedId = encrypt($row->task->id);
@@ -2521,6 +3005,57 @@ class TaskController extends Controller
             $buttons = " " . $acceptButton . "  " . $rejectButton . " " . $viewbutton;
             return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
         })
+
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
@@ -2654,54 +3189,113 @@ class TaskController extends Controller
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
                 ->whereNotIn('tasks.task_status', [4, 7])
-                ->whereHas('task', function ($query) {
-                    $query->where('status', '1'); // Assuming 'status' is in the Task model
-                });
+                ->where('task_assignees.status', '1');
+            // ->whereHas('task', function ($query) {
+            //     $query->where('status', '1');
+            // });
         } else {
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
                 ->whereNotIn('tasks.task_status', [4, 7])
-                ->whereHas('task', function ($query) use ($user) {
-                    $query->where('status', '1'); // Assuming 'status' is in the Task model
+                ->where('task_assignees.status', '1')
+                // ->whereHas('task', function ($query)  {
+                //     $query->where('status', '1');
 
-                })->where('user_id', $user->id); // Ensure we filter by the logged-in user
+                // })
+                ->where('user_id', $user->id); // Ensure we filter by the logged-in user
         }
 
-        // // Apply search filter if provided
-        // if (!empty($request->search['value'])) {
-        //     $searchTerm = $request->search['value'];
-        //     $tasks->where(function ($query) use ($searchTerm) {
-        //         // $query->whereHas('task', function ($subQuery) use ($searchTerm) {
-        //         $query->where('task_number', 'like', '%' . $searchTerm . '%');
-        //                 // ->orWhere('ticket', 'like', '%' . $searchTerm . '%')
-        //                 // ->orWhere('title', 'like', '%' . $searchTerm . '%');
-        //         // });
-        //     });
-        // }
 
-        if ($request->has('search') && $request->get('search')['value']) {
-            $search = $request->get('search')['value'];
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
 
-            $tasks->where(function ($query) use ($search) {
-                $query->where('tasks.title', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.description', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
-                    ->orWhereHas('creator', function ($creatorQuery) use ($search) {
-                        $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
-                            ->orWhere('last_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
-                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
-                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
-                    });
-            });
+            $tasks = $tasks
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
         }
+
+
+
+
 
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
             ->addColumn('actions', function ($row) {
                 $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
@@ -6949,7 +7543,7 @@ class TaskController extends Controller
                 return $description;
             })->rawColumns(['actions'])->make(true);
     }
-    public function getAll_deleted()
+    public function getAll_deleted(Request $request)
     {
         $userId = auth()->user()->id;
         $loggedInUser = auth()->user();
@@ -6983,8 +7577,46 @@ class TaskController extends Controller
         if ($loggedInUser->hasRole('Super Admin')) {
             $tasks = TaskAssignee::withTrashed();
         } else {
-            $tasks = TaskAssignee::withTrashed()->where('created_by', $userId);
+            $tasks = TaskAssignee::withTrashed()->where('task_assignees.created_by', $userId);
         }
+
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->join('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
 
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
@@ -7045,6 +7677,57 @@ class TaskController extends Controller
             //         $description = html_entity_decode($row->description);
             //         return $description;
             //     })->rawColumns(['actions'])->make(true);
+
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
@@ -8462,8 +9145,8 @@ class TaskController extends Controller
 
 
             // Start building the query
-            $rejectedTasks = TaskAssignee::whereNotIn('task_status', ['4', '7']) // Filter for tasks with task_status not 4 or 7
-                ->where('status', 2)  // Filter for tasks with status 2 (rejected)
+            $rejectedTasks = TaskAssignee::whereNotIn('task_assignees.task_status', ['4', '7']) // Filter for tasks with task_status not 4 or 7
+                ->where('task_assignees.status', 2)  // Filter for tasks with status 2 (rejected)
                 ->orderBy('id', 'desc'); // Order by task_assignees ID in descending order
 
             // Check if the current user is admin (id = 1)
@@ -8471,7 +9154,7 @@ class TaskController extends Controller
                 // Non-admin users need to apply additional filters
                 if ($request->filter == 'rejected_my_task') {
                     // Filter for tasks created by the current user
-                    $rejectedTasks = $rejectedTasks->where('created_by', auth()->user()->id);
+                    $rejectedTasks = $rejectedTasks->where('task_assignees.created_by', auth()->user()->id);
                 } else {
                     // Filter for tasks assigned to the current user
                     $rejectedTasks = $rejectedTasks->where('user_id', auth()->user()->id);
@@ -8480,10 +9163,98 @@ class TaskController extends Controller
 
             // Exclude tasks where both 'created_by' and 'user_id' are the logged-in user
             $rejectedTasks = $rejectedTasks->where(function ($query) {
-                $query->where('created_by', '!=', auth()->user()->id)
+                $query->where('task_assignees.created_by', '!=', auth()->user()->id)
                     ->orWhere('user_id', '!=', auth()->user()->id);
             });
+
+
+            if (!empty($request->search['value'])) {
+                $searchTerm = $request->search['value'];
+
+                $rejectedTasks = $rejectedTasks->leftjoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                    ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                    ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                    ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                    ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                    ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                    ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                    ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                    ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                    ->select(
+                        'task_assignees.*',
+                        'tasks.title',
+                        'tasks.subject',
+                        'tasks.description',
+                        'status.status_name',
+                        'projects.project_name',
+                        'departments.department_name',
+                        'sub_departments.sub_department_name',
+                        'tasks.created_at as task_created_at',
+                        'tasks.start_date as task_start_date',
+                        'tasks.completed_date as task_completed_date',
+                        'owner_department.department_name as owner_department_name',
+                        'owner_sub_department.sub_department_name as owner_sub_department_name',
+                        'assignee.phone_no as owner_contact_info',
+                        'assigner.first_name as assign_by', // Task assigned by
+                        'assignee.first_name as assign_to', // Task assigned to
+                        'tasks.close_date as task_close_date'
+                    );
+
+                // dd($tasks->get());
+            }
+
+
             return DataTables::of($rejectedTasks)
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && $request->input('search')['value']) {
+                        $search = $request->input('search')['value'];
+
+                        $dateSearch = null;
+                        if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                            $dateParts = explode('/', $search);
+                            if (count($dateParts) === 3) {
+                                $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                            }
+                        }
+                        $query->where(function ($q) use ($search, $dateSearch) {
+                            $q->
+                                where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                                ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                                ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                                ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                                ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                                ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                                ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                                ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                                ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                                ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                                ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                            ;
+
+                            if ($dateSearch) {
+                                $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                    ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                    ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                    ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                    ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                    ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                                ;
+                            }
+
+
+                        });
+                    }
+                })
                 ->addColumn('actions', function ($row) {
                     $encryptedId_sub_task = encrypt($row->id);
                     $encryptedId = encrypt($row->task_id);
@@ -8621,7 +9392,7 @@ class TaskController extends Controller
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
 
             ->where('user_id', $userId)  // Focus on task assignees
-            ->where('status', '!=', 2)
+            ->where('task_assignees.status', '!=', 2)
             ->whereNotIn('tasks.task_status', [4, 7]) // Ensure the task is not deleted (assuming status 2 is deleted)
             ->with([
                 'task',  // Load the related task
@@ -8646,28 +9417,96 @@ class TaskController extends Controller
             });
 
 
-        if ($request->has('search') && $request->get('search')['value']) {
-            $search = $request->get('search')['value'];
-            $tasks->where(function ($query) use ($search) {
-                $query->where('tasks.title', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.description', 'LIKE', "%{$search}%")
-                    ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
-                    ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
-                    ->orWhereHas('creator', function ($creatorQuery) use ($search) {
-                        $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
-                            ->orWhere('last_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
-                        $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
-                        $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
-                    });
-            });
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date as task_completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date as task_close_date'
+                );
+
+            // dd($tasks->get());
         }
+
+
         // dd($tasks->get());
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->
+                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+
+
+                    });
+                }
+            })
+
             ->addColumn('actions', function ($row) {
                 // dd($row->task_id);
                 $encryptedId_sub_task = encrypt($row->id);
