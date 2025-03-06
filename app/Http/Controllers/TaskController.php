@@ -880,8 +880,15 @@ class TaskController extends Controller
             ->addColumn('close_date', function ($row) {
                 return ($row->task && $row->task->close_date) ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
+            // ->addColumn('completed_date', function ($row) {
+            //     return ($row->completed_date) ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
+            // })
             ->addColumn('completed_date', function ($row) {
-                return ($row->completed_date) ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
+                return $row->task && $row->task->completed_date
+                    ? Carbon::parse($row->task->completed_date)->format('d/m/Y')
+                    : ($row->completed_date
+                        ? Carbon::parse($row->completed_date)->format('d/m/Y')
+                        : '-');
             })
             ->addColumn('accepted_date', function ($row) {
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
@@ -2552,8 +2559,15 @@ class TaskController extends Controller
             ->addColumn('close_date', function ($row) {
                 return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
             })
+            // ->addColumn('completed_date', function ($row) {
+            //     return $row->completed_date ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
+            // })
             ->addColumn('completed_date', function ($row) {
-                return $row->completed_date ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
+                return $row->task && $row->task->completed_date
+                    ? Carbon::parse($row->task->completed_date)->format('d/m/Y')
+                    : ($row->completed_date
+                        ? Carbon::parse($row->completed_date)->format('d/m/Y')
+                        : '-');
             })
             ->addColumn('accepted_date', function ($row) {
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
