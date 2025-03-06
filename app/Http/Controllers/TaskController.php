@@ -1854,13 +1854,13 @@ class TaskController extends Controller
 
     public function getAll_recurring_main(Request $request)
     {
-        // dd("sdsd");
         $user = auth()->user();
 
         $query = RecurringTask::query();
-        // dd($query->get());
         // Filter only those tasks where is_sub_task is null
         $query->whereNull('is_sub_task');
+
+
 
         if (Auth()->user()->id == 1) {
 
@@ -1889,10 +1889,53 @@ class TaskController extends Controller
             $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
 
-
-
-
         $tasks = $query;
+
+        if (!empty($request->search['value'])) {
+            $search = $request->search['value'];
+
+            $dateSearch = null;
+            if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                $dateParts = explode('/', $search);
+                if (count($dateParts) === 3) {
+                    $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                }
+            }
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('subject', 'LIKE', "%{$search}%")
+                  ->orWhere('TaskNumber', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhere('created_at', 'LIKE', "%{$search}%")
+                  ->orWhere('start_date', 'LIKE', "%{$search}%")
+                  ->orWhereHas('creator', function ($q) use ($search) {
+                      $q->where('first_name', 'LIKE', "%{$search}%")
+                        ->orWhere('last_name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('taskStatus', function ($q) use ($search) {
+                      $q->where('status_name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('project', function ($q) use ($search) {
+                    $q->where('project_name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('department', function ($q) use ($search) {
+                    $q->where('department_name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('sub_department', function ($q) use ($search) {
+                    $q->where('sub_department_name', 'LIKE', "%{$search}%");
+                });
+
+
+            });
+            // if ($dateSearch) {
+            //     $query->orWhere('created_at', 'LIKE', "%{$dateSearch}%")
+            //           ->orWhere('start_date', 'LIKE', "%{$dateSearch}%")
+            //           ->orWhere('due_date', 'LIKE', "%{$dateSearch}%")
+            //           ->orWhere('completed_date', 'LIKE', "%{$dateSearch}%")
+            //           ->orWhere('accepted_date', 'LIKE', "%{$dateSearch}%")
+            //           ->orWhere('close_date', 'LIKE', "%{$dateSearch}%");
+            // }
+        }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // $satusData = TaskAssignee::where('')
