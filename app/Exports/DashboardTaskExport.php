@@ -37,7 +37,9 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'tasks.created_at',
                 'tasks.start_date',
                 'task_assignees.due_date',
-                'tasks.completed_date',
+                // 'tasks.completed_date',
+                'task_assignees.completed_date as task_assignee_completed_date', // Fetch from task_assignees
+                'tasks.completed_date as task_completed_date',
                 'task_assignees.accepted_date',
                 'projects.project_name',
                 'departments.department_name',
@@ -88,7 +90,8 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $this->formatDate($row->created_at),
             $this->formatDate($row->start_date),
             $this->formatDate($row->due_date),
-            $this->formatDate($row->completed_date),
+            // $this->formatDate($row->completed_date),
+            $this->formatDate($this->getCompletedDate($row)),
             $this->formatDate($row->accepted_date),
             $row->project_name,
             $row->department_name,
@@ -100,6 +103,16 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
         ];
     }
 
+    private function getCompletedDate($row)
+    {
+        if (!empty($row->task_assignee_completed_date)) {
+            return $row->task_assignee_completed_date;
+        } elseif (!empty($row->task_completed_date)) {
+            return $row->task_completed_date;
+        }
+        return null;
+    }
+
     private function formatDate($date)
     {
         return $date ? \PhpOffice\PhpSpreadsheet\Shared\Date::dateTimeToExcel(new \DateTime($date)) : null;
@@ -109,10 +122,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     {
         return [
             'H' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Created Date
-            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Start Date
-            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Due Date
-            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Completed Date
-            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Accepted Task Date
+            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Start Date
+            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Due Date
+            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Completed Date
+            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Accepted Task Date
             'S' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Close Date
         ];
     }
