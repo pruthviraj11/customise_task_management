@@ -6405,7 +6405,6 @@ class TaskController extends Controller
             $currentStatus_creator = $task->task_status;
             // Prepare task data
             if (($task && $task->creator->id == auth()->user()->id) || auth()->user()->id == 1) {
-                // dd($request->get('due_date'));
                 $taskData = [
                     'ticket' => $request->get('task_type') == '1' ? 1 : 0,
                     'title' => $request->get('title'),
@@ -6421,6 +6420,7 @@ class TaskController extends Controller
                     'task_status' => $request->get('task_status'),
                     'updated_by' => auth()->user()->id,
                 ];
+
                 // dd($taskData);
 
                 // Handle task status specific fields (completed_date and close_date)
@@ -6439,13 +6439,18 @@ class TaskController extends Controller
                 //     $taskData['close_by'] = auth()->user()->id;
                 // }
                 // Check if the task status has changed to 4 or 7 and update dates accordingly
+                $taskAssigneeData = [];
+
                 if ($request->get('task_status') == 4 && $currentStatus_creator != 4) {
                     $taskData['completed_date'] = now()->format('Y-m-d H:i:s');  // Update completed_date only if the status is set to 4
+                    $taskAssigneeData['completed_date'] = now()->format('Y-m-d H:i:s');
                 } elseif ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
                     // $taskData['completed_date'] = now();  // Update completed_date only if the status is set to 7
                 } elseif ($request->get('task_status') != 4 && $request->get('task_status') != 7) {
                     // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
+                    $taskAssigneeData['completed_date'] = null;
+
                 }
                 // dd($currentStatus_creator,'Hii');
                 // Update close_date if task status is set to 7 and the status has changed
@@ -6456,6 +6461,7 @@ class TaskController extends Controller
                     $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
                     $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
+                    $taskAssigneeData['completed_date'] = now()->format('Y-m-d H:i:s');
                 }
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
@@ -6485,6 +6491,10 @@ class TaskController extends Controller
                 // Update the task
                 $updated = $this->taskService->updateTask($id, $taskData);
 
+                if (!empty($taskAssigneeData)) {
+                    TaskAssignee::where('task_id', $task->id)
+                        ->update($taskAssigneeData);
+                }
             } else {
                 // dd($request->get('due_date'));
                 $taskData = [

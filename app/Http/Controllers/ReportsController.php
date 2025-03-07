@@ -70,9 +70,11 @@ class ReportsController extends Controller
             $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
-                ->whereIn('task_status', [4,7])
+                ->whereIn('task_status', [4, 7])
                 // ->whereDate('close_date', today())
-                ->whereDate('completed_date', today())
+                ->whereRaw('DATE(completed_date) = ?', [now()->toDateString()])
+                // ->whereBetween('completed_date', [now()->startOfDay()->format('Y-m-d h:i:s'), now()->endOfDay()->format('Y-m-d h:i:s')])
+                // ->whereBetween('completed_date', [now()->startOfDay()->format('Y-m-d h:i:s'), now()->format('Y-m-d h:i:s')])
                 ->count();
 
             $taskReportDate = TaskAssignee::where('user_id', $user->id)
