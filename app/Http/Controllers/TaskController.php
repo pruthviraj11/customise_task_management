@@ -5848,6 +5848,7 @@ class TaskController extends Controller
                 $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
             }
 
+
             // Create the task
             $task = $this->taskService->create($taskData);
             $task->TaskNumber = $task->id;  // Set task number
@@ -5877,8 +5878,28 @@ class TaskController extends Controller
             $userIds = $request->input('user_id', []);
             $userIds = array_map('intval', $userIds); // Ensure all user IDs are integers
 
+            $syncData = [];
+            foreach ($userIds as $userId) {
+                if ($userId == Auth::id()) {
+                    $syncData[$userId] = ['accepted_date' => now()];
+                } else {
+                    // Fetch existing pivot record for this user (if any)
+                    $existingPivot = $task->users()->where('user_id', $userId)->first();
+
+                    if (!$existingPivot || !$existingPivot->pivot->accepted_date) {
+                        // Only set accepted_date if it's not already set
+                        // $syncData[$userId] = ['accepted_date' => now()];
+                        $syncData[$userId] = [];
+
+                    }
+                }
+            }
+
+            // Sync users with conditional accepted_date
+            $task->users()->sync($syncData);
+
             // Sync users to the task (assign task to all users)
-            $task->users()->sync($userIds); // Sync the users
+            // $task->users()->sync($userIds); // Sync the users
 
             // Update their pivot table status (0 for others, 1 for the creator)
             $taskCount = count($task->users); // Get the current number of users associated with the task
@@ -8498,7 +8519,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)->orWhere('created_by', $userId)
+                $q->where('user_id', $userId)->orWhere('task_assignees.created_by', $userId)
                     ->whereHas('user', function ($q) {
                         // Ensure the user is not deleted (i.e., deleted_at is null)
                         $q->whereNull('deleted_at');
