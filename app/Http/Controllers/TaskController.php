@@ -6496,7 +6496,6 @@ class TaskController extends Controller
                         ->update($taskAssigneeData);
                 }
             } else {
-                // dd($request->get('due_date'));
                 $taskData = [
                     'due_date' => $request->get('due_date_form'),
                     'task_status' => $request->get('task_status'),
@@ -6514,6 +6513,8 @@ class TaskController extends Controller
                 //     $taskData['close_date'] = now();
                 //     $taskData['close_by'] = auth()->user()->id;
                 // }
+
+
                 if ($request->get('task_status') == 4 && $currentStatus_Assigne != 4) {
                     $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
                     $taskData['completed_by'] = auth()->user()->id; // Update completed_date only if the status is set to 4
@@ -6540,6 +6541,18 @@ class TaskController extends Controller
                 $updated = $this->taskService->updateTaskAssigne($id, $taskData);
                 // return redirect()->back()->with('success', 'Task Updated Successfully');
 
+
+                $all_subtask_completed = TaskAssignee::where('task_id',$request->task_id)->get();
+                $allCompleted = $all_subtask_completed->every(function ($assignee) {
+                    return $assignee->task_status == 4;
+                });
+                if ($allCompleted) {
+                    Task::where('id', $request->task_id)->update([
+                        'completed_date' => now()->format('Y-m-d H:i:s'),
+                        'task_status' => 4
+                        // 'completed_by' => auth()->user()->id
+                    ]);
+                }
             }
             // Handle file attachments
             if ($request->hasFile('attachments')) {
@@ -9818,10 +9831,10 @@ class TaskController extends Controller
     // Method to update the subtask data
     public function updateSubtask(Request $request, TaskAssignee $subtask)
     {
-        // dd($request->all());
         // Start by updating the subtask with the new data
         $subtask->due_date = $request->due_date;
         $subtask->task_status = $request->status; // Assuming task_status is an integer
+
 
         // Save the subtask
         if (!$subtask->save()) {
@@ -9832,12 +9845,24 @@ class TaskController extends Controller
         }
 
 
-
         $comment = new Comments(); // Assuming you have a Comment model
         $comment->comment = $request->comment;
         $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
         $comment->created_by = auth()->id(); // The ID of the currently authenticated user
         $comment->save();
+
+
+        $all_subtask_completed = TaskAssignee::where('task_id',$subtask->task_id)->get();
+        $allCompleted = $all_subtask_completed->every(function ($assignee) {
+            return $assignee->task_status == 4;
+        });
+        if ($allCompleted) {
+            Task::where('id', $subtask->task_id)->update([
+                'completed_date' => now()->format('Y-m-d H:i:s'),
+                'task_status' => 4
+                // 'completed_by' => auth()->user()->id
+            ]);
+        }
 
         // Return success response
         return response()->json([
