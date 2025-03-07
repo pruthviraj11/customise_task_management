@@ -272,9 +272,9 @@
     </div> --}}
     <!-- users list ends -->
     @php
-        $selectedColumns = json_decode(auth()->user()->selected_fields, true);
+        // $selectedColumns = json_decode(auth()->user()->selected_fields, true);
 
-        if (empty($selectedColumns)) {
+        // if (empty($selectedColumns)) {
             $selectedColumns = [
                 '0',
                 '3',
@@ -297,7 +297,7 @@
                 '21',
                 '22',
             ];
-        }
+        // }
 
     @endphp
 @endsection
