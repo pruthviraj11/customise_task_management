@@ -848,7 +848,6 @@ class TaskController extends Controller
                     'assignee.first_name as assign_to', // Task assigned to
                     'tasks.close_date'
                 );
-
         }
 
         return DataTables::of($tasks)
@@ -864,8 +863,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -896,8 +894,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -1926,6 +1922,27 @@ class TaskController extends Controller
                     });
 
 
+                // ->orWhere('subject', 'LIKE', "%{$search}%")
+                // ->orWhere('TaskNumber', 'LIKE', "%{$search}%")
+                // ->orWhere('description', 'LIKE', "%{$search}%")
+                // ->orWhere('created_at', 'LIKE', "%{$search}%")
+                // ->orWhere('start_date', 'LIKE', "%{$search}%")
+                // ->orWhereHas('creator', function ($q) use ($search) {
+                //     $q->where('first_name', 'LIKE', "%{$search}%")
+                //         ->orWhere('last_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('taskStatus', function ($q) use ($search) {
+                //     $q->where('status_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('project', function ($q) use ($search) {
+                //     $q->where('project_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('department', function ($q) use ($search) {
+                //     $q->where('department_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('sub_department', function ($q) use ($search) {
+                //     $q->where('sub_department_name', 'LIKE', "%{$search}%");
+                // });
             });
             // if ($dateSearch) {
             //     $query->orWhere('created_at', 'LIKE', "%{$dateSearch}%")
@@ -2126,8 +2143,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2158,8 +2174,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -2346,8 +2360,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2378,8 +2391,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -2558,8 +2569,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2707,7 +2717,7 @@ class TaskController extends Controller
     public function getAll_overallTask(Request $request)
     {
         $loggedInUser = auth()->user();
-
+        // dd($loggedInUser);
         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
 
@@ -2817,8 +2827,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2849,8 +2858,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -3065,8 +3072,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -3097,8 +3103,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -3306,8 +3310,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -3338,8 +3341,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -5890,7 +5891,6 @@ class TaskController extends Controller
                         // Only set accepted_date if it's not already set
                         // $syncData[$userId] = ['accepted_date' => now()];
                         $syncData[$userId] = [];
-
                     }
                 }
             }
@@ -6405,14 +6405,15 @@ class TaskController extends Controller
             $currentStatus_creator = $task->task_status;
             // Prepare task data
             if (($task && $task->creator->id == auth()->user()->id) || auth()->user()->id == 1) {
+
                 $taskData = [
                     'ticket' => $request->get('task_type') == '1' ? 1 : 0,
                     'title' => $request->get('title'),
                     'description' => $request->get('description'),
                     'subject' => $request->get('subject'),
-                    'project_name' => $project->project_name,
-                    'priority_name' => $priority->priority_name,
-                    'status_name' => $status->status_name,
+                    'project_name'  => $project ? $project->project_name : null,
+                    'priority_name' => $priority ? $priority->priority_name : null,
+                    'status_name'   => $status ? $status->status_name : null,
                     'project_id' => $request->get('project_id'),
                     'start_date' => $request->get('start_date'),
                     'due_date' => $request->get('due_date_form'),
@@ -6450,7 +6451,6 @@ class TaskController extends Controller
                     // If status is neither 4 nor 7, reset completed_date
                     $taskData['completed_date'] = null;
                     $taskAssigneeData['completed_date'] = null;
-
                 }
                 // dd($currentStatus_creator,'Hii');
                 // Update close_date if task status is set to 7 and the status has changed
@@ -6490,7 +6490,19 @@ class TaskController extends Controller
                 }
                 // Update the task
                 $updated = $this->taskService->updateTask($id, $taskData);
+                if ($updated) {
+                    // Fetch the updated task
+                    $task = Task::findOrFail($id);
 
+                    // Retrieve all sub-tasks assigned to this task
+                    $all_sub_tasks = TaskAssignee::where('task_id', $id)->where('user_id', Auth()->user()->id)->get();
+
+                    // Update each sub-task's due_date to match the main task's due_date
+                    foreach ($all_sub_tasks as $sub_task) {
+                        $sub_task->due_date = $task->due_date;
+                        $sub_task->save();
+                    }
+                }
                 if (!empty($taskAssigneeData)) {
                     TaskAssignee::where('task_id', $task->id)
                         ->update($taskAssigneeData);
@@ -6542,6 +6554,7 @@ class TaskController extends Controller
                 // return redirect()->back()->with('success', 'Task Updated Successfully');
 
 
+                $all_subtask_completed = TaskAssignee::where('task_id', $request->task_id)->get();
                 $all_subtask_completed = TaskAssignee::where('task_id', $request->task_id)->get();
                 $allCompleted = $all_subtask_completed->every(function ($assignee) {
                     return $assignee->task_status == 4;
@@ -7781,8 +7794,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -7813,8 +7825,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -8690,8 +8700,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -8722,8 +8731,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -9108,9 +9115,9 @@ class TaskController extends Controller
                 $query->whereIn('created_by', $addedUserIds)
                     ->where('created_by', '!=', $userId)
                     ->orWhereHas('assignees', function ($q) use ($addedUserIds, $userId) {
-                    $q->whereIn('user_id', $addedUserIds)
-                        ->where('user_id', '!=', $userId);
-                });
+                        $q->whereIn('user_id', $addedUserIds)
+                            ->where('user_id', '!=', $userId);
+                    });
             });
 
         // Return the data using DataTables with added columns
@@ -9309,8 +9316,7 @@ class TaskController extends Controller
                             }
                         }
                         $query->where(function ($q) use ($search, $dateSearch) {
-                            $q->
-                                where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -9341,8 +9347,6 @@ class TaskController extends Controller
                                     ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                                 ;
                             }
-
-
                         });
                     }
                 })
@@ -9560,8 +9564,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->
-                            where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -9592,8 +9595,6 @@ class TaskController extends Controller
                                 ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
                             ;
                         }
-
-
                     });
                 }
             })
@@ -9853,6 +9854,7 @@ class TaskController extends Controller
 
 
         $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
+        $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
         $allCompleted = $all_subtask_completed->every(function ($assignee) {
             return $assignee->task_status == 4;
         });
@@ -10007,7 +10009,7 @@ class TaskController extends Controller
     {
         try {
             $taskData = Task::where('task_status', 4)->get();
-dd('hii');
+            dd('hii');
             foreach ($taskData as $task) {
                 $assignees = TaskAssignee::where('task_id', $task->id)->get();
                 foreach ($assignees as $assignee) {
@@ -10017,12 +10019,11 @@ dd('hii');
                         $task = Task::where('id', $assignee->task_id)->first();
                         $assigneeData['task_status'] = 4;
                         $assigneeData['completed_date'] = $task->completed_date ?? now();
-dd($assigneeData);
+                        dd($assigneeData);
                         $assignee->update($assigneeData);
                     }
                 }
             }
-
         } catch (\Throwable $th) {
             \Log::error('Error in complete_sub_task_from_task: ' . $th->getMessage());
         }
