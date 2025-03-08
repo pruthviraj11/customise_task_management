@@ -1146,27 +1146,6 @@
 
 
 
-    {{-- <script>
-        $(document).ready(function() {
-            var startDateInput = document.getElementById('start_date');
-            // alert(startDateInput);
-            var dueDateInput = document.getElementById('due_date');
-            var today = new Date().toISOString().split('T')[0];
-
-            // Set today's date as the default start date if not already set
-            if (!startDateInput.value) {
-                startDateInput.value = today;
-            }
-
-            // Disable past dates for the due date
-            dueDateInput.min = startDateInput.value || today;
-
-            // Update due date min value when start date changes
-            startDateInput.addEventListener('change', function() {
-                dueDateInput.min = this.value;
-            });
-        });
-    </script> --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var startDateInput = document.getElementById('start_date');
@@ -1179,17 +1158,20 @@
 
             var today = new Date();
 
-            // Calculate the date one week ago
-            // var oneWeekAgo = new Date();
-            // oneWeekAgo.setDate(today.getDate() - 7);
+            // Check if the page is "Add New Task"
+            var isAddNewTask = <?php echo json_encode($page_data['form_title'] == 'Add New Task'); ?>;
 
-            // // Set the min and max attributes for the start date
-            // startDateInput.min = formatDate(oneWeekAgo);
+            if (isAddNewTask) {
+                // Apply start date validation only if page is "Add New Task"
+                var oneWeekAgo = new Date();
+                oneWeekAgo.setDate(today.getDate() - 7);
+                startDateInput.min = formatDate(oneWeekAgo);
+            }
 
             // Set initial minimum value for due date
-            if (startDateInput.value) {
-                dueDateInput.min = startDateInput.value;
-            }
+            // if (startDateInput.value) {
+            //     dueDateInput.min = startDateInput.value;
+            // }
 
             // Update due date's minimum when start date changes
             startDateInput.addEventListener('change', function() {
@@ -1204,6 +1186,7 @@
             }
         });
     </script>
+
 
 
     <script>
