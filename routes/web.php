@@ -360,6 +360,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('email-templates/getAll', [EmailTemplateController::class, 'getAll'])->name('app-email-templates-get-all');
     //Email Template End
 
+    Route::get('complete_sub_task_from_task', [TaskController::class, 'complete_sub_task_from_task'])->name('app-complete_sub_task_from_task');
+
 
     //Task start
     Route::get('task/list', [TaskController::class, 'index'])->name('app-task-list');
