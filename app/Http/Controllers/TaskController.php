@@ -1920,6 +1920,29 @@ class TaskController extends Controller
                     ->orWhereHas('sub_department', function ($q) use ($search) {
                         $q->where('sub_department_name', 'LIKE', "%{$search}%");
                     });
+
+
+                // ->orWhere('subject', 'LIKE', "%{$search}%")
+                // ->orWhere('TaskNumber', 'LIKE', "%{$search}%")
+                // ->orWhere('description', 'LIKE', "%{$search}%")
+                // ->orWhere('created_at', 'LIKE', "%{$search}%")
+                // ->orWhere('start_date', 'LIKE', "%{$search}%")
+                // ->orWhereHas('creator', function ($q) use ($search) {
+                //     $q->where('first_name', 'LIKE', "%{$search}%")
+                //         ->orWhere('last_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('taskStatus', function ($q) use ($search) {
+                //     $q->where('status_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('project', function ($q) use ($search) {
+                //     $q->where('project_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('department', function ($q) use ($search) {
+                //     $q->where('department_name', 'LIKE', "%{$search}%");
+                // })
+                // ->orWhereHas('sub_department', function ($q) use ($search) {
+                //     $q->where('sub_department_name', 'LIKE', "%{$search}%");
+                // });
             });
             // if ($dateSearch) {
             //     $query->orWhere('created_at', 'LIKE', "%{$dateSearch}%")
@@ -6532,6 +6555,7 @@ class TaskController extends Controller
 
 
                 $all_subtask_completed = TaskAssignee::where('task_id', $request->task_id)->get();
+                $all_subtask_completed = TaskAssignee::where('task_id', $request->task_id)->get();
                 $allCompleted = $all_subtask_completed->every(function ($assignee) {
                     return $assignee->task_status == 4;
                 });
@@ -9830,6 +9854,7 @@ class TaskController extends Controller
 
 
         $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
+        $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
         $allCompleted = $all_subtask_completed->every(function ($assignee) {
             return $assignee->task_status == 4;
         });
@@ -9974,6 +9999,33 @@ class TaskController extends Controller
                 'New task ' . $task->id . ' assigned to you.',
                 'Created'
             );
+        }
+    }
+
+
+
+
+    public function complete_sub_task_from_task(Request $request)
+    {
+        try {
+            $taskData = Task::where('task_status', 4)->get();
+            dd('hii');
+            foreach ($taskData as $task) {
+                $assignees = TaskAssignee::where('task_id', $task->id)->get();
+                foreach ($assignees as $assignee) {
+
+                    if ($assignee->task_status != 4 && $assignee->task_status != 7) {
+
+                        $task = Task::where('id', $assignee->task_id)->first();
+                        $assigneeData['task_status'] = 4;
+                        $assigneeData['completed_date'] = $task->completed_date ?? now();
+                        dd($assigneeData);
+                        $assignee->update($assigneeData);
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            \Log::error('Error in complete_sub_task_from_task: ' . $th->getMessage());
         }
     }
 }
