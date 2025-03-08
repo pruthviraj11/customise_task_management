@@ -2975,9 +2975,9 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) {
 
                 // $query->whereHas('assignees', function ($query) {
-                $query->where('task_assignees.status', 0)
+                $query->where('task_assignees.status', 0);
                     // })
-                    ->where('task_assignees.task_status', '!=', 7);
+                    // ->where('task_assignees.task_status', '!=', 7);
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         } else {
@@ -2985,9 +2985,9 @@ class TaskController extends Controller
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
 
                 // $query->whereHas('assignees', function ($query) use ($user) {
-                $query->where('user_id', $user->id)->where('task_assignees.status', 0)
+                $query->where('user_id', $user->id)->where('task_assignees.status', 0);
                     // })
-                    ->where('task_assignees.task_status', '!=', 7); // Use 'task_status' from tasks table
+                    // ->where('task_assignees.task_status', '!=', 7);
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         }
