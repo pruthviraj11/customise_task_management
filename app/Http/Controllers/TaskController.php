@@ -935,7 +935,9 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
             })
             ->addColumn('description', function ($row) {
                 return ($row->task && $row->task->description) ? $row->task->description : '-';
@@ -3381,7 +3383,9 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -7839,7 +7843,9 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -9394,7 +9400,9 @@ class TaskController extends Controller
                     return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
                 })
                 ->addColumn('Task_Ticket', function ($row) {
-                    return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                    // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
                 })
                 ->addColumn('description', function ($row) {
                     return $row->task && $row->task->description ? $row->task->description : '-';
@@ -9638,7 +9646,9 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
