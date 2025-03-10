@@ -10054,4 +10054,27 @@ class TaskController extends Controller
         }
     }
 
+    public function add_accepted_date(){
+        $all_sub_tasks = TaskAssignee::whereNull('accepted_date')
+        ->where(function ($query) {
+            $query->whereNotNull('completed_date')
+                  ->orWhereNotNull('close_date');
+        })
+        ->get();
+
+    // Update each task
+    foreach ($all_sub_tasks as $task) {
+        if ($task->completed_date && $task->close_date) {
+            $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+
+        } else {
+            $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+        }
+
+        $task->update(['accepted_date' => $acceptedDate]);
+    }
+
+    // dd($all_sub_tasks);
+
+    }
 }
