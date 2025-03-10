@@ -731,7 +731,7 @@ class TaskController extends Controller
     //             return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
     //         })
 
-    //         ->addColumn('status', function ($row) {
+    //         ->addColumn('task_status', function ($row) {
     //             return $row->task_status ? $row->taskStatus->status_name : "-";
     //         })
     //         ->addColumn('Created_Date', function ($row) {
@@ -951,7 +951,7 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return ($row->task_status) ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -1799,7 +1799,7 @@ class TaskController extends Controller
                 // Return the comma-separated user names
                 return $userNames ?: '-';
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2014,7 +2014,7 @@ class TaskController extends Controller
                 return !empty($usernames) ? implode(', ', $usernames) : '-';
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2232,7 +2232,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2452,7 +2452,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2653,7 +2653,7 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2741,9 +2741,9 @@ class TaskController extends Controller
 
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks->whereNull('task_assignees.deleted_at')->where('task_assignees.status', 1);
+            $tasks->whereNull('task_assignees.deleted_at');
         } else {
-            $tasks->whereIn('user_id', $hierarchyUserIds)->where('task_assignees.status', 1)->whereNull('task_assignees.deleted_at');
+            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at');
         }
 
         // // Search functionality
@@ -2864,7 +2864,6 @@ class TaskController extends Controller
                     });
                 }
             })
-
             ->addColumn('actions', function ($row) {
                 // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
@@ -2892,6 +2891,7 @@ class TaskController extends Controller
 
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
+
             ->addColumn('created_by_username', function ($row) {
                 return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
             })
@@ -2917,7 +2917,8 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
+
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -2970,6 +2971,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
+
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
@@ -3134,7 +3136,7 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -3399,7 +3401,7 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -3535,7 +3537,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -3649,7 +3651,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -3776,7 +3778,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -3952,7 +3954,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -4087,7 +4089,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -4216,7 +4218,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -4343,7 +4345,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -4614,7 +4616,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -4878,7 +4880,7 @@ class TaskController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -5233,7 +5235,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -7861,7 +7863,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -8797,7 +8799,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
@@ -9416,7 +9418,7 @@ class TaskController extends Controller
                 ->addColumn('Task_assign_to', function ($row) {
                     return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
                 })
-                ->addColumn('status', function ($row) {
+                ->addColumn('task_status', function ($row) {
                     return $row->task_status ? $row->taskStatus->status_name : "-"; // Assuming 'task_status' is on the Task model
                 })
                 ->addColumn('Created_Date', function ($row) {
@@ -9664,7 +9666,7 @@ class TaskController extends Controller
                 return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
 
-            ->addColumn('status', function ($row) {
+            ->addColumn('task_status', function ($row) {
                 return $row->task_status ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {

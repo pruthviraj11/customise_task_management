@@ -199,6 +199,7 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contatinfo</th>
                                 <th>Close Date</th>
+                                <th>Status</th>
                                 {{-- <th>Is Pinned</th> --}}
 
 
@@ -275,30 +276,29 @@
         // $selectedColumns = json_decode(auth()->user()->selected_fields, true);
 
         // if (empty($selectedColumns)) {
-            $selectedColumns = [
-                '0',
-                '3',
-                '4',
-                '5',
-                '7',
-                '8',
-                '9',
-                '10',
-                '11',
-                '12',
-                '13',
-                '14',
-                '15',
-                '16',
-                '17',
-                '18',
-                '19',
-                '20',
-                '21',
-                '22',
-            ];
+        $selectedColumns = [
+            '0',
+            '3',
+            '4',
+            '5',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+            '16',
+            '17',
+            '18',
+            '19',
+            '20',
+            '21',
+            '22',
+        ];
         // }
-
     @endphp
 @endsection
 
@@ -574,7 +574,7 @@
                             search: 'applied',
                             order: 'applied'
                         },
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                        columns: [23, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
                             19, 20, 21, 22
                         ]
                     }
@@ -689,7 +689,7 @@
                         visible: selectedColumns.includes("9")
                     },
                     {
-                        data: 'status',
+                        data: 'task_status',
                         name: 'status',
                         searchable: true,
                         visible: selectedColumns.includes("10")
@@ -777,8 +777,26 @@
                             visible: false,
                             searchable: false,
                         },
-                    @endif
-
+                    @endif {
+                        data: 'status',
+                        name: 'status',
+                        searchable: true,
+                        visible: selectedColumns.includes(
+                        "23"), // Checks if "23" is in the selectedColumns array
+                        render: function(data, type, row) {
+                            // Conditionally return the appropriate label based on the status value
+                            switch (data) {
+                                case 0:
+                                    return 'Requested';
+                                case 1:
+                                    return 'Accepted';
+                                case 2:
+                                    return 'Rejected';
+                                default:
+                                    return 'Unknown'; // For unexpected values
+                            }
+                        }
+                    }
                 ],
 
                 drawCallback: function() {
