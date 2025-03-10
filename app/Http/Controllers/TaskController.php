@@ -937,7 +937,6 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
             })
             ->addColumn('description', function ($row) {
                 return ($row->task && $row->task->description) ? $row->task->description : '-';
@@ -2300,7 +2299,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->whereNotIn('task_assignees.task_status', ['4', '7'])
-            ->where('task_assignees.status',1)
+                ->where('task_assignees.status', 1)
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2986,8 +2985,8 @@ class TaskController extends Controller
 
                 // $query->whereHas('assignees', function ($query) {
                 $query->where('task_assignees.status', 0);
-                    // })
-                    // ->where('task_assignees.task_status', '!=', 7);
+                // })
+                // ->where('task_assignees.task_status', '!=', 7);
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         } else {
@@ -2996,8 +2995,8 @@ class TaskController extends Controller
 
                 // $query->whereHas('assignees', function ($query) use ($user) {
                 $query->where('user_id', $user->id)->where('task_assignees.status', 0);
-                    // })
-                    // ->where('task_assignees.task_status', '!=', 7);
+                // })
+                // ->where('task_assignees.task_status', '!=', 7);
             })
                 ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
         }
@@ -3119,7 +3118,6 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -3385,7 +3383,6 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -7845,7 +7842,6 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -9401,8 +9397,7 @@ class TaskController extends Controller
                 })
                 ->addColumn('Task_Ticket', function ($row) {
                     // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
-                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
+                    return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
                 })
                 ->addColumn('description', function ($row) {
                     return $row->task && $row->task->description ? $row->task->description : '-';
@@ -9648,7 +9643,6 @@ class TaskController extends Controller
             ->addColumn('Task_Ticket', function ($row) {
                 // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
                 return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
-
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
@@ -10041,4 +10035,19 @@ class TaskController extends Controller
             \Log::error('Error in complete_sub_task_from_task: ' . $th->getMessage());
         }
     }
+    public function make_closetask_acc()
+    {
+        $all_main_tasks = Task::whereNotNull('accepted_date')->get();
+    
+        foreach ($all_main_tasks as $task) {
+            TaskAssignee::where('task_id', $task->id)
+                ->where('status', 0)
+                ->update([
+                    'status' => 1,
+                    'accepted_date' => $task->accepted_date,
+                    'manually_updated' => true
+                ]);
+        }
+    }
+    
 }

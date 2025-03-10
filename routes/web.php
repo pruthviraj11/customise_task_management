@@ -361,6 +361,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     //Email Template End
 
     Route::get('complete_sub_task_from_task', [TaskController::class, 'complete_sub_task_from_task'])->name('app-complete_sub_task_from_task');
+    Route::get('make_closetask_acc', [TaskController::class, 'make_closetask_acc'])->name('app-make_closetask_acc');
 
 
     //Task start
