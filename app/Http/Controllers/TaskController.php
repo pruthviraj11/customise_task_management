@@ -2298,6 +2298,7 @@ class TaskController extends Controller
         } else {
             // User-specific task filters
             $query->whereNotIn('task_assignees.task_status', ['4', '7'])
+            ->where('task_assignees.status',1)
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -3114,7 +3115,9 @@ class TaskController extends Controller
                 return $row->task_number ?? "-";
             })
             ->addColumn('Task_Ticket', function ($row) {
-                return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                // return $row->task ? ($row->task->ticket ? $row->task->ticket : 'Task') : 'Task';
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+
             })
             ->addColumn('description', function ($row) {
                 return $row->task && $row->task->description ? $row->task->description : '-';
