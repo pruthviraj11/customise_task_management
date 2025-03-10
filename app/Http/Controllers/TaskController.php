@@ -9958,7 +9958,8 @@ class TaskController extends Controller
 
                 // Check if the created_by user is the same as the assigned user (user_id)
                 $status = ($recurringTask->created_by == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
-
+                $accepted_at = ($status == 1) ? now() : null;
+                // Stores the current timestamp
                 // Update pivot with user-specific task number and additional details
                 TaskAssignee::create([
                     'task_id' => $task->id,         // Store the task_id
@@ -9970,6 +9971,7 @@ class TaskController extends Controller
                     'department' => $departmentId,
                     'sub_department' => $subdepartment,
                     'created_by' => $recurringTask->created_by,
+                    'accepted_at' => $accepted_at,
                     'created_at' => now(),
                 ]);
             }
@@ -10040,7 +10042,7 @@ class TaskController extends Controller
     public function make_closetask_acc()
     {
         $all_main_tasks = Task::whereNotNull('accepted_date')->get();
-    
+
         foreach ($all_main_tasks as $task) {
             TaskAssignee::where('task_id', $task->id)
                 ->where('status', 0)
@@ -10051,5 +10053,5 @@ class TaskController extends Controller
                 ]);
         }
     }
-    
+
 }
