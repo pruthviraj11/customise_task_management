@@ -10056,7 +10056,7 @@ class TaskController extends Controller
     }
     public function make_closetask_acc()
     {
-        // old Code :
+        // Old Code :
         // $all_main_tasks = Task::whereNotNull('accepted_date')->get();
 
         // foreach ($all_main_tasks as $task) {
@@ -10070,32 +10070,29 @@ class TaskController extends Controller
         // }
 
 
-        // New Code
-        $all_main_tasks = TaskAssignee::whereNull('accepted_date')
-        ->where('status', 0)
-        ->where(function ($query) {
-            $query->whereNotNull('close_date')
-                  ->orWhereNotNull('completed_date');
-        })
-        ->get();
-        dd($all_main_tasks);
-        foreach ($all_main_tasks as $task) {
-            dd($task);
-            if ($task->completed_date !== null) {
-                $accepted_date = $task->completed_date;
-            } else {
-                $accepted_date = $task->close_date;
-            }
-            $kkk=    TaskAssignee::where('id', $task->id)
-                ->where('status', 0)
-                ->update([
-                    'status' => 1,
-                    'accepted_date' =>$accepted_date,
-                    'manually_updated' => true
-                ]);
+        // New Code :
+        $taskAssignees = TaskAssignee::whereNull('accepted_date')
+            ->where('status', 0)
+            ->whereIn('task_id', function ($query) {
+                $query->select('id')
+                    ->from('tasks')
+                    ->whereNotNull('close_date')
+                    ->orWhereNotNull('completed_date');
+            })
+            ->get();
 
-            dump($kkk) ;
+        foreach ($taskAssignees as $taskAssignee) {
+            $task = Task::find($taskAssignee->task_id);
+
+            if ($task) {
+                $taskAssignee->update([
+                    'accepted_date' => $task->completed_date ?? $task->close_date,
+                    'status' => 1,
+                    'manually_updated' => true,
+                ]);
+            }
         }
+
     }
 
     public function add_accepted_date()
