@@ -7699,9 +7699,9 @@ class TaskController extends Controller
         //         'task.comments'
         //     ]);
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks = TaskAssignee::withTrashed();
+            $tasks = TaskAssignee::onlyTrashed();
         } else {
-            $tasks = TaskAssignee::withTrashed()->where('task_assignees.created_by', $userId);
+            $tasks = TaskAssignee::onlyTrashed()->where('task_assignees.created_by', $userId);
         }
 
 
