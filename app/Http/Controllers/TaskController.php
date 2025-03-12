@@ -9854,10 +9854,13 @@ class TaskController extends Controller
     // Method to update the subtask data
     public function updateSubtask(Request $request, TaskAssignee $subtask)
     {
-        // Start by updating the subtask with the new data
-        $subtask->due_date = $request->due_date;
-        $subtask->task_status = $request->status; // Assuming task_status is an integer
 
+        $request->validate([
+            'comment' => 'required',
+        ]);
+
+        $subtask->due_date = $request->due_date;
+        $subtask->task_status = $request->status;
 
         // Save the subtask
         if (!$subtask->save()) {
@@ -9867,13 +9870,11 @@ class TaskController extends Controller
             ], 500);
         }
 
-
-        $comment = new Comments(); // Assuming you have a Comment model
+        $comment = new Comments();
         $comment->comment = $request->comment;
-        $comment->task_id = $subtask->task_id; // Assuming the comment is related to a task
-        $comment->created_by = auth()->id(); // The ID of the currently authenticated user
+        $comment->task_id = $subtask->task_id;
+        $comment->created_by = auth()->id();
         $comment->save();
-
 
         $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
         $all_subtask_completed = TaskAssignee::where('task_id', $subtask->task_id)->get();
@@ -9888,11 +9889,10 @@ class TaskController extends Controller
             ]);
         }
 
-        // Return success response
         return response()->json([
             'success' => true,
             'message' => 'Subtask updated successfully.',
-            'subtask' => $subtask, // Optionally, return the updated subtask data
+            'subtask' => $subtask,
         ]);
     }
     public function checkAndCreateTasks()
