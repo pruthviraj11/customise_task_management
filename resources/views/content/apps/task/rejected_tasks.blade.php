@@ -186,6 +186,7 @@
                         data: 'status',
                         name: 'status',
                         searchable: true,
+                        visible:false
                     },
 
                 ],

@@ -65,7 +65,20 @@ class TaskController extends Controller
     }
 
     public function index($user_id = '', $status_id = '', $route_type = '')
-    {
+    { $today = Carbon::today()->toDateString();
+
+        // Get all recurring tasks where start_date is today
+        $tasksToCreate_count = RecurringTask::whereDate('start_date', $today)
+            ->whereNotNull('is_sub_task')
+            ->where('is_completed', 0)  // Exclude completed tasks
+            ->whereNull('deleted_at')  // Exclude soft deleted tasks
+            ->count();
+            // dd($tasksToCreate_count);
+            if($tasksToCreate_count != 0){
+
+                $this->checkAndCreateTasks();
+            }
+// dd($)
         // dd($user_id);
         $tasks = Task::withTrashed()->get();
 
@@ -9885,6 +9898,7 @@ class TaskController extends Controller
     public function checkAndCreateTasks()
     {
         // Get today's date
+        // dd('hhh');
         $today = Carbon::today()->toDateString();
 
         // Get all recurring tasks where start_date is today
@@ -9971,7 +9985,7 @@ class TaskController extends Controller
                     'department' => $departmentId,
                     'sub_department' => $subdepartment,
                     'created_by' => $recurringTask->created_by,
-                    'accepted_at' => $accepted_at,
+                    'accepted_date' => $accepted_at,
                     'created_at' => now(),
                 ]);
             }
