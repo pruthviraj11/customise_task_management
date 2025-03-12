@@ -65,7 +65,8 @@ class TaskController extends Controller
     }
 
     public function index($user_id = '', $status_id = '', $route_type = '')
-    { $today = Carbon::today()->toDateString();
+    {
+        $today = Carbon::today()->toDateString();
 
         // Get all recurring tasks where start_date is today
         $tasksToCreate_count = RecurringTask::whereDate('start_date', $today)
@@ -73,12 +74,12 @@ class TaskController extends Controller
             ->where('is_completed', 0)  // Exclude completed tasks
             ->whereNull('deleted_at')  // Exclude soft deleted tasks
             ->count();
-            // dd($tasksToCreate_count);
-            if($tasksToCreate_count != 0){
+        // dd($tasksToCreate_count);
+        if ($tasksToCreate_count != 0) {
 
-                $this->checkAndCreateTasks();
-            }
-// dd($)
+            $this->checkAndCreateTasks();
+        }
+        // dd($)
         // dd($user_id);
         $tasks = Task::withTrashed()->get();
 
@@ -6430,9 +6431,9 @@ class TaskController extends Controller
                     'title' => $request->get('title'),
                     'description' => $request->get('description'),
                     'subject' => $request->get('subject'),
-                    'project_name'  => $project ? $project->project_name : null,
+                    'project_name' => $project ? $project->project_name : null,
                     'priority_name' => $priority ? $priority->priority_name : null,
-                    'status_name'   => $status ? $status->status_name : null,
+                    'status_name' => $status ? $status->status_name : null,
                     'project_id' => $request->get('project_id'),
                     'start_date' => $request->get('start_date'),
                     'due_date' => $request->get('due_date_form'),
@@ -9135,9 +9136,9 @@ class TaskController extends Controller
                 $query->whereIn('created_by', $addedUserIds)
                     ->where('created_by', '!=', $userId)
                     ->orWhereHas('assignees', function ($q) use ($addedUserIds, $userId) {
-                        $q->whereIn('user_id', $addedUserIds)
-                            ->where('user_id', '!=', $userId);
-                    });
+                    $q->whereIn('user_id', $addedUserIds)
+                        ->where('user_id', '!=', $userId);
+                });
             });
 
         // Return the data using DataTables with added columns
@@ -10055,40 +10056,70 @@ class TaskController extends Controller
     }
     public function make_closetask_acc()
     {
-        $all_main_tasks = Task::whereNotNull('accepted_date')->get();
+        // old Code :
+        // $all_main_tasks = Task::whereNotNull('accepted_date')->get();
 
+        // foreach ($all_main_tasks as $task) {
+        //     TaskAssignee::where('task_id', $task->id)
+        //         ->where('status', 0)
+        //         ->update([
+        //             'status' => 1,
+        //             'accepted_date' => $task->accepted_date,
+        //             'manually_updated' => true
+        //         ]);
+        // }
+
+
+        // New Code
+        $all_main_tasks = TaskAssignee::whereNull('accepted_date')
+        ->where('status', 0)
+        ->where(function ($query) {
+            $query->whereNotNull('close_date')
+                  ->orWhereNotNull('completed_date');
+        })
+        ->get();
+        dd($all_main_tasks);
         foreach ($all_main_tasks as $task) {
-            TaskAssignee::where('task_id', $task->id)
+            dd($task);
+            if ($task->completed_date !== null) {
+                $accepted_date = $task->completed_date;
+            } else {
+                $accepted_date = $task->close_date;
+            }
+            $kkk=    TaskAssignee::where('id', $task->id)
                 ->where('status', 0)
                 ->update([
                     'status' => 1,
-                    'accepted_date' => $task->accepted_date,
+                    'accepted_date' =>$accepted_date,
                     'manually_updated' => true
                 ]);
+
+            dump($kkk) ;
         }
     }
 
-    public function add_accepted_date(){
+    public function add_accepted_date()
+    {
         $all_sub_tasks = TaskAssignee::whereNull('accepted_date')
-        ->where(function ($query) {
-            $query->whereNotNull('completed_date')
-                  ->orWhereNotNull('close_date');
-        })
-        ->get();
+            ->where(function ($query) {
+                $query->whereNotNull('completed_date')
+                    ->orWhereNotNull('close_date');
+            })
+            ->get();
 
-    // Update each task
-    foreach ($all_sub_tasks as $task) {
-        if ($task->completed_date && $task->close_date) {
-            $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+        // Update each task
+        foreach ($all_sub_tasks as $task) {
+            if ($task->completed_date && $task->close_date) {
+                $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
 
-        } else {
-            $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+            } else {
+                $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+            }
+
+            $task->update(['accepted_date' => $acceptedDate]);
         }
 
-        $task->update(['accepted_date' => $acceptedDate]);
-    }
-
-    // dd($all_sub_tasks);
+        // dd($all_sub_tasks);
 
     }
 }
