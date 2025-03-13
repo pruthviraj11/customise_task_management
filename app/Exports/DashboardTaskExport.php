@@ -33,6 +33,8 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'tasks.subject',
                 'assigner.first_name as assign_by', // Task assigned by
                 'assignee.first_name as assign_to', // Task assigned to
+                'assigner.last_name as assign_by_last', // Task assigned by
+                'assignee.last_name as assign_to_last', // Task assigned to
                 'status.status_name',
                 'tasks.created_at',
                 'tasks.start_date',
@@ -84,8 +86,8 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $row->ticket == 0 ? 'Task' : 'Ticket',
             $row->title,
             $row->subject,
-            $row->assign_by,
-            $row->assign_to,
+            $row->assign_by . ' ' . $row->assign_by_last, // Full name of assigner
+            $row->assign_to . ' ' . $row->assign_to_last, // Full name of assignee
             $row->status_name,
             $this->formatDate($row->created_at),
             $this->formatDate($row->start_date),
