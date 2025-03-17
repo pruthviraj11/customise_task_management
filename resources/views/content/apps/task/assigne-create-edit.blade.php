@@ -91,7 +91,15 @@
                                         @enderror
                                     </span>
                                 </div>
-
+                                <div class="col-md-12 col-sm-12 mb-1">
+                                    <label class="form-label" for="description">Description</label>
+                                    <h2>{{ $taskAss && $taskAss->description ? trim(strip_tags($taskAss->description)) : "-" }}</h2>
+                                    <span class="text-danger">
+                                        @error('description')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
 
                                 @if ($taskAss != '')
                                     <div class="col-md-12 col-sm-12 mt-3">
