@@ -10148,4 +10148,10 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Completed dates or closed dates updated successfully']);
     }
+
+    public function add_close_date(){
+        $all_sub_tasks = TaskAssignee::where('task_status',7)->whereNull('close_date')->get();
+        dd($all_sub_tasks);
+
+    }
 }
