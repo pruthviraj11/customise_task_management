@@ -10127,7 +10127,10 @@ class TaskController extends Controller
             ->get();
 
         foreach ($all_sub_tasks as $task) {
-            $task->update(['completed_date' => $task->close_date]);
+            $task->update([
+                'completed_date' => $task->close_date,
+                'manually_updated' => true
+            ]);
         }
 
         return response()->json(['message' => 'Completed dates updated successfully']);
