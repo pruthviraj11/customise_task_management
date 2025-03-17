@@ -10119,4 +10119,17 @@ class TaskController extends Controller
         // dd($all_sub_tasks);
 
     }
+
+    public function add_completed_date()
+    {
+        $all_sub_tasks = TaskAssignee::whereNull('completed_date')
+            ->whereNotNull('close_date')
+            ->get();
+
+        foreach ($all_sub_tasks as $task) {
+            $task->update(['completed_date' => $task->close_date]);
+        }
+
+        return response()->json(['message' => 'Completed dates updated successfully']);
+    }
 }

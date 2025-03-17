@@ -363,6 +363,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('complete_sub_task_from_task', [TaskController::class, 'complete_sub_task_from_task'])->name('app-complete_sub_task_from_task');
     Route::get('make_closetask_acc', [TaskController::class, 'make_closetask_acc'])->name('app-make_closetask_acc');
     Route::get('add_accepted_date', [TaskController::class, 'add_accepted_date'])->name('app-add_accepted_date');
+    Route::get('add_completed_date', [TaskController::class, 'add_completed_date'])->name('app-add_completed_date');
+
 
 
 
