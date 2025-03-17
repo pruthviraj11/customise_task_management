@@ -10138,8 +10138,7 @@ class TaskController extends Controller
 
         $all_sub_tasks = TaskAssignee::whereNull('close_date')
         ->whereNotNull('completed_date')
-        ->count();
-dd($all_sub_tasks);
+        ->get();
         foreach ($all_sub_tasks as $task) {
             $task->update([
                 'close_date' => $task->completed_date,
