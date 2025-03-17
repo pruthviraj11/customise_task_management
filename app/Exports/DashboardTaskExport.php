@@ -16,8 +16,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
         return TaskAssignee::leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
             ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
             ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
-            ->leftJoin('departments', 'task_assignees.department', '=', 'departments.id')
-            ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            // ->leftJoin('departments', 'task_assignees.department', '=', 'departments.id')
+            // ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            ->leftJoin('departments as assignee_department', 'assignee.department_id', '=', 'assignee_department.id') // Assignee Department
+            ->leftJoin('sub_departments as assignee_sub_department', 'assignee.subdepartment', '=', 'assignee_sub_department.id') // Assignee Sub Department
             ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
             ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
             ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
@@ -44,8 +46,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'tasks.completed_date as task_completed_date',
                 'task_assignees.accepted_date',
                 'projects.project_name',
-                'departments.department_name',
-                'sub_departments.sub_department_name',
+                // 'departments.department_name',
+                // 'sub_departments.sub_department_name',
+                'assignee_department.department_name as assignee_department_name',
+                'assignee_sub_department.sub_department_name as assignee_sub_department_name',
                 'owner_department.department_name as owner_department_name',
                 'owner_sub_department.sub_department_name as owner_sub_department_name',
                 'assignee.phone_no as owner_contact_info',
@@ -96,8 +100,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $this->formatDate($this->getCompletedDate($row)),
             $this->formatDate($row->accepted_date),
             $row->project_name,
-            $row->department_name,
-            $row->sub_department_name,
+            // $row->department_name,
+            // $row->sub_department_name,
+            $row->assignee_department_name, // Assignee Department
+            $row->assignee_sub_department_name,
             $row->owner_department_name,
             $row->owner_sub_department_name,
             $row->owner_contact_info,
