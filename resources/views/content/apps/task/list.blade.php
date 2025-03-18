@@ -804,7 +804,7 @@
                                 case 2:
                                     return 'Rejected';
                                 default:
-                                    return 'Unknown'; // For unexpected values
+                                    return '-'; // For unexpected values
                             }
                         }
                     }

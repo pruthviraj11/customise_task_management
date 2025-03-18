@@ -131,7 +131,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             case 2:
                 return 'Rejected';
             default:
-                return 'Unknown'; // For unexpected values
+                return '-'; // For unexpected values
         }
     }
     private function getCompletedDate($row)
