@@ -577,8 +577,20 @@
                         columns: [23, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
                             19, 20, 21, 22
                         ]
-                    }
+                    },
+                    customize: function(xlsx) {
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        $('row c[r]', sheet).each(function() {
+                            var cell = $(this);
+                            var cellRef = cell.attr('r');
 
+                            // Check if the column belongs to one of the date fields
+                            if (cellRef.match(
+                                /^(K|L|M|N|O|P|Q)$/)) { // Adjust based on column index
+                                cell.attr('s', '2'); // Apply date format
+                            }
+                        });
+                    }
                 }],
 
                 ajax: {
@@ -698,34 +710,37 @@
                         data: 'Created_Date',
                         name: 'Created_Date',
                         searchable: true,
-                        visible: selectedColumns.includes("11")
+                        visible: selectedColumns.includes("11"),
+                        render: formatDate
 
-                    }, {
+                    },
+                    {
                         data: 'start_date',
                         name: 'start_date',
                         searchable: true,
-                        visible: selectedColumns.includes("12")
-
+                        visible: selectedColumns.includes("12"),
+                        render: formatDate
                     },
                     {
                         data: 'due_date',
                         name: 'due_date',
                         searchable: true,
-                        visible: selectedColumns.includes("13")
-
+                        visible: selectedColumns.includes("13"),
+                        render: formatDate
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
                         searchable: true,
-                        visible: selectedColumns.includes("14")
+                        visible: selectedColumns.includes("14"),
+                        render: formatDate
                     },
-
                     {
                         data: 'accepted_date',
                         name: 'accepted_date',
                         searchable: true,
-                        visible: selectedColumns.includes("15")
+                        visible: selectedColumns.includes("15"),
+                        render: formatDate
                     },
                     {
                         data: 'project',
@@ -767,7 +782,9 @@
                         data: 'close_date',
                         name: 'close_date',
                         searchable: true,
-                        visible: selectedColumns.includes("22")
+                        visible: selectedColumns.includes("22"),
+                        render: formatDate
+
                     },
                     @if ($type == 'mytask')
 
@@ -782,7 +799,7 @@
                         name: 'status',
                         searchable: true,
                         visible: selectedColumns.includes(
-                        "23"), // Checks if "23" is in the selectedColumns array
+                            "23"), // Checks if "23" is in the selectedColumns array
                         render: function(data, type, row) {
                             // Conditionally return the appropriate label based on the status value
                             switch (data) {
@@ -805,6 +822,11 @@
                 }
             });
 
+            function formatDate(data, type, row) {
+                if (!data) return "";
+                var date = new Date(data);
+                return date.toISOString().split('T')[0]; // Formats as YYYY-MM-DD
+            }
             $(document).ready(function() {
                 $('#columnVisibilityModal').on('change', '.column-toggle', function() {
                     var columnIndex = $(this).data('column');
