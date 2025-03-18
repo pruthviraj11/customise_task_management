@@ -574,9 +574,10 @@
                             search: 'applied',
                             order: 'applied'
                         },
-                        columns: [23, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                        columns: [23,  2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
                             19, 20, 21, 22
                         ]
+                        //Add 1 in columns for pin task column
                     },
                     customize: function(xlsx) {
                         var sheet = xlsx.xl.worksheets['sheet1.xml'];

@@ -30,8 +30,12 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             ->whereNull('task_assignees.deleted_at')
             ->select(
                 'task_assignees.task_number',
+                'task_assignees.status as status',
+                'task_assignees.task_id as task_id',
+
                 'tasks.ticket',
                 'tasks.title',
+                'tasks.description',
                 'tasks.subject',
                 'assigner.first_name as assign_by', // Task assigned by
                 'assignee.first_name as assign_to', // Task assigned to
@@ -61,13 +65,16 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     public function headings(): array
     {
         return [
+            'Status',
+            'Task',
             'Task Number',
             'Task/Ticket',
             'Title',
+            'Description',
             'Subject',
             'Assigned By',
             'Assigned To',
-            'Status',
+            'Task Status',
             'Created Date',
             'Start Date',
             'Due Date',
@@ -86,9 +93,12 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     public function map($row): array
     {
         return [
+            $this->mapStatus($row->status),
+            $row->task_id,
             $row->task_number,
             $row->ticket == 0 ? 'Task' : 'Ticket',
             $row->title,
+            $row->description,
             $row->subject,
             $row->assign_by . ' ' . $row->assign_by_last, // Full name of assigner
             $row->assign_to . ' ' . $row->assign_to_last, // Full name of assignee
@@ -111,6 +121,19 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
         ];
     }
 
+    private function mapStatus($status)
+    {
+        switch ($status) {
+            case 0:
+                return 'Requested';
+            case 1:
+                return 'Accepted';
+            case 2:
+                return 'Rejected';
+            default:
+                return 'Unknown'; // For unexpected values
+        }
+    }
     private function getCompletedDate($row)
     {
         if (!empty($row->task_assignee_completed_date)) {
@@ -129,12 +152,12 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     public function columnFormats(): array
     {
         return [
-            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Created Date
-            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Start Date
-            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Due Date
-            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Completed Date
-            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Accepted Task Date
-            'S' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Close Date
+            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Created Date
+            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Start Date
+            'M' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Due Date
+            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Completed Date
+            'O' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Accepted Task Date
+            'V' => NumberFormat::FORMAT_DATE_DDMMYYYY . ' HH:MM:SS', // Close Date
         ];
     }
 }
