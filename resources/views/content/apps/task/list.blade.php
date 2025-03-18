@@ -718,28 +718,24 @@
                         name: 'start_date',
                         searchable: true,
                         visible: selectedColumns.includes("12")
-                        // render: formatDate
                     },
                     {
                         data: 'due_date',
                         name: 'due_date',
                         searchable: true,
                         visible: selectedColumns.includes("13")
-                        // render: formatDate
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
                         searchable: true,
                         visible: selectedColumns.includes("14")
-                        // render: formatDate
                     },
                     {
                         data: 'accepted_date',
                         name: 'accepted_date',
                         searchable: true,
                         visible: selectedColumns.includes("15")
-                        // render: formatDate
                     },
                     {
                         data: 'project',
@@ -781,7 +777,7 @@
                         data: 'close_date',
                         name: 'close_date',
                         searchable: true,
-                        visible: selectedColumns.includes("22"),
+                        visible: selectedColumns.includes("22")
                     },
                     @if ($type == 'mytask')
 
@@ -819,11 +815,7 @@
                 }
             });
 
-            function formatDate(data, type, row) {
-                if (!data) return "";
-                var date = new Date(data);
-                return date.toISOString().split('T')[0]; // Formats as YYYY-MM-DD
-            }
+
             $(document).ready(function() {
                 $('#columnVisibilityModal').on('change', '.column-toggle', function() {
                     var columnIndex = $(this).data('column');
