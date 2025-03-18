@@ -578,6 +578,19 @@
                             19, 20, 21, 22
                         ]
                         //Add 1 in columns for pin task column
+                    },
+                    customize: function(xlsx) {
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        $('row c[r]', sheet).each(function() {
+                            var cell = $(this);
+                            var cellRef = cell.attr('r');
+
+                            // Check if the column belongs to one of the date fields
+                            if (cellRef.match(
+                                /^(K|L|M|N|O|P|Q)$/)) { // Adjust based on column index
+                                cell.attr('s', '2'); // Apply date format
+                            }
+                        });
                     }
                 }],
 
@@ -707,32 +720,11 @@
                         searchable: true,
                         visible: selectedColumns.includes("12")
                     },
-
-                    // {
-                    //     data: 'due_date',
-                    //     name: 'due_date',
-                    //     searchable: true,
-                    //     visible: selectedColumns.includes("13")
-                    // },
                     {
                         data: 'due_date',
                         name: 'due_date',
                         searchable: true,
-                        visible: selectedColumns.includes("13"),
-                        render: function(data) {
-                            if (data) {
-                                var date = new Date(data);
-                                var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' +
-                                    (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-                                return formattedDate;
-                            }
-                            return '';
-                        }
-                    },
-                    {
-                        data: 'due_date',
-                        name: 'due_date',
-                        visible: false,
+                        visible: selectedColumns.includes("13")
                     },
                     {
                         data: 'completed_date',
