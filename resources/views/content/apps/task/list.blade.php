@@ -710,37 +710,36 @@
                         data: 'Created_Date',
                         name: 'Created_Date',
                         searchable: true,
-                        visible: selectedColumns.includes("11"),
-                        render: formatDate
+                        visible: selectedColumns.includes("11")
 
                     },
                     {
                         data: 'start_date',
                         name: 'start_date',
                         searchable: true,
-                        visible: selectedColumns.includes("12"),
-                        render: formatDate
+                        visible: selectedColumns.includes("12")
+                        // render: formatDate
                     },
                     {
                         data: 'due_date',
                         name: 'due_date',
                         searchable: true,
-                        visible: selectedColumns.includes("13"),
-                        render: formatDate
+                        visible: selectedColumns.includes("13")
+                        // render: formatDate
                     },
                     {
                         data: 'completed_date',
                         name: 'completed_date',
                         searchable: true,
-                        visible: selectedColumns.includes("14"),
-                        render: formatDate
+                        visible: selectedColumns.includes("14")
+                        // render: formatDate
                     },
                     {
                         data: 'accepted_date',
                         name: 'accepted_date',
                         searchable: true,
-                        visible: selectedColumns.includes("15"),
-                        render: formatDate
+                        visible: selectedColumns.includes("15")
+                        // render: formatDate
                     },
                     {
                         data: 'project',
@@ -783,8 +782,6 @@
                         name: 'close_date',
                         searchable: true,
                         visible: selectedColumns.includes("22"),
-                        render: formatDate
-
                     },
                     @if ($type == 'mytask')
 
