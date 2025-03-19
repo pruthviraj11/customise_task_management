@@ -197,7 +197,7 @@
                                 <th>Sub Department</th>
                                 <th>Owner Department</th>
                                 <th>Owner Sub Department</th>
-                                <th>Owner Contatinfo</th>
+                                <th>Owner Contactinfo</th>
                                 <th>Close Date</th>
                                 <th>Status</th>
                                 {{-- <th>Is Pinned</th> --}}
