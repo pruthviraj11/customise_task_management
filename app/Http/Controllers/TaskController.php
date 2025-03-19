@@ -10175,6 +10175,7 @@ class TaskController extends Controller
         ]);
         // $all_sub_tasks = TaskAssignee::where('task_status',7)->whereNull('close_date')->get();
         // dd($all_sub_tasks);
+        return response()->json(['message' => 'Completed dates or closed dates updated successfully']);
 
     }
 }
