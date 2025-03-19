@@ -10168,10 +10168,10 @@ class TaskController extends Controller
     }
 
     public function add_close_date(){
-        $taskCount = TaskAssignee::whereNull('close_date')
+        $taskCount = TaskAssignee::whereNull('close_date')->whereNotNull('due_date')
         ->where('task_status', '7')
         ->update( [
-            'close_date' => DB::raw('updated_at') // Set completed_date to the value of updated_at
+            'close_date' => DB::raw('due_date') // Set completed_date to the value of updated_at
         ]);
         // $all_sub_tasks = TaskAssignee::where('task_status',7)->whereNull('close_date')->get();
         // dd($all_sub_tasks);
