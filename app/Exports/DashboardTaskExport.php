@@ -57,7 +57,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'owner_department.department_name as owner_department_name',
                 'owner_sub_department.sub_department_name as owner_sub_department_name',
                 'assignee.phone_no as owner_contact_info',
-                'task_assignees.close_date as ramesh'
+                'task_assignees.close_date as task_assignees_close_date'
             )
             ->get();
     }
@@ -117,7 +117,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $row->owner_department_name,
             $row->owner_sub_department_name,
             $row->owner_contact_info,
-            $this->formatDate($row->ramesh)
+            $this->formatDate($row->task_assignees_close_date)
         ];
     }
 
