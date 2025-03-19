@@ -6477,11 +6477,15 @@ class TaskController extends Controller
                 if ($request->get('task_status') == 7 && $currentStatus_creator == 4) {
                     $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
+                    $taskAssigneeData['close_date'] = now()->format('Y-m-d H:i:s');
+
                 } elseif ($request->get('task_status') == 7 && ($currentStatus_creator != 7 && $currentStatus_creator != 4)) {
                     $taskData['close_date'] = now()->format('Y-m-d H:i:s');  // Only update close_date when changing to status 7
                     $taskData['close_by'] = auth()->user()->id;
                     $taskData['completed_date'] = now()->format('Y-m-d H:i:s');
                     $taskAssigneeData['completed_date'] = now()->format('Y-m-d H:i:s');
+                    $taskAssigneeData['close_date'] = now()->format('Y-m-d H:i:s');
+
                 }
                 // Fetch the task to be updated
                 $task = Task::findOrFail($id);
