@@ -10148,13 +10148,13 @@ class TaskController extends Controller
 
 
         $taskCount = TaskAssignee::whereNull('completed_date')
-        ->whereIn('task_status', ['4', '7'])
-        ->update([
-            'completed_date' => DB::raw('close_date') // Set completed_date to the value of updated_at
-        ]);
-//    $task=     TaskAssignee::whereNull('completed_date')->whereIn('task_status',['4','7'])->count();
+            ->whereIn('task_status', ['4', '7'])
+            ->update([
+                'completed_date' => DB::raw('close_date') // Set completed_date to the value of updated_at
+            ]);
+        //    $task=     TaskAssignee::whereNull('completed_date')->whereIn('task_status',['4','7'])->count();
 
-//         $task = Task::whereNotNull('close_date')->get();
+        //         $task = Task::whereNotNull('close_date')->get();
 //         foreach ($task as $t){
 // $taskAssignee = TaskAssignee::whereNull('completed_date')->where('task_id',$t->id)->first();
 // if ($taskAssignee) {
@@ -10167,15 +10167,27 @@ class TaskController extends Controller
         return response()->json(['message' => 'Completed dates or closed dates updated successfully']);
     }
 
-    public function add_close_date(){
+    public function add_close_date()
+    {
         $taskCount = TaskAssignee::whereNull('close_date')->whereNotNull('due_date')
-        ->where('task_status', '7')
-        ->update( [
-            'close_date' => DB::raw('due_date') // Set completed_date to the value of updated_at
-        ]);
+            ->where('task_status', '7')
+            ->update([
+                'close_date' => DB::raw('due_date') // Set completed_date to the value of updated_at
+            ]);
         // $all_sub_tasks = TaskAssignee::where('task_status',7)->whereNull('close_date')->get();
         // dd($all_sub_tasks);
         return response()->json(['message' => 'Completed dates or closed dates updated successfully']);
+
+    }
+
+    public function add_due_date()
+    {
+        $tasks = TaskAssignee::whereNull('due_date')
+            ->update([
+                'due_date' => DB::raw('completed_date') // Set completed_date to the value of updated_at
+            ]);
+
+        return response()->json(['message' => 'Due dates updated successfully']);
 
     }
 }

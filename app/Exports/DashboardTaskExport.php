@@ -45,6 +45,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'tasks.created_at',
                 'tasks.start_date',
                 'task_assignees.due_date',
+                'tasks.due_date as tasks_due_date',
                 // 'tasks.completed_date',
                 'task_assignees.completed_date as task_assignee_completed_date', // Fetch from task_assignees
                 'tasks.completed_date as task_completed_date',
@@ -105,7 +106,8 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $row->status_name,
             $this->formatDate($row->created_at),
             $this->formatDate($row->start_date),
-            $this->formatDate($row->due_date),
+            // $this->formatDate($row->due_date),
+            $this->formatDate($this->getDueDate($row)),
             // $this->formatDate($row->completed_date),
             $this->formatDate($this->getCompletedDate($row)),
             $this->formatDate($row->accepted_date),
@@ -140,6 +142,16 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             return $row->task_assignee_completed_date;
         } elseif (!empty($row->task_completed_date)) {
             return $row->task_completed_date;
+        }
+        return null;
+    }
+
+    private function getDueDate($row)
+    {
+        if (!empty($row->due_date)) {
+            return $row->due_date;
+        } elseif (!empty($row->tasks_due_date)) {
+            return $row->tasks_due_date;
         }
         return null;
     }

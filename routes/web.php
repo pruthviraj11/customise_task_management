@@ -366,6 +366,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('add_accepted_date', [TaskController::class, 'add_accepted_date'])->name('app-add_accepted_date');
     Route::get('add_completed_date', [TaskController::class, 'add_completed_date'])->name('app-add_completed_date');
     Route::get('add_close_date', [TaskController::class, 'add_close_date'])->name('app-add_close_date');
+    Route::get('add_due_date', [TaskController::class, 'add_due_date'])->name('app-add_due_date');
+
 
     // Manual Entry In Database Ends
 
