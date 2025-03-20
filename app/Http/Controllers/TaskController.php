@@ -2948,7 +2948,13 @@ class TaskController extends Controller
             })
 
             ->addColumn('close_date', function ($row) {
-                return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+                // return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+                if ($row->task && $row->task->close_date) {
+                    return Carbon::parse($row->task->close_date)->format('d/m/Y');
+                } elseif ($row->close_date) {
+                    return Carbon::parse($row->close_date)->format('d/m/Y');
+                }
+                return '-';
             })
             // ->addColumn('completed_date', function ($row) {
             //     return $row->completed_date ? Carbon::parse($row->completed_date)->format('d/m/Y') : '-';
