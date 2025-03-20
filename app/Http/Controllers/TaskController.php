@@ -1011,7 +1011,7 @@ class TaskController extends Controller
                 return ($row->creator && $row->creator->sub_department) ? $row->creator->sub_department->sub_department_name : '-';
             })
             ->addColumn('creator_phone', function ($row) {
-                return ($row->creator && $row->creator->phone_no) ? $row->creator->phone_no : '-';
+                return ($row->creator && $row->creator->phone_no) ? $row->creator->phone_no : '0';
             })
             ->addColumn('pin_task', function ($row) {
                 return '-';
@@ -2982,7 +2982,7 @@ class TaskController extends Controller
                 return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
             })
             ->addColumn('creator_phone', function ($row) {
-                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '0';
             })
             ->addColumn('pin_task', function ($row) {
                 return '-';

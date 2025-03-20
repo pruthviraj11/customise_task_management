@@ -118,7 +118,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $row->assignee_sub_department_name,
             $row->owner_department_name,
             $row->owner_sub_department_name,
-            $row->owner_contact_info,
+            !empty($row->owner_contact_info) ? $row->owner_contact_info : '0',
             $this->formatDate($row->task_assignees_close_date)
         ];
     }
