@@ -10116,11 +10116,10 @@ class TaskController extends Controller
 
     public function add_accepted_date()
     {
-        $all_sub_tasks = TaskAssignee::whereNull('accepted_date')
-        ->update([
-            'accepted_date' => DB::raw('created_at') // Set completed_date to the value of updated_at
-        ]);
-
+        $all_sub_tasks = TaskAssignee::where('accepted_date', '1899-12-30 00:00:00')
+            ->update([
+                'accepted_date' => DB::raw('created_at') // Update accepted_date with created_at value
+            ]);
         // // Update each task
         // foreach ($all_sub_tasks as $task) {
         //     if ($task->completed_date && $task->close_date) {
