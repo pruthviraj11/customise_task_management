@@ -138,10 +138,16 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     }
     private function getCompletedDate($row)
     {
-        if (!empty($row->task_assignee_completed_date)) {
-            return $row->task_assignee_completed_date;
-        } elseif (!empty($row->task_completed_date)) {
+        // if (!empty($row->task_assignee_completed_date)) {
+        //     return $row->task_assignee_completed_date;
+        // } elseif (!empty($row->task_completed_date)) {
+        //     return $row->task_completed_date;
+        // }
+        // return null;
+        if (!empty($row->task_completed_date)) {
             return $row->task_completed_date;
+        } elseif (!empty($row->task_assignee_completed_date)) {
+            return $row->task_assignee_completed_date;
         }
         return null;
     }
@@ -164,12 +170,12 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
     public function columnFormats(): array
     {
         return [
-            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Created Date
+            'K' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Created Date
             'L' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Start Date
             'M' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Due Date
             'N' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Completed Date
             'O' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Accepted Task Date
-            'V' => NumberFormat::FORMAT_DATE_DDMMYYYY , // Close Date
+            'V' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Close Date
         ];
     }
 }
