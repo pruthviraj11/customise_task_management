@@ -3259,7 +3259,10 @@ class TaskController extends Controller
             $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject')
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
                 ->whereNotIn('tasks.task_status', [4, 7])
-                ->where('task_assignees.status', '1');
+                ->where('task_assignees.status', '1')
+                ->whereIn('task_assignees.task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
             // ->whereHas('task', function ($query) {
             //     $query->where('status', '1');
             // });
@@ -3268,6 +3271,9 @@ class TaskController extends Controller
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
                 ->whereNotIn('tasks.task_status', [4, 7])
                 ->where('task_assignees.status', '1')
+                ->whereIn('task_assignees.task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 // ->whereHas('task', function ($query)  {
                 //     $query->where('status', '1');
 

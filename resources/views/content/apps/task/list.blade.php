@@ -202,6 +202,16 @@
                                 <th>Status</th>
                                 {{-- <th>Is Pinned</th> --}}
 
+                                {{-- Fields For Excel Starts--}}
+                                <th>Created Date</th>
+                                <th>Start Date</th>
+                                <th>Due Date</th>
+                                <th>Completed Date</th>
+                                <th>Accepted task Date</th>
+                                <th>Close Date</th>
+                                {{-- Fields For Excel Ends--}}
+
+
 
                             </tr>
                         </thead>
@@ -574,8 +584,8 @@
                             search: 'applied',
                             order: 'applied'
                         },
-                        columns: [23,  2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                            19, 20, 21, 22
+                        columns: [23, 2, 3, 4, 5, 6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 16, 17, 18,
+                            19, 20, 21, 29
                         ]
                         //Add 1 in columns for pin task column
                     },
@@ -587,7 +597,8 @@
 
                             // Check if the column belongs to one of the date fields
                             if (cellRef.match(
-                                /^(K|L|M|N|O|P|Q)$/)) { // Adjust based on column index
+                                    /^(K|L|M|N|O|P|Q)$/
+                                )) { // Adjust based on column index
                                 cell.attr('s', '2'); // Apply date format
                             }
                         });
@@ -714,6 +725,7 @@
                         visible: selectedColumns.includes("11")
 
                     },
+
                     {
                         data: 'start_date',
                         name: 'start_date',
@@ -807,7 +819,133 @@
                                     return '-'; // For unexpected values
                             }
                         }
-                    }
+                    },
+                    {
+                        data: 'Created_Date',
+                        name: 'Created_Date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                    0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'start_date',
+                        name: 'start_date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                    0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'due_date',
+                        name: 'due_date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                    0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'completed_date',
+                        name: 'completed_date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                    0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'accepted_date',
+                        name: 'accepted_date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        data: 'close_date',
+                        name: 'close_date',
+                        visible: false,
+                        searchable: true,
+                        exportOnly: true,
+                        render: function(data) {
+                            if (data && data.includes('/')) {
+                                var parts = data.split(
+                                '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
+                                0]; // Convert to 'Y-m-d' for Date object
+                                var date = new Date(formattedDate);
+
+                                // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
+                                return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
+                                .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            }
+                            return '';
+                        }
+                    },
                 ],
 
                 drawCallback: function() {
