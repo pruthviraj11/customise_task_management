@@ -799,6 +799,9 @@ class TaskController extends Controller
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
             // ->whereNotIn('task_assignees.task_status', ['4', '7'])
             ->where('task_assignees.created_by', $userId)
+            ->whereIn('task_assignees.task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->whereDoesntHave('user', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             });
@@ -9276,7 +9279,10 @@ class TaskController extends Controller
             // Start building the query
             $rejectedTasks = TaskAssignee::whereNotIn('task_assignees.task_status', ['4', '7']) // Filter for tasks with task_status not 4 or 7
                 ->where('task_assignees.status', 2)  // Filter for tasks with status 2 (rejected)
-                ->orderBy('id', 'desc'); // Order by task_assignees ID in descending order
+                ->orderBy('id', 'desc')
+                ->whereIn('task_assignees.task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                }); // Order by task_assignees ID in descending order
 
             // Check if the current user is admin (id = 1)
             if (auth()->user()->id != 1) {
@@ -9521,6 +9527,9 @@ class TaskController extends Controller
             ->where('user_id', $userId)  // Focus on task assignees
             ->where('task_assignees.status', '!=', 2)
             ->whereNotIn('tasks.task_status', [4, 7]) // Ensure the task is not deleted (assuming status 2 is deleted)
+            ->whereIn('task_assignees.task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->with([
                 'task',  // Load the related task
                 'creator',
@@ -10108,23 +10117,21 @@ class TaskController extends Controller
     public function add_accepted_date()
     {
         $all_sub_tasks = TaskAssignee::whereNull('accepted_date')
-            ->where(function ($query) {
-                $query->whereNotNull('completed_date')
-                    ->orWhereNotNull('close_date');
-            })
-            ->get();
+        ->update([
+            'accepted_date' => DB::raw('created_at') // Set completed_date to the value of updated_at
+        ]);
 
-        // Update each task
-        foreach ($all_sub_tasks as $task) {
-            if ($task->completed_date && $task->close_date) {
-                $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+        // // Update each task
+        // foreach ($all_sub_tasks as $task) {
+        //     if ($task->completed_date && $task->close_date) {
+        //         $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
 
-            } else {
-                $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
-            }
+        //     } else {
+        //         $acceptedDate = $task->completed_date ?? $task->close_date; // Use whichever is available
+        //     }
 
-            $task->update(['accepted_date' => $acceptedDate]);
-        }
+        //     $task->update(['accepted_date' => $acceptedDate]);
+        // }
 
         // dd($all_sub_tasks);
 
@@ -10160,7 +10167,7 @@ class TaskController extends Controller
         $taskCount = TaskAssignee::whereNull('completed_date')
             ->whereIn('task_status', ['4', '7'])
             ->update([
-                'completed_date' => DB::raw('close_date') // Set completed_date to the value of updated_at
+                'completed_date' => DB::raw('updated_at') // Set completed_date to the value of updated_at
             ]);
         //    $task=     TaskAssignee::whereNull('completed_date')->whereIn('task_status',['4','7'])->count();
 
