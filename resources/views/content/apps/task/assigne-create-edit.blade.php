@@ -93,7 +93,7 @@
                                 </div>
                                 <div class="col-md-12 col-sm-12 mb-1">
                                     <label class="form-label" for="description">Description</label>
-                                    <h2>{{ $taskAss && $taskAss->description ? trim(strip_tags($taskAss->description)) : "-" }}</h2>
+                                    <h5>{{ $taskAss && $taskAss->description ? trim(strip_tags($taskAss->description)) : "-" }}</h5>
                                     <span class="text-danger">
                                         @error('description')
                                             {{ $message }}

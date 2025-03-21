@@ -140,7 +140,9 @@
                 </div>
             </div>
         </div>
-
+        <div class="ms-2">
+            <h3 class="text-danger"><span>*</span> <strong>This report includes only accepted tasks.</strong></h3>
+        </div>
         <div class="card-body">
             <table id="users-hierarchy_new" class="table table-bordered">
                 <thead>
@@ -270,7 +272,7 @@
         </div>
     </div>
     <div class="card table-responsive">
-        <div class="card-header">
+        {{-- <div class="card-header">
             <div class="row text-center mt-2">
                 <div class="col-md-4">
                     <p><strong>Report Date:</strong> {{ \Carbon\Carbon::today()->format('F j, Y') }}</p>
@@ -284,7 +286,7 @@
                         {{ auth()->user()->department->department_name ?? 'No Department' }}</p>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="card-body">
             <table id="users-status-bifurcation" class="table table-bordered">

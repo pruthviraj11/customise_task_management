@@ -121,7 +121,7 @@
                         @foreach ($table_data as $users)
                             <th>
                                 @if ($loop->first)
-                                    Self
+                                {{ $users['user_name'] }}
                                 @else
                                     {{ $users['user_name'] }}
                                 @endif
