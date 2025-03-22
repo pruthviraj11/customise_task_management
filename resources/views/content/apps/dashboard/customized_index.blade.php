@@ -29,26 +29,26 @@
                 <p>{{ session('success') }}</p>
             @endif
             @if (auth()->user()->hasRole('Super Admin'))
-
-            <div class="col-lg-6 col-sm-6">
-                <div class="card">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h3 class="fw-bolder mb-75">{{ $total_task_count }}</h3>
-                            <span>Total Task</span>
+                <div class="col-lg-6 col-sm-6">
+                    <div class="card">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <h3 class="fw-bolder mb-75">{{ $total_task_count }}</h3>
+                                <span>Total Task</span>
+                            </div>
+                            <div class="avatar bg-light-primary p-50">
+                                <span class="avatar-content">
+                                    <i data-feather="align-left" class="font-medium-4"></i>
+                                </span>
+                            </div>
                         </div>
-                        <div class="avatar bg-light-primary p-50">
-                            <span class="avatar-content">
-                                <i data-feather="align-left" class="font-medium-4"></i>
-                            </span>
+                        <div class="card-footer text-center">
+                            <a href="{{ route('export.dashboard_total_tasks') }}" class="btn btn-success">Export to
+                                Excel</a>
                         </div>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a href="{{ route('export.dashboard_total_tasks') }}" class="btn btn-success">Export to Excel</a>
                     </div>
                 </div>
-            </div>
-@endif
+            @endif
 
         </div>
         @if (auth()->user()->id != 1)
@@ -159,8 +159,10 @@
 
 
 
-            <!---- Requested to us  ---->
-            <div class="card-header">
+            <!---- Total Task to us  ---->
+            {{--  Commented As Anand bhai Said --}}
+
+            {{-- <div class="card-header">
                 <h1>Total Tasks Lists
                 </h1>
                 <table id="total_task_status" class="table table-bordered w-100">
@@ -208,7 +210,7 @@
                         </tr>
                     </tfoot>
                 </table>
-            </div>
+            </div> --}}
 
 
 
@@ -695,226 +697,226 @@
 
             /*--------   Total Task Status ---------*/
 
+            // Commented As Anand bhai Said
+            // $(document).ready(function() {
+            //     var usersTable = $('#total_task_status').DataTable({
+            //         processing: true,
+            //         serverSide: false,
+            //         // ajax: '{{ route('users.task.status.hierarchy') }}', // Ensure this route returns user task status data
+            //         ajax: '{{ route('users.total_task_details') }}',
+            //         paging: false, // Disable pagination
+            //         info: false, // Disable the information summary
+            //         dom: 'Bfrtip', // Add this line to include Buttons
+            //         buttons: [{
+            //             extend: 'excel',
+            //             text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
+            //             title: '',
+            //             filename: 'User Task Status',
+            //             className: 'btn btn-success btn-sm'
+            //         }],
+            //         columns: [{
+            //                 data: 'user_name',
+            //                 name: 'user_name'
+            //             },
+            //             {
+            //                 data: 'total_tasks',
+            //                 name: 'total_tasks',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId = row.status_id
+            //                     let url =
+            //                         '{{ route('tasks.total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(':status_id',
+            //                         statusId);
 
-            $(document).ready(function() {
-                var usersTable = $('#total_task_status').DataTable({
-                    processing: true,
-                    serverSide: false,
-                    // ajax: '{{ route('users.task.status.hierarchy') }}', // Ensure this route returns user task status data
-                    ajax: '{{ route('users.total_task_details') }}',
-                    paging: false, // Disable pagination
-                    info: false, // Disable the information summary
-                    dom: 'Bfrtip', // Add this line to include Buttons
-                    buttons: [{
-                        extend: 'excel',
-                        text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
-                        title: '',
-                        filename: 'User Task Status',
-                        className: 'btn btn-success btn-sm'
-                    }],
-                    columns: [{
-                            data: 'user_name',
-                            name: 'user_name'
-                        },
-                        {
-                            data: 'total_tasks',
-                            name: 'total_tasks',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId = row.status_id
-                                let url =
-                                    '{{ route('tasks.total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(':status_id',
-                                    statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
 
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
 
-                            }
-                        },
+            //             @foreach ($statusinfos as $index => $status)
+            //                 @if ($index <= 3)
+            //                     {
+            //                         data: '{{ \Str::slug($status->status_name, '_') }}',
+            //                         name: '{{ \Str::slug($status->status_name, '_') }}',
+            //                         render: function(data, type, row) {
+            //                             let userId = row.user_id;
+            //                             let statusId =
+            //                                 '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
 
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 3)
-                                {
-                                    data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    render: function(data, type, row) {
-                                        let userId = row.user_id;
-                                        let statusId =
-                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                             let url =
+            //                                 '{{ route('tasks.total_task_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                             url = url.replace(':user_id', userId).replace(
+            //                                 ':status_id',
+            //                                 statusId);
 
-                                        let url =
-                                            '{{ route('tasks.total_task_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                        url = url.replace(':user_id', userId).replace(
-                                            ':status_id',
-                                            statusId);
+            //                             return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                         }
+            //                     },
+            //                 @endif
+            //             @endforeach
 
-                                        return `<a href="${url}" class="text-primary">${data}</a>`;
-                                    }
-                                },
-                            @endif
-                        @endforeach
+            //             {
+            //                 data: 'pending_tasks',
+            //                 name: 'pending_tasks',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId =
+            //                         '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                     let url =
+            //                         '{{ route('tasks.total_task_pending_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(
+            //                         ':status_id', statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
+            //             {
+            //                 data: 'over_dues',
+            //                 name: 'over_dues',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId =
+            //                         '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                     let url =
+            //                         '{{ route('tasks.total_task_over_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(
+            //                         ':status_id', statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
+            //             {
+            //                 data: 'today_dues',
+            //                 name: 'today_dues',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId =
+            //                         '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                     let url =
+            //                         '{{ route('tasks.total_task_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(
+            //                         ':status_id', statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
 
-                        {
-                            data: 'pending_tasks',
-                            name: 'pending_tasks',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId =
-                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
-                                let url =
-                                    '{{ route('tasks.total_task_pending_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(
-                                    ':status_id', statusId);
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
-                        },
-                        {
-                            data: 'over_dues',
-                            name: 'over_dues',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId =
-                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
-                                let url =
-                                    '{{ route('tasks.total_task_over_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(
-                                    ':status_id', statusId);
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
-                        },
-                        {
-                            data: 'today_dues',
-                            name: 'today_dues',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId =
-                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
-                                let url =
-                                    '{{ route('tasks.total_task_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(
-                                    ':status_id', statusId);
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
-                        },
+            //             @foreach ($statusinfos as $index => $status)
+            //                 @if ($index >= 4)
+            //                     {
+            //                         data: '{{ \Str::slug($status->status_name, '_') }}',
+            //                         name: '{{ \Str::slug($status->status_name, '_') }}',
+            //                         render: function(data, type, row) {
+            //                             let userId = row.user_id;
+            //                             let statusId =
+            //                                 '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
 
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index >= 4)
-                                {
-                                    data: '{{ \Str::slug($status->status_name, '_') }}',
-                                    name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    render: function(data, type, row) {
-                                        let userId = row.user_id;
-                                        let statusId =
-                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                             let url =
+            //                                 '{{ route('tasks.total_task_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                             url = url.replace(':user_id', userId).replace(
+            //                                 ':status_id',
+            //                                 statusId);
 
-                                        let url =
-                                            '{{ route('tasks.total_task_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                        url = url.replace(':user_id', userId).replace(
-                                            ':status_id',
-                                            statusId);
+            //                             return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                         }
+            //                     },
+            //                 @endif
+            //             @endforeach
 
-                                        return `<a href="${url}" class="text-primary">${data}</a>`;
-                                    }
-                                },
-                            @endif
-                        @endforeach
+            //             {
+            //                 data: 'finish_tasks',
+            //                 name: 'finish_tasks',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId =
+            //                         '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                     let url =
+            //                         '{{ route('tasks.total_task_finished_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(
+            //                         ':status_id', statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
+            //             {
+            //                 data: 'total',
+            //                 name: 'total',
+            //                 render: function(data, type, row) {
+            //                     let userId = row.user_id;
+            //                     let statusId =
+            //                         '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+            //                     let url =
+            //                         '{{ route('tasks.total_task_total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
+            //                     url = url.replace(':user_id', userId).replace(
+            //                         ':status_id', statusId);
+            //                     return `<a href="${url}" class="text-primary">${data}</a>`;
+            //                 }
+            //             },
 
-                        {
-                            data: 'finish_tasks',
-                            name: 'finish_tasks',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId =
-                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
-                                let url =
-                                    '{{ route('tasks.total_task_finished_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(
-                                    ':status_id', statusId);
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
-                        },
-                        {
-                            data: 'total',
-                            name: 'total',
-                            render: function(data, type, row) {
-                                let userId = row.user_id;
-                                let statusId =
-                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
-                                let url =
-                                    '{{ route('tasks.total_task_total_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'total_task']) }}';
-                                url = url.replace(':user_id', userId).replace(
-                                    ':status_id', statusId);
-                                return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
-                        },
+            //         ],
+            //         footerCallback: function(row, data, start, end, display) {
+            //             var api = this.api();
+            //             var totalColumns = api.columns().count();
+            //             var grandTotal = 0;
 
-                    ],
-                    footerCallback: function(row, data, start, end, display) {
-                        var api = this.api();
-                        var totalColumns = api.columns().count();
-                        var grandTotal = 0;
+            //             for (var i = 1; i < totalColumns; i++) {
+            //                 var columnTotal = api.column(i).data().reduce(function(a, b) {
+            //                     return a + (parseFloat(b) || 0);
+            //                 }, 0);
 
-                        for (var i = 1; i < totalColumns; i++) {
-                            var columnTotal = api.column(i).data().reduce(function(a, b) {
-                                return a + (parseFloat(b) || 0);
-                            }, 0);
+            //                 console.log(row);
+            //                 // Construct the URL dynamically based on the column index or data
+            //                 var userIds = data.map(function(row) {
+            //                     return row.user_id;
+            //                 }).join(',');
 
-                            console.log(row);
-                            // Construct the URL dynamically based on the column index or data
-                            var userIds = data.map(function(row) {
-                                return row.user_id;
-                            }).join(',');
+            //                 var status_id =
+            //                     i; // Assuming each column corresponds to a `status_id`
+            //                 var typeOrStatusId =
+            //                     'requestedToUsTasks'; // Replace with your type logic
+            //                 var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
 
-                            var status_id =
-                                i; // Assuming each column corresponds to a `status_id`
-                            var typeOrStatusId =
-                                'requestedToUsTasks'; // Replace with your type logic
-                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+            //                 // Render the clickable link in the footer
+            //                 $(api.column(i).footer()).html(renderClickableLink(routeUrl,
+            //                     columnTotal));
 
-                            // Render the clickable link in the footer
-                            $(api.column(i).footer()).html(renderClickableLink(routeUrl,
-                                columnTotal));
-
-                            grandTotal += columnTotal;
-                        }
-
-
-                        var totalColumnIndex = totalColumns -
-                            1; // Assuming "Total" column is the last column
-                        var verticalSum = api.column(totalColumnIndex, {
-                                page: 'current'
-                            }).data()
-                            .reduce(function(a, b) {
-                                return a + (parseFloat(b) || 0); // Sum vertically
-                            }, 0);
+            //                 grandTotal += columnTotal;
+            //             }
 
 
-                        // Render the grand total in the last column
-                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
-                        var grandTotalRouteUrl = createUrl(userIds, 'all',
-                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
-
-                        $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
-                            grandTotalRouteUrl, verticalSum));
-                    }
-
-                });
-
-                function createUrl(userId, status_id, typeOrStatusId) {
-                    let routeUrl =
-                        '{{ route('tasks.total_task_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
-                    return routeUrl
-                        .replace(':user_id', userId)
-                        .replace(':status_id', status_id)
-                        .replace(':type_or_status_id', typeOrStatusId);
-                }
-
-                function renderClickableLink(routeUrl, data) {
-                    return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
-                }
+            //             var totalColumnIndex = totalColumns -
+            //                 1; // Assuming "Total" column is the last column
+            //             var verticalSum = api.column(totalColumnIndex, {
+            //                     page: 'current'
+            //                 }).data()
+            //                 .reduce(function(a, b) {
+            //                     return a + (parseFloat(b) || 0); // Sum vertically
+            //                 }, 0);
 
 
-            });
+            //             // Render the grand total in the last column
+            //             // $(api.column(totalColumns - 1).footer()).html(grandTotal);
+            //             var grandTotalRouteUrl = createUrl(userIds, 'all',
+            //                 typeOrStatusId); // Pass 'all' or any identifier for the grand total
+
+            //             $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
+            //                 grandTotalRouteUrl, verticalSum));
+            //         }
+
+            //     });
+
+            //     function createUrl(userId, status_id, typeOrStatusId) {
+            //         let routeUrl =
+            //             '{{ route('tasks.total_task_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+            //         return routeUrl
+            //             .replace(':user_id', userId)
+            //             .replace(':status_id', status_id)
+            //             .replace(':type_or_status_id', typeOrStatusId);
+            //     }
+
+            //     function renderClickableLink(routeUrl, data) {
+            //         return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
+            //     }
+
+
+            // });
 
 
 
