@@ -457,7 +457,7 @@ class DashboardCUstomizedController extends Controller
 
 
 
-            $totalAssign = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
+            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '1')->count();
 
             $array['requested_to_us'] = $totalAssign; // Correctly add the key-value pair to the existing array
 
@@ -473,9 +473,9 @@ class DashboardCUstomizedController extends Controller
             foreach ($status as $i => $s) {
 
 
-                $CountTaskStatus = TaskAssignee::where('user_id', $userId)
+                $CountTaskStatus = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
-                    ->where('created_by', $user->id)
+                    // ->where('created_by', $user->id)
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
@@ -484,17 +484,17 @@ class DashboardCUstomizedController extends Controller
                 /*------  Total PendingTask Detais -----*/
 
                 if (in_array($s->id, $matchIds)) {
-                    $CountPendingTask = TaskAssignee::where('user_id', $userId)
+                    $CountPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
-                        ->where('created_by', $user->id)
+                        // ->where('created_by', $user->id)
                         ->count();
                     $pending_total += $CountPendingTask;
                 }
 
                 /*---------------  Total Dues Tasks ------*/
 
-                $due_tasks = TaskAssignee::where('user_id', $userId)
-                    ->where('created_by', $user->id)
+                $due_tasks = TaskAssignee::where('user_id', $user->id)
+                    // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
                     ->count();
@@ -517,8 +517,8 @@ class DashboardCUstomizedController extends Controller
                 /*--------------- Total Today's Due ------*/
 
 
-                $TodayCountDueTask = TaskAssignee::where('user_id', $userId)
-                    ->where('created_by', $user->id)
+                $TodayCountDueTask = TaskAssignee::where('user_id', $user->id)
+                    // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
                     ->count();
@@ -539,9 +539,9 @@ class DashboardCUstomizedController extends Controller
 
                 /*--------------  Total Finished Tasks -----*/
                 if (in_array($s->id, $complete_close)) {
-                    $CountFinishedTask = TaskAssignee::where('user_id', $userId)
+                    $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
-                        ->where('created_by', $user->id)
+                        // ->where('created_by', $user->id)
                         ->count();
                     $finish_total += $CountFinishedTask;
                 }
@@ -753,9 +753,9 @@ class DashboardCUstomizedController extends Controller
             foreach ($status as $i => $s) {
 
 
-                $CountRequestUs = TaskAssignee::where('user_id', $userId)
+                $CountRequestUs = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
-                    ->where('created_by', $user->id)
+                    // ->where('created_by', $user->id)
                     ->count();
 
                 $CountRequestTo = TaskAssignee::where('user_id', $user->id)
@@ -772,9 +772,9 @@ class DashboardCUstomizedController extends Controller
                 /*------  Total PendingTask Detais -----*/
 
                 if (in_array($s->id, $matchIds)) {
-                    $CountRequestToPendingTask = TaskAssignee::where('user_id', $userId)
+                    $CountRequestToPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
-                        ->where('created_by', $user->id)
+                        // ->where('created_by', $user->id)
                         ->count();
 
 
@@ -788,8 +788,8 @@ class DashboardCUstomizedController extends Controller
 
                 /*---------------  Total Dues Tasks ------*/
 
-                $CountRequestToTask = TaskAssignee::where('user_id', $userId)
-                    ->where('created_by', $user->id)
+                $CountRequestToTask = TaskAssignee::where('user_id', $user->id)
+                    // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
                     ->count();
@@ -809,8 +809,8 @@ class DashboardCUstomizedController extends Controller
                 /*--------------- Total Today's Due ------*/
 
 
-                $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $userId)
-                    ->where('created_by', $user->id)
+                $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $user->id)
+                    // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
                     ->count();
@@ -828,9 +828,9 @@ class DashboardCUstomizedController extends Controller
 
                 /*--------------  Total Finished Tasks -----*/
                 if (in_array($s->id, $complete_close)) {
-                    $CountRequestToFinishedTask = TaskAssignee::where('user_id', $userId)
+                    $CountRequestToFinishedTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
-                        ->where('created_by', $user->id)
+                        // ->where('created_by', $user->id)
                         ->count();
 
                     $CountRequestByMeFinishedTask = TaskAssignee::where('user_id', $user->id)
