@@ -3494,7 +3494,7 @@ class TaskController extends Controller
 
     public function requestedToUsTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
 
@@ -3617,7 +3617,7 @@ class TaskController extends Controller
     }
     public function requestedToUsStatusTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
         $user = auth()->user()->id;
         // dd($type);
         if ($type == 'requested_to_us') {
@@ -3732,7 +3732,7 @@ class TaskController extends Controller
 
     public function requestedToUsPendingTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
 
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
@@ -3858,7 +3858,7 @@ class TaskController extends Controller
     }
     public function requestedToUsOverDuesTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
 
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
@@ -4035,7 +4035,7 @@ class TaskController extends Controller
 
     public function requestedToUsTodayDuesTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
 
         $user = auth()->user()->id;
         $cdate = date("Y-m-d");
@@ -4171,7 +4171,7 @@ class TaskController extends Controller
 
     public function requestedToUsFinishedTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
 
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
@@ -4299,7 +4299,7 @@ class TaskController extends Controller
 
     public function requestedToUsTotalTasks($user_id, $status_id, $type)
     {
-        $user_id = decrypt($user_id);
+        $user_id = ($user_id);
 
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
@@ -4442,7 +4442,7 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('status', 1)
@@ -4454,7 +4454,7 @@ class TaskController extends Controller
         } elseif ($status_id == 2)  // Conceptualization
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 1)
@@ -4466,7 +4466,7 @@ class TaskController extends Controller
         } elseif ($status_id == 3) //Scope Defined
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 3)
@@ -4478,7 +4478,7 @@ class TaskController extends Controller
         } elseif ($status_id == 4)     // For Completed
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 4)
@@ -4490,7 +4490,7 @@ class TaskController extends Controller
         } elseif ($status_id == 5) //In Execution
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 5)
@@ -4502,7 +4502,7 @@ class TaskController extends Controller
         } elseif ($status_id == 9) ///For Hold
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 6)
@@ -4515,7 +4515,7 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 5, 6])
@@ -4530,7 +4530,7 @@ class TaskController extends Controller
             $cdate = date("Y-m-d");
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     // ->where('created_by', $user_id)
@@ -4546,7 +4546,7 @@ class TaskController extends Controller
             $cdate = date("Y-m-d");
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     // ->where('created_by', $user_id)
@@ -4559,7 +4559,7 @@ class TaskController extends Controller
         } elseif ($status_id == 10)     // For Closed
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 7)
@@ -4572,7 +4572,7 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', ['4', '7'])
@@ -4584,7 +4584,7 @@ class TaskController extends Controller
         } elseif ($status_id == 'all')      //For Grand Total
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                     // ->where('created_by', $user_id)

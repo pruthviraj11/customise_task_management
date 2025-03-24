@@ -451,7 +451,7 @@ class DashboardCUstomizedController extends Controller
             $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
 
             $array = [
-                'user_id' => encrypt($user->id),
+                'user_id' => ($user->id),
                 'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
 
