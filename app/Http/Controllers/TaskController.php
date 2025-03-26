@@ -8584,7 +8584,8 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_assignees.task_status', ['1', '3', '5', '6']); // Use a single query for all statuses
+            $query->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
+            ->where('task_assignees.status','!=', 2) ;
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
@@ -8594,7 +8595,8 @@ class TaskController extends Controller
                         $q->whereNull('deleted_at');
                     });
             })
-                ->whereIn('task_assignees.task_status', ['1', '3', '5', '6']); // Add the status condition here for users
+                ->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
+                ->where('task_assignees.status','!=', 2) ;
         }
 
 
