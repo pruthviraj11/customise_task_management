@@ -3498,7 +3498,7 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
 
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '1')->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
         } elseif ($type == 'total_task') {
@@ -4445,7 +4445,7 @@ class TaskController extends Controller
                 $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
-                    ->where('status', 1)
+                    ->where('status', 0)
                     // ->where('created_by', $user_id)
                     ->get();
 
