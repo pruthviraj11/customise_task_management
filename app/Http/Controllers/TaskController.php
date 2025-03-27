@@ -1658,6 +1658,7 @@ class TaskController extends Controller
             $query->whereNotIn('task_status', ['4', '7'])->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
         if (!empty($request->search['value'])) {
+
             $search = $request->search['value'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
@@ -3616,7 +3617,7 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         // dd($type);
         if ($type == 'requested_to_us') {
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('status','1')->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('status', '1')->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
         } elseif ($type == 'total_task') {
@@ -3733,7 +3734,7 @@ class TaskController extends Controller
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 5, 6])
-                ->where('status','1')
+                ->where('status', '1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -3873,7 +3874,7 @@ class TaskController extends Controller
             $tasksData = TaskAssignee::where('user_id', $user_id)
                 // ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
-                ->where('status','1')
+                ->where('status', '1')
                 ->whereDate('due_date', '<', $cdate)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4041,7 +4042,7 @@ class TaskController extends Controller
             $tasksData = TaskAssignee::where('user_id', $user_id)
                 // ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
-                ->where('status','1')
+                ->where('status', '1')
                 ->whereDate('due_date', '=', $cdate)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4176,7 +4177,7 @@ class TaskController extends Controller
 
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', ['4', '7'])
-                ->where('status','1')
+                ->where('status', '1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4304,7 +4305,7 @@ class TaskController extends Controller
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
-                ->where('status','1')
+                ->where('status', '1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4458,6 +4459,8 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 1)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4470,6 +4473,8 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 3)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4482,6 +4487,8 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 4)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4494,24 +4501,28 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 5)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 9) ///For Hold
+        } elseif ($status_id == 6) ///For Hold
         {
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 6)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 6)  //pending
+        } elseif ($status_id == 7)  //pending
         {
 
             foreach ($user_ids as $user_id) {
@@ -4519,12 +4530,14 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 5, 6])
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id)
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 7) //For OverDue
+        } elseif ($status_id == 8) //For OverDue
         {
 
             $cdate = date("Y-m-d");
@@ -4536,11 +4549,13 @@ class TaskController extends Controller
                     // ->where('created_by', $user_id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
+                    ->where('status', 1)
+
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 8) //For Todays Due
+        } elseif ($status_id == 9) //For Todays Due
         {
 
             $cdate = date("Y-m-d");
@@ -4552,6 +4567,8 @@ class TaskController extends Controller
                     // ->where('created_by', $user_id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
+                    ->where('status', 1)
+
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
@@ -4563,6 +4580,8 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 7)
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4576,6 +4595,8 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', ['4', '7'])
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id)
                     ->get();
 
@@ -4587,6 +4608,8 @@ class TaskController extends Controller
                 $user_id = ($user_id);
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                    ->where('status', 1)
+
                     // ->where('created_by', $user_id)
                     ->get();
                 $tasks = $tasks->merge($tasksData);
@@ -4726,7 +4749,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        }  elseif ($status_id == 3) //Scope Defined
+        } elseif ($status_id == 3) //Scope Defined
         {
 
             foreach ($user_ids as $user_id) {
@@ -4751,8 +4774,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        }
-         elseif ($status_id == 5) //In Execution
+        } elseif ($status_id == 5) //In Execution
         {
             foreach ($user_ids as $user_id) {
                 $user_id = decrypt($user_id);
@@ -5024,8 +5046,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        }
-        elseif ($status_id == 4)     // For Completed
+        } elseif ($status_id == 4)     // For Completed
         {
             foreach ($user_ids as $user_id) {
                 $user_id = decrypt($user_id);
@@ -5046,8 +5067,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        }
-         elseif ($status_id == 5) //In Execution
+        } elseif ($status_id == 5) //In Execution
         {
             foreach ($user_ids as $user_id) {
                 $user_id = decrypt($user_id);
@@ -8585,7 +8605,7 @@ class TaskController extends Controller
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
-            ->where('task_assignees.status','!=', 2) ;
+                ->where('task_assignees.status', '!=', 2);
         } else {
             // User-specific task filters
             $query->where(function ($q) use ($userId) {
@@ -8596,7 +8616,7 @@ class TaskController extends Controller
                     });
             })
                 ->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
-                ->where('task_assignees.status','!=', 2) ;
+                ->where('task_assignees.status', '!=', 2);
         }
 
 

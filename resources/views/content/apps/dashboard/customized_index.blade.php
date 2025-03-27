@@ -93,7 +93,7 @@
                             <th>Requested To Us</th>
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index <= 3)
+                                @if ($index <= 4)
                                     <th>{{ $status->status_name }}</th>
                                 @endif
                             @endforeach
@@ -103,7 +103,7 @@
                             <th>Today's Due</th>
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index >= 4)
+                                @if ($index >= 5)
                                     <th>{{ $status->status_name }}</th>
                                 @endif
                             @endforeach
@@ -317,7 +317,7 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 3)
+                            @if ($index <= 4)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
@@ -386,7 +386,7 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index >= 4)
+                            @if ($index >= 5)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
