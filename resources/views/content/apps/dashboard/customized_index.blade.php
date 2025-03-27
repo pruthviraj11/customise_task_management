@@ -21,28 +21,38 @@
     <style>
         .requested-to-us{
             background-color: hsla(38, 92%, 64%, 0.615) !important;
+            text-align: end;
             font-weight: 900;
         }
         .pending-tasks {
             background-color: hsl(219, 67%, 72%) !important;
+            text-align: end;
             font-weight: 900;
 
         }
         .over-dues{
             background-color: hsla(5, 89%, 50%, 0.643) !important;
+            text-align: end;
             font-weight: 900;
         }
         .today-dues{
             background-color: hsla(35, 66%, 77%, 0.643) !important;
+            text-align: end;
             font-weight: 900;
         }
         .finish-tasks{
             background-color: hsla(130, 62%, 63%, 0.62) !important;
+            text-align: end;
             font-weight: 900;
         }
         .total{
             background-color: hsla(130, 66%, 25%, 0.62) !important;
+            text-align: end;
             font-weight: 900;
+        }
+        .all_status_columns{
+            text-align: end;
+
         }
     </style>
 @endsection
@@ -321,6 +331,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -390,6 +401,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
