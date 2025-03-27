@@ -475,6 +475,7 @@ class DashboardCUstomizedController extends Controller
 
                 $CountTaskStatus = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
+                    ->where('status','1')
                     // ->where('created_by', $user->id)
                     ->count();
 
@@ -486,6 +487,8 @@ class DashboardCUstomizedController extends Controller
                 if (in_array($s->id, $matchIds)) {
                     $CountPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
+                    ->where('status','1')
+
                         // ->where('created_by', $user->id)
                         ->count();
                     $pending_total += $CountPendingTask;
@@ -496,6 +499,8 @@ class DashboardCUstomizedController extends Controller
                 $due_tasks = TaskAssignee::where('user_id', $user->id)
                     // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
+                    ->where('status','1')
+
                     ->whereDate('due_date', '<', $cdate)
                     ->count();
 
@@ -521,6 +526,8 @@ class DashboardCUstomizedController extends Controller
                     // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
+                    ->where('status','1')
+
                     ->count();
 
                 // $today_tasks = TaskAssignee::where('user_id', $userId)
@@ -541,6 +548,8 @@ class DashboardCUstomizedController extends Controller
                 if (in_array($s->id, $complete_close)) {
                     $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
+                    ->where('status','1')
+
                         // ->where('created_by', $user->id)
                         ->count();
                     $finish_total += $CountFinishedTask;

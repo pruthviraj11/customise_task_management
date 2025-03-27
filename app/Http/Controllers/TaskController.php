@@ -1659,7 +1659,6 @@ class TaskController extends Controller
         }
         if (!empty($request->search['value'])) {
             $search = $request->search['value'];
-
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
                     ->orWhere('TaskNumber', 'LIKE', "%{$search}%")
@@ -1827,7 +1826,6 @@ class TaskController extends Controller
             ->addColumn('due_date', function ($row) {
                 return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
             })
-
             ->addColumn('close_date', function ($row) {
                 return $row->close_date ? Carbon::parse($row->close_date)->format('d/m/Y') : '-';
             })
@@ -1837,7 +1835,6 @@ class TaskController extends Controller
             ->addColumn('accepted_date', function ($row) {
                 return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
             })
-
             ->addColumn('project', function ($row) {
                 return $row->project ? $row->project->project_name : '-';
             })
@@ -1850,14 +1847,12 @@ class TaskController extends Controller
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
             })
-
             ->addColumn('creator_sub_department', function ($row) {
                 return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
             })
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
             })
-
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
@@ -3621,7 +3616,7 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         // dd($type);
         if ($type == 'requested_to_us') {
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('status','1')->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
         } elseif ($type == 'total_task') {
@@ -3738,6 +3733,7 @@ class TaskController extends Controller
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 5, 6])
+                ->where('status','1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -3877,6 +3873,7 @@ class TaskController extends Controller
             $tasksData = TaskAssignee::where('user_id', $user_id)
                 // ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->where('status','1')
                 ->whereDate('due_date', '<', $cdate)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4044,6 +4041,7 @@ class TaskController extends Controller
             $tasksData = TaskAssignee::where('user_id', $user_id)
                 // ->where('created_by', $user_id)
                 ->whereNotIn('task_status', [4, 7])
+                ->where('status','1')
                 ->whereDate('due_date', '=', $cdate)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4178,6 +4176,7 @@ class TaskController extends Controller
 
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', ['4', '7'])
+                ->where('status','1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4305,6 +4304,7 @@ class TaskController extends Controller
         if ($type == 'requested_to_us') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
+                ->where('status','1')
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
@@ -4445,7 +4445,7 @@ class TaskController extends Controller
                 $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
-                    ->where('status', 0)
+                    ->where('status', 1)
                     // ->where('created_by', $user_id)
                     ->get();
 

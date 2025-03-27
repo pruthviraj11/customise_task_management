@@ -18,6 +18,33 @@
 
 @section('page-style')
     {{-- Page Css files --}}
+    <style>
+        .requested-to-us{
+            background-color: hsla(38, 92%, 64%, 0.615) !important;
+            font-weight: 900;
+        }
+        .pending-tasks {
+            background-color: hsl(219, 67%, 72%) !important;
+            font-weight: 900;
+
+        }
+        .over-dues{
+            background-color: hsla(5, 89%, 50%, 0.643) !important;
+            font-weight: 900;
+        }
+        .today-dues{
+            background-color: hsla(35, 66%, 77%, 0.643) !important;
+            font-weight: 900;
+        }
+        .finish-tasks{
+            background-color: hsla(130, 62%, 63%, 0.62) !important;
+            font-weight: 900;
+        }
+        .total{
+            background-color: hsla(130, 66%, 25%, 0.62) !important;
+            font-weight: 900;
+        }
+    </style>
 @endsection
 @section('content')
 
@@ -275,6 +302,7 @@
                         {
                             data: 'requested_to_us',
                             name: 'requested_to_us',
+                            class: 'requested-to-us',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId = row.status_id
@@ -314,6 +342,7 @@
                         {
                             data: 'pending_tasks',
                             name: 'pending_tasks',
+                            class: 'pending-tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -323,11 +352,12 @@
                                 url = url.replace(':user_id', userId).replace(
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
-                            }
+                            },
                         },
                         {
                             data: 'over_dues',
                             name: 'over_dues',
+                            class:'over-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -342,6 +372,7 @@
                         {
                             data: 'today_dues',
                             name: 'today_dues',
+                            class:'today-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -376,6 +407,7 @@
                         {
                             data: 'finish_tasks',
                             name: 'finish_tasks',
+                            class: 'finish-tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -390,6 +422,7 @@
                         {
                             data: 'total',
                             name: 'total',
+                            class: 'total',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
