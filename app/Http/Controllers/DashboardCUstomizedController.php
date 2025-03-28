@@ -457,7 +457,10 @@ class DashboardCUstomizedController extends Controller
 
 
 
-            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')->count();
+            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->count();
 
             $array['requested_to_us'] = $totalAssign; // Correctly add the key-value pair to the existing array
 

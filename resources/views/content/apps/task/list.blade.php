@@ -714,7 +714,7 @@
                     },
                     {
                         data: 'task_status',
-                        name: 'Task status',
+                        name: 'task_status',
                         searchable: true,
                         visible: selectedColumns.includes("10")
                     },

@@ -1816,7 +1816,7 @@ class TaskController extends Controller
                 return $userNames ?: '-';
             })
             ->addColumn('task_status', function ($row) {
-                return $row->task_status ? $row->taskStatus->status_name : "-";
+                return $row->taskStatus ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('Created_Date', function ($row) {
                 return $row->created_at ? \Carbon\Carbon::parse($row->created_at)->format('d/m/Y') : '-';
@@ -1853,6 +1853,9 @@ class TaskController extends Controller
             })
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+            ->addColumn('status', function ($row) {
+                return '-';
             })
             ->addColumn('pin_task', function ($row) {
                 return '-';
@@ -2067,6 +2070,9 @@ class TaskController extends Controller
             })
             ->addColumn('creator_phone', function ($row) {
                 return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+            })
+            ->addColumn('status', function ($row) {
+                return '-';
             })
             ->addColumn('pin_task', function ($row) {
                 return '-';
@@ -3494,7 +3500,10 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         if ($type == 'requested_to_us') {
 
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
         } elseif ($type == 'total_task') {
@@ -4446,7 +4455,10 @@ class TaskController extends Controller
                 $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
-                    ->where('status', 1)
+                    ->where('status', 0)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id)
                     ->get();
 
