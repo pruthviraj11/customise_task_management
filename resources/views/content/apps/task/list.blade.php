@@ -186,7 +186,7 @@
                                 <th>Subject</th>
                                 <th>Assign By</th>
                                 <th>Task assign to</th>
-                                <th>Status</th>
+                                <th>Task Status</th>
                                 <th>Created Date</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
@@ -714,7 +714,7 @@
                     },
                     {
                         data: 'task_status',
-                        name: 'status',
+                        name: 'Task status',
                         searchable: true,
                         visible: selectedColumns.includes("10")
                     },
