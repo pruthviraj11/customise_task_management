@@ -276,12 +276,14 @@
                                     @enderror
                                 </span>
                             </div>
+                            {{-- {{dd($taskAssigne->completed_date,$task->completed_date)}} --}}
                             @if ($task->completed_date)
                                 <div class="col-md-4 col-sm-12 mb-1">
                                     <label class="form-label" for="completed_dates">Completed Date</label>
                                     <input readonly type="date" id="completed_dates" class="form-control"
                                         name="completed_dates"
-                                        value="{{ old('completed_dates') ?? ($task != '' ? $task->completed_date : '') }}">
+                                        value="{{ old('completed_dates') ?? ($task && $task->completed_date ? \Carbon\Carbon::parse($task->completed_date)->format('Y-m-d') : ($taskAssigne && $taskAssigne->completed_date ? \Carbon\Carbon::parse($taskAssigne->completed_date)->format('Y-m-d') : '')) }}">
+
                                     <span class="text-danger">
                                         @error('completed_dates')
                                             {{ $message }}
