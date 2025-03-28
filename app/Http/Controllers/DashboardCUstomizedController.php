@@ -480,6 +480,9 @@ class DashboardCUstomizedController extends Controller
                     ->where('task_status', $s->id)
                     ->where('status','1')
                     // ->where('created_by', $user->id)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
@@ -491,7 +494,9 @@ class DashboardCUstomizedController extends Controller
                     $CountPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
                     ->where('status','1')
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                         // ->where('created_by', $user->id)
                         ->count();
                     $pending_total += $CountPendingTask;
@@ -505,6 +510,9 @@ class DashboardCUstomizedController extends Controller
                     ->where('status','1')
 
                     ->whereDate('due_date', '<', $cdate)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
 
@@ -530,7 +538,9 @@ class DashboardCUstomizedController extends Controller
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
                     ->where('status','1')
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
                 // $today_tasks = TaskAssignee::where('user_id', $userId)
@@ -552,7 +562,9 @@ class DashboardCUstomizedController extends Controller
                     $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
                     ->where('status','1')
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                         // ->where('created_by', $user->id)
                         ->count();
                     $finish_total += $CountFinishedTask;
@@ -599,12 +611,15 @@ class DashboardCUstomizedController extends Controller
             $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
 
             $array = [
-                'user_id' => encrypt($user->id),
+                'user_id' => ($user->id),
                 'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
 
 
-            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')->where('created_by', $userId)->count();
+            $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')->where('created_by', $userId)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->count();
 
             $array['requested_by_us'] = $totalAssign; // Correctly add the key-value pair to the existing array
 
@@ -623,6 +638,9 @@ class DashboardCUstomizedController extends Controller
                 $CountTaskStatus = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
                     ->where('created_by', $userId)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
@@ -636,6 +654,9 @@ class DashboardCUstomizedController extends Controller
                     $CountPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
                         ->where('created_by', $userId)
+                        ->whereIn('task_id', function ($subquery) {
+                            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                        })
                         ->count();
                     $pending_total += $CountPendingTask;
                 }
@@ -646,6 +667,9 @@ class DashboardCUstomizedController extends Controller
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
                 // $due_tasks = TaskAssignee::where('user_id', $user->id)
@@ -668,6 +692,9 @@ class DashboardCUstomizedController extends Controller
                     ->where('created_by', $userId)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->count();
 
 
@@ -690,6 +717,9 @@ class DashboardCUstomizedController extends Controller
                     $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
                         ->where('created_by', $userId)
+                        ->whereIn('task_id', function ($subquery) {
+                            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                        })
                         ->count();
                     $finish_total += $CountFinishedTask;
                 }
@@ -710,9 +740,6 @@ class DashboardCUstomizedController extends Controller
         }
 
         return response()->json(['data' => $table_data]);
-
-
-
 
 
     }

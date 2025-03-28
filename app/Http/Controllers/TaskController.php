@@ -2094,7 +2094,10 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7'])->where('task_assignees.due_date', '<', today());
+            $query->whereNotIn('task_assignees.task_status', ['4', '7'])->where('task_assignees.due_date', '<', today())
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            });
         } else {
             // User-specific task filters
             $query->where('task_assignees.status', 1)->where('task_assignees.due_date', '<', today())
@@ -2105,6 +2108,9 @@ class TaskController extends Controller
                             // Ensure the user is not deleted (i.e., deleted_at is null)
                             $q->whereNull('deleted_at');
                         });
+                })
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         }
 
@@ -2314,7 +2320,10 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7']);
+            $query->whereNotIn('task_assignees.task_status', ['4', '7'])
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            });
         } else {
             // User-specific task filters
             $query->whereNotIn('task_assignees.task_status', ['4', '7'])
@@ -2325,6 +2334,9 @@ class TaskController extends Controller
                             // Ensure the user is not deleted (i.e., deleted_at is null)
                             $q->whereNull('deleted_at');
                         });
+                })
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         }
 
@@ -2530,7 +2542,10 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereIn('task_assignees.task_status', ['4', '7']);
+            $query->whereIn('task_assignees.task_status', ['4', '7'])
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            });
         } else {
             // User-specific task filters
             $query->whereIn('task_assignees.task_status', ['4', '7'])
@@ -2539,6 +2554,9 @@ class TaskController extends Controller
                         ->whereHas('user', function ($q) {
                             $q->whereNull('deleted_at');
                         });
+                })
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         }
 
@@ -2759,9 +2777,15 @@ class TaskController extends Controller
 
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
-            $tasks->whereNull('task_assignees.deleted_at');
+            $tasks->whereNull('task_assignees.deleted_at')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            });
         } else {
-            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at');
+            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            });
         }
 
         // // Search functionality
@@ -3015,7 +3039,10 @@ class TaskController extends Controller
                 // })
                 // ->where('task_assignees.task_status', '!=', 7);
             })
-                ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
+                ->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });  // Ensure the assignee is not deleted
         } else {
 
             $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -3025,7 +3052,10 @@ class TaskController extends Controller
                 // })
                 // ->where('task_assignees.task_status', '!=', 7);
             })
-                ->whereNull('task_assignees.deleted_at');  // Ensure the assignee is not deleted
+                ->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });  // Ensure the assignee is not deleted
         }
 
 
@@ -3262,7 +3292,6 @@ class TaskController extends Controller
 
     public function getAll_accepted(Request $request)
     {
-
         $user = auth()->user();
 
         // Modify query based on task_assignees table
@@ -3272,6 +3301,9 @@ class TaskController extends Controller
                 ->whereNotIn('tasks.task_status', [4, 7])
                 ->where('task_assignees.status', '1')
                 ->whereIn('task_assignees.task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
+                ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
             // ->whereHas('task', function ($query) {
@@ -3283,6 +3315,9 @@ class TaskController extends Controller
                 ->whereNotIn('tasks.task_status', [4, 7])
                 ->where('task_assignees.status', '1')
                 ->whereIn('task_assignees.task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
+                ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })
                 // ->whereHas('task', function ($query)  {
@@ -3505,7 +3540,10 @@ class TaskController extends Controller
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->get();
         } elseif ($type == 'requested_by_me') {
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('status', '0')->where('created_by', $user)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->get();
         } elseif ($type == 'total_task') {
             // Fetch the tasks for both tasks_A and tasks_B and combine them
             $tasks_A = TaskAssignee::where('user_id', $user)
@@ -3626,9 +3664,19 @@ class TaskController extends Controller
         $user = auth()->user()->id;
         // dd($type);
         if ($type == 'requested_to_us') {
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('status', '1')->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('status', '1')
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })->get();
         } elseif ($type == 'requested_by_me') {
-            $tasks = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->where('created_by', $user)->get();
+            $tasks = TaskAssignee::where('user_id', $user_id)
+            ->where('task_status', $status_id)
+            ->where('created_by', $user)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
+            ->get();
+
         } elseif ($type == 'total_task') {
             $tasks_A = TaskAssignee::where('user_id', $user_id)->where('task_status', $status_id)->get();
 
@@ -3744,12 +3792,18 @@ class TaskController extends Controller
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 5, 6])
                 ->where('status', '1')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 5, 6])
                 ->where('created_by', $user)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'total_task') {
             $tasks_A = TaskAssignee::where('user_id', $user_id)
@@ -3885,6 +3939,9 @@ class TaskController extends Controller
                 ->whereNotIn('task_status', [4, 7])
                 ->where('status', '1')
                 ->whereDate('due_date', '<', $cdate)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'requested_by_me') {
             // $due_tasks = $due_tasks = TaskAssignee::where('user_id', $user_id)
@@ -3903,6 +3960,9 @@ class TaskController extends Controller
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
                 ->whereDate('due_date', '<', $cdate)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type = 'total_task') {
 
@@ -4053,6 +4113,9 @@ class TaskController extends Controller
                 ->whereNotIn('task_status', [4, 7])
                 ->where('status', '1')
                 ->whereDate('due_date', '=', $cdate)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'requested_by_me') {
 
@@ -4060,6 +4123,9 @@ class TaskController extends Controller
                 ->where('created_by', $user)
                 ->whereNotIn('task_status', [4, 7])
                 ->whereDate('due_date', '=', $cdate)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'total_task') {
             $today_tasks_A = TaskAssignee::where('user_id', $user_id)
@@ -4187,12 +4253,18 @@ class TaskController extends Controller
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', ['4', '7'])
                 ->where('status', '1')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', ['4', '7'])
                 ->where('created_by', $user)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'total_task') {
             $tasks_A = TaskAssignee::where('user_id', $user_id)
@@ -4315,12 +4387,18 @@ class TaskController extends Controller
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                 ->where('status', '1')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 // ->where('created_by', $user_id)
                 ->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', $user_id)
                 ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                 ->where('created_by', $user)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->get();
         } elseif ($type == 'total_task') {
             $tasks_A = TaskAssignee::where('user_id', $user_id)
@@ -4472,7 +4550,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 1)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4486,7 +4566,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 3)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4500,7 +4582,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 4)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4514,7 +4598,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 5)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4528,7 +4614,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 6)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4543,7 +4631,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 5, 6])
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id)
                     ->get();
 
@@ -4562,7 +4652,9 @@ class TaskController extends Controller
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
@@ -4580,7 +4672,9 @@ class TaskController extends Controller
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
@@ -4593,7 +4687,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 7)
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id) // Assuming the tasks are created by the logged-in user
                     ->get();
 
@@ -4608,7 +4704,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', ['4', '7'])
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id)
                     ->get();
 
@@ -4621,7 +4719,9 @@ class TaskController extends Controller
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                     ->where('status', 1)
-
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     // ->where('created_by', $user_id)
                     ->get();
                 $tasks = $tasks->merge($tasksData);
@@ -4727,7 +4827,6 @@ class TaskController extends Controller
 
     public function requestedByUsFooterTotalTasks($user_id, $status_id, $type)
     {
-
         $user_ids = explode(',', $user_id);
         // $tasks = [];
 
@@ -4740,11 +4839,14 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('status', 0)
                     ->where('created_by', $user)
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
@@ -4752,11 +4854,14 @@ class TaskController extends Controller
         } elseif ($status_id == 2)  // Conceptualization
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 1)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
                     ->get();
 
                 $tasks = $tasks->merge($tasksData);
@@ -4765,48 +4870,56 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 3)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
         } elseif ($status_id == 4)     // For Completed
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 4)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
         } elseif ($status_id == 5) //In Execution
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 5)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
         } elseif ($status_id == 9) ///For Hold
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 6)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
@@ -4814,12 +4927,14 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 5, 6])
                     ->where('created_by', $user)
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
@@ -4829,13 +4944,15 @@ class TaskController extends Controller
             $cdate = date("Y-m-d");
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('created_by', $user)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '<', $cdate)
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
@@ -4845,25 +4962,29 @@ class TaskController extends Controller
             $cdate = date("Y-m-d");
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('created_by', $user)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
         } elseif ($status_id == 10)     // For Closed
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->where('task_status', 7)
                     ->where('created_by', $user) // Assuming the tasks are created by the logged-in user
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
@@ -4871,24 +4992,28 @@ class TaskController extends Controller
         {
 
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', ['4', '7'])
                     ->where('created_by', $user)
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
         } elseif ($status_id == 'all')      //For Grand Total
         {
             foreach ($user_ids as $user_id) {
-                $user_id = decrypt($user_id);
+                $user_id = ($user_id);
 
                 $tasksData = TaskAssignee::where('user_id', $user_id)
                     ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
                     ->where('created_by', $user)
-                    ->get();
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })->get();
 
                 $tasks = $tasks->merge($tasksData);
             }
@@ -8605,7 +8730,6 @@ class TaskController extends Controller
 
     public function getAll_total_task(Request $request)
     {
-
         $userId = Auth()->user()->id;
         ini_set('max_execution_time', 500);
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
@@ -8617,6 +8741,9 @@ class TaskController extends Controller
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
                 ->where('task_assignees.status', '!=', 2);
         } else {
             // User-specific task filters
@@ -8628,6 +8755,9 @@ class TaskController extends Controller
                     });
             })
                 ->whereIn('task_assignees.task_status', ['1', '3', '5', '6'])
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->where('task_assignees.status', '!=', 2);
         }
 
@@ -9586,6 +9716,9 @@ class TaskController extends Controller
             ->whereHas('task', function ($query) use ($userId) {
                 $query->where('created_by', $userId)  // Ensure the task was created by the current user
                     ->havingRaw('COUNT(task_assignees.user_id) = 1');  // Ensure task has only one assignee
+            })
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             });
 
 
