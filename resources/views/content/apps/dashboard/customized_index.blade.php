@@ -50,6 +50,11 @@
             text-align: end;
             font-weight: 900;
         }
+        .rejected_tasks{
+            background-color: hsla(131, 39%, 74%, 0.62) !important;
+            text-align: end;
+            font-weight: 900;
+        }
         .all_status_columns{
             text-align: end;
 
@@ -121,6 +126,7 @@
 
                             <th>Finished Task</th>
                             <th>Total</th>
+                            <th>Rejected Task</th>
 
                         </tr>
                     </thead>
@@ -445,7 +451,21 @@
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
-                        },
+                        },{
+                            data: 'rejected_tasks',
+                            name: 'rejected_tasks',
+                            class: 'rejected_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_rejected_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
+                        }
 
                     ],
                     footerCallback: function(row, data, start, end, display) {

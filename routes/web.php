@@ -133,6 +133,10 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
         ->name('tasks.requested_to_us_footer_total_list');
 
 
+        Route::get('/tasks/requested_to_us_rejected_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+        ->name('tasks.requested_to_us_rejected_task');
+    Route::get('/tasks/requested_to_us_rejected_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsRejectedTasks'])
+        ->name('tasks.requested_to_us_rejected_task_list');
     /////////////////////////  Routes For Requested To Us  Ends      ///////////////////////
 
 

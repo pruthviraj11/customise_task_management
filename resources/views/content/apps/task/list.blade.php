@@ -202,14 +202,14 @@
                                 <th>Status</th>
                                 {{-- <th>Is Pinned</th> --}}
 
-                                {{-- Fields For Excel Starts--}}
+                                {{-- Fields For Excel Starts --}}
                                 <th>Created Date</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
                                 <th>Completed Date</th>
                                 <th>Accepted task Date</th>
                                 <th>Close Date</th>
-                                {{-- Fields For Excel Ends--}}
+                                {{-- Fields For Excel Ends --}}
 
 
 
@@ -493,6 +493,10 @@
             @elseif ($type == 'tasks.requested_to_us_total_task' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_to_us_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
+                }
+            @elseif ($type == 'tasks.requested_to_us_rejected_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_to_us_rejected_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
                 }
             @elseif ($type == 'tasks.requested_by_us' && $user_id != '') {
                     ajaxUrl =
@@ -913,14 +917,14 @@
                         render: function(data) {
                             if (data && data.includes('/')) {
                                 var parts = data.split(
-                                '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
                                 var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
-                                0]; // Convert to 'Y-m-d' for Date object
+                                    0]; // Convert to 'Y-m-d' for Date object
                                 var date = new Date(formattedDate);
 
                                 // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
                                 return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
-                                .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                             }
                             return '';
                         }
@@ -934,14 +938,14 @@
                         render: function(data) {
                             if (data && data.includes('/')) {
                                 var parts = data.split(
-                                '/'); // Splitting 'd/m/Y' into [day, month, year]
+                                    '/'); // Splitting 'd/m/Y' into [day, month, year]
                                 var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[
-                                0]; // Convert to 'Y-m-d' for Date object
+                                    0]; // Convert to 'Y-m-d' for Date object
                                 var date = new Date(formattedDate);
 
                                 // Return date in 'd-m-Y' format for display & ensure Excel recognizes it as a date
                                 return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1))
-                                .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                                    .slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                             }
                             return '';
                         }
