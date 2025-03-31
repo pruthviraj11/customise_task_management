@@ -4867,18 +4867,17 @@ class TaskController extends Controller
                     ->get();
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 13)
+        } elseif ($status_id == 'all')
         {
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);
-                $tasksData = TaskAssignee::where('user_id', $user_id)
-                    ->whereIn('task_status', [1, 3, 4, 5, 6, 7])
-                    ->where('status', 1)
-                    ->whereIn('task_id', function ($subquery) {
-                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-                    })
-                    // ->where('created_by', $user_id)
-                    ->get();
+                $tasksData =  TaskAssignee::where('user_id', $user_id)
+                // ->where('task_status', $taskStatusId) // Make sure $taskStatusId is correctly assigned
+                ->where('status', '2')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
+                ->get();
                 $tasks = $tasks->merge($tasksData);
             }
         }

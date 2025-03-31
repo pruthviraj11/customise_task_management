@@ -51,7 +51,7 @@
             font-weight: 900;
         }
         .rejected_tasks{
-            background-color: hsla(130, 66%, 25%, 0.62) !important;
+            background-color: hsla(131, 39%, 69%, 0.62) !important;
             text-align: end;
             font-weight: 900;
         }
@@ -147,6 +147,7 @@
                             <th></th> <!-- Today's Due Tasks Total -->
                             <th></th> <!-- Finished Tasks Total -->
                             <th></th> <!-- Grand Total -->
+                            <th></th> <!-- Rejected Tasks Total -->
                         </tr>
                     </tfoot>
                 </table>
