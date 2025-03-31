@@ -231,7 +231,7 @@
                                     class="red">*</span>
                                 <input type="date" id="due_date_form" class="form-control" name="due_date_form"
                                     value="{{ old('due_date_form') ?? ($task != '' ? $task->due_date : date('Y-m-d')) }}"
-                                    >
+                                    required>
 
                                 <span class="text-danger">
                                     @error('due_date_form')
@@ -1533,12 +1533,14 @@
             // Get recurring checkbox and related containers
             const recurringCheckbox = document.getElementById('recurring');
             const endDateContainer = document.getElementById('end_date_container');
+            const endDateInput = document.getElementById('due_date_form');
             const recurringOptionsContainer = document.getElementById('recurring_options');
             const numberOfDaysContainer = document.getElementById('number_of_time_container');
 
             // Initially check the state of the "Recurring" checkbox
             if (recurringCheckbox.checked) {
                 endDateContainer.style.display = 'none'; // Hide End Date
+                endDateInput.removeAttribute('required');
                 recurringOptionsContainer.style.display = 'block'; // Show Recurring options
                 numberOfDaysContainer.style.display = 'block'; // Show Number of Days input
             }
@@ -1547,10 +1549,12 @@
             recurringCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     endDateContainer.style.display = 'none'; // Hide End Date when Recurring is selected
+                    endDateInput.removeAttribute('required'); // Remove required attribute
                     recurringOptionsContainer.style.display = 'block'; // Show Recurring options
                     numberOfDaysContainer.style.display = 'block'; // Show Number of Days input
                 } else {
                     endDateContainer.style.display = 'block'; // Show End Date if not recurring
+                    endDateInput.setAttribute('required', 'required'); // Add required attribute
                     recurringOptionsContainer.style.display = 'none'; // Hide Recurring options
                     numberOfDaysContainer.style.display = 'none'; // Hide Number of Days input
                 }
