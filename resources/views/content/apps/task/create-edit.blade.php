@@ -277,6 +277,8 @@
                             </div>
 
 
+{{-- {{dd($task)}} --}}
+
 
                             <div class="col-md-3 col-sm-12 mb-1">
                                 <label class="form-label" for="task_status">Status</label><span class="red">*</span>
@@ -794,6 +796,34 @@
         }
     </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const recurringCheckbox = document.getElementById("recurring");
+    const taskStatusSelect = document.getElementById("task_status");
+
+    function toggleClosedOption() {
+        const closedOption = Array.from(taskStatusSelect.options).find(option => option.text.toLowerCase() === "closed");
+
+        if (recurringCheckbox.checked) {
+            if (closedOption) closedOption.remove(); // Remove the "Closed" option
+        } else {
+            // Re-add the "Closed" option if not present
+            if (!closedOption) {
+                const newOption = document.createElement("option");
+                newOption.value = "7"; // Replace with the actual ID of "Closed"
+                newOption.text = "Closed";
+                taskStatusSelect.appendChild(newOption);
+            }
+        }
+    }
+
+    // Run on page load
+    toggleClosedOption();
+
+    // Add event listener
+    recurringCheckbox.addEventListener("change", toggleClosedOption);
+});
+</script>
     {{-- <script>
         $(document).ready(function() {
             // Initialize RateYo
