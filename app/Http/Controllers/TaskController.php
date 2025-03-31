@@ -9612,7 +9612,7 @@ class TaskController extends Controller
                     $rejectedTasks = $rejectedTasks->where('task_assignees.created_by', auth()->user()->id);
                 } else {
                     // Filter for tasks assigned to the current user
-                    $rejectedTasks = $rejectedTasks->where('user_id', auth()->user()->id);
+                    $rejectedTasks = $rejectedTasks->where('task_assignees.user_id', auth()->user()->id);
                 }
             }
 
