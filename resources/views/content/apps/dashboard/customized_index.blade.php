@@ -51,7 +51,7 @@
             font-weight: 900;
         }
         .rejected_tasks{
-            background-color: hsla(131, 39%, 74%, 0.62) !important;
+            background-color: hsla(130, 66%, 25%, 0.62) !important;
             text-align: end;
             font-weight: 900;
         }
@@ -108,14 +108,19 @@
                             <th>Requested To Us</th>
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index <= 4)
-                                    <th>{{ $status->status_name }}</th>
+                                @if ($index <= 4 && $index !=2)
+                                    <th>{{ $status->status_name }} </th>
                                 @endif
                             @endforeach
 
                             <th>Pending Tasks</th>
                             <th>Over Due</th>
                             <th>Today's Due</th>
+                            @foreach ($statusinfos as $index => $status)
+                            @if ($index ==2)
+                                <th>{{ $status->status_name }} </th>
+                            @endif
+                        @endforeach
 
                             @foreach ($statusinfos as $index => $status)
                                 @if ($index >= 5)
@@ -333,7 +338,7 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4)
+                            @if ($index <= 4 && $index !=2)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
@@ -386,6 +391,7 @@
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
                         },
+
                         {
                             data: 'today_dues',
                             name: 'today_dues',
@@ -401,7 +407,29 @@
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
                         },
+                        @foreach ($statusinfos as $index => $status)
+                            @if ($index == 2)
+                                {
+                                    data: '{{ \Str::slug($status->status_name, '_') }}',
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
 
+                                        let url =
+                                            '{{ route('tasks.requested_to_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id',
+                                            statusId);
+
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
+
+                                },
+                            @endif
+                        @endforeach
                         @foreach ($statusinfos as $index => $status)
                             @if ($index >= 5)
                                 {
