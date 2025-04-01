@@ -5198,7 +5198,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 4)     // For Completed
+        } elseif ($status_id == 9)     // For Completed
         {
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);
@@ -5213,7 +5213,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 5) //In Execution
+        } elseif ($status_id == 4) //In Execution
         {
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);
@@ -5228,7 +5228,7 @@ class TaskController extends Controller
 
                 $tasks = $tasks->merge($tasksData);
             }
-        } elseif ($status_id == 9) ///For Hold
+        } elseif ($status_id == 5) ///For Hold
         {
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);

@@ -169,17 +169,22 @@
 
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index <= 3)
-                                    <th>{{ $status->status_name }}</th>
-                                @endif
-                            @endforeach
+                            @if ($index <= 4 && $index !=2)
+                                <th>{{ $status->status_name }} </th>
+                            @endif
+                        @endforeach
 
                             <th>Pending Tasks</th>
                             <th>Over Due</th>
                             <th>Today's Due</th>
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index >= 4)
+                            @if ($index ==2)
+                                <th>{{ $status->status_name }} </th>
+                            @endif
+                        @endforeach
+                             @foreach ($statusinfos as $index => $status)
+                                @if ($index >= 5)
                                     <th>{{ $status->status_name }}</th>
                                 @endif
                             @endforeach
@@ -623,23 +628,25 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 3)
+                            @if ($index <= 4 && $index !=2)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
                                             '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
 
                                         let url =
-                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
                                         url = url.replace(':user_id', userId).replace(
                                             ':status_id',
                                             statusId);
 
                                         return `<a href="${url}" class="text-primary">${data}</a>`;
                                     }
+
                                 },
                             @endif
                         @endforeach
@@ -687,27 +694,71 @@
                             }
                         },
 
+                        // @foreach ($statusinfos as $index => $status)
+                        //     @if ($index >= 4)
+                        //         {
+                        //             data: '{{ \Str::slug($status->status_name, '_') }}',
+                        //             name: '{{ \Str::slug($status->status_name, '_') }}',
+                        //             render: function(data, type, row) {
+                        //                 let userId = row.user_id;
+                        //                 let statusId =
+                        //                     '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+
+                        //                 let url =
+                        //                     '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                        //                 url = url.replace(':user_id', userId).replace(
+                        //                     ':status_id',
+                        //                     statusId);
+
+                        //                 return `<a href="${url}" class="text-primary">${data}</a>`;
+                        //             }
+                        //         },
+                        //     @endif
+                        // @endforeach
+
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index >= 4)
+                            @if ($index == 2)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
                                             '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
 
                                         let url =
-                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
                                         url = url.replace(':user_id', userId).replace(
                                             ':status_id',
                                             statusId);
 
                                         return `<a href="${url}" class="text-primary">${data}</a>`;
                                     }
+
                                 },
                             @endif
                         @endforeach
+                        @foreach ($statusinfos as $index => $status)
+                            @if ($index >= 5)
+                                {
+                                    data: '{{ \Str::slug($status->status_name, '_') }}',
+                                    name: '{{ \Str::slug($status->status_name, '_') }}',
+                                    class:'all_status_columns',
+                                    render: function(data, type, row) {
+                                        let userId = row.user_id;
+                                        let statusId =
+                                            '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                        let url =
+                                            '{{ route('tasks.requested_by_us_status', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                        url = url.replace(':user_id', userId).replace(
+                                            ':status_id', statusId);
+                                        return `<a href="${url}" class="text-primary">${data}</a>`;
+                                    }
+                                },
+                            @endif
+                        @endforeach
+
 
                         {
                             data: 'finish_tasks',
