@@ -498,7 +498,7 @@
                     ajaxUrl =
                         "{{ route('tasks.requested_to_us_rejected_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
                 }
-                @elseif ($type == 'tasks.requested_to_us_overall_total' && $user_id != '') {
+            @elseif ($type == 'tasks.requested_to_us_overall_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_to_us_overall_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_to_us']) }}";
                 }
@@ -529,6 +529,10 @@
             @elseif ($type == 'tasks.requested_by_us_total_task' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_by_us_total_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
+                }
+            @elseif ($type == 'tasks.requested_by_us_rejected_task' && $user_id != '') {
+                    ajaxUrl =
+                        "{{ route('tasks.requested_by_us_rejected_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
                 }
             @elseif ($type == 'tasks.total_task' && $user_id != '') {
                     ajaxUrl =

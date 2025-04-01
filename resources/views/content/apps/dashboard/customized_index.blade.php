@@ -187,6 +187,7 @@
 
                             <th>Finished Task</th>
                             <th>Total</th>
+                            <th>Rejected Tasks</th>
 
                         </tr>
                     </thead>
@@ -202,6 +203,7 @@
                             <th></th> <!-- Today's Due Tasks Total -->
                             <th></th> <!-- Finished Tasks Total -->
                             <th></th> <!-- Grand Total -->
+                            <th></th> <!-- Rejected Tasks Total -->
                         </tr>
                     </tfoot>
                 </table>
@@ -733,6 +735,20 @@
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
                         },
+                        {
+                            data: 'rejected_tasks',
+                            name: 'rejected_tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_by_us_rejected_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
+                        }
 
                     ],
                     footerCallback: function(row, data, start, end, display) {
