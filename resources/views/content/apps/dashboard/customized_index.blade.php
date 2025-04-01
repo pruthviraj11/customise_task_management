@@ -132,7 +132,7 @@
                             <th>Finished Task</th>
                             <th>Total</th>
                             <th>Rejected Task</th>
-
+                            <th>Overall Total</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -148,6 +148,7 @@
                             <th></th> <!-- Finished Tasks Total -->
                             <th></th> <!-- Grand Total -->
                             <th></th> <!-- Rejected Tasks Total -->
+                            <th></th> <!-- Overall Total -->
                         </tr>
                     </tfoot>
                 </table>
@@ -494,7 +495,22 @@
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
-                        }
+                        },
+                        {
+                            data: 'overall_total',
+                            name: 'overall_total',
+                            class: 'finish-tasks',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_to_us_finished_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_to_us']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
+                        },
 
                     ],
                     footerCallback: function(row, data, start, end, display) {

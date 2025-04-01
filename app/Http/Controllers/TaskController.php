@@ -4514,6 +4514,8 @@ class TaskController extends Controller
             ->make(true);
     }
 
+
+
     public function requestedToUsRejectedTasks($user_id, $status_id, $type)
     {
         $user_id = ($user_id);
@@ -4652,6 +4654,148 @@ class TaskController extends Controller
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
+
+
+
+    // public function requestedToUsOverallTotal($user_id, $status_id, $type)
+    // {
+    //     dd('Hii');
+    //     $user_id = ($user_id);
+
+    //     $user = auth()->user()->id;
+    //     $cdate = date("Y-m-d");
+    //     if ($type == 'requested_to_us') {
+
+    //         $tasksData = TaskAssignee::where('user_id', $user_id)
+    //             ->where('status', '2')
+    //             ->whereIn('task_id', function ($subquery) {
+    //                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+    //             })
+    //             ->get();
+    //     } elseif ($type == 'requested_by_me') {
+
+    //         $tasksData = TaskAssignee::where('user_id', $user_id)
+    //             ->where('created_by', $user)
+    //             ->whereNotIn('task_status', [4, 7])
+    //             ->whereDate('due_date', '=', $cdate)
+    //             ->whereIn('task_id', function ($subquery) {
+    //                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+    //             })
+    //             ->get();
+    //     } elseif ($type == 'total_task') {
+    //         $today_tasks_A = TaskAssignee::where('user_id', $user_id)
+    //             // ->where('created_by', $user_id)
+    //             ->whereNotIn('task_status', [4, 7])
+    //             ->whereDate('due_date', '=', $cdate)
+    //             ->get();
+
+
+    //         $today_tasks_B = TaskAssignee::where('user_id', $user_id)
+    //             ->where('created_by', $user)
+    //             ->whereNotIn('task_status', [4, 7])
+    //             ->whereDate('due_date', '=', $cdate)
+    //             ->get();
+
+    //         $tasksData = $today_tasks_A->merge($today_tasks_B);
+    //     }
+    //     return DataTables::of($tasksData)
+
+    //         ->addColumn('actions', function ($row) {
+    //             // dd($row);
+    //             $encryptedId_sub_task = encrypt($row->id);
+    //             $encryptedId = encrypt($row->task_id);
+    //             // $satusData = TaskAssignee::where('')
+    //             $updateButton = '';
+    //             $deleteButton = '';
+    //             $acceptButton = '';
+    //             if ($row->status == 0 && $row->user_id == auth()->user()->id) {
+    //                 $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+    //                 $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //             } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+    //                 $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+    //                 $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+    //             }
+    //             $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+
+    //             return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
+    //         })
+    //         ->addColumn('created_by_username', function ($row) {
+    //             return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+    //         })
+    //         ->addColumn('Task_number', function ($row) {
+    //             return $row->task_number ?? "-";
+    //         })
+    //         ->addColumn('Task_Ticket', function ($row) {
+    //             return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+    //         })
+
+
+    //         ->addColumn('description', function ($row) {
+    //             return $row->task && $row->task->description ? $row->task->description : '-';
+    //         })
+
+    //         ->addColumn('subject', function ($row) {
+    //             return $row->task && $row->task->subject ? $row->task->subject : '-';
+    //         })
+    //         ->addColumn('title', function ($row) {
+    //             return $row->task && $row->task->title ? $row->task->title : '-';
+    //         })
+    //         ->addColumn('Task_assign_to', function ($row) {
+    //             return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
+    //         })
+
+    //         ->addColumn('task_status', function ($row) {
+    //             return $row->task_status ? $row->taskStatus->status_name : "-";
+    //         })
+    //         ->addColumn('Created_Date', function ($row) {
+    //             return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+    //         })
+    //         ->addColumn('start_date', function ($row) {
+    //             return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+    //         })
+    //         ->addColumn('due_date', function ($row) {
+    //             return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+    //         })
+
+    //         ->addColumn('close_date', function ($row) {
+    //             return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+    //         })
+    //         ->addColumn('completed_date', function ($row) {
+    //             return $row->task && $row->task->completed_date ? Carbon::parse($row->task->completed_date)->format('d/m/Y') : '-';
+    //         })
+    //         ->addColumn('accepted_date', function ($row) {
+    //             return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+    //         })
+
+    //         ->addColumn('project', function ($row) {
+    //             return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+    //         })
+    //         ->addColumn('department', function ($row) {
+    //             return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+    //         })
+
+    //         ->addColumn('sub_department', function ($row) {
+    //             return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+    //         })
+    //         ->addColumn('creator_department', function ($row) {
+    //             return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+    //         })
+
+    //         ->addColumn('creator_sub_department', function ($row) {
+    //             return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+    //         })
+    //         ->addColumn('creator_phone', function ($row) {
+    //             return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '-';
+    //         })
+
+    //         ->addColumn('pin_task', function ($row) {
+    //             return '-';
+    //         })
+
+
+    //         ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
+    //         ->make(true);
+    // }
 
 
 

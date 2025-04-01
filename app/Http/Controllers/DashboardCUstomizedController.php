@@ -574,7 +574,6 @@ class DashboardCUstomizedController extends Controller
             $array['pending_tasks'] = $pending_total;
             $array['finish_tasks'] = $finish_total;
             $array['total'] = $pending_total + $finish_total;
-
             $CountRejectedTask = TaskAssignee::where('user_id', $user->id)
                 // ->where('task_status', $taskStatusId) // Make sure $taskStatusId is correctly assigned
                 ->where('status', '2')
@@ -585,6 +584,7 @@ class DashboardCUstomizedController extends Controller
 
 
             $array['rejected_tasks'] = $CountRejectedTask;
+            $array['overall_total'] = $pending_total + $finish_total + $totalAssign + $CountRejectedTask;
 
             array_push($table_data, $array);
         }
