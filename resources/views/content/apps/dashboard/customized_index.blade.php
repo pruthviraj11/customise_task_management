@@ -188,6 +188,7 @@
                             <th>Finished Task</th>
                             <th>Total</th>
                             <th>Rejected Tasks</th>
+                            <th>Overall Total</th>
 
                         </tr>
                     </thead>
@@ -204,6 +205,7 @@
                             <th></th> <!-- Finished Tasks Total -->
                             <th></th> <!-- Grand Total -->
                             <th></th> <!-- Rejected Tasks Total -->
+                            <th></th> <!-- Overall Total -->
                         </tr>
                     </tfoot>
                 </table>
@@ -744,6 +746,20 @@
                                     '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
                                 let url =
                                     '{{ route('tasks.requested_by_us_rejected_task', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                url = url.replace(':user_id', userId).replace(
+                                    ':status_id', statusId);
+                                return `<a href="${url}" class="text-primary">${data}</a>`;
+                            }
+                        },
+                        {
+                            data: 'overall_task',
+                            name: 'overall_task',
+                            render: function(data, type, row) {
+                                let userId = row.user_id;
+                                let statusId =
+                                    '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
+                                let url =
+                                    '{{ route('tasks.requested_by_us_overall_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
                                 url = url.replace(':user_id', userId).replace(
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;

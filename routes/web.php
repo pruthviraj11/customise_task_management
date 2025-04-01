@@ -192,6 +192,11 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
         ->name('tasks.requested_by_us_rejected_task');
     Route::get('/tasks/requested_by_us_rejected_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsRejectedTasks'])
         ->name('tasks.requested_by_us_rejected_task_list');
+
+        Route::get('/tasks/requested_by_us_overall_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+        ->name('tasks.requested_by_us_overall_total');
+    Route::get('/tasks/requested_by_us_overall_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverallTotal'])
+        ->name('tasks.requested_by_us_overall_total_list');
     /////////////////////////  Routes For Requested By Us Ends ///////////////////////
 
     /////////////////////////  Routes For Total task Starts   ///////////////////////
