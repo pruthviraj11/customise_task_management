@@ -614,6 +614,8 @@
                         {
                             data: 'requested_by_us',
                             name: 'requested_by_us',
+                            class: 'requested-to-us',
+
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId = row.status_id
@@ -654,6 +656,7 @@
                         {
                             data: 'pending_tasks',
                             name: 'pending_tasks',
+                            class: 'pending-tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -668,6 +671,7 @@
                         {
                             data: 'over_dues',
                             name: 'over_dues',
+                            class:'over-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -682,6 +686,7 @@
                         {
                             data: 'today_dues',
                             name: 'today_dues',
+                            class:'today-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -763,6 +768,7 @@
                         {
                             data: 'finish_tasks',
                             name: 'finish_tasks',
+                            class: 'finish-tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -777,6 +783,7 @@
                         {
                             data: 'total',
                             name: 'total',
+                            class: 'total',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -791,6 +798,7 @@
                         {
                             data: 'rejected_tasks',
                             name: 'rejected_tasks',
+                            class: 'rejected_tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -805,6 +813,7 @@
                         {
                             data: 'overall_task',
                             name: 'overall_task',
+                            class: 'finish-tasks',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =

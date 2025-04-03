@@ -559,7 +559,7 @@
                                                 <td>{{ $subtask->task_number }}</td>
                                                 <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($subtask->due_date)->format('d/m/Y') }}</td>
-                                                <td>{{ $subtask->taskStatus->displayname }}</td>
+                                                <td>{{ $subtask->taskStatus->displayname ?? '' }}</td>
 
                                             </tr>
                                         @endforeach
