@@ -418,7 +418,10 @@
                                                     </div>
                                                     <div class="mail-items">
                                                         <h5 class="mt-0">
-                                                            {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }}
+                                                            {{-- {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }} --}}
+                                                            {{ $loggedInUserId == $comment->created_by
+                                                                ? auth()->user()->first_name
+                                                                : optional($comment->creator)->first_name }}
                                                         </h5>
                                                         <div class="email-info-dropup dropdown">
                                                             <span role="button"
