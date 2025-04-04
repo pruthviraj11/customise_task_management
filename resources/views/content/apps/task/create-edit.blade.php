@@ -418,20 +418,17 @@
                                                     </div>
                                                     <div class="mail-items">
                                                         <h5 class="mt-0">
-                                                            {{-- {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }} --}}
-                                                            {{ $loggedInUserId == $comment->created_by
+                                                            {{ $loggedInUserId == $comment->created_by ? auth()->user()->first_name : $comment->creator->first_name }}
+                                                            {{-- {{ $loggedInUserId == $comment->created_by
                                                                 ? auth()->user()->first_name
-                                                                : optional($comment->creator)->first_name }}
+                                                                : optional($comment->creator)->first_name }} --}}
                                                         </h5>
                                                         <div class="email-info-dropup dropdown">
                                                             <span role="button"
                                                                 class="dropdown-toggle font-small-3 text-muted"
                                                                 id="card_top01" data-bs-toggle="dropdown"
                                                                 aria-haspopup="true" aria-expanded="false">
-                                                                {{-- {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }} --}}
-                                                                {{ $loggedInUserId == $comment->created_by
-                                                                    ? auth()->user()->email
-                                                                    : optional($comment->creator)->email }}
+                                                                {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }}
                                                             </span>
                                                         </div>
                                                     </div>
