@@ -429,6 +429,9 @@
                                                                 id="card_top01" data-bs-toggle="dropdown"
                                                                 aria-haspopup="true" aria-expanded="false">
                                                                 {{ $loggedInUserId == $comment->created_by ? auth()->user()->email : $comment->creator->email }}
+                                                                {{ $loggedInUserId == $comment->created_by
+                                                                    ? auth()->user()->email
+                                                                    : optional($comment->creator)->email }}
                                                             </span>
                                                         </div>
                                                     </div>
