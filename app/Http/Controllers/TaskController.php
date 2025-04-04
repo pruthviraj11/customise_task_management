@@ -256,9 +256,13 @@ class TaskController extends Controller
                 // dd("sdsd");
                 $taskAssigne = $this->taskService->gettask($id);
                 $getTaskComments = Comments::where('task_id', $task->id)
-                ->leftjoin('users','comments.created_by','users.id')
-                ->whereNull('users.deleted_at')
+                ->whereHas('creator', function ($query) {
+                    $query->whereNull('deleted_at');
+                })
+                ->with('creator')
                 ->get();
+
+
 
             } else {
 
@@ -269,10 +273,14 @@ class TaskController extends Controller
                 // ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id') // Join tasks table.
                 // ->first();
 
-                $getTaskComments = Comments::where('task_id', $task->task_id)
-                ->leftjoin('users','comments.created_by','users.id')
-                ->whereNull('users.deleted_at')
-                ->first();
+                $getTaskComments = Comments::where('task_id', $task->id)
+                ->whereHas('creator', function ($query) {
+                    $query->whereNull('deleted_at');
+                })
+                ->with('creator')
+                ->get();
+
+
                 $creator = 0;
                 // dd($task);
             }
@@ -6522,23 +6530,35 @@ class TaskController extends Controller
                 $creator = 1;
                 $taskAss = '';
                 $getTaskComments = Comments::where('task_id', $task->id)
-                ->leftjoin('users','comments.created_by','users.id')
-                ->whereNull('users.deleted_at')
+                ->whereHas('creator', function ($query) {
+                    $query->whereNull('deleted_at');
+                })
+                ->with('creator')
                 ->get();
+
+
             } elseif (auth()->user()->id == 1) {
                 $creator = 1;
                 $taskAss = '';
                 $getTaskComments = Comments::where('task_id', $task->id)
-                ->leftjoin('users','comments.created_by','users.id')
-                ->whereNull('users.deleted_at')
+                ->whereHas('creator', function ($query) {
+                    $query->whereNull('deleted_at');
+                })
+                ->with('creator')
                 ->get();
+
+
             } else {
                 $task = $this->taskService->gettaskAssigne($id);
                 $taskAss = $this->taskService->gettaskAssigneAss($id);
-                $getTaskComments = Comments::where('task_id', $task->task_id)
-                ->leftjoin('users','comments.created_by','users.id')
-                ->whereNull('users.deleted_at')
+                $getTaskComments = Comments::where('task_id', $task->id)
+                ->whereHas('creator', function ($query) {
+                    $query->whereNull('deleted_at');
+                })
+                ->with('creator')
                 ->get();
+
+
                 $creator = 0;
             }
 
