@@ -381,7 +381,6 @@
 
                                 <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                     @foreach ($getTaskComments as $comment)
-                                     @if ($comment->creator)
                                         @php
                                             // Get the logged-in user ID
                                             $loggedInUserId = auth()->id();
@@ -445,7 +444,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @endif
                                     @endforeach
                                 </div>
 
