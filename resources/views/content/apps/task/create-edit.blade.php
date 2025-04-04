@@ -381,6 +381,7 @@
 
                                 <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                     @foreach ($getTaskComments as $comment)
+                                     @if ($comment->creator)
                                         @php
                                             // Get the logged-in user ID
                                             $loggedInUserId = auth()->id();
@@ -395,7 +396,6 @@
                                                 <div
                                                     class="user-details d-flex justify-content-between align-items-center flex-wrap">
                                                     <div class="avatar me-75">
-                                                        @if ($comment->creator)
                                                         {{-- Check if the comment creator is the logged-in user --}}
                                                         @if ($loggedInUserId == $comment->created_by)
                                                             {{-- Display logged-in user's profile image if they are the creator --}}
@@ -415,7 +415,6 @@
                                                                 <img src="http://127.0.0.1:8000/images/avatars/AvtarIMG.png"
                                                                     alt="Default Avatar" width="48" height="48">
                                                             @endif
-                                                        @endif
                                                         @endif
                                                     </div>
                                                     <div class="mail-items">
@@ -446,6 +445,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @endif
                                     @endforeach
                                 </div>
 
