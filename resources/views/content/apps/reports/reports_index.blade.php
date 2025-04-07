@@ -87,6 +87,11 @@
             font-weight: 900;
 
         }
+
+        .heading_color {
+            background-color: #33405E !important;
+            color: #ffff;
+        }
     </style>
 @endsection
 
@@ -146,11 +151,11 @@
         <div class="card-body">
             <table id="users-hierarchy_new" class="table table-bordered">
                 <thead>
-                    <tr class="text-center">
-                        <th>Sr. No</th>
-                        <th>Particulars</th>
+                    <tr class="text-center ">
+                        <th class="heading_color">Sr. No</th>
+                        <th class="heading_color">Particulars</th>
                         @foreach ($table_data as $users)
-                            <th>
+                            <th class="heading_color">
                                 {{-- @if ($loop->first) --}}
                                 {{-- Self --}}
                                 {{-- @else --}}
@@ -158,7 +163,7 @@
                                 {{-- @endif --}}
                             </th>
                         @endforeach
-                        <th>Total</th> <!-- Add the Total column header -->
+                        <th class="heading_color">Total</th> <!-- Add the Total column header -->
                     </tr>
                 </thead>
                 <tbody>
@@ -289,18 +294,18 @@
         </div> --}}
 
         <div class="card-body">
-            <table id="users-status-bifurcation" class="table table-bordered">
+            <table id="users-status-bifurcation" class="table table-bordered ">
                 <thead>
                     <tr class="text-center">
-                        <th>Sr. No</th>
-                        <th>Particulars</th>
+                        <th class="heading_color">Sr. No</th>
+                        <th class="heading_color">Particulars</th>
                         @foreach ($table_data as $users)
-                            <th>
+                            <th class="heading_color">
 
                                 {{ $users['user_name'] }}
                             </th>
                         @endforeach
-                        <th>Total</th> <!-- Add the Total column header -->
+                        <th class="heading_color">Total</th> <!-- Add the Total column header -->
                     </tr>
                 </thead>
                 <tbody>
