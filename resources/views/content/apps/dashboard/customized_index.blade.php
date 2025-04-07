@@ -692,7 +692,7 @@
                                 let statusId =
                                     '{{ \Str::slug($status->id, '_') }}'; // Dynamically set the statusId
                                 let url =
-                                    '{{ route('tasks.requested_to_us_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
+                                    '{{ route('tasks.requested_by_us_today_due', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => 'requested_by_me']) }}';
                                 url = url.replace(':user_id', userId).replace(
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
