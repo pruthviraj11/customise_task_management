@@ -1656,7 +1656,7 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
 
-            $query->whereNull('deleted_at')->get();
+            $query->whereNull('deleted_at')->orderBy('id','desc')->get();
             //As Per Anand Bhai removed this condition ->whereNotIn('task_status', ['4', '7'])
         } else {
 
@@ -1670,7 +1670,7 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
 
-            $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
+            $query->where('created_by', $user->id)->whereNull('deleted_at')->orderBy('id','desc')->get();
             //As Per Anand Bhai removed this condition ->whereNotIn('task_status', ['4', '7'])
         }
         if (!empty($request->search['value'])) {
