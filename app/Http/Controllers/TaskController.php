@@ -1655,7 +1655,9 @@ class TaskController extends Controller
             // })
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
-            $query->whereNotIn('task_status', ['4', '7'])->whereNull('deleted_at')->get();
+
+            $query->whereNull('deleted_at')->get();
+            //As Per Anand Bhai removed this condition ->whereNotIn('task_status', ['4', '7'])
         } else {
 
             // $tasks = TaskAssignee::whereHas('task', function ($query) use ($user) {
@@ -1668,7 +1670,8 @@ class TaskController extends Controller
             //     ->whereNull('task_assignees.deleted_at')  // Ensure the assignee is not deleted
             //     ->get();
 
-            $query->whereNotIn('task_status', ['4', '7'])->where('created_by', $user->id)->whereNull('deleted_at')->get();
+            $query->where('created_by', $user->id)->whereNull('deleted_at')->get();
+            //As Per Anand Bhai removed this condition ->whereNotIn('task_status', ['4', '7'])
         }
         if (!empty($request->search['value'])) {
 
