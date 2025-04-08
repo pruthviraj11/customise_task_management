@@ -6968,7 +6968,7 @@ class TaskController extends Controller
         try {
             // Decrypt the encrypted task ID
             $id = decrypt($encrypted_id);
-            // dd($id);
+            // dd($request->all());/
             // Fetch project, priority, and status
             $project = Project::where('id', $request->get('project_id'))->first();
             $priority = Priority::where('id', $request->get('priority_id'))->first();
@@ -6993,7 +6993,8 @@ class TaskController extends Controller
                     'start_date' => $request->get('start_date'),
                     'due_date' => $request->get('due_date_form'),
                     'priority_id' => $request->get('priority_id'),
-                    'task_status' => $request->get('task_status'),
+                    // 'task_status' => $request->get('task_status'),
+                    'task_status' => $request->get('task_status') ?? $task->task_status,
                     'updated_by' => auth()->user()->id,
                 ];
 
