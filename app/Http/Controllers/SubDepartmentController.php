@@ -84,7 +84,6 @@ class SubDepartmentController extends Controller
     public function store(CreateSubDepartmentRequest $request)
     {
         try {
-
             $sub_departmentData['description'] = $request->get('description');
             $sub_departmentData['sub_department_name'] = $request->get('sub_department_name');
             $sub_departmentData['created_by'] = auth()->user()->id;

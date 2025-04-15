@@ -6258,13 +6258,13 @@ class TaskController extends Controller
                             if ($i == 1) {
                                 $taskStartDate = clone $startDate;
                                 // First sub-task starts on the same day as the main task
-                                $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week later
+                                $taskDueDate = $taskStartDate->copy()->addWeek()->subDay(); // Due date is 1 week later
                             } else {
                                 $taskStartDate = $prevStartDate->addWeek(); // Increment by 1 week for each sub-task
                                 // dd($taskStartDate);
-                                $taskStartDate->addDay(1);
+                                // $taskStartDate->addDay(1);
 
-                                $taskDueDate = $taskStartDate->copy()->addWeek(); // Due date is 1 week after the start date
+                                $taskDueDate = $taskStartDate->copy()->addWeek()->subDay(); // Due date is 1 week after the start date
                             }
                             break;
 

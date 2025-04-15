@@ -12,6 +12,7 @@ class SubDepartmentRepository
 
     public function create(array $data)
     {
+        
         return SubDepartment::create($data);
     }
 

@@ -17,12 +17,14 @@ class DepartmentRepository
 
     public function update($id, array $data)
     {
-        return Department::findOrFail( $id)->update($data);
+        return Department::findOrFail($id)->update($data);
     }
 
     public function delete($id)
     {
-        return Department::findOrFail('id', $id)->delete();
+        $data = Department::where('id', $id)->first();
+
+        return $data->delete();
     }
     public function getAll()
     {

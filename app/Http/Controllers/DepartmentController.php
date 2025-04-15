@@ -156,7 +156,7 @@ class DepartmentController extends Controller
                 return redirect()->back()->with('error', 'Error while Deleting Departments');
             }
         } catch (\Exception $error) {
-            return redirect()->route("app-department-list")->with('error', 'Error while editing Departments');
+            return redirect()->route("app-department-list")->with('error', 'Error while deleting Departments');
         }
     }
     public function import(Request $request)

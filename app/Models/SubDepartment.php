@@ -18,7 +18,7 @@ class SubDepartment extends Model
 
     protected $table = 'sub_departments';
     protected $fillable = [
-        'id',
+
         'sub_department_name',
         'deleted_by',
         'department_id',

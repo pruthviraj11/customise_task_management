@@ -142,15 +142,14 @@
                                 <div class="card-body ">
                                     <div id="columnVisibilityModal">
                                         <div class="row">
-                                            @php
+                                            {{-- @php
                                                 $selectedColumns = json_decode(auth()->user()->selected_fields, true); // Get the selected columns array
-                                                // dd($selectedColumns);
-                                            @endphp
-                                            <div class="list-group-item col">
+                                            @endphp --}}
+                                            {{-- <div class="list-group-item col">
                                                 <input type="checkbox" class="column-toggle" data-column="0"
                                                     @if (is_null($selectedColumns) || (is_array($selectedColumns) && in_array(0, $selectedColumns))) checked @endif>
                                                 Actions
-                                            </div>
+                                            </div> --}}
 
 
                                             {{-- @if ($type == 'mytask')
@@ -165,7 +164,9 @@
                                         Task ID
                                     </div> --}}
 
-                                            <div class="list-group-item col">
+                                            {{-- Code for Haystack option to select fields code Starts --}}
+
+                                            {{-- <div class="list-group-item col">
                                                 <input type="checkbox" class="column-toggle" data-column="3"
                                                     @if (in_array(3, $selectedColumns)) checked @endif>
                                                 Task Number
@@ -180,10 +181,7 @@
                                                     @if (in_array(5, $selectedColumns)) checked @endif>
                                                 Title
                                             </div>
-                                            {{-- <div class="list-group-item col">
-                                        <input type="checkbox" class="column-toggle" data-column="6"  @if (in_array(6, $selectedColumns)) checked @endif>
-                                        Description
-                                    </div> --}}
+
                                             <div class="list-group-item col">
                                                 <input type="checkbox" class="column-toggle" data-column="7"
                                                     @if (in_array(7, $selectedColumns)) checked @endif>
@@ -263,7 +261,10 @@
                                                 <input type="checkbox" class="column-toggle" data-column="22"
                                                     @if (in_array(22, $selectedColumns)) checked @endif>
                                                 Close Date
-                                            </div>
+                                            </div> --}}
+
+                                            {{-- Code for Haystack option to select fields code Ends --}}
+
                                             {{-- @if ($type == 'mytask')
                                         <div class="list-group-item col">
                                             <input type="checkbox" class="column-toggle" data-column="23"  @if (in_array(23, $selectedColumns)) checked @endif>
