@@ -55,7 +55,21 @@ class TaskAssignee extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->useLogName('Task Assignee')
-            ->logOnly(['id', 'task_id', 'user_id', 'status', 'remark'])
+            ->logOnly([
+                'id',
+                'task_id',
+                'user_id',
+                'status',
+                'remark',
+                'close_by',
+                'completed_by',
+                'completed_date',
+                'close_date',
+                'reopen_date',
+                'reopen_by',
+                'accepted_by',
+                'accepted_date'
+            ])
             ->logOnlyDirty();
     }
 

@@ -200,36 +200,107 @@ class DashboardController extends Controller
         // dd('heare');
         return view('content.apps.dashboard.index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count'));
     }
+
+    // public function activity()
+    // {
+    //     $userId = auth()->user()->id;
+
+    //     function getHierarchy($userId, &$allUsers, &$addedUserIds)
+    //     {
+    //         $reportingUsers = User::where('report_to', $userId)->get();
+    //         foreach ($reportingUsers as $user) {
+    //             if (!in_array($user->id, $addedUserIds)) {
+    //                 $allUsers[$user->id] = $user;
+    //                 $addedUserIds[] = $user->id;
+    //                 getHierarchy($user->id, $allUsers, $addedUserIds);
+    //             }
+    //         }
+    //     }
+
+    //     $allUsers = [];
+    //     $addedUserIds = [$userId];
+    //     getHierarchy($userId, $allUsers, $addedUserIds);
+
+    //     // Extracting all user IDs from the $allUsers array
+    //     $userIds = array_keys($allUsers);
+
+    //     // Adding the root user ID to the list of user IDs
+    //     $userIds[] = $userId;
+
+
+
+    //     $allActivityLogs = collect();
+
+    //     foreach ($userIds as $userId) {
+    //         $activityLog = Activity::orderBy('created_at', 'desc')
+    //             ->where('causer_id', $userId)
+    //             ->limit(15)
+    //             ->get();
+
+    //         $allActivityLogs = $allActivityLogs->merge($activityLog); // Merge each user's activity logs into the collection
+    //     }
+    //     $allActivityLogs = $allActivityLogs->sortByDesc('created_at');
+    //     if ($allActivityLogs) {
+    //         return view('content.apps.dashboard.activity', ['activityLogs' => $allActivityLogs]);
+    //     } else {
+    //         abort(404, 'Activity log entry not found.');
+    //     }
+    // }
+
+
     public function activity(Request $request)
     {
-        $userId = auth()->user()->id;
+        $authUserId = auth()->user()->id;
+        $searchTerm = $request->get('term', '');
 
-        // Recursive function to get all users under the hierarchy
+        // Recursive function to get user hierarchy
         function getHierarchy($userId, &$allUsers, &$addedUserIds)
         {
             $reportingUsers = User::where('report_to', $userId)->get();
             foreach ($reportingUsers as $user) {
                 if (!in_array($user->id, $addedUserIds)) {
-                    $allUsers[] = $user->id;
+                    $allUsers[$user->id] = $user;
                     $addedUserIds[] = $user->id;
                     getHierarchy($user->id, $allUsers, $addedUserIds);
                 }
             }
         }
 
-        $userIds = [$userId];
-        $addedUserIds = [$userId];
-        getHierarchy($userId, $userIds, $addedUserIds);
+        $allUsers = [];
+        $addedUserIds = [$authUserId];
+        getHierarchy($authUserId, $allUsers, $addedUserIds);
 
-        // Fetch all activities for those user IDs with proper pagination (10 per page)
-        $activityLogs = Activity::whereIn('causer_id', $userIds)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10); // Laravel handles the pagination and links
+        $userIds = array_keys($allUsers);
+        $userIds[] = $authUserId; // include the current user
 
+        // Base activity query
+        $query = Activity::whereIn('causer_id', $userIds);
 
+        // Search filter
+        if (!empty($searchTerm)) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('subject_id', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhere('properties', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('causer', function ($subQ) use ($searchTerm) {
+                      $subQ->where('first_name', 'like', "%{$searchTerm}%")
+                           ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
 
+        // Sort and paginate
+        $activityLogs = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        // AJAX response for search or pagination
+        if ($request->ajax()) {
+            return view('content.apps.dashboard.partials.activity_table', compact('activityLogs'));
+        }
+
+        // Full view
         return view('content.apps.dashboard.activity', compact('activityLogs'));
     }
+
 
 
     public function my_task()
