@@ -24,11 +24,14 @@
                 <div class="col-lg-12 col">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Basic</h4>
+                            <h4 class="card-title">Activity Log</h4>
                             {{-- <input type="text" id="searchInput" class="form-control mb-3"
                                 placeholder="Search activities..."> --}}
+                            <div class="card-header d-flex flex-column align-items-start gap-2">
 
-                                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search activities...">
+                                <input type="text" id="searchInput" class="form-control"
+                                    placeholder="Search activities...">
+                            </div>
 
 
                         </div>
@@ -310,36 +313,38 @@
             return password;
         }
     </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
-        let debounceTimer;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            let debounceTimer;
 
-        searchInput.addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            const searchTerm = this.value.toLowerCase();
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const searchTerm = this.value.toLowerCase();
 
-            debounceTimer = setTimeout(() => {
-                // Show loading indicator
-                document.querySelector('.timeline').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                debounceTimer = setTimeout(() => {
+                    // Show loading indicator
+                    document.querySelector('.timeline').innerHTML =
+                        '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
-                // Fetch filtered results via AJAX
-                fetch(`{{ route('activity-index') }}?term=${encodeURIComponent(searchTerm)}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.querySelector('.timeline').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error searching activities:', error);
-                    document.querySelector('.timeline').innerHTML = '<p class="text-danger">Error loading search results</p>';
-                });
-            }, 400); // Wait 400ms after user stops typing
+                    // Fetch filtered results via AJAX
+                    fetch(`{{ route('activity-index') }}?term=${encodeURIComponent(searchTerm)}`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            document.querySelector('.timeline').innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error searching activities:', error);
+                            document.querySelector('.timeline').innerHTML =
+                                '<p class="text-danger">Error loading search results</p>';
+                        });
+                }, 400); // Wait 400ms after user stops typing
+            });
         });
-    });
-</script>
+    </script>
 
 @endsection

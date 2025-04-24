@@ -281,11 +281,11 @@ class DashboardController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('subject_id', 'like', "%{$searchTerm}%")
                   ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhere('properties', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('causer', function ($subQ) use ($searchTerm) {
-                      $subQ->where('first_name', 'like', "%{$searchTerm}%")
-                           ->orWhere('last_name', 'like', "%{$searchTerm}%");
-                  });
+                  ->orWhere('properties', 'like', "%{$searchTerm}%");
+                  $q->orWhereHas('causer', function ($subQ) use ($searchTerm) {
+                    $subQ->where('first_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                });
             });
         }
 
