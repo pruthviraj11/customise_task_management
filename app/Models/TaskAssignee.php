@@ -103,7 +103,7 @@ class TaskAssignee extends Model
     // Define relationship with the creator (created_by references User)
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
     // public function status()
     // {
