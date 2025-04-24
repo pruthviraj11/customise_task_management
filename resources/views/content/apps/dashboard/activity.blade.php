@@ -33,7 +33,6 @@
                                     placeholder="Search activities...">
                             </div>
 
-
                         </div>
                         <div class="card-body">
                             <ul class="timeline">
@@ -346,5 +345,18 @@
             });
         });
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
+        const url = new URL(window.location.href);
+
+        if (isRefresh && url.searchParams.has('page')) {
+            url.searchParams.delete('page');
+            window.location.replace(url.toString());
+        }
+    });
+</script>
+
+
 
 @endsection
