@@ -25,6 +25,8 @@
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title">Basic</h4>
+                            {{-- <input type="text" id="searchInput" class="form-control mb-3"
+                                placeholder="Search activities..."> --}}
                         </div>
                         <div class="card-body">
                             <ul class="timeline">
@@ -81,69 +83,6 @@
                                                 </div>
 
                                                 <div class="collapse" id="collapseExample{{ $activityLog->id }}">
-                                                    {{-- <ul class="list-group list-group-flush mt-1">
-                                                        <div class="row">
-                                                            @if ($activityLog->event === 'updated')
-                                                                @php
-                                                                    $properties = json_decode(
-                                                                        $activityLog->properties,
-                                                                        true,
-                                                                    );
-
-                                                                    $old = isset($properties['old'])
-                                                                        ? $properties['old']
-                                                                        : [];
-                                                                    $attributes = isset($properties['attributes'])
-                                                                        ? $properties['attributes']
-                                                                        : [];
-
-                                                                @endphp
-                                                                <div class="col-6">
-                                                                    <li
-                                                                        class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                        <span>Old Data:</span>
-                                                                    </li>
-                                                                    @foreach ($old as $key => $value)
-                                                                        <li
-                                                                            class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                            <span>{{ ucfirst(str_replace('_', ' ', $key)) }}
-                                                                                : <span
-                                                                                    class="fw-bold">{{ $value }}</span></span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </div>
-
-                                                                <div class="col-6">
-                                                                    <li
-                                                                        class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                        <span>New Data:</span>
-                                                                    </li>
-                                                                    @foreach ($attributes as $key => $value)
-                                                                        <li
-                                                                            class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                            <span>{{ ucfirst(str_replace('_', ' ', $key)) }}
-                                                                                : <span
-                                                                                    class="fw-bold">{{ $value }}</span></span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </div>
-                                                        </div>
-                                                    @else
-                                                        @php
-                                                            $properties = json_decode($activityLog->properties, true);
-                                                            $attributes = isset($properties['attributes'])
-                                                                ? $properties['attributes']
-                                                                : [];
-                                                        @endphp
-                                                        @foreach ($attributes as $key => $value)
-                                                            <li
-                                                                class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                <span>{{ ucfirst(str_replace('_', ' ', $key)) }} : <span
-                                                                        class="fw-bold">{{ $value }}</span></span>
-                                                            </li>
-                                                        @endforeach
-                                    @endif
-                            </ul> --}}
                                                     <ul class="list-group list-group-flush mt-1">
                                                         <div class="row">
                                                             @if ($activityLog->event === 'updated')
@@ -301,7 +240,6 @@
                                                                                 $attributes['project_id'],
                                                                             )->project_name ?? null
                                                                         : null;
-                                                                    // dump($attributes);
                                                                 @endphp
                                                                 @foreach ($attributes as $key => $value)
                                                                     <li
@@ -329,155 +267,15 @@
                                     @endif
                                 @endforeach
                             </ul>
+                            <div class="pagination-wrapper mt-2 d-flex justify-content-center">
+                                {{ $activityLogs->links('pagination::bootstrap-4') }}
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
-        {{-- working code
-
-            <section class="basic-timeline">
-            <div class="row">
-                <div class="col-lg-12 col">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Basic</h4>
-                        </div>
-                        <div class="card-body">
-                            <ul class="timeline">
-
-
-
-
-                                @foreach ($activityLogs as $activityLog)
-                                    @if ($activityLog)
-                                        <div class="timeline-item">
-                                            <span
-                                                class="timeline-point timeline-point-success timeline-point-indicator"></span>
-                                            <div class="timeline-event">
-                                                <div
-                                                    class="d-flex justify-content-between flex-sm-row flex-column mb-sm-0 mb-1">
-                                                    <h6>{{ $activityLog->description }}</h6>
-                                                    <span
-                                                        class="timeline-event-time">{{ $activityLog->created_at->diffForHumans() }}</span>
-                                                </div>
-                                                @php
-                                                    $properties = json_decode($activityLog->properties, true);
-                                                    $attributes = isset($properties['attributes'])
-                                                        ? $properties['attributes']
-                                                        : [];
-                                                    $causerId = $activityLog->causer_id;
-                                                    $user = \App\Models\User::find($causerId); // Assuming User model namespace is App\Models\User
-                                                @endphp
-                                                <div class="row">
-                                                    <div class="d-flex flex-row align-items-center col-3">
-                                                        <div class="avatar">
-                                                            <img src="{{ Storage::url($user->profile_img) }}" alt="avatar"
-                                                                height="38" width="38">
-                                                        </div>
-                                                        <div class="ms-50">
-                                                            <h6 class="mb-0">{{ $user->first_name }}
-                                                                {{ $user->last_name }}</h6>
-                                                            <span>{{ $user->authorization }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <p class="mb-50">Click below to see details.
-                                                        </p>
-                                                        <button class="btn btn-outline-primary btn-sm" type="button"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#collapseExample{{ $activityLog->id }}"
-                                                            aria-expanded="false"
-                                                            aria-controls="collapseExample{{ $activityLog->id }}">
-                                                            Show Report
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div class="collapse" id="collapseExample{{ $activityLog->id }}">
-                                                    <ul class="list-group list-group-flush mt-1">
-                                                        <div class="row">
-                                                            @if ($activityLog->event === 'updated')
-                                                                @php
-                                                                    $properties = json_decode(
-                                                                        $activityLog->properties,
-                                                                        true,
-                                                                    );
-                                                                    $old = isset($properties['old'])
-                                                                        ? $properties['old']
-                                                                        : [];
-                                                                    $attributes = isset($properties['attributes'])
-                                                                        ? $properties['attributes']
-                                                                        : [];
-                                                                @endphp
-                                                                <div class="col-6">
-                                                                    <li
-                                                                        class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                        <span>Old Data:</span>
-                                                                    </li>
-                                                                    @foreach ($old as $key => $value)
-                                                                        <li
-                                                                            class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                            <span>{{ ucfirst(str_replace('_', ' ', $key)) }}
-                                                                                :
-                                                                                <span
-                                                                                    class="fw-bold">{{ $value }}</span></span>
-
-                                                                        </li>
-                                                                    @endforeach
-                                                                </div>
-
-                                                                <div class="col-6">
-                                                                    <li
-                                                                        class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                        <span>New Data:</span>
-                                                                    </li>
-                                                                    @foreach ($attributes as $key => $value)
-                                                                        <li
-                                                                            class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                            <span>{{ ucfirst(str_replace('_', ' ', $key)) }}
-                                                                                :
-                                                                                <span
-                                                                                    class="fw-bold">{{ $value }}</span></span>
-
-                                                                        </li>
-                                                                    @endforeach
-                                                                </div>
-                                                        </div>
-                                                    @else
-                                                        @php
-                                                            $properties = json_decode($activityLog->properties, true);
-                                                            $attributes = isset($properties['attributes'])
-                                                                ? $properties['attributes']
-                                                                : [];
-                                                        @endphp
-                                                        @foreach ($attributes as $key => $value)
-                                                            <li
-                                                                class="list-group-item d-flex justify-content-between flex-wrap">
-                                                                <span>{{ ucfirst(str_replace('_', ' ', $key)) }} :
-                                                                    <span class="fw-bold">{{ $value }}</span></span>
-
-                                                            </li>
-                                                        @endforeach
-                                    @endif
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            @else
-                <p>Activity log entry not found.</p>
-                @endif
-                @endforeach
-                </ul>
-            </div>
-    </div>
-    </div>
-
-    </div>
-    </section> --}}
-        <!-- Timeline Ends -->
-
     </div>
 
 @endsection
@@ -507,4 +305,5 @@
             return password;
         }
     </script>
+
 @endsection

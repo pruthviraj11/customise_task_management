@@ -15,7 +15,7 @@ use App\Models\User;
 use App\Models\Department;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use Illuminate\Http\Request;
 
@@ -200,51 +200,38 @@ class DashboardController extends Controller
         // dd('heare');
         return view('content.apps.dashboard.index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count'));
     }
-    public function activity()
+    public function activity(Request $request)
     {
         $userId = auth()->user()->id;
 
+        // Recursive function to get all users under the hierarchy
         function getHierarchy($userId, &$allUsers, &$addedUserIds)
         {
             $reportingUsers = User::where('report_to', $userId)->get();
             foreach ($reportingUsers as $user) {
                 if (!in_array($user->id, $addedUserIds)) {
-                    $allUsers[$user->id] = $user;
+                    $allUsers[] = $user->id;
                     $addedUserIds[] = $user->id;
                     getHierarchy($user->id, $allUsers, $addedUserIds);
                 }
             }
         }
 
-        $allUsers = [];
+        $userIds = [$userId];
         $addedUserIds = [$userId];
-        getHierarchy($userId, $allUsers, $addedUserIds);
+        getHierarchy($userId, $userIds, $addedUserIds);
 
-        // Extracting all user IDs from the $allUsers array
-        $userIds = array_keys($allUsers);
-
-        // Adding the root user ID to the list of user IDs
-        $userIds[] = $userId;
-
+        // Fetch all activities for those user IDs with proper pagination (10 per page)
+        $activityLogs = Activity::whereIn('causer_id', $userIds)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10); // Laravel handles the pagination and links
 
 
-        $allActivityLogs = collect();
 
-        foreach ($userIds as $userId) {
-            $activityLog = Activity::orderBy('created_at', 'desc')
-                ->where('causer_id', $userId)
-                ->limit(15)
-                ->get();
-
-            $allActivityLogs = $allActivityLogs->merge($activityLog); // Merge each user's activity logs into the collection
-        }
-        $allActivityLogs = $allActivityLogs->sortByDesc('created_at');
-        if ($allActivityLogs) {
-            return view('content.apps.dashboard.activity', ['activityLogs' => $allActivityLogs]);
-        } else {
-            abort(404, 'Activity log entry not found.');
-        }
+        return view('content.apps.dashboard.activity', compact('activityLogs'));
     }
+
+
     public function my_task()
     {
 
