@@ -90,13 +90,13 @@ class Task extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'task_assignees')
-            ->whereNull('task_assignees.deleted_at');
+            ->withTrashed();
     }
 
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
     public function taskStatus()
     {
@@ -138,6 +138,6 @@ class Task extends Model
         return $this->hasMany(TaskAssignee::class); // Adjust the relationship based on your setup
     }
 
-   
+
 
 }

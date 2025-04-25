@@ -82,7 +82,7 @@ class TaskAssignee extends Model
     // Define relationship with the User model (A TaskAssignee belongs to a User)
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');  // Ensure correct foreign key 'user_id'
+        return $this->belongsTo(User::class, 'user_id')->withTrashed();  // Ensure correct foreign key 'user_id'
     }
 
     // Define relationship with the Status model (A TaskAssignee has a status)
