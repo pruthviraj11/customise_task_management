@@ -70,7 +70,7 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    @if ( $type !== 'deleted')
+                    @if ($type !== 'deleted')
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
@@ -148,8 +148,17 @@
                                 <input type="hidden" class="form-control dt-date end_date dt-input"
                                     name="value_from_accepted_task_end_date" data-column="5" data-column-index="4" />
                             </div>
-
-
+                            @if ($type !== 'recurring_main')
+                                <div class="mb-1 col-3">
+                                    <label class="form-label" for="task_type">Task Type</label>
+                                    <select class="form-control form-select select2 dt-input" id="task_type"
+                                        name="task_type" data-column="6">
+                                        <option value="">Select Task Type</option>
+                                        <option value="0">Normal Tasks</option>
+                                        <option value="1">Recurring Tasks</option>
+                                    </select>
+                                </div>
+                            @endif
                             {{-- <input type="date" id="filter-start-date" class="col  form-control"
                                 placeholder="Filter by Start Date"> --}}
                             <div class="col-md-12 text-end">
@@ -534,7 +543,7 @@
                     ajaxUrl =
                         "{{ route('tasks.requested_by_us_rejected_task_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
                 }
-                @elseif ($type == 'tasks.requested_by_us_overall_total' && $user_id != '') {
+            @elseif ($type == 'tasks.requested_by_us_overall_total' && $user_id != '') {
                     ajaxUrl =
                         "{{ route('tasks.requested_by_us_overall_total_list', ['user_id' => $user_id, 'status_id' => $status_id, 'type' => 'requested_by_me']) }}";
                 }
@@ -635,6 +644,8 @@
                         d.project = $('#filter-project').val();
                         d.created_by = $('#filter-created-by').val();
                         d.start_date = $('#filter-start-date').val();
+                        d.task_type = $('#task_type').val();
+
                     }
                 },
                 searching: true,

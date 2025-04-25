@@ -1778,6 +1778,12 @@ class TaskController extends Controller
             $query->where('project_id', $project);
         }
 
+        if (!is_null($request->input('task_type')) && $request->input('task_type') !== '') {
+            $taskTypeFilter = intval($request->input('task_type'));
+
+            $query->where('tasks.is_recursive', $taskTypeFilter);
+
+        }
         $tasks = $query;
 
 
@@ -9175,6 +9181,7 @@ class TaskController extends Controller
         }
 
 
+
         if ($task_filter = $request->input('task')) {
             // Assuming you want to filter by 'ticket' column in the 'tasks' table, make sure you join the tasks table
             $query->whereHas('task', function ($q) use ($task_filter) {
@@ -9260,7 +9267,14 @@ class TaskController extends Controller
                 $q->where('project_id', $project); // Filter tasks by their project_id
             });
         }
+        if (!is_null($request->input('task_type')) && $request->input('task_type') !== '') {
+            $taskTypeFilter = intval($request->input('task_type'));
 
+            $query->whereHas('task', function ($q) use ($taskTypeFilter) {
+                $q->where('is_recursive', $taskTypeFilter);
+            });
+        }
+        // dd($request->input('task_type'),$query->get());
         // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
         $tasks = $query;
 
@@ -10881,6 +10895,14 @@ class TaskController extends Controller
             });
         }
 
+
+        if (!is_null($request->input('task_type')) && $request->input('task_type') !== '') {
+            $taskTypeFilter = intval($request->input('task_type'));
+
+            $tasks->whereHas('task', function ($q) use ($taskTypeFilter) {
+                $q->where('is_recursive', $taskTypeFilter);
+            });
+        }
     }
 
     private function task_filter_recurring_main($tasks, $request)
