@@ -10807,7 +10807,7 @@ class TaskController extends Controller
         }
 
         if ($created_by = $request->input('created_by')) {
-            $tasks->where('created_by', $created_by);
+            $tasks->where('task_assignees.created_by', $created_by);
         }
 
         if ($assignees = $request->input('assignees')) {
@@ -10944,8 +10944,6 @@ class TaskController extends Controller
                 $tasks->whereDate('accepted_date', $formattedDate);
             }
         }
-
-
     }
 
     function parseDateRange($input)
