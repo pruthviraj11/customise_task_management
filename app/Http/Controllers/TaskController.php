@@ -1013,11 +1013,28 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return ($row->task && $row->task->project) ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return ($row->department && $row->department_data) ? $row->department_data->department_name : '-';
+            // })
+            // ->addColumn('sub_department', function ($row) {
+            //     return ($row->sub_department && $row->sub_department_data) ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return ($row->department && $row->department_data) ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
+
             ->addColumn('sub_department', function ($row) {
-                return ($row->sub_department && $row->sub_department_data) ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return ($row->creator && $row->creator->department) ? $row->creator->department->department_name : '-';
@@ -2317,12 +2334,29 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -2546,12 +2580,29 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -2762,11 +2813,28 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
+
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -3043,12 +3111,29 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -3273,12 +3358,30 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
+
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -3536,11 +3639,28 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
+
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -9441,12 +9561,29 @@ class TaskController extends Controller
             ->addColumn('project', function ($row) {
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
+            // ->addColumn('department', function ($row) {
+            //     return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+            // })
+
+            // ->addColumn('sub_department', function ($row) {
+            //     return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+            // })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
@@ -10316,11 +10453,21 @@ class TaskController extends Controller
                 return $row->task && $row->task->project ? $row->task->project->project_name : '-';
             })
             ->addColumn('department', function ($row) {
-                return $row->department && $row->department_data ? $row->department_data->department_name : '-';
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
             })
 
             ->addColumn('sub_department', function ($row) {
-                return $row->sub_department && $row->sub_department_data ? $row->sub_department_data->sub_department_name : '-';
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
             })
             ->addColumn('creator_department', function ($row) {
                 return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
