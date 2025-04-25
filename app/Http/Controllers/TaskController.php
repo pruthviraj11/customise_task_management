@@ -1922,6 +1922,9 @@ class TaskController extends Controller
 
         $tasks = $query;
 
+        //For Filtering Task
+        //  dd($tasks);
+        $this->task_filter_recurring_main($tasks, $request);
         if (!empty($request->search['value'])) {
             $search = $request->search['value'];
 
@@ -1987,6 +1990,9 @@ class TaskController extends Controller
             //           ->orWhere('accepted_date', 'LIKE', "%{$dateSearch}%")
             //           ->orWhere('close_date', 'LIKE', "%{$dateSearch}%");
             // }
+
+
+
         }
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
@@ -2098,6 +2104,9 @@ class TaskController extends Controller
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
             ->make(true);
     }
+
+
+
 
     public function getAll_dueDatePast(Request $request)
     {
@@ -10782,6 +10791,8 @@ class TaskController extends Controller
         return response()->json(['message' => 'Due dates updated successfully']);
 
     }
+
+
     private function task_filter($tasks, $request)
     {
         if ($task_filter = $request->input('task')) {
@@ -10871,4 +10882,83 @@ class TaskController extends Controller
         }
 
     }
+
+    private function task_filter_recurring_main($tasks, $request)
+    {
+        if ($task_filter = $request->input('task')) {
+            $tasks->where('ticket', $task_filter);
+        }
+
+        if ($department_filter = $request->input('department')) {
+            $tasks->whereHas('department', function ($q) use ($department_filter) {
+                $q->where('id', $department_filter);
+            });
+        }
+
+        if ($created_by = $request->input('created_by')) {
+            $tasks->where('created_by', $created_by);
+        }
+
+        if ($assignees = $request->input('assignees')) {
+            $tasks->where(function ($query) use ($assignees) {
+                foreach ($assignees as $assigneeId) {
+                    $query->orWhereRaw("FIND_IN_SET(?, task_assignes)", [$assigneeId]);
+                }
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $tasks->where('task_status', $status);
+        }
+
+        if ($project_id = $request->input('project')) {
+            $tasks->where('project_id', $project_id);
+        }
+        if ($request->filled('dt_date')) {
+            $dtDateRange = parseDateRange($request->input('dt_date'));
+
+            if (!empty($dtDateRange[1])) {
+                $tasks->whereBetween('start_date', [$dtDateRange[0], $dtDateRange[1]]);
+            } else {
+                $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('dt_date'))->format('Y-m-d');
+                $tasks->whereDate('start_date', $formattedDate);
+            }
+        }
+        // End Date Filter
+        if ($request->input('end_date')) {
+            $dtEndDateRange = parseDateRange($request->input('end_date'));
+
+            if (!empty($dtEndDateRange[1])) {
+                $tasks->whereBetween('due_date', [$dtEndDateRange[0], $dtEndDateRange[1]]);
+            } else {
+                $tasks->whereDate('due_date', $dtEndDateRange[0]);
+            }
+        }
+        if ($request->filled('accepted_task_date')) {
+            $acceptedDateRange = parseDateRange($request->input('accepted_task_date'));
+
+            if (!empty($acceptedDateRange[1])) {
+                $tasks->whereBetween('accepted_date', [$acceptedDateRange[0], $acceptedDateRange[1]]);
+            } else {
+                $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('accepted_task_date'))->format('Y-m-d');
+                $tasks->whereDate('accepted_date', $formattedDate);
+            }
+        }
+
+
+    }
+
+    function parseDateRange($input)
+    {
+        $dates = explode(' - ', $input);
+        if (count($dates) === 2) {
+            return [
+                \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[0]))->format('Y-m-d'),
+                \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[1]))->format('Y-m-d')
+            ];
+        }
+
+        return [trim($dates[0]), null];
+    }
+
 }

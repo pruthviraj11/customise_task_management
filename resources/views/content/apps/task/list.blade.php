@@ -70,7 +70,7 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    @if ($type !== 'recurring_main' && $type !== 'deleted')
+                    @if ( $type !== 'deleted')
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
