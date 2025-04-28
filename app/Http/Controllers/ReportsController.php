@@ -66,7 +66,7 @@ class ReportsController extends Controller
             })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->count();
-
+            // dd($tasksAddedToday);
             $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
@@ -74,13 +74,13 @@ class ReportsController extends Controller
                 // ->whereDate('close_date', today())
                 ->whereRaw('DATE(completed_date) = ?', [now()->toDateString()])
                 ->count();
-
             $taskReportDate = TaskAssignee::where('user_id', $user->id)
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })->where('status', 1)
                 // ->whereIn('task_status', [4,7])
                 ->count();
+            // dd($taskReportDate);
 
             $totalPendingTask = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -96,7 +96,6 @@ class ReportsController extends Controller
                 ->whereDate('due_date', '<', Carbon::now()->toDateString())
                 ->whereNotIn('task_status', [4, 7, 6])
                 ->count();
-
             $totalTasksConceptualization = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
@@ -195,61 +194,255 @@ class ReportsController extends Controller
         // $inactiveTotalTasks = 0;
         // $inactiveTaskAddedToday = 0;
 
+        //Data of Particular members starts
         // Active user task counts
+        // foreach ($usersWithG7 as $user) {
+
+        //     $users = collect([$user])->merge($this->getAllSubordinates($user));
+        //     dd($users);
+
+        //     // Conceptualization Counts
+        //     $conceptualizationCounts[$user->id] = TaskAssignee::where('task_status', 1)
+        //         ->where('user_id', $user->id)
+        //         ->count();
+        //     // Scope Define Counts
+        //     $scopeDefineCounts[$user->id] = TaskAssignee::where('task_status', 3)
+        //         ->where('user_id', $user->id)
+        //         ->count();
+
+        //     // In Execution Counts
+        //     $inExecutionCounts[$user->id] = TaskAssignee::where('task_status', 5)
+        //         ->where('user_id', $user->id)
+        //         ->count();
+
+        //     // Completed Task Counts
+        //     $completedCounts[$user->id] = TaskAssignee::whereIn('task_status', [4, 7])
+        //         ->where('user_id', $user->id)
+        //         ->count();
+
+
+
+        //     // Overdue Counts
+        //     $overdueCounts[$user->id] = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
+        //         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        //     })->where('status', 1)
+        //     ->whereDate('due_date', '<', $cdate)
+        //     ->whereNotIn('task_status', [4, 7])
+        //         ->count();
+
+        //     // Total Task Counts
+        //     $totalTaskCounts[$user->id] = TaskAssignee::where('user_id', $user->id)
+        //         // ->where('status', 1)
+        //         ->count();
+
+        //     // Task Added Today
+        //     $task_added_reporting_date[$user->id] = TaskAssignee::where('user_id', $user->id)
+        //         ->whereIn('task_id', function ($subquery) {
+        //             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        //         })->where('status', 1)
+        //         ->whereDate('created_at', today())
+        //         ->count();
+
+
+        //     // Task Completed Today
+        //     $task_completed_reporting_date[$user->id] = TaskAssignee::where('user_id', $user->id)
+        //         ->whereIn('task_id', function ($subquery) {
+        //             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        //         })->where('status', 1)
+        //         ->whereIn('task_status', [4, 7])
+        //         ->whereRaw('DATE(completed_date) = ?', [now()->toDateString()])
+
+        //         ->count();
+
+        //     // dd($task_completed_reporting_date);
+        //     // Task pending - Opning and Closing Today
+
+        //     $task_closing_opening_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', '<', now()->startOfDay())
+        //         // whereDate('created_at', today())
+        //         ->where('user_id', $user->id)
+        //         ->where('status', 1)
+        //         ->whereIn('task_id', function ($subquery) {
+        //             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        //         })
+        //         ->whereNotIn('task_status', [4, 7])
+        //         ->count();
+
+
+        //     // Completed Task Percentage
+        //     $completedPercentage[$user->id] = $totalTaskCounts[$user->id] > 0
+        //         ? number_format(($completedCounts[$user->id] / $totalTaskCounts[$user->id]) * 100, 2)
+        //         : 0;
+
+        //     // Overdue Task Percentage
+        //     $overDuePercentage[$user->id] = $totalTaskCounts[$user->id] > 0
+        //         ? number_format(($overdueCounts[$user->id] / $totalTaskCounts[$user->id]) * 100, 2)
+        //         : 0;
+        // }
+
+        // // Inactive user task counts
+        // // foreach ($InactiveusersWithG7 as $user) {
+        // //     $inactiveConceptualization += TaskAssignee::where('task_status', 1)
+        // //         ->where('user_id', $user->id)
+        // //         ->count();
+        // //     $inactiveScopeDefine += TaskAssignee::where('task_status', 3)
+        // //         ->where('user_id', $user->id)
+        // //         ->count();
+        // //     $inactiveInExecution += TaskAssignee::where('task_status', 5)
+        // //         ->where('user_id', $user->id)
+        // //         ->count();
+        // //     $inactiveCompleted += TaskAssignee::whereIn('task_status', [4, 7])
+        // //         ->where('user_id', $user->id)
+        // //         ->count();
+        // //     $inactiveCompletedreport += TaskAssignee::whereDate('created_at', today())
+        // //         ->where('user_id', $user->id)
+        // //         ->where('status', 1)
+        // //         ->whereIn('task_status', [4, 7])
+        // //         ->count();
+        // //     $inactiveOverdue += TaskAssignee::where('user_id', $user->id)
+        // //         ->whereNotIn('task_status', [4, 7])
+        // //         ->whereDate('due_date', '<', $cdate)
+        // //         ->count();
+        // //     $inactiveTotalTasks += TaskAssignee::where('user_id', $user->id)
+        // //         ->where('status', 1)
+        // //         ->count();
+        // //     $inactiveTaskAddedToday += TaskAssignee::whereDate('created_at', today())
+        // //         ->where('user_id', $user->id)
+        // //         ->where('status', 1)
+        // //         ->count();
+        // // }
+
+        // // Prepare the active user data
+        // $data = $usersWithG7->map(function ($user) use ($conceptualizationCounts, $scopeDefineCounts, $inExecutionCounts, $overdueCounts, $completedCounts, $totalTaskCounts, $completedPercentage, $overDuePercentage, $task_added_reporting_date, $task_completed_reporting_date, $task_closing_opening_reporting_date) {
+
+        //     return [
+
+        //         'name' => $user->first_name . ' ' . $user->last_name,
+        //         'users_status' => $user->status,
+        //         'total_task' => $totalTaskCounts[$user->id] ?? 0,
+        //         'total_completed_task' => $completedCounts[$user->id] ?? 0,
+        //         'completion_percent' => $completedPercentage[$user->id] . '%',
+        //         'total_pending_yesterday' => $task_closing_opening_reporting_date[$user->id] ?? 0,
+        //         'tasks_added_today' => $task_added_reporting_date[$user->id] ?? 0,
+        //         'tasks_completed_today' => $task_completed_reporting_date[$user->id] ?? 0,
+        //         'total_pending_closing' => $task_closing_opening_reporting_date[$user->id] ?? 0,
+        //         'overdue_task' => $overdueCounts[$user->id] ?? 0,
+        //         'percent_overdue' => $overDuePercentage[$user->id] . '%',
+        //         'conceptualization' => $conceptualizationCounts[$user->id] ?? 0,
+        //         'scope_defined' => $scopeDefineCounts[$user->id] ?? 0,
+        //         'in_execution' => $inExecutionCounts[$user->id] ?? 0,
+        //     ];
+        // });
+
+        //Data of Particular member ends
+
+
+        //Data of Particular member and their team starts
+
         foreach ($usersWithG7 as $user) {
-            // Conceptualization Counts
-            $conceptualizationCounts[$user->id] = TaskAssignee::where('task_status', 1)
-                ->where('user_id', $user->id)
-                ->count();
+            $allUsers = collect([$user])->merge($this->getAllSubordinates($user)); // user + team members
 
-            // Scope Define Counts
-            $scopeDefineCounts[$user->id] = TaskAssignee::where('task_status', 3)
-                ->where('user_id', $user->id)
-                ->count();
+            // Initialize counts
+            $conceptualizationCounts[$user->id] = 0;
+            $scopeDefineCounts[$user->id] = 0;
+            $inExecutionCounts[$user->id] = 0;
+            $completedCounts[$user->id] = 0;
+            $overdueCounts[$user->id] = 0;
+            $totalTaskCounts[$user->id] = 0;
+            $task_added_reporting_date[$user->id] = 0;
+            $task_completed_reporting_date[$user->id] = 0;
+            $task_closing_opening_reporting_date[$user->id] = 0;
 
-            // In Execution Counts
-            $inExecutionCounts[$user->id] = TaskAssignee::where('task_status', 5)
-                ->where('user_id', $user->id)
-                ->count();
+            foreach ($allUsers as $subUser) {
 
-            // Completed Task Counts
-            $completedCounts[$user->id] = TaskAssignee::whereIn('task_status', [4, 7])
-                ->where('user_id', $user->id)
-                ->count();
+                // Conceptualization Counts
+                $conceptualizationCounts[$user->id] += TaskAssignee::where('task_status', 1)
+                    ->where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->count();
 
-            // Overdue Counts
-            $overdueCounts[$user->id] = TaskAssignee::where('user_id', $user->id)
-                ->whereNotIn('task_status', [4, 7])
-                ->whereDate('due_date', '<', $cdate)
-                ->count();
+                // Scope Define Counts
+                $scopeDefineCounts[$user->id] += TaskAssignee::where('task_status', 3)
+                    ->where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->count();
 
-            // Total Task Counts
-            $totalTaskCounts[$user->id] = TaskAssignee::where('user_id', $user->id)
-                // ->where('status', 1)
-                ->count();
+                // In Execution Counts
+                $inExecutionCounts[$user->id] += TaskAssignee::where('task_status', 5)
+                    ->where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->count();
 
-            // Task Added Today
-            $task_added_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-                ->where('user_id', $user->id)
-                ->where('status', 1)
-                ->count();
+                // Completed Task Counts
+                $completedCounts[$user->id] += TaskAssignee::whereIn('task_status', [4, 7])
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->where('user_id', $subUser->id)
+                    ->count();
 
-            // Task Completed Today
-            $task_completed_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-                ->where('user_id', $user->id)
-                ->where('status', 1)
-                ->whereIn('task_status', [4, 7])
-                ->count();
+                // Overdue Counts
+                $overdueCounts[$user->id] += TaskAssignee::where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->where('status', 1)
+                    ->whereDate('due_date', '<', now())
+                    ->whereNotIn('task_status', [4, 7])
+                    ->count();
+
+                // Total Task Counts
+                $totalTaskCounts[$user->id] += TaskAssignee::where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->count();
 
 
-            // Task pending - Opning and Closing Today
 
-            $task_closing_opening_reporting_date[$user->id] = TaskAssignee::whereDate('created_at', today())
-                ->where('user_id', $user->id)
-                ->where('status', 1)
-                ->whereNotIn('task_status', [4, 7])
-                ->count();
+                // Task Added Today
+                $task_added_reporting_date[$user->id] += TaskAssignee::where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->where('status', 1)
+                    ->whereDate('created_at', today())
+                    ->count();
 
+                // Task Completed Today
+                $task_completed_reporting_date[$user->id] += TaskAssignee::where('user_id', $subUser->id)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->where('status', 1)
+                    ->whereIn('task_status', [4, 7])
+                    ->whereRaw('DATE(completed_date) = ?', [now()->toDateString()])
+                    ->count();
+
+                // Task pending - Opening and Closing Today
+                $task_closing_opening_reporting_date[$user->id] += TaskAssignee::whereDate('created_at', '<', now()->startOfDay())
+                    ->where('user_id', $subUser->id)
+                    ->where('status', 1)
+                    ->whereNull('task_assignees.deleted_at')
+                    ->whereIn('task_id', function ($subquery) {
+                        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                    })
+                    ->whereNotIn('task_status', [4, 7])
+                    ->count();
+            }
 
             // Completed Task Percentage
             $completedPercentage[$user->id] = $totalTaskCounts[$user->id] > 0
@@ -262,43 +455,9 @@ class ReportsController extends Controller
                 : 0;
         }
 
-        // Inactive user task counts
-        // foreach ($InactiveusersWithG7 as $user) {
-        //     $inactiveConceptualization += TaskAssignee::where('task_status', 1)
-        //         ->where('user_id', $user->id)
-        //         ->count();
-        //     $inactiveScopeDefine += TaskAssignee::where('task_status', 3)
-        //         ->where('user_id', $user->id)
-        //         ->count();
-        //     $inactiveInExecution += TaskAssignee::where('task_status', 5)
-        //         ->where('user_id', $user->id)
-        //         ->count();
-        //     $inactiveCompleted += TaskAssignee::whereIn('task_status', [4, 7])
-        //         ->where('user_id', $user->id)
-        //         ->count();
-        //     $inactiveCompletedreport += TaskAssignee::whereDate('created_at', today())
-        //         ->where('user_id', $user->id)
-        //         ->where('status', 1)
-        //         ->whereIn('task_status', [4, 7])
-        //         ->count();
-        //     $inactiveOverdue += TaskAssignee::where('user_id', $user->id)
-        //         ->whereNotIn('task_status', [4, 7])
-        //         ->whereDate('due_date', '<', $cdate)
-        //         ->count();
-        //     $inactiveTotalTasks += TaskAssignee::where('user_id', $user->id)
-        //         ->where('status', 1)
-        //         ->count();
-        //     $inactiveTaskAddedToday += TaskAssignee::whereDate('created_at', today())
-        //         ->where('user_id', $user->id)
-        //         ->where('status', 1)
-        //         ->count();
-        // }
-
         // Prepare the active user data
         $data = $usersWithG7->map(function ($user) use ($conceptualizationCounts, $scopeDefineCounts, $inExecutionCounts, $overdueCounts, $completedCounts, $totalTaskCounts, $completedPercentage, $overDuePercentage, $task_added_reporting_date, $task_completed_reporting_date, $task_closing_opening_reporting_date) {
-
             return [
-
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'users_status' => $user->status,
                 'total_task' => $totalTaskCounts[$user->id] ?? 0,
@@ -315,6 +474,10 @@ class ReportsController extends Controller
                 'in_execution' => $inExecutionCounts[$user->id] ?? 0,
             ];
         });
+
+        //Data of Particular member and their team ends
+
+
 
         // Prepare totals
         $totals = [
