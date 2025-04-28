@@ -358,6 +358,8 @@
                                         G6</option>
                                     <option value="G7" {{ old('Grad', $user->Grad ?? '') == 'G7' ? 'selected' : '' }}>
                                         G7</option>
+                                    <option value="G8" {{ old('Grad', $user->Grad ?? '') == 'G8' ? 'selected' : '' }}>
+                                        G8</option>
                                 </select>
                                 <span class="text-danger">
                                     @error('Grad')

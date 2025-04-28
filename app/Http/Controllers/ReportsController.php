@@ -484,7 +484,7 @@ class ReportsController extends Controller
             'name' => 'Total',
             'users_status' => '',
             'total_task' => array_sum($totalTaskCounts),
-            'total_completed_task' => array_sum($completedCounts), // Added missing comma here
+            'total_completed_task' => array_sum($completedCounts), 
             'completion_percent' => number_format((array_sum($completedCounts)) / (array_sum($totalTaskCounts)) * 100, 2) . '%',
             'total_pending_yesterday' => array_sum($task_closing_opening_reporting_date),
             'tasks_added_today' => array_sum($task_added_reporting_date),
