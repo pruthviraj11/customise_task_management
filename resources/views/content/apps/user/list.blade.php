@@ -98,6 +98,8 @@
                             <tr>
 
                                 <th>Actions</th>
+                                <th>Status</th>
+
                                 <th>User Name</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -198,13 +200,26 @@
                 "lengthMenu": [10, 25, 50, 100, 200, 500],
                 ajax: "{{ route('app-users-get-all') }}",
                 order: [
-                    [1, 'asc']
+                    [2, 'asc']
                 ],
                 columns: [{
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
                         // searchable: false
+                    },
+                    {
+                        data: 'status',
+                        data: 'status',
+                        render: function(data) {
+                            if (data === '1') {
+                                return '<span class="badge bg-success">Active</span>';
+                            } else {
+                                return '<span class="badge bg-danger">Inactive</span>';
+                            }
+                        },
+                        orderable: true,
+
                     },
                     {
                         data: 'username',
@@ -260,6 +275,7 @@
                         data: 'designation',
                         name: 'designation'
                     },
+
 
                 ],
                 drawCallback: function() {
