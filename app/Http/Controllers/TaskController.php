@@ -10953,6 +10953,93 @@ class TaskController extends Controller
 
     }
 
+    // Manual Functions Starts
+    public function close_date_present_old()
+    {
+        $tasks = TaskAssignee::whereNotNull('close_date')
+            ->whereNull('completed_date')
+            ->get();
+            foreach ($tasks as $task) {
+            $task->completed_date = $task->close_date;
+            $task->save();
+        }
+    }
+
+     public function close_date_present()
+    {
+        $tasks =Task::whereNotNull('close_date')
+            ->whereNull('completed_date')
+            ->orWhere('completed_date','1899-12-30 00:00:00')
+            ->get();
+            foreach ($tasks as $task) {
+            $task->completed_date = $task->close_date;
+            $task->save();
+        }
+    }
+    public function has_completed_date_and_close_date()
+    {
+        $tasks = TaskAssignee::whereNotNull('close_date')
+            ->whereNotNull('completed_date')
+            ->whereNull('task_status')
+            ->get();
+
+        foreach ($tasks as $task) {
+            $task->task_status = 7;
+            $task->save();
+        }
+    }
+
+    public function has_completed_date_and_close_date_null()
+    {
+        $tasks = TaskAssignee::whereNotNull('completed_date')
+            ->whereNull('close_date')
+
+            ->whereNull('task_status')
+            ->get();
+
+        foreach ($tasks as $task) {
+
+            $task->task_status = 4; // completed_date present but close_date missing
+
+            $task->save();
+        }
+    }
+
+    public function completed_date_and_close_date_null()
+    {
+        $tasks = TaskAssignee::whereNull('completed_date')
+            ->whereNull('close_date')
+
+            ->whereNull('task_status')
+            ->get();
+
+        foreach ($tasks as $task) {
+
+            $task->task_status = 1; // completed_date present but close_date missing
+
+            $task->save();
+        }
+    }
+
+
+    public function completeddate_null()
+    {
+        $tasks = TaskAssignee::where('task_status', 4)
+
+            ->whereNull('completed_date')
+            ->get();
+
+        foreach ($tasks as $task) {
+
+            $task->completed_date = $task->due_date; // completed_date present but close_date missing
+
+            $task->save();
+        }
+    }
+
+
+//Manual Function Ends
+
 
     private function task_filter($tasks, $request)
     {

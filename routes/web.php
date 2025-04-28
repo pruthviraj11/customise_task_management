@@ -388,6 +388,18 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('add_due_date', [TaskController::class, 'add_due_date'])->name('app-add_due_date');
 
 
+
+    Route::get('close_date_present_old', [TaskController::class, 'close_date_present_old'])->name('app-close_date_present_old');
+    Route::get('close_date_present', [TaskController::class, 'close_date_present'])->name('app-close_date_present');
+    Route::get('has_completed_date_and_close_date', [TaskController::class, 'has_completed_date_and_close_date'])->name('app-has_completed_date_and_close_date');
+    Route::get('has_completed_date_and_close_date_null', [TaskController::class, 'has_completed_date_and_close_date_null'])->name('app-has_completed_date_and_close_date_null');
+    Route::get('completed_date_and_close_date_null', [TaskController::class, 'completed_date_and_close_date_null'])->name('app-completed_date_and_close_date_null');
+    Route::get('completeddate_null', [TaskController::class, 'completeddate_null'])->name('app-completeddate_null');
+
+
+
+
+
     // Manual Entry In Database Ends
 
 
