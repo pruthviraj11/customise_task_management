@@ -360,7 +360,7 @@
 
                     <tr class="text-center text-red-bold">
                         <td class="SrNo">4</td>
-                        <td>Total Pendding Task</td>
+                        <td>Total Pending Task</td>
                         @foreach ($table_data as $users)
                             @php
                                 $totals['totalStatusCount'] += $users['totalStatusCount'];
