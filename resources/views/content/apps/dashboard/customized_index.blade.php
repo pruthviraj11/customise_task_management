@@ -19,43 +19,50 @@
 @section('page-style')
     {{-- Page Css files --}}
     <style>
-        .requested-to-us{
+        .requested-to-us {
             background-color: hsla(38, 92%, 64%, 0.615) !important;
             text-align: end;
             font-weight: 900;
         }
+
         .pending-tasks {
             background-color: hsl(219, 67%, 72%) !important;
             text-align: end;
             font-weight: 900;
 
         }
-        .over-dues{
+
+        .over-dues {
             background-color: hsla(5, 89%, 50%, 0.643) !important;
             text-align: end;
             font-weight: 900;
         }
-        .today-dues{
+
+        .today-dues {
             background-color: hsla(35, 66%, 77%, 0.643) !important;
             text-align: end;
             font-weight: 900;
         }
-        .finish-tasks{
+
+        .finish-tasks {
             background-color: hsla(130, 62%, 63%, 0.62) !important;
             text-align: end;
             font-weight: 900;
         }
-        .total{
+
+        .total {
             background-color: hsla(130, 66%, 25%, 0.62) !important;
             text-align: end;
             font-weight: 900;
         }
-        .rejected_tasks{
+
+        .rejected_tasks {
             background-color: hsla(131, 39%, 69%, 0.62) !important;
             text-align: end;
             font-weight: 900;
         }
-        .all_status_columns{
+
+        .all_status_columns {
             text-align: end;
 
         }
@@ -87,6 +94,11 @@
                         <div class="card-footer text-center">
                             <a href="{{ route('export.dashboard_total_tasks') }}" class="btn btn-success">Export to
                                 Excel</a>
+
+                            <a href="{{ route('app-close_date_present_old') }}" class="btn btn-warning"
+                                onclick="return confirm('Are you sure you want to update completed_date from close_date?');">
+                                Update Completed Dates
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -108,7 +120,7 @@
                             <th>Requested To Us</th>
 
                             @foreach ($statusinfos as $index => $status)
-                                @if ($index <= 4 && $index !=2)
+                                @if ($index <= 4 && $index != 2)
                                     <th>{{ $status->status_name }} </th>
                                 @endif
                             @endforeach
@@ -117,10 +129,10 @@
                             <th>Over Due</th>
                             <th>Today's Due</th>
                             @foreach ($statusinfos as $index => $status)
-                            @if ($index ==2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
+                                @if ($index == 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
 
                             @foreach ($statusinfos as $index => $status)
                                 @if ($index >= 5)
@@ -169,21 +181,21 @@
 
 
                             @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4 && $index !=2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
+                                @if ($index <= 4 && $index != 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
 
                             <th>Pending Tasks</th>
                             <th>Over Due</th>
                             <th>Today's Due</th>
 
                             @foreach ($statusinfos as $index => $status)
-                            @if ($index ==2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
-                             @foreach ($statusinfos as $index => $status)
+                                @if ($index == 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
+                            @foreach ($statusinfos as $index => $status)
                                 @if ($index >= 5)
                                     <th>{{ $status->status_name }}</th>
                                 @endif
@@ -349,11 +361,11 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4 && $index !=2)
+                            @if ($index <= 4 && $index != 2)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -390,7 +402,7 @@
                         {
                             data: 'over_dues',
                             name: 'over_dues',
-                            class:'over-dues',
+                            class: 'over-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -406,7 +418,7 @@
                         {
                             data: 'today_dues',
                             name: 'today_dues',
-                            class:'today-dues',
+                            class: 'today-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -423,7 +435,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -446,7 +458,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -490,7 +502,7 @@
                                     ':status_id', statusId);
                                 return `<a href="${url}" class="text-primary">${data}</a>`;
                             }
-                        },{
+                        }, {
                             data: 'rejected_tasks',
                             name: 'rejected_tasks',
                             class: 'rejected_tasks',
@@ -630,11 +642,11 @@
                         },
 
                         @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4 && $index !=2)
+                            @if ($index <= 4 && $index != 2)
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -671,7 +683,7 @@
                         {
                             data: 'over_dues',
                             name: 'over_dues',
-                            class:'over-dues',
+                            class: 'over-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -686,7 +698,7 @@
                         {
                             data: 'today_dues',
                             name: 'today_dues',
-                            class:'today-dues',
+                            class: 'today-dues',
                             render: function(data, type, row) {
                                 let userId = row.user_id;
                                 let statusId =
@@ -726,7 +738,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =
@@ -749,7 +761,7 @@
                                 {
                                     data: '{{ \Str::slug($status->status_name, '_') }}',
                                     name: '{{ \Str::slug($status->status_name, '_') }}',
-                                    class:'all_status_columns',
+                                    class: 'all_status_columns',
                                     render: function(data, type, row) {
                                         let userId = row.user_id;
                                         let statusId =

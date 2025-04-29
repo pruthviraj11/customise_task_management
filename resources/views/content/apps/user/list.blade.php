@@ -111,6 +111,11 @@
                                 <th>Sub Department</th>
                                 <th>Report To</th>
                                 <th>Designation</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Location</th>
+                                <th>Grad</th>
+
 
                             </tr>
                         </thead>
@@ -274,6 +279,23 @@
                     }, {
                         data: 'designation',
                         name: 'designation'
+                    }, {
+                        data: 'email',
+                        name: 'email',
+                        visible:false
+                    },{
+                        data: 'address',
+                        name: 'address',
+                        visible:false
+                    },{
+                        data: 'location_name',
+                        name: 'location_name',
+                        visible:false
+                    },
+                    {
+                        data: 'Grad',
+                        name: 'Grad',
+                        visible:false
                     },
 
 
@@ -303,7 +325,7 @@
                         modifier: {
                             length: -1
                         },
-                        columns: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11]
+                        columns: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
                     }
                 }],

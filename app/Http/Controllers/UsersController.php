@@ -121,7 +121,9 @@ class UsersController extends Controller
     public function getAll(Request $request)
     {
         // $users = $this->userService->getAllUser();
-        $users = User::query();
+        $users = User::query()
+        ->leftJoin('locations', 'users.location_id', '=', 'locations.id')
+        ->select('users.*', 'locations.location_name as location_name');
         // dd($users->username());
         // $users = $this->userService->getAllUser();
 

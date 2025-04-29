@@ -10959,19 +10959,24 @@ class TaskController extends Controller
         $tasks = TaskAssignee::whereNotNull('close_date')
             ->whereNull('completed_date')
             ->get();
-            foreach ($tasks as $task) {
+        foreach ($tasks as $task) {
             $task->completed_date = $task->close_date;
             $task->save();
         }
+        $this->close_date_present();
+        $this->has_completed_date_and_close_date();
+        $this->has_completed_date_and_close_date_null();
+        $this->completed_date_and_close_date_null();
+        $this->completeddate_null();
     }
 
-     public function close_date_present()
+    public function close_date_present()
     {
-        $tasks =Task::whereNotNull('close_date')
+        $tasks = Task::whereNotNull('close_date')
             ->whereNull('completed_date')
-            ->orWhere('completed_date','1899-12-30 00:00:00')
+            ->orWhere('completed_date', '1899-12-30 00:00:00')
             ->get();
-            foreach ($tasks as $task) {
+        foreach ($tasks as $task) {
             $task->completed_date = $task->close_date;
             $task->save();
         }
@@ -11038,7 +11043,7 @@ class TaskController extends Controller
     }
 
 
-//Manual Function Ends
+    //Manual Function Ends
 
 
     private function task_filter($tasks, $request)
