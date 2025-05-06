@@ -601,3 +601,6 @@ Route::any('/upload_task', [DashboardController::class, 'upload_task'])->name('k
 
 Route::get('/tasks/team_task', [DashboardController::class, 'team_task'])->name('tasks.team_task');
 Route::post('/generate-custom-excel-report', [DashboardCUstomizedController::class, 'generateCustomExcelReport'])->name('generate-custom-excel-report');
+// Add this route for the preview functionality
+Route::post('/preview-dynamic-report', [DashboardCUstomizedController::class, 'previewDynamicReport'])->name('preview.dynamic.report');
+

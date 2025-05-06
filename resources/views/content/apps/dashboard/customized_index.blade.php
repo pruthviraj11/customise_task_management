@@ -290,84 +290,98 @@
 
 
         @endif
-        <div class="card-header">
-            <div>
-                <h1>Dynamic Report</h1>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group mb-2 fw-bold">
-                        <label for="row-field-selector ">Row</label>
-                        <select id="row-field-selector" class="form-select select2" aria-label="Select Row">
-                            <option value="">Select a Field</option>
-                            {{-- <option value="actions">Actions</option> --}}
-                            {{-- <option value="pin_task">Pin Task</option> --}}
-                            <option value="task_id">Task ID</option>
-                            <option value="Task_number">Task Number</option>
-                            <option value="Task_Ticket">Task/Ticket</option>
-                            <option value="title">Title</option>
-                            <option value="description">Description</option>
-                            <option value="subject">Subject</option>
-                            <option value="created_by_username">Assigned By</option>
-                            <option value="Task_assign_to">Assigned To</option>
-                            <option value="task_status">Task Status</option>
-                            <option value="Created_Date">Created Date</option>
-                            <option value="start_date">Start Date</option>
-                            <option value="due_date">Due Date</option>
-                            <option value="completed_date">Completed Date</option>
-                            <option value="accepted_date">Accepted Date</option>
-                            <option value="project">Project</option>
-                            <option value="department">Department</option>
-                            <option value="sub_department">Sub Department</option>
-                            <option value="creator_department">Creator Department</option>
-                            <option value="creator_sub_department">Creator Sub Department</option>
-                            <option value="creator_phone">Creator Phone</option>
-                            <option value="close_date">Close Date</option>
-                            {{-- <option value="is_pinned">Pinned Status</option> --}}
-                            <option value="status">Status (0,1,2)</option>
-                        </select>
+        {{-- <div class="card"> --}}
+            <div class="card-header">
+                <div>
+                    <h1>Dynamic Report</h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-2 fw-bold">
+                            <label for="row-field-selector">Row</label>
+                            <select id="row-field-selector" class="form-select select2" aria-label="Select Row">
+                                <option value="">Select a Field</option>
+                                <option value="task_id">Task ID</option>
+                                <option value="Task_number">Task Number</option>
+                                <option value="Task_Ticket">Task/Ticket</option>
+                                <option value="title">Title</option>
+                                <option value="description">Description</option>
+                                <option value="subject">Subject</option>
+                                <option value="created_by_username">Assigned By</option>
+                                <option value="Task_assign_to">Assigned To</option>
+                                <option value="task_status">Task Status</option>
+                                <option value="Created_Date">Created Date</option>
+                                <option value="start_date">Start Date</option>
+                                <option value="due_date">Due Date</option>
+                                <option value="completed_date">Completed Date</option>
+                                <option value="accepted_date">Accepted Date</option>
+                                <option value="project">Project</option>
+                                <option value="department">Department</option>
+                                <option value="sub_department">Sub Department</option>
+                                <option value="creator_department">Creator Department</option>
+                                <option value="creator_sub_department">Creator Sub Department</option>
+                                <option value="creator_phone">Creator Phone</option>
+                                <option value="close_date">Close Date</option>
+                                <option value="status">Status (0,1,2)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-2 fw-bold">
+                            <label for="column-field-selector">Column</label>
+                            <select id="column-field-selector" class="form-select select2" aria-label="Select Column">
+                                <option value="">Select a Field</option>
+                                <option value="task_id">Task ID</option>
+                                <option value="Task_number">Task Number</option>
+                                <option value="Task_Ticket">Task/Ticket</option>
+                                <option value="title">Title</option>
+                                <option value="description">Description</option>
+                                <option value="subject">Subject</option>
+                                <option value="created_by_username">Assigned By</option>
+                                <option value="Task_assign_to">Assigned To</option>
+                                <option value="task_status">Task Status</option>
+                                <option value="Created_Date">Created Date</option>
+                                <option value="start_date">Start Date</option>
+                                <option value="due_date">Due Date</option>
+                                <option value="completed_date">Completed Date</option>
+                                <option value="accepted_date">Accepted Date</option>
+                                <option value="project">Project</option>
+                                <option value="department">Department</option>
+                                <option value="sub_department">Sub Department</option>
+                                <option value="creator_department">Creator Department</option>
+                                <option value="creator_sub_department">Creator Sub Department</option>
+                                <option value="creator_phone">Creator Phone</option>
+                                <option value="close_date">Close Date</option>
+                                <option value="status">Status (0,1,2)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <button id="preview-report-btn" class="btn btn-info me-2">
+                            <i class="ficon" data-feather="eye"></i> Preview Report
+                        </button>
+                        <button id="generate-report-btn" class="btn btn-primary">
+                            <i class="ficon" data-feather="download"></i> Download Excel
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group mb-2 fw-bold">
-                        <label for="column-field-selector">Column</label>
-                        <select id="column-field-selector" class="form-select select2" aria-label="Select Column">
-                            <option value="">Select a Field</option>
-                            {{-- <option value="actions">Actions</option> --}}
-                            {{-- <option value="pin_task">Pin Task</option> --}}
-                            <option value="task_id">Task ID</option>
-                            <option value="Task_number">Task Number</option>
-                            <option value="Task_Ticket">Task/Ticket</option>
-                            <option value="title">Title</option>
-                            <option value="description">Description</option>
-                            <option value="subject">Subject</option>
-                            <option value="created_by_username">Assigned By</option>
-                            <option value="Task_assign_to">Assigned To</option>
-                            <option value="task_status">Task Status</option>
-                            <option value="Created_Date">Created Date</option>
-                            <option value="start_date">Start Date</option>
-                            <option value="due_date">Due Date</option>
-                            <option value="completed_date">Completed Date</option>
-                            <option value="accepted_date">Accepted Date</option>
-                            <option value="project">Project</option>
-                            <option value="department">Department</option>
-                            <option value="sub_department">Sub Department</option>
-                            <option value="creator_department">Creator Department</option>
-                            <option value="creator_sub_department">Creator Sub Department</option>
-                            <option value="creator_phone">Creator Phone</option>
-                            <option value="close_date">Close Date</option>
-                            {{-- <option value="is_pinned">Pinned Status</option> --}}
-                            <option value="status">Status (0,1,2)</option>
-                        </select>
+            </div>
+            <div class="card-body">
+                <!-- Loading indicator -->
+                <div id="report-loading" style="display: none;" class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
+                    <p class="mt-2">Loading report data...</p>
                 </div>
-                <div class="col-md-4 mt-2">
-                    <button id="generate-report-btn" class="btn btn-primary">
-                        <i class="ficon" data-feather="file-text"></i> Generate Report
-                    </button>
+
+                <!-- Report container -->
+                <div id="report-container" style="display: none;">
+                    <h2 class="mb-3">Report Preview</h2>
+                    <div id="report-table"></div>
                 </div>
             </div>
-        </div>
+        {{-- </div> --}}
 
     </section>
 
@@ -390,85 +404,178 @@
 
     <script>
         $(document).ready(function() {
-            // Initialize select2 if it's being used
-            if ($.fn.select2) {
-                $('.select2').select2();
+    // Initialize Select2 for dropdowns if not already initialized
+    if ($.fn.select2) {
+        $('.select2').select2();
+    }
+
+    // Preview button to show data on page
+    $('#preview-report-btn').on('click', function() {
+        // Get selected row and column fields
+        var rowField = $('#row-field-selector').val();
+        var columnField = $('#column-field-selector').val();
+
+        // Validate selections
+        if (!rowField || !columnField) {
+            // Show error message
+            toastr.error('Please select both Row and Column fields', 'Error');
+            return;
+        }
+
+        // Show loading indicator
+        $('#report-loading').show();
+        $('#report-container').hide();
+
+        // Collect filter values
+        var filters = {
+            row_field: rowField,
+            column_field: columnField,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        };
+
+        // Add any additional filters from the page
+        if ($('#filter-department').length) {
+            filters.department = $('#filter-department').val();
+        }
+
+        if ($('#filter-assignee').length) {
+            filters.assignees = $('#filter-assignee').val();
+        }
+
+        if ($('#filter-status').length) {
+            filters.status = $('#filter-status').val();
+        }
+
+        // Make AJAX request to get report data
+        $.ajax({
+            url: '/preview-dynamic-report',
+            type: 'POST',
+            data: filters,
+            success: function(response) {
+                // Hide loading indicator
+                $('#report-loading').hide();
+
+                // Render the report table
+                renderReportTable(response.data, response.columnValues, rowField, columnField, response.fieldDisplayNames);
+
+                // Show the report container
+                $('#report-container').show();
+            },
+            error: function(xhr, status, error) {
+                // Hide loading indicator
+                $('#report-loading').hide();
+
+                // Show error message
+                toastr.error('Failed to load report data', 'Error');
+                console.error(error);
             }
-
-            // Initialize feather icons
-            if (typeof feather !== 'undefined') {
-                feather.replace();
-            }
-
-            // Handle Generate Report button click
-            $('#generate-report-btn').on('click', function() {
-                // Get selected row and column fields
-                var rowField = $('#row-field-selector').val();
-                var columnField = $('#column-field-selector').val();
-
-                // Validate selections
-                if (!rowField || !columnField) {
-                    // Show error message
-                    toastr.error('Please select both Row and Column fields', 'Error');
-                    return;
-                }
-
-                // Create a form for POST submission
-                var form = $('<form>', {
-                    'method': 'POST',
-                    'action': '/generate-custom-excel-report',
-                    'target': '_blank'
-                });
-
-                // Add CSRF token
-                form.append($('<input>', {
-                    'type': 'hidden',
-                    'name': '_token',
-                    'value': $('meta[name="csrf-token"]').attr('content')
-                }));
-
-                // Add selected fields
-                form.append($('<input>', {
-                    'type': 'hidden',
-                    'name': 'row_field',
-                    'value': rowField
-                }));
-
-                form.append($('<input>', {
-                    'type': 'hidden',
-                    'name': 'column_field',
-                    'value': columnField
-                }));
-
-                // Add any additional filters from the page
-                if ($('#filter-department').length) {
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': 'department',
-                        'value': $('#filter-department').val()
-                    }));
-                }
-
-                if ($('#filter-assignee').length) {
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': 'assignees',
-                        'value': $('#filter-assignee').val()
-                    }));
-                }
-
-                if ($('#filter-status').length) {
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': 'status',
-                        'value': $('#filter-status').val()
-                    }));
-                }
-
-                // Add the form to the document and submit it
-                form.appendTo('body').submit().remove();
-            });
         });
+    });
+
+    // Function to render the report table
+    function renderReportTable(data, columnValues, rowField, columnField, fieldDisplayNames) {
+        var tableHTML = '<div class="table-responsive"><table class="table table-bordered table-striped">';
+
+        // Create header row
+        tableHTML += '<thead><tr>';
+        tableHTML += '<th>' + (fieldDisplayNames[rowField] || rowField) + '</th>';
+
+        // Add column headers
+        columnValues.forEach(function(columnValue) {
+            tableHTML += '<th>' + columnValue + '</th>';
+        });
+
+        tableHTML += '</tr></thead><tbody>';
+
+        // Add data rows
+        Object.keys(data).forEach(function(rowValue) {
+            tableHTML += '<tr>';
+            tableHTML += '<td>' + rowValue + '</td>';
+
+            // Add cells for each column
+            columnValues.forEach(function(columnValue) {
+                var cellValue = data[rowValue][columnValue] || 0;
+                tableHTML += '<td>' + cellValue + '</td>';
+            });
+
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += '</tbody></table></div>';
+
+        // Set the HTML content
+        $('#report-table').html(tableHTML);
+    }
+
+    // Existing Excel download functionality
+    $('#generate-report-btn').on('click', function() {
+        // Get selected row and column fields
+        var rowField = $('#row-field-selector').val();
+        var columnField = $('#column-field-selector').val();
+
+        // Validate selections
+        if (!rowField || !columnField) {
+            // Show error message
+            toastr.error('Please select both Row and Column fields', 'Error');
+            return;
+        }
+
+        // Create a form for POST submission
+        var form = $('<form>', {
+            'method': 'POST',
+            'action': '/generate-custom-excel-report',
+            'target': '_blank'
+        });
+
+        // Add CSRF token
+        form.append($('<input>', {
+            'type': 'hidden',
+            'name': '_token',
+            'value': $('meta[name="csrf-token"]').attr('content')
+        }));
+
+        // Add selected fields
+        form.append($('<input>', {
+            'type': 'hidden',
+            'name': 'row_field',
+            'value': rowField
+        }));
+
+        form.append($('<input>', {
+            'type': 'hidden',
+            'name': 'column_field',
+            'value': columnField
+        }));
+
+        // Add any additional filters from the page
+        if ($('#filter-department').length) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'department',
+                'value': $('#filter-department').val()
+            }));
+        }
+
+        if ($('#filter-assignee').length) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'assignees',
+                'value': $('#filter-assignee').val()
+            }));
+        }
+
+        if ($('#filter-status').length) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'status',
+                'value': $('#filter-status').val()
+            }));
+        }
+
+        // Add the form to the document and submit it
+        form.appendTo('body').submit().remove();
+    });
+});
     </script>
 
     <script>
