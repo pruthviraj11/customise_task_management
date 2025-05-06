@@ -20,7 +20,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
 use Illuminate\Http\Request;
 
@@ -649,7 +652,7 @@ class DashboardCUstomizedController extends Controller
                 $CountTaskStatus = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('task_status', $s->id)
                     ->where('created_by', $user->id)
-                    ->where('status',1)
+                    ->where('status', 1)
 
                     ->whereIn('task_id', function ($subquery) {
                         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -667,7 +670,7 @@ class DashboardCUstomizedController extends Controller
                     $CountPendingTask = TaskAssignee::where('user_id', '!=', $user->id)
                         ->where('task_status', $s->id)
                         ->where('created_by', $user->id)
-                        ->where('status',1)
+                        ->where('status', 1)
 
                         ->whereIn('task_id', function ($subquery) {
                             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -681,7 +684,7 @@ class DashboardCUstomizedController extends Controller
                 $CountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->where('status',1)
+                    ->where('status', 1)
 
                     ->whereDate('due_date', '<', $cdate)
                     ->whereIn('task_id', function ($subquery) {
@@ -708,7 +711,7 @@ class DashboardCUstomizedController extends Controller
                 $TodayCountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
-                    ->where('status',1)
+                    ->where('status', 1)
 
                     ->whereDate('due_date', '=', $cdate)
                     ->whereIn('task_id', function ($subquery) {
@@ -735,7 +738,7 @@ class DashboardCUstomizedController extends Controller
                 if (in_array($s->id, $complete_close)) {
                     $CountFinishedTask = TaskAssignee::where('user_id', '!=', $user->id)
                         ->where('task_status', $s->id)
-                        ->where('status',1)
+                        ->where('status', 1)
                         ->where('created_by', $user->id)
                         ->whereIn('task_id', function ($subquery) {
                             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -1304,6 +1307,287 @@ class DashboardCUstomizedController extends Controller
         })->count();
 
         return response()->json(['teamTasks_count' => $teamTasks]);
+    }
+
+    public function generateCustomExcelReport(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'row_field' => 'required|string',
+            'column_field' => 'required|string',
+            'department' => 'nullable',
+            'assignees' => 'nullable',
+            'status' => 'nullable',
+        ]);
+
+        $rowField = $request->row_field;
+        $columnField = $request->column_field;
+        // Get field display names for column headers
+        $fieldDisplayNames = [
+            'task_id' => 'Task ID',
+            'Task_number' => 'Task Number',
+            'Task_Ticket' => 'Task/Ticket',
+            'title' => 'Title',
+            'description' => 'Description',
+            'subject' => 'Subject',
+            'created_by_username' => 'Created By',
+            'Task_assign_to' => 'Assigned To',
+            'task_status' => 'Status',
+            'Created_Date' => 'Created Date',
+            'start_date' => 'Start Date',
+            'due_date' => 'Due Date',
+            'completed_date' => 'Completed Date',
+            'accepted_date' => 'Accepted Date',
+            'project' => 'Project',
+            'department' => 'Department',
+            'sub_department' => 'Sub Department',
+            'creator_department' => 'Creator Department',
+            'creator_sub_department' => 'Creator Sub Department',
+            'creator_phone' => 'Creator Phone',
+            'close_date' => 'Close Date',
+            'is_pinned' => 'Pinned Status',
+            'status' => 'Task Status',
+        ];
+
+        // Get the logged-in user
+        $loggedInUser = auth()->user();
+
+        // Base query similar to getAll_overallTask method
+        $tasks = TaskAssignee::with([
+            'task',
+            'creator',
+            'user',
+            'taskStatus',
+            'department_data',
+            'sub_department_data',
+            'task.project',
+            'creator.department',
+            'creator.sub_department'
+        ])->whereIn('task_id', function ($subquery) {
+            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        });
+        // Role-based filtering
+        if ($loggedInUser->hasRole('Super Admin')) {
+            $tasks->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+
+        } else {
+            $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+            $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+
+            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+
+
+        }
+        // Apply filters from request
+        if ($request->filled('department')) {
+            $tasks->where('department', $request->department);
+        }
+
+        if ($request->filled('assignees')) {
+            $tasks->where('user_id', $request->assignees);
+        }
+
+        if ($request->filled('status')) {
+            $tasks->where('task_status', $request->status);
+        }
+
+        // Join necessary tables
+        $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
+            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
+            ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+            ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+            ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+            ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+            ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id');
+
+        // Select all necessary fields
+        $tasks = $tasks->select(
+            'task_assignees.*',
+            'tasks.title',
+            'tasks.subject',
+            'tasks.description',
+            'status.status_name as task_status',
+            'projects.project_name as project',
+            'departments.department_name as department',
+            'sub_departments.sub_department_name as sub_department',
+            'tasks.created_at as created_at',
+            'tasks.start_date as start_date',
+            'tasks.completed_date',
+            'owner_department.department_name as creator_department',
+            'owner_sub_department.sub_department_name as creator_sub_department',
+            'assignee.phone_no as creator_phone',
+            DB::raw("CONCAT(assigner.first_name, ' ', assigner.last_name) as created_by_username"),
+            DB::raw("CONCAT(assignee.first_name, ' ', assignee.last_name) as Task_assign_to"),
+            'tasks.close_date',
+            DB::raw("DATE_FORMAT(tasks.created_at, '%d/%m/%Y') as Created_Date"),
+            DB::raw("DATE_FORMAT(tasks.start_date, '%d/%m/%Y') as start_date_formatted"),
+            DB::raw("DATE_FORMAT(task_assignees.due_date, '%d/%m/%Y') as due_date"),
+            DB::raw("DATE_FORMAT(tasks.completed_date, '%d/%m/%Y') as completed_date"),
+            DB::raw("DATE_FORMAT(task_assignees.accepted_date, '%d/%m/%Y') as accepted_date"),
+            DB::raw("DATE_FORMAT(tasks.close_date, '%d/%m/%Y') as close_date"),
+            'tasks.TaskNumber as Task_number'
+        );
+
+        // Execute the query
+        $data = $tasks->get();
+        // Process data for Excel
+        // Group by row field and column field
+        $processedData = [];
+        $columnValues = [];
+
+        foreach ($data as $item) {
+            $rowValue = $this->getFieldValue($item, $rowField);
+            $columnValue = $this->getFieldValue($item, $columnField);
+            // Add to unique column values
+            if (!in_array($columnValue, $columnValues)) {
+                $columnValues[] = $columnValue;
+            }
+            // Group data
+            if (!isset($processedData[$rowValue])) {
+                $processedData[$rowValue] = [];
+            }
+            if (!isset($processedData[$rowValue][$columnValue])) {
+                $processedData[$rowValue][$columnValue] = 0;
+            }
+
+            $processedData[$rowValue][$columnValue]++;
+        }
+
+        // Sort column values for consistency
+        sort($columnValues);
+        // dd($processedData,$columnValues);
+        // Create Excel file
+        return Excel::download(new class ($processedData, $columnValues, $rowField, $columnField, $fieldDisplayNames) implements FromCollection, WithHeadings, WithStyles {
+            protected $data;
+            protected $columns;
+            protected $rowField;
+            protected $columnField;
+            protected $fieldDisplayNames;
+
+            public function __construct($data, $columns, $rowField, $columnField, $fieldDisplayNames)
+            {
+                $this->data = $data;
+                $this->columns = $columns;
+                $this->rowField = $rowField;
+                $this->columnField = $columnField;
+                $this->fieldDisplayNames = $fieldDisplayNames;
+            }
+
+            public function collection()
+            {
+                $collection = collect();
+
+                foreach ($this->data as $rowValue => $columnData) {
+                    $row = [
+                        $this->rowField => $rowValue,
+                    ];
+
+                    foreach ($this->columns as $column) {
+                        $row[$column] = $columnData[$column] ?? 0;
+                    }
+
+                    $collection->push($row);
+                }
+
+                return $collection;
+            }
+
+            public function headings(): array
+            {
+                $headings = [
+                    $this->fieldDisplayNames[$this->rowField] ?? $this->rowField,
+                ];
+
+                foreach ($this->columns as $column) {
+                    $headings[] = $column;
+                }
+
+                return $headings;
+            }
+
+            public function styles(Worksheet $sheet)
+            {
+                return [
+                    1 => ['font' => ['bold' => true]],
+                ];
+            }
+        }, 'custom_report_' . date('Y-m-d') . '.xlsx');
+    }
+
+    /**
+     * Helper method to get field value from task object
+     *
+     * @param object $task
+     * @param string $field
+     * @return mixed
+     */
+    private function getFieldValue($task, $field)
+    {
+        switch ($field) {
+            case 'task_id':
+                return $task->task_id;
+            case 'Task_number':
+                return $task->Task_number;
+            case 'Task_Ticket':
+                return $task->ticket == 0 ? 'Task' : 'Ticket';
+            case 'title':
+                return $task->title;
+            case 'description':
+                return $task->description;
+            case 'subject':
+                return $task->subject;
+            case 'created_by_username':
+                return $task->created_by_username;
+            case 'Task_assign_to':
+                return $task->Task_assign_to;
+            case 'task_status':
+                return $task->task_status;
+            case 'Created_Date':
+                return $task->Created_Date;
+            case 'start_date':
+                return $task->start_date_formatted;
+            case 'due_date':
+                return $task->due_date;
+            case 'completed_date':
+                return $task->completed_date;
+            case 'accepted_date':
+                return $task->accepted_date;
+            case 'project':
+                return $task->project;
+            case 'department':
+                return $task->department;
+            case 'sub_department':
+                return $task->sub_department;
+            case 'creator_department':
+                return $task->creator_department;
+            case 'creator_sub_department':
+                return $task->creator_sub_department;
+            case 'creator_phone':
+                return $task->creator_phone;
+            case 'close_date':
+                return $task->close_date;
+            case 'status':
+                switch ($task->status) {
+                    case 0:
+                        return 'Requested';
+                    case 1:
+                        return 'Accepted';
+                    case 2:
+                        return 'Rejected';
+                    default:
+                        return '-';
+                }
+            default:
+                return '-';
+        }
     }
 
 }

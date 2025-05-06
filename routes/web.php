@@ -600,3 +600,4 @@ Route::get('/tasks/total-count', [DashboardController::class, 'getTotalTaskCount
 Route::any('/upload_task', [DashboardController::class, 'upload_task'])->name('kk');
 
 Route::get('/tasks/team_task', [DashboardController::class, 'team_task'])->name('tasks.team_task');
+Route::post('/generate-custom-excel-report', [DashboardCUstomizedController::class, 'generateCustomExcelReport'])->name('generate-custom-excel-report');
