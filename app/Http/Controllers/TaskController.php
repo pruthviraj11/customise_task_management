@@ -895,7 +895,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2221,7 +2221,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2465,7 +2465,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2701,7 +2701,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -2984,7 +2984,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -3262,7 +3262,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -3531,7 +3531,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -9447,7 +9447,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -10083,7 +10083,7 @@ class TaskController extends Controller
                             }
                         }
                         $query->where(function ($q) use ($search, $dateSearch) {
-                            $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                            $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                                 ->orWhere('tasks.description', 'LIKE', "%{$search}%")
@@ -10339,7 +10339,7 @@ class TaskController extends Controller
                         }
                     }
                     $query->where(function ($q) use ($search, $dateSearch) {
-                        $q->where('tasks.TaskNumber', 'LIKE', "%{$search}%")
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.title', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
                             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
