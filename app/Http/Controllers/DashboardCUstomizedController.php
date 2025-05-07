@@ -1318,10 +1318,14 @@ class DashboardCUstomizedController extends Controller
             'department' => 'nullable',
             'assignees' => 'nullable',
             'status' => 'nullable',
+            'date_field' => 'nullable|string',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
         ]);
 
         $rowField = $request->row_field;
         $columnField = $request->column_field;
+
         // Get field display names for column headers
         $fieldDisplayNames = [
             'task_id' => 'Task ID',
@@ -1366,13 +1370,13 @@ class DashboardCUstomizedController extends Controller
         ])->whereIn('task_id', function ($subquery) {
             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
         });
+
         // Role-based filtering
         if ($loggedInUser->hasRole('Super Admin')) {
             $tasks->whereNull('task_assignees.deleted_at')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
-
         } else {
             $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
             $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
@@ -1381,9 +1385,8 @@ class DashboardCUstomizedController extends Controller
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
-
-
         }
+
         // Apply filters from request
         if ($request->filled('department')) {
             $tasks->where('department', $request->department);
@@ -1395,6 +1398,21 @@ class DashboardCUstomizedController extends Controller
 
         if ($request->filled('status')) {
             $tasks->where('task_status', $request->status);
+        }
+
+        // Apply date range filters if provided
+        if ($request->filled('date_field') && ($request->filled('from_date') || $request->filled('to_date'))) {
+            $dateField = $this->getDateFieldQueryColumn($request->date_field);
+
+            if ($request->filled('from_date')) {
+                $fromDate = Carbon::parse($request->from_date)->startOfDay();
+                $tasks->whereDate($dateField, '>=', $fromDate);
+            }
+
+            if ($request->filled('to_date')) {
+                $toDate = Carbon::parse($request->to_date)->endOfDay();
+                $tasks->whereDate($dateField, '<=', $toDate);
+            }
         }
 
         // Join necessary tables
@@ -1590,174 +1608,210 @@ class DashboardCUstomizedController extends Controller
         }
     }
 
-
     public function previewDynamicReport(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'row_field' => 'required|string',
+            'column_field' => 'required|string',
+            'department' => 'nullable',
+            'assignees' => 'nullable',
+            'status' => 'nullable',
+            'date_field' => 'nullable|string',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+        $rowField = $request->row_field;
+        $columnField = $request->column_field;
+
+        // Get field display names for column headers
+        $fieldDisplayNames = [
+            'task_id' => 'Task ID',
+            'Task_number' => 'Task Number',
+            'Task_Ticket' => 'Task/Ticket',
+            'title' => 'Title',
+            'description' => 'Description',
+            'subject' => 'Subject',
+            'created_by_username' => 'Created By',
+            'Task_assign_to' => 'Assigned To',
+            'task_status' => 'Status',
+            'Created_Date' => 'Created Date',
+            'start_date' => 'Start Date',
+            'due_date' => 'Due Date',
+            'completed_date' => 'Completed Date',
+            'accepted_date' => 'Accepted Date',
+            'project' => 'Project',
+            'department' => 'Department',
+            'sub_department' => 'Sub Department',
+            'creator_department' => 'Creator Department',
+            'creator_sub_department' => 'Creator Sub Department',
+            'creator_phone' => 'Creator Phone',
+            'close_date' => 'Close Date',
+            'is_pinned' => 'Pinned Status',
+            'status' => 'Task Status',
+        ];
+
+        // Get the logged-in user
+        $loggedInUser = auth()->user();
+
+        // Base query similar to getAll_overallTask method
+        $tasks = TaskAssignee::with([
+            'task',
+            'creator',
+            'user',
+            'taskStatus',
+            'department_data',
+            'sub_department_data',
+            'task.project',
+            'creator.department',
+            'creator.sub_department'
+        ])->whereIn('task_id', function ($subquery) {
+            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        });
+
+        // Role-based filtering
+        if ($loggedInUser->hasRole('Super Admin')) {
+            $tasks->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+
+        } else {
+            $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+            $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+
+            $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+        }
+
+        // Apply filters from request
+        if ($request->filled('department')) {
+            $tasks->where('department', $request->department);
+        }
+
+        if ($request->filled('assignees')) {
+            $tasks->where('user_id', $request->assignees);
+        }
+
+        if ($request->filled('status')) {
+            $tasks->where('task_status', $request->status);
+        }
+
+        // Apply date range filters if provided
+        if ($request->filled('date_field') && ($request->filled('from_date') || $request->filled('to_date'))) {
+            $dateField = $this->getDateFieldQueryColumn($request->date_field);
+
+            if ($request->filled('from_date')) {
+                $fromDate = Carbon::parse($request->from_date)->startOfDay();
+                $tasks->whereDate($dateField, '>=', $fromDate);
+            }
+
+            if ($request->filled('to_date')) {
+                $toDate = Carbon::parse($request->to_date)->endOfDay();
+                $tasks->whereDate($dateField, '<=', $toDate);
+            }
+        }
+
+        // Join necessary tables
+        $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
+            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
+            ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+            ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+            ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+            ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+            ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id');
+
+        // Select all necessary fields
+        $tasks = $tasks->select(
+            'task_assignees.*',
+            'tasks.title',
+            'tasks.subject',
+            'tasks.description',
+            'status.status_name as task_status',
+            'projects.project_name as project',
+            'departments.department_name as department',
+            'sub_departments.sub_department_name as sub_department',
+            'tasks.created_at as created_at',
+            'tasks.start_date as start_date',
+            'tasks.completed_date',
+            'owner_department.department_name as creator_department',
+            'owner_sub_department.sub_department_name as creator_sub_department',
+            'assignee.phone_no as creator_phone',
+            DB::raw("CONCAT(assigner.first_name, ' ', assigner.last_name) as created_by_username"),
+            DB::raw("CONCAT(assignee.first_name, ' ', assignee.last_name) as Task_assign_to"),
+            'tasks.close_date',
+            DB::raw("DATE_FORMAT(tasks.created_at, '%d/%m/%Y') as Created_Date"),
+            DB::raw("DATE_FORMAT(tasks.start_date, '%d/%m/%Y') as start_date_formatted"),
+            DB::raw("DATE_FORMAT(task_assignees.due_date, '%d/%m/%Y') as due_date"),
+            DB::raw("DATE_FORMAT(tasks.completed_date, '%d/%m/%Y') as completed_date"),
+            DB::raw("DATE_FORMAT(task_assignees.accepted_date, '%d/%m/%Y') as accepted_date"),
+            DB::raw("DATE_FORMAT(tasks.close_date, '%d/%m/%Y') as close_date"),
+            'tasks.TaskNumber as Task_number'
+        );
+
+        // Execute the query
+        $data = $tasks->get();
+
+        // Process data for the report
+        // Group by row field and column field
+        $processedData = [];
+        $columnValues = [];
+
+        foreach ($data as $item) {
+            $rowValue = $this->getFieldValue($item, $rowField);
+            $columnValue = $this->getFieldValue($item, $columnField);
+
+            // Add to unique column values
+            if (!in_array($columnValue, $columnValues)) {
+                $columnValues[] = $columnValue;
+            }
+
+            // Group data
+            if (!isset($processedData[$rowValue])) {
+                $processedData[$rowValue] = [];
+            }
+            if (!isset($processedData[$rowValue][$columnValue])) {
+                $processedData[$rowValue][$columnValue] = 0;
+            }
+
+            $processedData[$rowValue][$columnValue]++;
+        }
+
+        // Sort column values for consistency
+        sort($columnValues);
+
+        // Return JSON response
+        return response()->json([
+            'success' => true,
+            'data' => $processedData,
+            'columnValues' => $columnValues,
+            'fieldDisplayNames' => $fieldDisplayNames
+        ]);
+    }
+
+    private function getDateFieldQueryColumn($field)
 {
-    // Validate the request
-    $validated = $request->validate([
-        'row_field' => 'required|string',
-        'column_field' => 'required|string',
-        'department' => 'nullable',
-        'assignees' => 'nullable',
-        'status' => 'nullable',
-    ]);
-
-    $rowField = $request->row_field;
-    $columnField = $request->column_field;
-
-    // Get field display names for column headers
-    $fieldDisplayNames = [
-        'task_id' => 'Task ID',
-        'Task_number' => 'Task Number',
-        'Task_Ticket' => 'Task/Ticket',
-        'title' => 'Title',
-        'description' => 'Description',
-        'subject' => 'Subject',
-        'created_by_username' => 'Created By',
-        'Task_assign_to' => 'Assigned To',
-        'task_status' => 'Status',
-        'Created_Date' => 'Created Date',
-        'start_date' => 'Start Date',
-        'due_date' => 'Due Date',
-        'completed_date' => 'Completed Date',
-        'accepted_date' => 'Accepted Date',
-        'project' => 'Project',
-        'department' => 'Department',
-        'sub_department' => 'Sub Department',
-        'creator_department' => 'Creator Department',
-        'creator_sub_department' => 'Creator Sub Department',
-        'creator_phone' => 'Creator Phone',
-        'close_date' => 'Close Date',
-        'is_pinned' => 'Pinned Status',
-        'status' => 'Task Status',
-    ];
-
-    // Get the logged-in user
-    $loggedInUser = auth()->user();
-
-    // Base query similar to getAll_overallTask method
-    $tasks = TaskAssignee::with([
-        'task',
-        'creator',
-        'user',
-        'taskStatus',
-        'department_data',
-        'sub_department_data',
-        'task.project',
-        'creator.department',
-        'creator.sub_department'
-    ])->whereIn('task_id', function ($subquery) {
-        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-    });
-
-    // Role-based filtering
-    if ($loggedInUser->hasRole('Super Admin')) {
-        $tasks->whereNull('task_assignees.deleted_at')
-            ->whereIn('task_id', function ($subquery) {
-                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-            });
-
-    } else {
-        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-
-        $tasks->whereIn('user_id', $hierarchyUserIds)->whereNull('task_assignees.deleted_at')
-            ->whereIn('task_id', function ($subquery) {
-                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-            });
+    switch ($field) {
+        case 'Created_Date':
+            return 'tasks.created_at';
+        case 'start_date':
+            return 'tasks.start_date';
+        case 'due_date':
+            return 'task_assignees.due_date';
+        case 'completed_date':
+            return 'tasks.completed_date';
+        case 'accepted_date':
+            return 'task_assignees.accepted_date';
+        case 'close_date':
+            return 'tasks.close_date';
+        default:
+            return 'tasks.created_at'; // Default to created_at
     }
-
-    // Apply filters from request
-    if ($request->filled('department')) {
-        $tasks->where('department', $request->department);
-    }
-
-    if ($request->filled('assignees')) {
-        $tasks->where('user_id', $request->assignees);
-    }
-
-    if ($request->filled('status')) {
-        $tasks->where('task_status', $request->status);
-    }
-
-    // Join necessary tables
-    $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
-        ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
-        ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
-        ->leftJoin('status', 'task_assignees.task_status', 'status.id')
-        ->leftJoin('projects', 'projects.id', 'tasks.project_id')
-        ->leftJoin('departments', 'departments.id', 'tasks.department_id')
-        ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
-        ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
-        ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id');
-
-    // Select all necessary fields
-    $tasks = $tasks->select(
-        'task_assignees.*',
-        'tasks.title',
-        'tasks.subject',
-        'tasks.description',
-        'status.status_name as task_status',
-        'projects.project_name as project',
-        'departments.department_name as department',
-        'sub_departments.sub_department_name as sub_department',
-        'tasks.created_at as created_at',
-        'tasks.start_date as start_date',
-        'tasks.completed_date',
-        'owner_department.department_name as creator_department',
-        'owner_sub_department.sub_department_name as creator_sub_department',
-        'assignee.phone_no as creator_phone',
-        DB::raw("CONCAT(assigner.first_name, ' ', assigner.last_name) as created_by_username"),
-        DB::raw("CONCAT(assignee.first_name, ' ', assignee.last_name) as Task_assign_to"),
-        'tasks.close_date',
-        DB::raw("DATE_FORMAT(tasks.created_at, '%d/%m/%Y') as Created_Date"),
-        DB::raw("DATE_FORMAT(tasks.start_date, '%d/%m/%Y') as start_date_formatted"),
-        DB::raw("DATE_FORMAT(task_assignees.due_date, '%d/%m/%Y') as due_date"),
-        DB::raw("DATE_FORMAT(tasks.completed_date, '%d/%m/%Y') as completed_date"),
-        DB::raw("DATE_FORMAT(task_assignees.accepted_date, '%d/%m/%Y') as accepted_date"),
-        DB::raw("DATE_FORMAT(tasks.close_date, '%d/%m/%Y') as close_date"),
-        'tasks.TaskNumber as Task_number'
-    );
-
-    // Execute the query
-    $data = $tasks->get();
-
-    // Process data for the report
-    // Group by row field and column field
-    $processedData = [];
-    $columnValues = [];
-
-    foreach ($data as $item) {
-        $rowValue = $this->getFieldValue($item, $rowField);
-        $columnValue = $this->getFieldValue($item, $columnField);
-
-        // Add to unique column values
-        if (!in_array($columnValue, $columnValues)) {
-            $columnValues[] = $columnValue;
-        }
-
-        // Group data
-        if (!isset($processedData[$rowValue])) {
-            $processedData[$rowValue] = [];
-        }
-        if (!isset($processedData[$rowValue][$columnValue])) {
-            $processedData[$rowValue][$columnValue] = 0;
-        }
-
-        $processedData[$rowValue][$columnValue]++;
-    }
-
-    // Sort column values for consistency
-    sort($columnValues);
-
-    // Return JSON response
-    return response()->json([
-        'success' => true,
-        'data' => $processedData,
-        'columnValues' => $columnValues,
-        'fieldDisplayNames' => $fieldDisplayNames
-    ]);
 }
-
 }
 

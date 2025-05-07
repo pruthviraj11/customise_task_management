@@ -291,96 +291,141 @@
 
         @endif
         {{-- <div class="card"> --}}
-            <div class="card-header">
-                <div>
-                    <h1>Dynamic Report</h1>
+        <div class="card-header">
+            <div>
+                <h1>Dynamic Report</h1>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <div class="form-group mb-2 fw-bold">
+                        <label for="row-field-selector">Row</label>
+                        <select id="row-field-selector" class="form-select select2" aria-label="Select Row">
+                            <option value="">Select a Field</option>
+                            <option value="task_id">Task ID</option>
+                            <option value="Task_number">Task Number</option>
+                            <option value="Task_Ticket">Task/Ticket</option>
+                            <option value="title">Title</option>
+                            <option value="description">Description</option>
+                            <option value="subject">Subject</option>
+                            <option value="created_by_username">Assigned By</option>
+                            <option value="Task_assign_to">Assigned To</option>
+                            <option value="task_status">Task Status</option>
+                            <option value="Created_Date">Created Date</option>
+                            <option value="start_date">Start Date</option>
+                            <option value="due_date">Due Date</option>
+                            <option value="completed_date">Completed Date</option>
+                            <option value="accepted_date">Accepted Date</option>
+                            <option value="project">Project</option>
+                            <option value="department">Department</option>
+                            <option value="sub_department">Sub Department</option>
+                            <option value="creator_department">Creator Department</option>
+                            <option value="creator_sub_department">Creator Sub Department</option>
+                            <option value="creator_phone">Creator Phone</option>
+                            <option value="close_date">Close Date</option>
+                            <option value="status">Status (0,1,2)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group mb-2 fw-bold">
-                            <label for="row-field-selector">Row</label>
-                            <select id="row-field-selector" class="form-select select2" aria-label="Select Row">
-                                <option value="">Select a Field</option>
-                                <option value="task_id">Task ID</option>
-                                <option value="Task_number">Task Number</option>
-                                <option value="Task_Ticket">Task/Ticket</option>
-                                <option value="title">Title</option>
-                                <option value="description">Description</option>
-                                <option value="subject">Subject</option>
-                                <option value="created_by_username">Assigned By</option>
-                                <option value="Task_assign_to">Assigned To</option>
-                                <option value="task_status">Task Status</option>
-                                <option value="Created_Date">Created Date</option>
-                                <option value="start_date">Start Date</option>
-                                <option value="due_date">Due Date</option>
-                                <option value="completed_date">Completed Date</option>
-                                <option value="accepted_date">Accepted Date</option>
-                                <option value="project">Project</option>
-                                <option value="department">Department</option>
-                                <option value="sub_department">Sub Department</option>
-                                <option value="creator_department">Creator Department</option>
-                                <option value="creator_sub_department">Creator Sub Department</option>
-                                <option value="creator_phone">Creator Phone</option>
-                                <option value="close_date">Close Date</option>
-                                <option value="status">Status (0,1,2)</option>
-                            </select>
-                        </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-2 fw-bold">
+                        <label for="column-field-selector">Column</label>
+                        <select id="column-field-selector" class="form-select select2" aria-label="Select Column">
+                            <option value="">Select a Field</option>
+                            <option value="task_id">Task ID</option>
+                            <option value="Task_number">Task Number</option>
+                            <option value="Task_Ticket">Task/Ticket</option>
+                            <option value="title">Title</option>
+                            <option value="description">Description</option>
+                            <option value="subject">Subject</option>
+                            <option value="created_by_username">Assigned By</option>
+                            <option value="Task_assign_to">Assigned To</option>
+                            <option value="task_status">Task Status</option>
+                            <option value="Created_Date">Created Date</option>
+                            <option value="start_date">Start Date</option>
+                            <option value="due_date">Due Date</option>
+                            <option value="completed_date">Completed Date</option>
+                            <option value="accepted_date">Accepted Date</option>
+                            <option value="project">Project</option>
+                            <option value="department">Department</option>
+                            <option value="sub_department">Sub Department</option>
+                            <option value="creator_department">Creator Department</option>
+                            <option value="creator_sub_department">Creator Sub Department</option>
+                            <option value="creator_phone">Creator Phone</option>
+                            <option value="close_date">Close Date</option>
+                            <option value="status">Status (0,1,2)</option>
+                        </select>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group mb-2 fw-bold">
-                            <label for="column-field-selector">Column</label>
-                            <select id="column-field-selector" class="form-select select2" aria-label="Select Column">
-                                <option value="">Select a Field</option>
-                                <option value="task_id">Task ID</option>
-                                <option value="Task_number">Task Number</option>
-                                <option value="Task_Ticket">Task/Ticket</option>
-                                <option value="title">Title</option>
-                                <option value="description">Description</option>
-                                <option value="subject">Subject</option>
-                                <option value="created_by_username">Assigned By</option>
-                                <option value="Task_assign_to">Assigned To</option>
-                                <option value="task_status">Task Status</option>
-                                <option value="Created_Date">Created Date</option>
-                                <option value="start_date">Start Date</option>
-                                <option value="due_date">Due Date</option>
-                                <option value="completed_date">Completed Date</option>
-                                <option value="accepted_date">Accepted Date</option>
-                                <option value="project">Project</option>
-                                <option value="department">Department</option>
-                                <option value="sub_department">Sub Department</option>
-                                <option value="creator_department">Creator Department</option>
-                                <option value="creator_sub_department">Creator Sub Department</option>
-                                <option value="creator_phone">Creator Phone</option>
-                                <option value="close_date">Close Date</option>
-                                <option value="status">Status (0,1,2)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mt-2">
-                        <button id="preview-report-btn" class="btn btn-info me-2">
-                            <i class="ficon" data-feather="eye"></i> Preview Report
-                        </button>
-                        <button id="generate-report-btn" class="btn btn-primary">
-                            <i class="ficon" data-feather="download"></i> Download Excel
-                        </button>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-2 fw-bold">
+                        <label for="date-field-selector">Date Field</label>
+                        <select id="date-field-selector" class="form-select select2" aria-label="Select Date Field">
+                            <option value="">Select a Date Field</option>
+                            <option value="Created_Date">Created Date</option>
+                            <option value="start_date">Start Date</option>
+                            <option value="due_date">Due Date</option>
+                            <option value="completed_date">Completed Date</option>
+                            <option value="accepted_date">Accepted Date</option>
+                            <option value="close_date">Close Date</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <!-- Loading indicator -->
-                <div id="report-loading" style="display: none;" class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <div class="form-group  fw-bold">
+                        <label for="date-from">From Date</label>
+                        <input type="date" id="date-from" class="form-control flatpickr-basic"
+                            placeholder="YYYY-MM-DD">
                     </div>
-                    <p class="mt-2">Loading report data...</p>
                 </div>
+                <div class="col-md-4">
+                    <div class="form-group  fw-bold">
+                        <label for="date-to">To Date</label>
+                        <input type="date" id="date-to" class="form-control flatpickr-basic"
+                            placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button id="preview-report-btn" class="btn btn-info me-2">
+                        <i class="ficon" data-feather="eye"></i> Preview Report
+                    </button>
+                    <button id="generate-report-btn" class="btn btn-primary">
+                        <i class="ficon" data-feather="download"></i> Download Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Loading indicator -->
+            <div id="report-loading" style="display: none;" class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading report data...</p>
+            </div>
 
-                <!-- Report container -->
-                <div id="report-container" style="display: none;">
-                    <h2 class="mb-3">Report Preview</h2>
-                    <div id="report-table"></div>
-                </div>
+            <!-- Report container -->
+            <div id="report-container" style="display: none;">
+                <h2 class="mb-3">Report Preview</h2>
+                <div id="report-table"></div>
             </div>
+        </div>
+        <div class="card-body">
+            <!-- Loading indicator -->
+            <div id="report-loading" style="display: none;" class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading report data...</p>
+            </div>
+
+            <!-- Report container -->
+            <div id="report-container" style="display: none;">
+                <h2 class="mb-3">Report Preview</h2>
+                <div id="report-table"></div>
+            </div>
+        </div>
         {{-- </div> --}}
 
     </section>
@@ -403,11 +448,19 @@
 @section('page-script')
 
     <script>
-        $(document).ready(function() {
+      $(document).ready(function() {
     // Initialize Select2 for dropdowns if not already initialized
     if ($.fn.select2) {
         $('.select2').select2();
     }
+
+    // Initialize Flatpickr for date pickers if available
+    // if (typeof flatpickr !== 'undefined') {
+    //     $('.flatpickr-basic').flatpickr({
+    //         dateFormat: 'Y-m-d',
+    //         allowInput: true
+    //     });
+    // }
 
     // Preview button to show data on page
     $('#preview-report-btn').on('click', function() {
@@ -432,6 +485,17 @@
             column_field: columnField,
             _token: $('meta[name="csrf-token"]').attr('content')
         };
+
+        // Add date range filters if selected
+        var dateField = $('#date-field-selector').val();
+        var fromDate = $('#date-from').val();
+        var toDate = $('#date-to').val();
+
+        if (dateField && (fromDate || toDate)) {
+            filters.date_field = dateField;
+            if (fromDate) filters.from_date = fromDate;
+            if (toDate) filters.to_date = toDate;
+        }
 
         // Add any additional filters from the page
         if ($('#filter-department').length) {
@@ -504,6 +568,7 @@
         tableHTML += '</tbody></table></div>';
 
         // Set the HTML content
+        // alert(tableHTML);
         $('#report-table').html(tableHTML);
     }
 
@@ -546,6 +611,35 @@
             'name': 'column_field',
             'value': columnField
         }));
+
+        // Add date range filters if selected
+        var dateField = $('#date-field-selector').val();
+        var fromDate = $('#date-from').val();
+        var toDate = $('#date-to').val();
+
+        if (dateField) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'date_field',
+                'value': dateField
+            }));
+        }
+
+        if (fromDate) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'from_date',
+                'value': fromDate
+            }));
+        }
+
+        if (toDate) {
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'to_date',
+                'value': toDate
+            }));
+        }
 
         // Add any additional filters from the page
         if ($('#filter-department').length) {
