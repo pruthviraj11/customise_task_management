@@ -303,8 +303,19 @@
                                     <ul>
                                         @foreach ($taskAssigne->attachments as $attachment)
                                             <li><a target="_blank"
-                                                    href="{{ Storage::url('app/' . $attachment->file) }}">{{ last(explode('/', $attachment->file)) }}</a>
+                                                    {{-- href="{{ Storage::url('app/' . $attachment->file) }}">{{ last(explode('/', $attachment->file)) }}</a> --}}
+                                                    href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}">{{ last(explode('/', $attachment->file)) }}</a>
+
                                             </li>
+
+                                            {{--
+                                              <a
+                                                    href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}">
+
+                                                    {{ last(explode('/', $attachment->file)) }}
+
+                                                </a>
+ --}}
                                         @endforeach
                                     </ul>
                                 @endif
