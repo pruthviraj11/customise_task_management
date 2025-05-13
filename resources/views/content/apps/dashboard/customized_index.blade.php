@@ -386,6 +386,9 @@
                             placeholder="YYYY-MM-DD">
                     </div>
                 </div>
+                <div class="text-danger mt-2">
+                    <p><span class="text-danger">*</span> If no Date Field is selected, the system will automatically use the Task's From Date and To Date.</p>
+                </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button id="preview-report-btn" class="btn btn-info me-2">
                         <i class="ficon" data-feather="eye"></i> Preview Report
@@ -448,228 +451,259 @@
 @section('page-script')
 
     <script>
-      $(document).ready(function() {
-    // Initialize Select2 for dropdowns if not already initialized
-    if ($.fn.select2) {
-        $('.select2').select2();
-    }
-
-    // Initialize Flatpickr for date pickers if available
-    // if (typeof flatpickr !== 'undefined') {
-    //     $('.flatpickr-basic').flatpickr({
-    //         dateFormat: 'Y-m-d',
-    //         allowInput: true
-    //     });
-    // }
-
-    // Preview button to show data on page
-    $('#preview-report-btn').on('click', function() {
-        // Get selected row and column fields
-        var rowField = $('#row-field-selector').val();
-        var columnField = $('#column-field-selector').val();
-
-        // Validate selections
-        if (!rowField || !columnField) {
-            // Show error message
-            toastr.error('Please select both Row and Column fields', 'Error');
-            return;
-        }
-
-        // Show loading indicator
-        $('#report-loading').show();
-        $('#report-container').hide();
-
-        // Collect filter values
-        var filters = {
-            row_field: rowField,
-            column_field: columnField,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        };
-
-        // Add date range filters if selected
-        var dateField = $('#date-field-selector').val();
-        var fromDate = $('#date-from').val();
-        var toDate = $('#date-to').val();
-
-        if (dateField && (fromDate || toDate)) {
-            filters.date_field = dateField;
-            if (fromDate) filters.from_date = fromDate;
-            if (toDate) filters.to_date = toDate;
-        }
-
-        // Add any additional filters from the page
-        if ($('#filter-department').length) {
-            filters.department = $('#filter-department').val();
-        }
-
-        if ($('#filter-assignee').length) {
-            filters.assignees = $('#filter-assignee').val();
-        }
-
-        if ($('#filter-status').length) {
-            filters.status = $('#filter-status').val();
-        }
-
-        // Make AJAX request to get report data
-        $.ajax({
-            url: '/preview-dynamic-report',
-            type: 'POST',
-            data: filters,
-            success: function(response) {
-                // Hide loading indicator
-                $('#report-loading').hide();
-
-                // Render the report table
-                renderReportTable(response.data, response.columnValues, rowField, columnField, response.fieldDisplayNames);
-
-                // Show the report container
-                $('#report-container').show();
-            },
-            error: function(xhr, status, error) {
-                // Hide loading indicator
-                $('#report-loading').hide();
-
-                // Show error message
-                toastr.error('Failed to load report data', 'Error');
-                console.error(error);
+        $(document).ready(function() {
+            // Initialize Select2 for dropdowns if not already initialized
+            if ($.fn.select2) {
+                $('.select2').select2();
             }
-        });
-    });
 
-    // Function to render the report table
-    function renderReportTable(data, columnValues, rowField, columnField, fieldDisplayNames) {
-        var tableHTML = '<div class="table-responsive"><table class="table table-bordered table-striped">';
+            // Initialize Flatpickr for date pickers if available
+            // if (typeof flatpickr !== 'undefined') {
+            //     $('.flatpickr-basic').flatpickr({
+            //         dateFormat: 'Y-m-d',
+            //         allowInput: true
+            //     });
+            // }
 
-        // Create header row
-        tableHTML += '<thead><tr>';
-        tableHTML += '<th>' + (fieldDisplayNames[rowField] || rowField) + '</th>';
+            // Preview button to show data on page
+            $('#preview-report-btn').on('click', function() {
+                // Get selected row and column fields
+                var rowField = $('#row-field-selector').val();
+                var columnField = $('#column-field-selector').val();
 
-        // Add column headers
-        columnValues.forEach(function(columnValue) {
-            tableHTML += '<th>' + columnValue + '</th>';
-        });
+                // Validate selections
+                if (!rowField || !columnField) {
+                    // Show error message
+                    toastr.error('Please select both Row and Column fields', 'Error');
+                    return;
+                }
 
-        tableHTML += '</tr></thead><tbody>';
+                // Show loading indicator
+                $('#report-loading').show();
+                $('#report-container').hide();
 
-        // Add data rows
-        Object.keys(data).forEach(function(rowValue) {
-            tableHTML += '<tr>';
-            tableHTML += '<td>' + rowValue + '</td>';
+                // Collect filter values
+                var filters = {
+                    row_field: rowField,
+                    column_field: columnField,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                };
 
-            // Add cells for each column
-            columnValues.forEach(function(columnValue) {
-                var cellValue = data[rowValue][columnValue] || 0;
-                tableHTML += '<td>' + cellValue + '</td>';
+                // Add date range filters if selected
+                var dateField = $('#date-field-selector').val();
+                var fromDate = $('#date-from').val();
+                var toDate = $('#date-to').val();
+
+                if (dateField && (fromDate || toDate)) {
+                    filters.date_field = dateField;
+                    if (fromDate) filters.from_date = fromDate;
+                    if (toDate) filters.to_date = toDate;
+                }
+
+                // Add any additional filters from the page
+                if ($('#filter-department').length) {
+                    filters.department = $('#filter-department').val();
+                }
+
+                if ($('#filter-assignee').length) {
+                    filters.assignees = $('#filter-assignee').val();
+                }
+
+                if ($('#filter-status').length) {
+                    filters.status = $('#filter-status').val();
+                }
+
+                // Make AJAX request to get report data
+                $.ajax({
+                    url: '/preview-dynamic-report',
+                    type: 'POST',
+                    data: filters,
+                    success: function(response) {
+                        // Hide loading indicator
+                        $('#report-loading').hide();
+
+                        // Render the report table
+                        renderReportTable(response.data, response.columnValues, rowField,
+                            columnField, response.fieldDisplayNames);
+
+                        // Show the report container
+                        $('#report-container').show();
+                    },
+                    error: function(xhr, status, error) {
+                        // Hide loading indicator
+                        $('#report-loading').hide();
+
+                        // Show error message
+                        toastr.error('Failed to load report data', 'Error');
+                        console.error(error);
+                    }
+                });
             });
 
-            tableHTML += '</tr>';
+            // Function to render the report table
+            function renderReportTable(data, columnValues, rowField, columnField, fieldDisplayNames) {
+                var tableHTML = '<div class="table-responsive"><table class="table table-bordered table-striped">';
+
+                // Create header row
+                tableHTML += '<thead><tr>';
+                tableHTML += '<th>' + (fieldDisplayNames[rowField] || rowField) + '</th>';
+
+                // Add column headers
+                columnValues.forEach(function(columnValue) {
+                    tableHTML += '<th>' + columnValue + '</th>';
+                });
+
+                // Add horizontal "Row Total" header
+                tableHTML += '<th>Total</th>';
+                tableHTML += '</tr></thead><tbody>';
+
+                // Object to store column totals
+                var columnTotals = {};
+                columnValues.forEach(function(columnValue) {
+                    columnTotals[columnValue] = 0;
+                });
+
+                var grandTotal = 0;
+
+                // Add data rows with row totals
+                Object.keys(data).forEach(function(rowValue) {
+                    tableHTML += '<tr>';
+                    tableHTML += '<td>' + rowValue + '</td>';
+
+                    var rowTotal = 0;
+
+                    // Add cells for each column
+                    columnValues.forEach(function(columnValue) {
+                        var cellValue = data[rowValue][columnValue] || 0;
+                        tableHTML += '<td>' + cellValue + '</td>';
+
+                        rowTotal += cellValue;
+                        columnTotals[columnValue] += cellValue;
+                        grandTotal += cellValue;
+                    });
+
+                    // Add row total
+                    tableHTML += '<td><strong>' + rowTotal + '</strong></td>';
+                    tableHTML += '</tr>';
+                });
+
+                // Add column totals row
+                tableHTML += '<tr>';
+                tableHTML += '<th>Total</th>';
+
+                columnValues.forEach(function(columnValue) {
+                    tableHTML += '<th><strong>' + columnTotals[columnValue] + '</strong></th>';
+                });
+
+                // Add grand total
+                tableHTML += '<th><strong>' + grandTotal + '</strong></th>';
+                tableHTML += '</tr>';
+
+                tableHTML += '</tbody></table></div>';
+
+                // Set the HTML content
+                $('#report-table').html(tableHTML);
+            }
+
+
+            // Existing Excel download functionality
+            $('#generate-report-btn').on('click', function() {
+                // Get selected row and column fields
+                var rowField = $('#row-field-selector').val();
+                var columnField = $('#column-field-selector').val();
+
+                // Validate selections
+                if (!rowField || !columnField) {
+                    // Show error message
+                    toastr.error('Please select both Row and Column fields', 'Error');
+                    return;
+                }
+
+                // Create a form for POST submission
+                var form = $('<form>', {
+                    'method': 'POST',
+                    'action': '/generate-custom-excel-report',
+                    'target': '_blank'
+                });
+
+                // Add CSRF token
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': '_token',
+                    'value': $('meta[name="csrf-token"]').attr('content')
+                }));
+
+                // Add selected fields
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': 'row_field',
+                    'value': rowField
+                }));
+
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': 'column_field',
+                    'value': columnField
+                }));
+
+                // Add date range filters if selected
+                var dateField = $('#date-field-selector').val();
+                var fromDate = $('#date-from').val();
+                var toDate = $('#date-to').val();
+
+                if (dateField) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'date_field',
+                        'value': dateField
+                    }));
+                }
+
+                if (fromDate) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'from_date',
+                        'value': fromDate
+                    }));
+                }
+
+                if (toDate) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'to_date',
+                        'value': toDate
+                    }));
+                }
+
+                // Add any additional filters from the page
+                if ($('#filter-department').length) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'department',
+                        'value': $('#filter-department').val()
+                    }));
+                }
+
+                if ($('#filter-assignee').length) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'assignees',
+                        'value': $('#filter-assignee').val()
+                    }));
+                }
+
+                if ($('#filter-status').length) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'status',
+                        'value': $('#filter-status').val()
+                    }));
+                }
+
+                // Add the form to the document and submit it
+                form.appendTo('body').submit().remove();
+            });
         });
-
-        tableHTML += '</tbody></table></div>';
-
-        // Set the HTML content
-        // alert(tableHTML);
-        $('#report-table').html(tableHTML);
-    }
-
-    // Existing Excel download functionality
-    $('#generate-report-btn').on('click', function() {
-        // Get selected row and column fields
-        var rowField = $('#row-field-selector').val();
-        var columnField = $('#column-field-selector').val();
-
-        // Validate selections
-        if (!rowField || !columnField) {
-            // Show error message
-            toastr.error('Please select both Row and Column fields', 'Error');
-            return;
-        }
-
-        // Create a form for POST submission
-        var form = $('<form>', {
-            'method': 'POST',
-            'action': '/generate-custom-excel-report',
-            'target': '_blank'
-        });
-
-        // Add CSRF token
-        form.append($('<input>', {
-            'type': 'hidden',
-            'name': '_token',
-            'value': $('meta[name="csrf-token"]').attr('content')
-        }));
-
-        // Add selected fields
-        form.append($('<input>', {
-            'type': 'hidden',
-            'name': 'row_field',
-            'value': rowField
-        }));
-
-        form.append($('<input>', {
-            'type': 'hidden',
-            'name': 'column_field',
-            'value': columnField
-        }));
-
-        // Add date range filters if selected
-        var dateField = $('#date-field-selector').val();
-        var fromDate = $('#date-from').val();
-        var toDate = $('#date-to').val();
-
-        if (dateField) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'date_field',
-                'value': dateField
-            }));
-        }
-
-        if (fromDate) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'from_date',
-                'value': fromDate
-            }));
-        }
-
-        if (toDate) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'to_date',
-                'value': toDate
-            }));
-        }
-
-        // Add any additional filters from the page
-        if ($('#filter-department').length) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'department',
-                'value': $('#filter-department').val()
-            }));
-        }
-
-        if ($('#filter-assignee').length) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'assignees',
-                'value': $('#filter-assignee').val()
-            }));
-        }
-
-        if ($('#filter-status').length) {
-            form.append($('<input>', {
-                'type': 'hidden',
-                'name': 'status',
-                'value': $('#filter-status').val()
-            }));
-        }
-
-        // Add the form to the document and submit it
-        form.appendTo('body').submit().remove();
-    });
-});
     </script>
 
     <script>
