@@ -68,9 +68,6 @@
                                     </span>
                                 </div>
 
-
-
-
                                 <div class="col-md-3 col-sm-12 mb-1">
                                     <label class="form-label" for="task_status">Status</label><span class="red">*</span>
                                     <select id="task_status" class="form-select select2" name="task_status"
@@ -93,14 +90,29 @@
                                 </div>
                                 <div class="col-md-12 col-sm-12 mb-1">
                                     <label class="form-label" for="description">Description</label>
-                                    <h5>{{ $taskAss && $taskAss->description ? trim(strip_tags($taskAss->description)) : "-" }}</h5>
+                                    <h5>{{ $taskAss && $taskAss->description ? trim(strip_tags($taskAss->description)) : '-' }}
+                                    </h5>
                                     <span class="text-danger">
                                         @error('description')
                                             {{ $message }}
                                         @enderror
                                     </span>
                                 </div>
+                                @if ($taskAss && $taskAss->task && $taskAss->task->attachments->count())
+                                    <div class="col-6 col-sm-12 mb-1">
+                                        <label class="form-label">Attachments</label>
+                                        <ul class="list-unstyled">
+                                            @foreach ($taskAss->task->attachments as $attachment)
+                                                <li>
+                                                    <a href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}" target="_blank">
+                                                        {{ last(explode('/', $attachment->file)) }}
+                                                    </a>
 
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                                 @if ($taskAss != '')
                                     <div class="col-md-12 col-sm-12 mt-3">
                                         {{-- <form action="{{ route('comments.store') }}" method="POST">
