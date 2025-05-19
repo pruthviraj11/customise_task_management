@@ -159,7 +159,7 @@
                                 {{-- @if ($loop->first) --}}
                                 {{-- Self --}}
                                 {{-- @else --}}
-                                {{ $users['user_name'] }}
+                                <?= $users['user_name']  ?>
                                 {{-- @endif --}}
                             </th>
                         @endforeach
@@ -302,7 +302,7 @@
                         @foreach ($table_data as $users)
                             <th class="heading_color">
 
-                                {{ $users['user_name'] }}
+                                <?= $users['user_name']  ?>
                             </th>
                         @endforeach
                         <th class="heading_color">Total</th> <!-- Add the Total column header -->

@@ -45,6 +45,11 @@ class ReportsController extends Controller
         $table_data = [];
 
         foreach ($users as $user) {
+            $userStatus = $user->status;
+            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+            $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
+
+
             $departmentName = $user->department->department_name ?? 'No Department';
 
             $totalTasksTillYesterday = TaskAssignee::where('user_id', $user->id)->where('status', 1)->whereIn('task_id', function ($subquery) {
@@ -138,7 +143,7 @@ class ReportsController extends Controller
 
             // Add the user data to the table_data array
             $table_data[] = [
-                'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')',
+                'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')' . $statusText,
                 'total_tasks_till_yesterday' => $totalTasksTillYesterday,
                 'total_pending_tasks_till_yesterday' => $totalPendingTasksTillYesterday,
                 'tasks_added_today' => $tasksAddedToday,
@@ -484,7 +489,7 @@ class ReportsController extends Controller
             'name' => 'Total',
             'users_status' => '',
             'total_task' => array_sum($totalTaskCounts),
-            'total_completed_task' => array_sum($completedCounts), 
+            'total_completed_task' => array_sum($completedCounts),
             'completion_percent' => number_format((array_sum($completedCounts)) / (array_sum($totalTaskCounts)) * 100, 2) . '%',
             'total_pending_yesterday' => array_sum($task_closing_opening_reporting_date),
             'tasks_added_today' => array_sum($task_added_reporting_date),
@@ -536,6 +541,12 @@ class ReportsController extends Controller
         $table_data = [];
 
         foreach ($users as $user) {
+            $userStatus = $user->status;
+            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+
+            // Only append parentheses if the user is inactive
+            $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
+
             $departmentName = $user->department->department_name ?? 'No Department';
 
             // Modify queries to get data from last Monday to Sunday (Previous Week)
@@ -594,7 +605,7 @@ class ReportsController extends Controller
 
             // Add the user data to the table_data array
             $table_data[] = [
-                'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')',
+                'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')' . $statusText,
                 'total_tasks_last_week' => $totalTasksLastWeek,
                 'total_pending_tasks_last_week' => $totalPendingTasksLastWeek,
                 'tasks_added_last_week' => $tasksAddedLastWeek,

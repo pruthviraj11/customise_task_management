@@ -121,9 +121,9 @@
                         @foreach ($table_data as $users)
                             <th>
                                 @if ($loop->first)
-                                {{ $users['user_name'] }}
+                                 <?= $users['user_name']  ?>
                                 @else
-                                    {{ $users['user_name'] }}
+                                     <?= $users['user_name']  ?>
                                 @endif
                             </th>
                         @endforeach
