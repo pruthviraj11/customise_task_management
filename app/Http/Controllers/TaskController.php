@@ -10969,10 +10969,8 @@ class TaskController extends Controller
         $this->completed_date_and_close_date_null();
         $this->completeddate_null();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Task status and dates updated successfully.',
-        ]);
+        return redirect()->route('dashboard-index')
+        ->with('success', 'Task status and dates updated successfully.');
     }
 
     public function close_date_present()
