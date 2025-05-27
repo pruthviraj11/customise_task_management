@@ -10968,6 +10968,11 @@ class TaskController extends Controller
         $this->has_completed_date_and_close_date_null();
         $this->completed_date_and_close_date_null();
         $this->completeddate_null();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task status and dates updated successfully.',
+        ]);
     }
 
     public function close_date_present()
@@ -11040,6 +11045,7 @@ class TaskController extends Controller
 
             $task->save();
         }
+
     }
 
 
