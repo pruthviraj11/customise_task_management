@@ -139,7 +139,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
         ->name('tasks.requested_to_us_rejected_task_list');
 
 
-        Route::get('/tasks/requested_to_us_overall_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    Route::get('/tasks/requested_to_us_overall_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
         ->name('tasks.requested_to_us_overall_total');
     Route::get('/tasks/requested_to_us_overall_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverallTotal'])
         ->name('tasks.requested_to_us_overall_total_list');
@@ -188,12 +188,12 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('/tasks/requested_by_us_footer_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedByUsFooterTotalTasks'])
         ->name('tasks.requested_by_us_footer_total_list');
 
-        Route::get('/tasks/requested_by_us_rejected_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    Route::get('/tasks/requested_by_us_rejected_task/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
         ->name('tasks.requested_by_us_rejected_task');
     Route::get('/tasks/requested_by_us_rejected_task/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsRejectedTasks'])
         ->name('tasks.requested_by_us_rejected_task_list');
 
-        Route::get('/tasks/requested_by_us_overall_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
+    Route::get('/tasks/requested_by_us_overall_total/{user_id}/{status_id}/{type}', [TaskController::class, 'index'])
         ->name('tasks.requested_by_us_overall_total');
     Route::get('/tasks/requested_by_us_overall_total/list/{user_id}/{status_id}/{type}', [TaskController::class, 'requestedToUsOverallTotal'])
         ->name('tasks.requested_by_us_overall_total_list');
@@ -463,6 +463,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/overall_task', [TaskController::class, 'index'])->name('app-task-overall_task');
 
     Route::get('task/recurring_cancel/{encrypted_id}', [TaskController::class, 'cancel'])->name('app-task-recurring_cancel');
+    Route::delete('attachment/{attachment}', [DashboardCUstomizedController::class, 'destroy'])->name('attachment.destroy');
 
 
 

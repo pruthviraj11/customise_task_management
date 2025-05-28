@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\DashboardTaskExport;
 use App\Models\TaskAssignee;
+use App\Models\TaskAttachment;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
@@ -1542,229 +1543,229 @@ class DashboardCUstomizedController extends Controller
 
 
     public function generateCustomExcelReport(Request $request)
-{
-    // Validate the request
-    $validated = $request->validate([
-        'row_field' => 'required|string',
-        'column_field' => 'required|string',
-        'department' => 'nullable',
-        'assignees' => 'nullable',
-        'status' => 'nullable',
-        'date_field' => 'nullable|string',
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date',
-    ]);
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'row_field' => 'required|string',
+            'column_field' => 'required|string',
+            'department' => 'nullable',
+            'assignees' => 'nullable',
+            'status' => 'nullable',
+            'date_field' => 'nullable|string',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
 
-    $rowField = $request->row_field;
-    $columnField = $request->column_field;
+        $rowField = $request->row_field;
+        $columnField = $request->column_field;
 
-    $fieldDisplayNames = [
-        'task_id' => 'Task ID',
-        'Task_number' => 'Task Number',
-        'Task_Ticket' => 'Task/Ticket',
-        'title' => 'Title',
-        'description' => 'Description',
-        'subject' => 'Subject',
-        'created_by_username' => 'Created By',
-        'Task_assign_to' => 'Assigned To',
-        'task_status' => 'Status',
-        'Created_Date' => 'Created Date',
-        'start_date' => 'Start Date',
-        'due_date' => 'Due Date',
-        'completed_date' => 'Completed Date',
-        'accepted_date' => 'Accepted Date',
-        'project' => 'Project',
-        'department' => 'Department',
-        'sub_department' => 'Sub Department',
-        'creator_department' => 'Creator Department',
-        'creator_sub_department' => 'Creator Sub Department',
-        'creator_phone' => 'Creator Phone',
-        'close_date' => 'Close Date',
-        'is_pinned' => 'Pinned Status',
-        'status' => 'Task Status',
-    ];
+        $fieldDisplayNames = [
+            'task_id' => 'Task ID',
+            'Task_number' => 'Task Number',
+            'Task_Ticket' => 'Task/Ticket',
+            'title' => 'Title',
+            'description' => 'Description',
+            'subject' => 'Subject',
+            'created_by_username' => 'Created By',
+            'Task_assign_to' => 'Assigned To',
+            'task_status' => 'Status',
+            'Created_Date' => 'Created Date',
+            'start_date' => 'Start Date',
+            'due_date' => 'Due Date',
+            'completed_date' => 'Completed Date',
+            'accepted_date' => 'Accepted Date',
+            'project' => 'Project',
+            'department' => 'Department',
+            'sub_department' => 'Sub Department',
+            'creator_department' => 'Creator Department',
+            'creator_sub_department' => 'Creator Sub Department',
+            'creator_phone' => 'Creator Phone',
+            'close_date' => 'Close Date',
+            'is_pinned' => 'Pinned Status',
+            'status' => 'Task Status',
+        ];
 
-    $loggedInUser = auth()->user();
+        $loggedInUser = auth()->user();
 
-    $tasks = TaskAssignee::with([
-        'task',
-        'creator',
-        'user',
-        'taskStatus',
-        'department_data',
-        'sub_department_data',
-        'task.project',
-        'creator.department',
-        'creator.sub_department'
-    ])->whereIn('task_id', function ($subquery) {
-        $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-    });
+        $tasks = TaskAssignee::with([
+            'task',
+            'creator',
+            'user',
+            'taskStatus',
+            'department_data',
+            'sub_department_data',
+            'task.project',
+            'creator.department',
+            'creator.sub_department'
+        ])->whereIn('task_id', function ($subquery) {
+            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        });
 
-    // Role-based filtering
-    if (!$loggedInUser->hasRole('Super Admin')) {
-        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-        $tasks->whereIn('user_id', $hierarchyUserIds);
-    }
-
-    // Filters
-    if ($request->filled('department')) {
-        $tasks->where('department', $request->department);
-    }
-    if ($request->filled('assignees')) {
-        $tasks->where('user_id', $request->assignees);
-    }
-    if ($request->filled('status')) {
-        $tasks->where('task_status', $request->status);
-    }
-
-    // Date range filtering
-    if ($request->filled('date_field') && ($request->filled('from_date') || $request->filled('to_date'))) {
-        $dateField = $this->getDateFieldQueryColumn($request->date_field);
-        if ($request->filled('from_date')) {
-            $tasks->whereDate($dateField, '>=', Carbon::parse($request->from_date)->startOfDay());
-        }
-        if ($request->filled('to_date')) {
-            $tasks->whereDate($dateField, '<=', Carbon::parse($request->to_date)->endOfDay());
-        }
-    }
-
-    $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
-        ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
-        ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
-        ->leftJoin('status', 'task_assignees.task_status', 'status.id')
-        ->leftJoin('projects', 'projects.id', 'tasks.project_id')
-        ->leftJoin('departments', 'departments.id', 'tasks.department_id')
-        ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
-        ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
-        ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
-        ->select(
-            'task_assignees.*',
-            'tasks.title',
-            'tasks.subject',
-            'tasks.description',
-            'status.status_name as task_status',
-            'projects.project_name as project',
-            'departments.department_name as department',
-            'sub_departments.sub_department_name as sub_department',
-            'tasks.created_at as created_at',
-            'tasks.start_date as start_date',
-            'tasks.completed_date',
-            'owner_department.department_name as creator_department',
-            'owner_sub_department.sub_department_name as creator_sub_department',
-            'assignee.phone_no as creator_phone',
-            DB::raw("CONCAT(assigner.first_name, ' ', assigner.last_name) as created_by_username"),
-            DB::raw("CONCAT(assignee.first_name, ' ', assignee.last_name) as Task_assign_to"),
-            'tasks.close_date',
-            DB::raw("DATE_FORMAT(tasks.created_at, '%d/%m/%Y') as Created_Date"),
-            DB::raw("DATE_FORMAT(tasks.start_date, '%d/%m/%Y') as start_date_formatted"),
-            DB::raw("DATE_FORMAT(task_assignees.due_date, '%d/%m/%Y') as due_date"),
-            DB::raw("DATE_FORMAT(tasks.completed_date, '%d/%m/%Y') as completed_date"),
-            DB::raw("DATE_FORMAT(task_assignees.accepted_date, '%d/%m/%Y') as accepted_date"),
-            DB::raw("DATE_FORMAT(tasks.close_date, '%d/%m/%Y') as close_date"),
-            'tasks.TaskNumber as Task_number'
-        );
-
-    $data = $tasks->get();
-
-    // Group and count
-    $processedData = [];
-    $columnValues = [];
-
-    foreach ($data as $item) {
-        $rowValue = $this->getFieldValue($item, $rowField);
-        $columnValue = $this->getFieldValue($item, $columnField);
-
-        if (!in_array($columnValue, $columnValues)) {
-            $columnValues[] = $columnValue;
+        // Role-based filtering
+        if (!$loggedInUser->hasRole('Super Admin')) {
+            $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+            $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+            $tasks->whereIn('user_id', $hierarchyUserIds);
         }
 
-        if (!isset($processedData[$rowValue])) {
-            $processedData[$rowValue] = [];
+        // Filters
+        if ($request->filled('department')) {
+            $tasks->where('department', $request->department);
+        }
+        if ($request->filled('assignees')) {
+            $tasks->where('user_id', $request->assignees);
+        }
+        if ($request->filled('status')) {
+            $tasks->where('task_status', $request->status);
         }
 
-        if (!isset($processedData[$rowValue][$columnValue])) {
-            $processedData[$rowValue][$columnValue] = 0;
+        // Date range filtering
+        if ($request->filled('date_field') && ($request->filled('from_date') || $request->filled('to_date'))) {
+            $dateField = $this->getDateFieldQueryColumn($request->date_field);
+            if ($request->filled('from_date')) {
+                $tasks->whereDate($dateField, '>=', Carbon::parse($request->from_date)->startOfDay());
+            }
+            if ($request->filled('to_date')) {
+                $tasks->whereDate($dateField, '<=', Carbon::parse($request->to_date)->endOfDay());
+            }
         }
 
-        $processedData[$rowValue][$columnValue]++;
-    }
+        $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+            ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
+            ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
+            ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+            ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+            ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+            ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+            ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+            ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+            ->select(
+                'task_assignees.*',
+                'tasks.title',
+                'tasks.subject',
+                'tasks.description',
+                'status.status_name as task_status',
+                'projects.project_name as project',
+                'departments.department_name as department',
+                'sub_departments.sub_department_name as sub_department',
+                'tasks.created_at as created_at',
+                'tasks.start_date as start_date',
+                'tasks.completed_date',
+                'owner_department.department_name as creator_department',
+                'owner_sub_department.sub_department_name as creator_sub_department',
+                'assignee.phone_no as creator_phone',
+                DB::raw("CONCAT(assigner.first_name, ' ', assigner.last_name) as created_by_username"),
+                DB::raw("CONCAT(assignee.first_name, ' ', assignee.last_name) as Task_assign_to"),
+                'tasks.close_date',
+                DB::raw("DATE_FORMAT(tasks.created_at, '%d/%m/%Y') as Created_Date"),
+                DB::raw("DATE_FORMAT(tasks.start_date, '%d/%m/%Y') as start_date_formatted"),
+                DB::raw("DATE_FORMAT(task_assignees.due_date, '%d/%m/%Y') as due_date"),
+                DB::raw("DATE_FORMAT(tasks.completed_date, '%d/%m/%Y') as completed_date"),
+                DB::raw("DATE_FORMAT(task_assignees.accepted_date, '%d/%m/%Y') as accepted_date"),
+                DB::raw("DATE_FORMAT(tasks.close_date, '%d/%m/%Y') as close_date"),
+                'tasks.TaskNumber as Task_number'
+            );
 
-    sort($columnValues);
+        $data = $tasks->get();
 
-    return Excel::download(new class ($processedData, $columnValues, $rowField, $columnField, $fieldDisplayNames) implements FromCollection, WithHeadings, WithStyles {
-        protected $data;
-        protected $columns;
-        protected $rowField;
-        protected $columnField;
-        protected $fieldDisplayNames;
+        // Group and count
+        $processedData = [];
+        $columnValues = [];
 
-        public function __construct($data, $columns, $rowField, $columnField, $fieldDisplayNames)
-        {
-            $this->data = $data;
-            $this->columns = $columns;
-            $this->rowField = $rowField;
-            $this->columnField = $columnField;
-            $this->fieldDisplayNames = $fieldDisplayNames;
+        foreach ($data as $item) {
+            $rowValue = $this->getFieldValue($item, $rowField);
+            $columnValue = $this->getFieldValue($item, $columnField);
+
+            if (!in_array($columnValue, $columnValues)) {
+                $columnValues[] = $columnValue;
+            }
+
+            if (!isset($processedData[$rowValue])) {
+                $processedData[$rowValue] = [];
+            }
+
+            if (!isset($processedData[$rowValue][$columnValue])) {
+                $processedData[$rowValue][$columnValue] = 0;
+            }
+
+            $processedData[$rowValue][$columnValue]++;
         }
 
-        public function collection()
-        {
-            $collection = collect();
-            $columnTotals = array_fill_keys($this->columns, 0);
-            $grandTotal = 0;
+        sort($columnValues);
 
-            foreach ($this->data as $rowValue => $columnData) {
-                $row = [$rowValue];
-                $rowTotal = 0;
+        return Excel::download(new class ($processedData, $columnValues, $rowField, $columnField, $fieldDisplayNames) implements FromCollection, WithHeadings, WithStyles {
+            protected $data;
+            protected $columns;
+            protected $rowField;
+            protected $columnField;
+            protected $fieldDisplayNames;
 
-                foreach ($this->columns as $column) {
-                    $count = $columnData[$column] ?? 0;
-                    $row[] = $count;
-                    $rowTotal += $count;
-                    $columnTotals[$column] += $count;
+            public function __construct($data, $columns, $rowField, $columnField, $fieldDisplayNames)
+            {
+                $this->data = $data;
+                $this->columns = $columns;
+                $this->rowField = $rowField;
+                $this->columnField = $columnField;
+                $this->fieldDisplayNames = $fieldDisplayNames;
+            }
+
+            public function collection()
+            {
+                $collection = collect();
+                $columnTotals = array_fill_keys($this->columns, 0);
+                $grandTotal = 0;
+
+                foreach ($this->data as $rowValue => $columnData) {
+                    $row = [$rowValue];
+                    $rowTotal = 0;
+
+                    foreach ($this->columns as $column) {
+                        $count = $columnData[$column] ?? 0;
+                        $row[] = $count;
+                        $rowTotal += $count;
+                        $columnTotals[$column] += $count;
+                    }
+
+                    $row[] = $rowTotal;
+                    $grandTotal += $rowTotal;
+
+                    $collection->push($row);
                 }
 
-                $row[] = $rowTotal;
-                $grandTotal += $rowTotal;
+                // Add totals row
+                $totalRow = ['Total'];
+                foreach ($this->columns as $column) {
+                    $totalRow[] = $columnTotals[$column];
+                }
+                $totalRow[] = $grandTotal;
+                $collection->push($totalRow);
 
-                $collection->push($row);
+                return $collection;
             }
 
-            // Add totals row
-            $totalRow = ['Total'];
-            foreach ($this->columns as $column) {
-                $totalRow[] = $columnTotals[$column];
-            }
-            $totalRow[] = $grandTotal;
-            $collection->push($totalRow);
+            public function headings(): array
+            {
+                $headings = [
+                    $this->fieldDisplayNames[$this->rowField] ?? $this->rowField,
+                ];
 
-            return $collection;
-        }
+                foreach ($this->columns as $column) {
+                    $headings[] = $column;
+                }
 
-        public function headings(): array
-        {
-            $headings = [
-                $this->fieldDisplayNames[$this->rowField] ?? $this->rowField,
-            ];
+                $headings[] = 'Total';
 
-            foreach ($this->columns as $column) {
-                $headings[] = $column;
+                return $headings;
             }
 
-            $headings[] = 'Total';
-
-            return $headings;
-        }
-
-        public function styles(Worksheet $sheet)
-        {
-            return [
-                1 => ['font' => ['bold' => true]],
-            ];
-        }
-    }, 'custom_report_' . date('Y-m-d') . '.xlsx');
-}
+            public function styles(Worksheet $sheet)
+            {
+                return [
+                    1 => ['font' => ['bold' => true]],
+                ];
+            }
+        }, 'custom_report_' . date('Y-m-d') . '.xlsx');
+    }
 
     /**
      * Helper method to get field value from task object
@@ -2038,6 +2039,21 @@ class DashboardCUstomizedController extends Controller
             default:
                 return 'tasks.created_at'; // Default to created_at
         }
+    }
+
+    public function destroy($id)
+    {
+        // dd($id);
+        $attachment = TaskAttachment::findOrFail($id);
+
+        // Optionally: delete file from storage
+        if (\Storage::exists($attachment->file)) {
+            \Storage::delete($attachment->file);
+        }
+
+        $attachment->delete();
+
+        return response()->json(['success' => true]);
     }
 }
 
