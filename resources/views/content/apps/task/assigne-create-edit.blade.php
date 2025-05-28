@@ -110,7 +110,7 @@
                                         <ul id="attachment-list">
                                             @foreach ($taskAss->task->attachments as $attachment)
                                                 <li id="attachment-{{ $attachment->id }}"
-                                                    class="d-flex justify-content-between align-items-center mb-1">
+                                                    class="">
                                                     <a href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}"
                                                         target="_blank">
                                                         {{ basename($attachment->file) }}
