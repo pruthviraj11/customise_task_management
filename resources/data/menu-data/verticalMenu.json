@@ -171,7 +171,18 @@
                 "task-list",
                 "task-create"
             ]
-        }, {
+        },
+        {
+            "url": "app/task/reassign_task",
+            "name": "Re Assign Task",
+            "icon": "clipboard",
+            "slug": "app-task-reassign_task",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
+        {
             "url": "app/task/deleted",
             "name": "Deleted Task",
             "icon": "trash",

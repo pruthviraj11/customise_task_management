@@ -425,6 +425,9 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll/pending_task', [TaskController::class, 'getAll_pendingTask'])->name('app-task-get-pending_task');
     Route::get('task/getAll/completed_task', [TaskController::class, 'getAll_completedTask'])->name('app-task-get-completed_task');
     Route::get('task/getAll/overall_task', [TaskController::class, 'getAll_overallTask'])->name('app-task-get-overall_task');
+    Route::get('task/getAll/reassign_task', [TaskController::class, 'getAll_reassignTask'])->name('app-task-get-reassign_task');
+Route::post('/task/reassign', [TaskController::class, 'reassign'])->name('app-task-reassign');
+
     Route::get('task/getAll/dynamic_report_list', [TaskController::class, 'getAll_dynamic_report_list'])->name('app-task-get-dynamic_report_list');
 
 
@@ -463,6 +466,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/pending_task', [TaskController::class, 'index'])->name('app-task-pending_task');
     Route::get('task/completed_task', [TaskController::class, 'index'])->name('app-task-completed_task');
     Route::get('task/overall_task', [TaskController::class, 'index'])->name('app-task-overall_task');
+    Route::get('task/reassign_task', [TaskController::class, 'index'])->name('app-task-reassign_task');
+
 
     Route::get('task/recurring_cancel/{encrypted_id}', [TaskController::class, 'cancel'])->name('app-task-recurring_cancel');
     Route::delete('attachment/{attachment}', [DashboardCUstomizedController::class, 'destroy'])->name('attachment.destroy');

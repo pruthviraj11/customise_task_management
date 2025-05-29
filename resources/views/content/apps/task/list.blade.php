@@ -70,7 +70,7 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    
+
                     @if ($type !== 'deleted' && $type !== 'dynamic_report')
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
@@ -262,6 +262,102 @@
             </div>
         </div>
     </section>
+    {{-- reassign --}}
+
+
+  {{-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const allUsers = @json($reassign_users);
+
+        document.querySelectorAll('.open-reassign-modal').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const encryptedTaskId = this.getAttribute('data-id');
+                const currentUserId = this.getAttribute('data-user-id');
+                const dropdown = document.getElementById('assignTo');
+                const hiddenInput = document.getElementById('modalTaskId');
+
+                hiddenInput.value = encryptedTaskId;
+
+                // Clear and populate dropdown
+                dropdown.innerHTML = '<option value="">Select User</option>';
+
+                allUsers.forEach(user => {
+                    if (user.id != currentUserId) {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = user.first_name;
+                        dropdown.appendChild(option);
+                    }
+                });
+            });
+        });
+    });
+</script> --}}
+
+
+    <!-- Reassign Modal -->
+    <div class="modal fade" id="reassignModal" tabindex="-1" aria-labelledby="reassignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="reassignForm" method="POST" action="{{ route('app-task-reassign') }}">
+                @csrf
+                <input type="hidden" name="task_id" id="modalTaskId">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reassignModalLabel">Reassign Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="assignTo" class="form-label">Assign To</label>
+                            <select class="form-select" name="assign_to" id="assignTo" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Reassign</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div><script>
+    $(document).ready(function () {
+        const allUsers = @json($reassign_users);
+
+        // Delegated event listener for dynamic DataTable buttons
+        $(document).on('click', '.open-reassign-modal', function () {
+            const encryptedTaskId = $(this).data('id');
+            const currentUserId = $(this).data('user-id');
+            const $dropdown = $('#assignTo');
+            const $hiddenInput = $('#modalTaskId');
+
+            console.log('Clicked for task:', encryptedTaskId, 'Current user:', currentUserId);
+
+            $hiddenInput.val(encryptedTaskId);
+            $dropdown.html('<option value="">Select User</option>');
+
+            allUsers.forEach(user => {
+                if (user.id != currentUserId) {
+                    $dropdown.append(
+                        $('<option>', {
+                            value: user.id,
+                            text: user.first_name
+                        })
+                    );
+                }
+            });
+
+            // Open the modal
+            $('#reassignModal').modal('show');
+        });
+    });
+</script>
+
+
+
+    {{-- reassign --}}
+
     {{-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -422,6 +518,9 @@
             @elseif ($type === 'overall_task') {
                     ajaxUrl = "{{ route('app-task-get-overall_task') }}";
                 }
+            @elseif ($type === 'reassign_task') {
+                    ajaxUrl = "{{ route('app-task-get-reassign_task') }}";
+                }
             @elseif ($type === 'list') {
                     ajaxUrl = "{{ route('app-task-getAll_total_task-get') }}";
                 }
@@ -444,9 +543,9 @@
                     ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
                 }
             @elseif ($type == 'dynamic_report') {
-                    const dateField = @json($dynamic_date_field ) ;
-                    const fromDate =  @json($dynamic_from_date) ;
-                    const toDate =  @json($dynamic_to_date) ;
+                    const dateField = @json($dynamic_date_field);
+                    const fromDate = @json($dynamic_from_date);
+                    const toDate = @json($dynamic_to_date);
 
                     ajaxUrl = "{{ route('app-task-get-dynamic_report_list') }}" +
                         "?date_field=" + encodeURIComponent(dateField) +
@@ -1445,6 +1544,18 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.open-reassign-modal').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const encryptedId = this.getAttribute('data-id');
+                    document.getElementById('modalTaskId').value = encryptedId;
+                });
+            });
+        });
+    </script>
+
     {{-- Page js files --}}
 @endsection
 

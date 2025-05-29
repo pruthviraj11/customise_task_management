@@ -96,7 +96,6 @@ class TaskController extends Controller
         $type = last(explode('-', request()->route()->getName()));
         $data['total_department'] = Task::count();
         $data['department'] = Task::get();
-
         // $taskAssignees = TaskAssignee::all();
         // foreach ($taskAssignees as $taskAssignee) {
         //     // Get the task by task_id from task_assignees, ensuring created_by is not null
@@ -220,8 +219,8 @@ class TaskController extends Controller
 
 
 
-
-        return view('content.apps.task.list', compact('data', 'type', 'user_id', 'status_id', 'route_type', 'dynamic_date_field', 'dynamic_from_date', 'dynamic_to_date'));
+        $reassign_users = User::where('report_to', auth()->user()->id)->whereNull('deleted_at')->where('status',1)->get();
+        return view('content.apps.task.list', compact('data', 'type', 'reassign_users', 'user_id', 'status_id', 'route_type', 'dynamic_date_field', 'dynamic_from_date', 'dynamic_to_date'));
     }
 
     public function updateTaskNumber(Request $request)
@@ -3159,8 +3158,263 @@ class TaskController extends Controller
             ->make(true);
     }
 
+    public function getAll_reassignTask(Request $request)
+    {
+        $loggedInUser = auth()->user();
+        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
 
+        $reporting_user = User::where('report_to', $loggedInUser->id)->pluck('id')->toArray();
+        // Base query
+        $tasks = TaskAssignee::with([
+            'task',
+            'creator',
+            'user',
+            'taskStatus',
+            'department_data',
+            'sub_department_data',
+            'task.project',
+            'creator.department',
+            'creator.sub_department'
+        ])->whereIn('task_id', function ($subquery) {
+            $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        });
 
+        // Role-based filtering
+        if ($loggedInUser->hasRole('Super Admin')) {
+            $tasks->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+        } else {
+            $tasks->whereIn('user_id', $reporting_user)
+                ->where('task_assignees.status', 0)
+                ->whereNull('task_assignees.deleted_at')
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                });
+        }
+
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+
+            $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
+                ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by') // Task assigned by
+                ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id') // Task assigned to
+                ->leftJoin('status', 'task_assignees.task_status', 'status.id')
+                ->leftJoin('projects', 'projects.id', 'tasks.project_id')
+                ->leftJoin('departments', 'departments.id', 'tasks.department_id')
+                ->leftJoin('sub_departments', 'task_assignees.sub_department', '=', 'sub_departments.id')
+                ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
+                ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
+
+                ->select(
+                    'task_assignees.*',
+                    'tasks.title',
+                    'tasks.subject',
+                    'tasks.description',
+                    'status.status_name',
+                    'projects.project_name',
+                    'departments.department_name',
+                    'sub_departments.sub_department_name',
+                    'tasks.created_at as task_created_at',
+                    'tasks.start_date as task_start_date',
+                    'tasks.completed_date',
+                    'owner_department.department_name as owner_department_name',
+                    'owner_sub_department.sub_department_name as owner_sub_department_name',
+                    'assignee.phone_no as owner_contact_info',
+                    'assigner.first_name as assign_by', // Task assigned by
+                    'assignee.first_name as assign_to', // Task assigned to
+                    'tasks.close_date'
+                );
+
+            // dd($tasks->get());
+        }
+
+        //For Filtering Task
+        $this->task_filter($tasks, $request);
+
+        return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search')['value']) {
+                    $search = $request->input('search')['value'];
+
+                    $dateSearch = null;
+                    if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $search)) {
+                        $dateParts = explode('/', $search);
+                        if (count($dateParts) === 3) {
+                            $dateSearch = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0]; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    $query->where(function ($q) use ($search, $dateSearch) {
+                        $q->where('task_assignees.task_number', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.title', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.description', 'LIKE', "%{$search}%")
+                            ->orWhere('status.status_name', 'LIKE', "%{$search}%")
+                            ->orWhere('projects.project_name', 'LIKE', "%{$search}%")
+                            ->orWhere('departments.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('sub_departments.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_department.department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('owner_sub_department.sub_department_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.phone_no', 'LIKE', "%{$search}%")
+                            ->orWhere('assigner.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('assignee.first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.created_at', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.start_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.due_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.completed_date', 'LIKE', "%{$search}%")
+                            ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$search}%")
+                            ->orWhere('tasks.close_date', 'LIKE', "%{$search}%")
+                        ;
+
+                        if ($dateSearch) {
+                            $q->orWhere('tasks.created_at', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.start_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.due_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.completed_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('task_assignees.accepted_date', 'LIKE', "%{$dateSearch}%")
+                                ->orWhere('tasks.close_date', 'LIKE', "%{$dateSearch}%")
+                            ;
+                        }
+                    });
+                }
+            })
+            ->addColumn('actions', function ($row) {
+                // dd($row);
+                $encryptedId_sub_task = encrypt($row->id);
+                $encryptedId = encrypt($row->task_id);
+                // $satusData = TaskAssignee::where('')
+                $updateButton = '';
+                $deleteButton = '';
+                $acceptButton = '';
+                $reassignButton = '';
+                if (auth()->user()->id == '1') {
+                    if ($row->status == 0) {
+                        $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    }
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                } elseif ($row->status == 0 && $row->user_id == auth()->user()->id) {
+                    // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
+
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
+                    $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
+                    $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
+                }
+                $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
+                if ($row->user_id != auth()->user()->id && $row->created_by != auth()->user()->id) {
+                    $reassignButton = "<a href='javascript:void(0)' data-bs-toggle='modal' data-bs-target='#reassignModal' data-user-id='$row->user_id' data-id='$encryptedId_sub_task' class='btn-sm btn-primary me-1 open-reassign-modal' title='Reassign Task'><i class='ficon' data-feather='refresh-cw'></i></a>";
+                }
+                return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . " " . $reassignButton . "</div>";
+            })
+
+            ->addColumn('created_by_username', function ($row) {
+                return $row->creator ? $row->creator->first_name . " " . $row->creator->last_name : "-";
+            })
+            ->addColumn('Task_number', function ($row) {
+                return $row->task_number ?? "-";
+            })
+            ->addColumn('Task_Ticket', function ($row) {
+                return $row->task ? ($row->task->ticket == 0 ? 'Task' : 'Ticket') : 'Task';
+            })
+
+            ->addColumn('description', function ($row) {
+                return $row->task && $row->task->description ? $row->task->description : '-';
+            })
+
+            ->addColumn('subject', function ($row) {
+                return $row->task && $row->task->subject ? $row->task->subject : '-';
+            })
+            ->addColumn('title', function ($row) {
+                return $row->task && $row->task->title ? $row->task->title : '-';
+            })
+            ->addColumn('Task_assign_to', function ($row) {
+                return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
+            })
+
+            ->addColumn('task_status', function ($row) {
+
+                return $row->task_status ? $row->taskStatus->status_name : "-";
+            })
+            ->addColumn('Created_Date', function ($row) {
+                return $row->task && $row->task->created_at ? \Carbon\Carbon::parse($row->task->created_at)->format('d/m/Y') : '-';
+            })
+            ->addColumn('start_date', function ($row) {
+                return $row->task && $row->task->start_date ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('due_date', function ($row) {
+                return $row->due_date ? \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('close_date', function ($row) {
+                // return $row->task && $row->task->close_date ? Carbon::parse($row->task->close_date)->format('d/m/Y') : '-';
+                if ($row->task && $row->task->close_date) {
+                    return Carbon::parse($row->task->close_date)->format('d/m/Y');
+                } elseif ($row->close_date) {
+                    return Carbon::parse($row->close_date)->format('d/m/Y');
+                }
+                return '-';
+            })
+            ->addColumn('completed_date', function ($row) {
+                return $row->task && $row->task->completed_date
+                    ? Carbon::parse($row->task->completed_date)->format('d/m/Y')
+                    : ($row->completed_date
+                        ? Carbon::parse($row->completed_date)->format('d/m/Y')
+                        : '-');
+            })
+            ->addColumn('accepted_date', function ($row) {
+                return $row->accepted_date ? Carbon::parse($row->accepted_date)->format('d/m/Y') : '-';
+            })
+
+            ->addColumn('project', function ($row) {
+                return $row->task && $row->task->project ? $row->task->project->project_name : '-';
+            })
+            ->addColumn('department', function ($row) {
+                if ($row->department && $row->department_data) {
+                    return $row->department_data->department_name;
+                } elseif ($row->task && $row->task->department) {
+                    return $row->task->department->department_name;
+                }
+                return '-';
+            })
+            ->addColumn('sub_department', function ($row) {
+                if ($row->sub_department && $row->sub_department_data) {
+                    return $row->sub_department_data->sub_department_name;
+                } elseif ($row->task && $row->task->sub_department) {
+                    return $row->task->sub_department->sub_department_name;
+                }
+                return '-';
+            })
+            ->addColumn('creator_department', function ($row) {
+                return $row->creator && $row->creator->department ? $row->creator->department->department_name : '-';
+            })
+            ->addColumn('creator_sub_department', function ($row) {
+                return $row->creator && $row->creator->sub_department ? $row->creator->sub_department->sub_department_name : '-';
+            })
+            ->addColumn('creator_phone', function ($row) {
+                return $row->creator && $row->creator->phone_no ? $row->creator->phone_no : '0';
+            })
+            ->addColumn('pin_task', function ($row) {
+                return '-';
+            })
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task'])
+            ->make(true);
+    }
+
+    public function reassign(Request $request)
+    {
+        $taskAssigneeId = decrypt($request->task_id); // if encrypted
+        $assignTo = $request->assign_to;
+        // dd($taskAssigneeId, $request->all());
+
+        TaskAssignee::where('id', $taskAssigneeId)->update(['user_id' => $assignTo]);
+
+        return redirect()->back()->with('success', 'Task reassigned successfully!');
+    }
     public function getAll_dynamic_report_list(Request $request)
     {
 
