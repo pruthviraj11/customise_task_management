@@ -425,6 +425,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll/pending_task', [TaskController::class, 'getAll_pendingTask'])->name('app-task-get-pending_task');
     Route::get('task/getAll/completed_task', [TaskController::class, 'getAll_completedTask'])->name('app-task-get-completed_task');
     Route::get('task/getAll/overall_task', [TaskController::class, 'getAll_overallTask'])->name('app-task-get-overall_task');
+    Route::get('task/getAll/dynamic_report_list', [TaskController::class, 'getAll_dynamic_report_list'])->name('app-task-get-dynamic_report_list');
+
 
     Route::post('task/pin', [TaskController::class, 'pinTask'])->name('app-task-pin');
 
@@ -542,7 +544,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll_in_execution', [TaskController::class, 'getAll_in_execution'])->name('app-task-getAll_in_execution-get');
 
     Route::get('task/hold', [TaskController::class, 'index'])->name('app-task-get-hold');
-    Route::get('task/getAll_hold', [TaskController::class, 'getAll_hold'])->name('app-task-getAll_hold-get');
+Route::get('dynamic-report-list', [TaskController::class, 'index'])->name('app-dynamic_report');
+ Route::get('task/getAll_hold', [TaskController::class, 'getAll_hold'])->name('app-task-getAll_hold-get');
 
     Route::get('task/admin_acc', [TaskController::class, 'index'])->name('app-task-get-admin_acc');
     Route::get('task/getAll_admin_acc', [TaskController::class, 'getAll_admin_acc'])->name('app-task-getAll_admin_acc-get');

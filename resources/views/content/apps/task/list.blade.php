@@ -70,7 +70,8 @@
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
-                    @if ($type !== 'deleted')
+                    
+                    @if ($type !== 'deleted' && $type !== 'dynamic_report')
                         <!-- Filter Inputs -->
                         {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
@@ -442,9 +443,16 @@
             @elseif ($type == 'close') {
                     ajaxUrl = "{{ route('app-task-getAll_close-get') }}";
                 }
-                // @elseif ($type == 'due_date_past') {
-                //         ajaxUrl = "{{ route('app-task-getAll_due_date_past-get') }}";
-                //     }
+            @elseif ($type == 'dynamic_report') {
+                    const dateField = @json($dynamic_date_field ) ;
+                    const fromDate =  @json($dynamic_from_date) ;
+                    const toDate =  @json($dynamic_to_date) ;
+
+                    ajaxUrl = "{{ route('app-task-get-dynamic_report_list') }}" +
+                        "?date_field=" + encodeURIComponent(dateField) +
+                        "&from_date=" + encodeURIComponent(fromDate) +
+                        "&to_date=" + encodeURIComponent(toDate);
+                }
             @elseif ($type == 'scope_defined') {
                     ajaxUrl = "{{ route('app-task-getAll_scope_defined-get') }}";
                 }

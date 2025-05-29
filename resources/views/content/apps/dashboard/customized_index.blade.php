@@ -387,7 +387,8 @@
                     </div>
                 </div>
                 <div class="text-danger mt-2">
-                    <p><span class="text-danger">*</span> If no Date Field is selected, the system will automatically use the Task's From Date and To Date.</p>
+                    <p><span class="text-danger">*</span> If no Date Field is selected, the system will automatically use
+                        the Task's From Date and To Date.</p>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button id="preview-report-btn" class="btn btn-info me-2">
@@ -478,6 +479,34 @@
                     return;
                 }
 
+                // Show SweetAlert with options
+                Swal.fire({
+                    title: 'Choose Report Type',
+                    text: 'How would you like to view the report?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: 'Summary',
+                    denyButtonText: 'List View',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#3085d6',
+                    denyButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User chose Summary
+                        generateSummaryReport(rowField, columnField);
+                    } else if (result.isDenied) {
+                        // User chose List View
+                        redirectToListView(rowField, columnField);
+                    }
+                    // If cancelled, do nothing
+                });
+            });
+
+            // Function to generate summary report (existing functionality)
+            function generateSummaryReport(rowField, columnField) {
                 // Show loading indicator
                 $('#report-loading').show();
                 $('#report-container').hide();
@@ -486,6 +515,7 @@
                 var filters = {
                     row_field: rowField,
                     column_field: columnField,
+                    report_type: 'summary',
                     _token: $('meta[name="csrf-token"]').attr('content')
                 };
 
@@ -538,9 +568,49 @@
                         console.error(error);
                     }
                 });
-            });
+            }
 
-            // Function to render the report table
+            // Function to redirect to list view
+            function redirectToListView(rowField, columnField) {
+                // Collect filter values
+                var filters = {
+                    row_field: rowField,
+                    column_field: columnField,
+                    report_type: 'dynamic_report'
+                };
+
+                // Add date range filters if selected
+                var dateField = $('#date-field-selector').val();
+                var fromDate = $('#date-from').val();
+                var toDate = $('#date-to').val();
+
+                if (dateField && (fromDate || toDate)) {
+                    filters.date_field = dateField;
+                    if (fromDate) filters.from_date = fromDate;
+                    if (toDate) filters.to_date = toDate;
+                }
+
+                // Add any additional filters from the page
+                if ($('#filter-department').length) {
+                    filters.department = $('#filter-department').val();
+                }
+
+                if ($('#filter-assignee').length) {
+                    filters.assignees = $('#filter-assignee').val();
+                }
+
+                if ($('#filter-status').length) {
+                    filters.status = $('#filter-status').val();
+                }
+
+                // Build query string
+                var queryString = $.param(filters);
+
+                // Redirect to list view route
+                window.location.href = 'dynamic-report-list?' + queryString;
+            }
+
+            // Function to render the report table (existing functionality)
             function renderReportTable(data, columnValues, rowField, columnField, fieldDisplayNames) {
                 var tableHTML = '<div class="table-responsive"><table class="table table-bordered table-striped">';
 
@@ -604,7 +674,6 @@
                 // Set the HTML content
                 $('#report-table').html(tableHTML);
             }
-
 
             // Existing Excel download functionality
             $('#generate-report-btn').on('click', function() {
