@@ -218,8 +218,12 @@ class TaskController extends Controller
         $dynamic_to_date = $request->to_date ?? '';
 
 
+        if (auth()->user()->hasRole('Super Admin') || auth()->user()->id == 1) {
+            $reassign_users = User::whereNull('deleted_at')->where('status', 1)->get();
+        }else{
+            $reassign_users = User::where('report_to', auth()->user()->id)->whereNull('deleted_at')->where('status', 1)->get();
 
-        $reassign_users = User::where('report_to', auth()->user()->id)->whereNull('deleted_at')->where('status',1)->get();
+        }
         return view('content.apps.task.list', compact('data', 'type', 'reassign_users', 'user_id', 'status_id', 'route_type', 'dynamic_date_field', 'dynamic_from_date', 'dynamic_to_date'));
     }
 
