@@ -219,9 +219,9 @@ class TaskController extends Controller
 
 
         if (auth()->user()->hasRole('Super Admin') || auth()->user()->id == 1) {
-            $reassign_users = User::whereNull('deleted_at')->where('status', 1)->get();
+            $reassign_users = User::select('users.*','departments.department_name as department_name')->leftjoin('departments','users.department_id','departments.id')->whereNull('users.deleted_at')->where('users.status', 1)->get();
         }else{
-            $reassign_users = User::where('report_to', auth()->user()->id)->whereNull('deleted_at')->where('status', 1)->get();
+            $reassign_users = User::select('users.*','departments.department_name as department_name')->leftjoin('departments','users.department_id','departments.id')->where('users.report_to', auth()->user()->id)->whereNull('users.deleted_at')->where('users.status', 1)->get();
 
         }
         return view('content.apps.task.list', compact('data', 'type', 'reassign_users', 'user_id', 'status_id', 'route_type', 'dynamic_date_field', 'dynamic_from_date', 'dynamic_to_date'));
@@ -964,7 +964,7 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
                 $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
@@ -1855,7 +1855,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {

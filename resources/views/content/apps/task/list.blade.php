@@ -342,7 +342,7 @@
                     $dropdown.append(
                         $('<option>', {
                             value: user.id,
-                            text: user.first_name + ' ' + user.last_name
+                            text: user.first_name + ' ' + user.last_name + ' (' + user.department_name + ')'
                         })
                     );
                 }
