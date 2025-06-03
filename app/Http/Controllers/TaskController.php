@@ -3194,6 +3194,7 @@ class TaskController extends Controller
             // dd($reporting_user);
             $tasks->whereIn('user_id', $hierarchyUserIds)
                 ->where('task_assignees.status', 0)
+                ->where('task_assignees.task_status','!=', 7)
                 ->whereNull('task_assignees.deleted_at')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
