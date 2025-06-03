@@ -219,9 +219,9 @@ class TaskController extends Controller
 
 
         if (auth()->user()->hasRole('Super Admin') || auth()->user()->id == 1) {
-            $reassign_users = User::select('users.*','departments.department_name as department_name')->leftjoin('departments','users.department_id','departments.id')->whereNull('users.deleted_at')->where('users.status', 1)->get();
-        }else{
-            $reassign_users = User::select('users.*','departments.department_name as department_name')->leftjoin('departments','users.department_id','departments.id')->where('users.report_to', auth()->user()->id)->whereNull('users.deleted_at')->where('users.status', 1)->get();
+            $reassign_users = User::select('users.*', 'departments.department_name as department_name')->leftjoin('departments', 'users.department_id', 'departments.id')->whereNull('users.deleted_at')->where('users.status', 1)->get();
+        } else {
+            $reassign_users = User::select('users.*', 'departments.department_name as department_name')->leftjoin('departments', 'users.department_id', 'departments.id')->where('users.report_to', auth()->user()->id)->whereNull('users.deleted_at')->where('users.status', 1)->get();
 
         }
         return view('content.apps.task.list', compact('data', 'type', 'reassign_users', 'user_id', 'status_id', 'route_type', 'dynamic_date_field', 'dynamic_from_date', 'dynamic_to_date'));
@@ -3194,7 +3194,7 @@ class TaskController extends Controller
             // dd($reporting_user);
             $tasks->whereIn('user_id', $hierarchyUserIds)
                 ->where('task_assignees.status', 0)
-                ->where('task_assignees.task_status','!=', 7)
+                ->where('task_assignees.task_status', '!=', 7)
                 ->whereNull('task_assignees.deleted_at')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -4263,6 +4263,7 @@ class TaskController extends Controller
                 })->get();
         } elseif ($type == 'requested_by_me') {
             $tasks = TaskAssignee::where('user_id', '!=', $user_id)->where('status', '0')->where('created_by', $user_id)
+                ->whereNotIn('task_status', [4, 7])
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })->get();
@@ -5880,6 +5881,7 @@ class TaskController extends Controller
 
                 $tasksData = TaskAssignee::where('user_id', '!=', $user_id)
                     ->where('status', 0)
+                    ->whereNotIn('task_status', [4, 7])
                     ->where('created_by', $user_id)
                     ->whereIn('task_id', function ($subquery) {
                         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
