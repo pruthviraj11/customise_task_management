@@ -5875,7 +5875,6 @@ class TaskController extends Controller
 
         if ($status_id == '1')  // requested_by_us
         {
-
             foreach ($user_ids as $user_id) {
                 $user_id = ($user_id);
 
