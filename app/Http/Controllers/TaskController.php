@@ -6899,12 +6899,24 @@ class TaskController extends Controller
 
     public function store(CreateTaskRequest $request)
     {
-        // try {
-        // dd($request->all());
-        // Fetch project, priority, and status
+        $userIds = $request->input('user_id', []);
+        $userIds = array_map('intval', $userIds);
+
+        foreach ($userIds as $index => $userId) {
+            $user = User::find($userId);
+            $departmentId = $user->department_id;
+            $subdepartment = $user->subdepartment;
+
+            if (empty($departmentId) || empty($subdepartment)) {
+                return redirect()->route("app-task-list")->with('error', 'Department and Subdepartment are required for this user.');
+            }
+        }
+
         $project = Project::where('id', $request->get('project_id'))->first();
         $priority = Priority::where('id', $request->get('priority_id'))->first();
         $status = Status::where('id', $request->get('task_status'))->first();
+
+
         if ($request->recurring == 1) {
             $request->validate([
                 'recurring_type' => 'required|string',
@@ -7176,6 +7188,10 @@ class TaskController extends Controller
                 $user = User::find($userId);  // Assuming you have a User model
                 $departmentId = $user->department_id;
                 $subdepartment = $user->subdepartment;
+
+                if (empty($departmentId) || empty($subdepartment)) {
+                    return redirect()->route("app-task-list")->with('error', 'Department and Subdepartment are required for this user.');
+                }
                 $status = (auth()->user()->id == $userId) ? 1 : 0; // If they are the same, set status to 1, otherwise 0
                 // Update pivot with user-specific task number
                 $task->users()->updateExistingPivot($userId, [
