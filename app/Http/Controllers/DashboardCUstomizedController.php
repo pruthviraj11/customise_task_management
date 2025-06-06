@@ -438,15 +438,17 @@ class DashboardCUstomizedController extends Controller
     {
         $loggedInUser = auth()->user();
         $userId = $loggedInUser->id;
-
-        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-
+        if ($userId != 1) {
+            $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        } else {
+            $users = User::all();
+        }
+        // dd($users);
 
         //$status = Status::where('status', 'on')->get();
         $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
 
         $table_data = [];
-
         foreach ($users as $user) {
             $userStatus = $user->status;
             $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
@@ -606,15 +608,14 @@ class DashboardCUstomizedController extends Controller
         $loggedInUser = auth()->user();
         $userId = $loggedInUser->id;
 
-        $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-
-        // dd($users);
+        if ($userId != 1) {
+            $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+        } else {
+            $users = User::all();
+        }
 
         //$status = Status::where('status', 'on')->get();
         $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
-
-
-
 
         $table_data = [];
 
@@ -650,7 +651,6 @@ class DashboardCUstomizedController extends Controller
 
             foreach ($status as $i => $s) {
 
-
                 $CountTaskStatus = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('task_status', $s->id)
                     ->where('created_by', $user->id)
@@ -663,8 +663,6 @@ class DashboardCUstomizedController extends Controller
 
                 $array[\Str::slug($s->status_name, '_')] = $CountTaskStatus;
                 $array['status_id'] = $s->id;
-
-
 
                 /*------  Total PendingTask Detais -----*/
 
@@ -709,7 +707,6 @@ class DashboardCUstomizedController extends Controller
 
                 /*--------------- Total Today's Due ------*/
 
-
                 $TodayCountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
@@ -734,7 +731,6 @@ class DashboardCUstomizedController extends Controller
                 // }
 
                 $array['today_dues'] = $TodayCountDueTask;
-
 
                 /*--------------  Total Finished Tasks -----*/
                 if (in_array($s->id, $complete_close)) {
@@ -771,7 +767,6 @@ class DashboardCUstomizedController extends Controller
         }
 
         return response()->json(['data' => $table_data]);
-
 
     }
 
