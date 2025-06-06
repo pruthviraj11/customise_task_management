@@ -803,7 +803,76 @@
                         text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
                         title: '',
                         filename: 'User Task Status',
-                        className: 'btn btn-success btn-sm'
+                        className: 'btn btn-success btn-sm',
+                        exportOptions: {
+                            columns: ':visible',
+                            format: {
+                                body: function(data, row, column, node) {
+                                    // Extract numeric value from HTML links for export
+                                    if (typeof data === 'string' && data.includes(
+                                        '<a')) {
+                                        var match = data.match(/>([^<]+)</);
+                                        return match ? match[1] : data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        },
+                        customize: function(xlsx) {
+    var sheet = xlsx.xl.worksheets['sheet1.xml'];
+    var api = usersTable;
+
+    var sheetXml = new XMLSerializer().serializeToString(sheet);
+
+    var totalColumns = api.columns().count();
+    var totals = [];
+    totals[0] = 'TOTAL';
+
+    for (var i = 1; i < totalColumns; i++) {
+        var columnTotal = api.column(i).data().reduce(function(a, b) {
+            var value = parseFloat(b) || 0;
+            return a + value;
+        }, 0);
+        totals[i] = columnTotal;
+    }
+
+    var rowCount = api.rows({ filter: 'applied' }).count() + 2;
+
+    function getExcelColumnLetter(colIndex) {
+        let dividend = colIndex + 1;
+        let columnName = '';
+        let modulo;
+
+        while (dividend > 0) {
+            modulo = (dividend - 1) % 26;
+            columnName = String.fromCharCode(65 + modulo) + columnName;
+            dividend = Math.floor((dividend - modulo) / 26);
+        }
+
+        return columnName;
+    }
+
+    var totalRowXml = '<row r="' + rowCount + '">';
+    for (var j = 0; j < totals.length; j++) {
+        var cellRef = getExcelColumnLetter(j) + rowCount;
+        var cellValue = totals[j];
+        var cellType = (j === 0) ? 'inlineStr' : 'n';
+
+        if (j === 0) {
+            totalRowXml += '<c r="' + cellRef + '" t="' + cellType + '"><is><t>' +
+                cellValue + '</t></is></c>';
+        } else {
+            totalRowXml += '<c r="' + cellRef + '" t="' + cellType + '"><v>' +
+                cellValue + '</v></c>';
+        }
+    }
+    totalRowXml += '</row>';
+
+    sheetXml = sheetXml.replace('</sheetData>', totalRowXml + '</sheetData>');
+
+    var parser = new DOMParser();
+    xlsx.xl.worksheets['sheet1.xml'] = parser.parseFromString(sheetXml, 'application/xml');
+}
                     }],
                     columns: [{
                             data: 'user_name',
@@ -1083,7 +1152,83 @@
                         text: '<i class="ficon" data-feather="file-text"></i> Export to Excel',
                         title: '',
                         filename: 'User Task Status',
-                        className: 'btn btn-success btn-sm'
+                        className: 'btn btn-success btn-sm',
+                        exportOptions: {
+                            columns: ':visible',
+                            format: {
+                                body: function(data, row, column, node) {
+                                    // Extract numeric value from HTML links for export
+                                    if (typeof data === 'string' && data.includes(
+                                        '<a')) {
+                                        var match = data.match(/>([^<]+)</);
+                                        return match ? match[1] : data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        },
+                        customize: function(xlsx) {
+                            // Simple approach - add totals using SheetJS utilities
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            var api = usersTable;
+
+                            // Calculate totals
+                            var totalColumns = api.columns().count();
+                            var totals = [];
+                            totals.push('TOTAL'); // First column
+
+                            for (var i = 1; i < totalColumns; i++) {
+                                var columnTotal = api.column(i).data().reduce(function(
+                                    a, b) {
+                                    return a + (parseFloat(b) || 0);
+                                }, 0);
+                                totals.push(columnTotal);
+                            }
+
+                            // Add totals row to the workbook
+                            var wb = xlsx;
+                            var ws = wb.xl.worksheets['sheet1.xml'];
+
+                            // Get current row count and add totals
+                            var rowCount = api.data().count() + 1; // +1 for header
+
+                            // Create totals row in the sheet
+                            var $sheet = $(ws);
+                            var lastRow = $sheet.find('row').last();
+                            var newRowNumber = rowCount + 1;
+
+                            var totalRowXml = '<row r="' + newRowNumber + '">';
+
+                            for (var j = 0; j < totals.length; j++) {
+                                var colLetter = String.fromCharCode(65 +
+                                j); // A, B, C, etc.
+                                var cellRef = colLetter + newRowNumber;
+                                var cellValue = totals[j];
+
+                                if (j === 0) {
+                                    // Text cell for "TOTAL"
+                                    totalRowXml += '<c r="' + cellRef +
+                                        '" t="inlineStr"><is><t>' + cellValue +
+                                        '</t></is></c>';
+                                } else {
+                                    // Number cell for totals
+                                    totalRowXml += '<c r="' + cellRef + '"><v>' +
+                                        cellValue + '</v></c>';
+                                }
+                            }
+
+                            totalRowXml += '</row>';
+
+                            // Insert the row before </sheetData>
+                            var sheetStr = (new XMLSerializer()).serializeToString(ws);
+                            sheetStr = sheetStr.replace('</sheetData>', totalRowXml +
+                                '</sheetData>');
+
+                            // Parse back to XML
+                            var parser = new DOMParser();
+                            xlsx.xl.worksheets['sheet1.xml'] = parser.parseFromString(
+                                sheetStr, 'text/xml');
+                        }
                     }],
                     columns: [{
                             data: 'user_name',
