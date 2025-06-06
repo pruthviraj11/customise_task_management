@@ -105,196 +105,8 @@
             @endif
 
         </div>
-        {{-- @if (auth()->user()->id != 1) --}}
 
 
-
-        <!---- Requested to us  ---->
-        <div class="card-header " >
-            <h1>Requested To Us Tasks Lists
-            </h1>
-            <div style="height: 60vh; overflow-y: scroll;">
-            <table id="requested_to_me" class="table table-bordered w-100">
-                <thead>
-                    <tr>
-                        <th>User Name</th>
-                        <th>Requested To Us</th>
-
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4 && $index != 2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
-
-                        <th>Pending Tasks</th>
-                        <th>Over Due</th>
-                        <th>Today's Due</th>
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index == 2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
-
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index >= 5)
-                                <th>{{ $status->status_name }}</th>
-                            @endif
-                        @endforeach
-
-
-                        <th>Finished Task</th>
-                        <th>Total</th>
-                        <th>Rejected Task</th>
-                        <th>Overall Total</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>Total</th>
-                        <th></th> <!-- Requested To Us Total -->
-                        @foreach ($statusinfos as $index => $status)
-                            <th></th> <!-- Status Totals -->
-                        @endforeach
-                        <th></th> <!-- Pending Tasks Total -->
-                        <th></th> <!-- Overdue Tasks Total -->
-                        <th></th> <!-- Today's Due Tasks Total -->
-                        <th></th> <!-- Finished Tasks Total -->
-                        <th></th> <!-- Grand Total -->
-                        <th></th> <!-- Rejected Tasks Total -->
-                        <th></th> <!-- Overall Total -->
-                    </tr>
-                </tfoot>
-            </table>
-            </div>
-        </div>
-
-
-
-        <!---- Requested By Us  ----->
-        <div class="card-header" >
-            <h1>Requested By Us Tasks Lists
-            </h1>
-            <div style="height: 60vh; overflow-y: scroll; overflow-x: scroll;">
-            <table id="requested_by_me" class="table table-bordered w-100">
-                <thead>
-                    <tr>
-                        <th>User Name</th>
-                        <th>Requested By Us</th>
-
-
-
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index <= 4 && $index != 2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
-
-                        <th>Pending Tasks</th>
-                        <th>Over Due</th>
-                        <th>Today's Due</th>
-
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index == 2)
-                                <th>{{ $status->status_name }} </th>
-                            @endif
-                        @endforeach
-                        @foreach ($statusinfos as $index => $status)
-                            @if ($index >= 5)
-                                <th>{{ $status->status_name }}</th>
-                            @endif
-                        @endforeach
-
-
-                        <th>Finished Task</th>
-                        <th>Total</th>
-                        <th>Rejected Tasks</th>
-                        <th>Overall Total</th>
-
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>Total</th>
-                        <th></th> <!-- Requested To Us Total -->
-                        @foreach ($statusinfos as $index => $status)
-                            <th></th> <!-- Status Totals -->
-                        @endforeach
-                        <th></th> <!-- Pending Tasks Total -->
-                        <th></th> <!-- Overdue Tasks Total -->
-                        <th></th> <!-- Today's Due Tasks Total -->
-                        <th></th> <!-- Finished Tasks Total -->
-                        <th></th> <!-- Grand Total -->
-                        <th></th> <!-- Rejected Tasks Total -->
-                        <th></th> <!-- Overall Total -->
-                    </tr>
-                </tfoot>
-            </table>
-            </div>
-        </div>
-
-
-
-        <!---- Total Task to us  ---->
-        {{--  Commented As Anand bhai Said --}}
-
-        {{-- <div class="card-header">
-                <h1>Total Tasks Lists
-                </h1>
-                <table id="total_task_status" class="table table-bordered w-100">
-                    <thead>
-                        <tr>
-                            <th>User Name</th>
-                            <th>Total Requested Status</th>
-
-
-
-                            @foreach ($statusinfos as $index => $status)
-                                @if ($index <= 3)
-                                    <th>{{ $status->status_name }}</th>
-                                @endif
-                            @endforeach
-
-                            <th>Pending Tasks</th>
-                            <th>Over Due</th>
-                            <th>Today's Due</th>
-
-                            @foreach ($statusinfos as $index => $status)
-                                @if ($index >= 4)
-                                    <th>{{ $status->status_name }}</th>
-                                @endif
-                            @endforeach
-
-
-                            <th>Finished Task</th>
-                            <th>Total</th>
-
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Total</th>
-                            <th></th> <!-- Requested To Us Total -->
-                            @foreach ($statusinfos as $index => $status)
-                                <th></th> <!-- Status Totals -->
-                            @endforeach
-                            <th></th> <!-- Pending Tasks Total -->
-                            <th></th> <!-- Overdue Tasks Total -->
-                            <th></th> <!-- Today's Due Tasks Total -->
-                            <th></th> <!-- Finished Tasks Total -->
-                            <th></th> <!-- Grand Total -->
-                        </tr>
-                    </tfoot>
-                </table>
-            </div> --}}
-
-
-
-
-
-
-
-        {{-- @endif --}}
-        {{-- <div class="card"> --}}
         <div class="card-header">
             <div>
                 <h1>Dynamic Report</h1>
@@ -434,6 +246,199 @@
                 <div id="report-table"></div>
             </div>
         </div>
+
+
+        {{-- @if (auth()->user()->id != 1) --}}
+
+
+
+        <!---- Requested to us  ---->
+        <div class="card-header ">
+            <h1>Requested To Us Tasks Lists
+            </h1>
+            <div style="height: 60vh; overflow-y: scroll;">
+                <table id="requested_to_me" class="table table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Requested To Us</th>
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index <= 4 && $index != 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
+
+                            <th>Pending Tasks</th>
+                            <th>Over Due</th>
+                            <th>Today's Due</th>
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index == 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index >= 5)
+                                    <th>{{ $status->status_name }}</th>
+                                @endif
+                            @endforeach
+
+
+                            <th>Finished Task</th>
+                            <th>Total</th>
+                            <th>Rejected Task</th>
+                            <th>Overall Total</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                            <th></th> <!-- Rejected Tasks Total -->
+                            <th></th> <!-- Overall Total -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!---- Requested By Us  ----->
+        <div class="card-header">
+            <h1>Requested By Us Tasks Lists
+            </h1>
+            <div style="height: 60vh; overflow-y: scroll; overflow-x: scroll;">
+                <table id="requested_by_me" class="table table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Requested By Us</th>
+
+
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index <= 4 && $index != 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
+
+                            <th>Pending Tasks</th>
+                            <th>Over Due</th>
+                            <th>Today's Due</th>
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index == 2)
+                                    <th>{{ $status->status_name }} </th>
+                                @endif
+                            @endforeach
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index >= 5)
+                                    <th>{{ $status->status_name }}</th>
+                                @endif
+                            @endforeach
+
+
+                            <th>Finished Task</th>
+                            <th>Total</th>
+                            <th>Rejected Tasks</th>
+                            <th>Overall Total</th>
+
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                            <th></th> <!-- Rejected Tasks Total -->
+                            <th></th> <!-- Overall Total -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!---- Total Task to us  ---->
+        {{--  Commented As Anand bhai Said --}}
+
+        {{-- <div class="card-header">
+                <h1>Total Tasks Lists
+                </h1>
+                <table id="total_task_status" class="table table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Total Requested Status</th>
+
+
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index <= 3)
+                                    <th>{{ $status->status_name }}</th>
+                                @endif
+                            @endforeach
+
+                            <th>Pending Tasks</th>
+                            <th>Over Due</th>
+                            <th>Today's Due</th>
+
+                            @foreach ($statusinfos as $index => $status)
+                                @if ($index >= 4)
+                                    <th>{{ $status->status_name }}</th>
+                                @endif
+                            @endforeach
+
+
+                            <th>Finished Task</th>
+                            <th>Total</th>
+
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th></th> <!-- Requested To Us Total -->
+                            @foreach ($statusinfos as $index => $status)
+                                <th></th> <!-- Status Totals -->
+                            @endforeach
+                            <th></th> <!-- Pending Tasks Total -->
+                            <th></th> <!-- Overdue Tasks Total -->
+                            <th></th> <!-- Today's Due Tasks Total -->
+                            <th></th> <!-- Finished Tasks Total -->
+                            <th></th> <!-- Grand Total -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div> --}}
+
+
+
+
+
+
+
+        {{-- @endif --}}
+        {{-- <div class="card"> --}}
+
         {{-- </div> --}}
 
     </section>
