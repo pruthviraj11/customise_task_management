@@ -819,60 +819,65 @@
                             }
                         },
                         customize: function(xlsx) {
-    var sheet = xlsx.xl.worksheets['sheet1.xml'];
-    var api = usersTable;
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            var api = usersTable;
 
-    var sheetXml = new XMLSerializer().serializeToString(sheet);
+                            // Convert XML to string if it's not already
+                            var sheetXml = (typeof sheet === 'string') ? sheet :
+                                new XMLSerializer().serializeToString(sheet);
 
-    var totalColumns = api.columns().count();
-    var totals = [];
-    totals[0] = 'TOTAL';
+                            // Calculate column totals
+                            var totalColumns = api.columns().count();
+                            var totals = [];
+                            totals[0] = 'TOTAL'; // First column label
 
-    for (var i = 1; i < totalColumns; i++) {
-        var columnTotal = api.column(i).data().reduce(function(a, b) {
-            var value = parseFloat(b) || 0;
-            return a + value;
-        }, 0);
-        totals[i] = columnTotal;
-    }
+                            for (var i = 1; i < totalColumns; i++) {
+                                var columnTotal = api.column(i).data().reduce(function(
+                                    a, b) {
+                                    var value = parseFloat(b) || 0;
+                                    return a + value;
+                                }, 0);
+                                totals[i] = columnTotal;
+                            }
 
-    var rowCount = api.rows({ filter: 'applied' }).count() + 2;
+                            // Get the row count to add totals at the bottom
+                            var rowCount = api.data().count() +
+                            2; // +1 for header, +1 for 0-based index
 
-    function getExcelColumnLetter(colIndex) {
-        let dividend = colIndex + 1;
-        let columnName = '';
-        let modulo;
+                            // Create the totals row XML
+                            var totalRowXml = '<row r="' + rowCount + '">';
+                            for (var j = 0; j < totals.length; j++) {
+                                var cellRef = String.fromCharCode(65 + j) +
+                                rowCount; // A, B, C, etc.
+                                var cellValue = totals[j];
+                                var cellType = (j === 0) ? 'inlineStr' :
+                                'n'; // String for first column, number for others
 
-        while (dividend > 0) {
-            modulo = (dividend - 1) % 26;
-            columnName = String.fromCharCode(65 + modulo) + columnName;
-            dividend = Math.floor((dividend - modulo) / 26);
-        }
+                                if (j === 0) {
+                                    totalRowXml += '<c r="' + cellRef + '" t="' +
+                                        cellType + '"><is><t>' + cellValue +
+                                        '</t></is></c>';
+                                } else {
+                                    totalRowXml += '<c r="' + cellRef + '" t="' +
+                                        cellType + '"><v>' + cellValue + '</v></c>';
+                                }
+                            }
+                            totalRowXml += '</row>';
 
-        return columnName;
-    }
+                            // Insert the totals row before closing sheetData
+                            var sheetDataCloseTag = '</sheetData>';
+                            sheetXml = sheetXml.replace(sheetDataCloseTag, totalRowXml +
+                                sheetDataCloseTag);
 
-    var totalRowXml = '<row r="' + rowCount + '">';
-    for (var j = 0; j < totals.length; j++) {
-        var cellRef = getExcelColumnLetter(j) + rowCount;
-        var cellValue = totals[j];
-        var cellType = (j === 0) ? 'inlineStr' : 'n';
-
-        if (j === 0) {
-            totalRowXml += '<c r="' + cellRef + '" t="' + cellType + '"><is><t>' +
-                cellValue + '</t></is></c>';
-        } else {
-            totalRowXml += '<c r="' + cellRef + '" t="' + cellType + '"><v>' +
-                cellValue + '</v></c>';
-        }
-    }
-    totalRowXml += '</row>';
-
-    sheetXml = sheetXml.replace('</sheetData>', totalRowXml + '</sheetData>');
-
-    var parser = new DOMParser();
-    xlsx.xl.worksheets['sheet1.xml'] = parser.parseFromString(sheetXml, 'application/xml');
-}
+                            // Convert back to XML object if needed
+                            if (typeof sheet !== 'string') {
+                                var parser = new DOMParser();
+                                xlsx.xl.worksheets['sheet1.xml'] = parser
+                                    .parseFromString(sheetXml, 'application/xml');
+                            } else {
+                                xlsx.xl.worksheets['sheet1.xml'] = sheetXml;
+                            }
+                        }
                     }],
                     columns: [{
                             data: 'user_name',
