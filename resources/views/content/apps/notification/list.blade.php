@@ -43,6 +43,7 @@
                     <table class="user-list-table table dt-responsive notification-table" id="notification-table">
                         <thead>
                             <tr>
+                                <th>id</th>
                                 <th>Action By</th>
                                 <th>Action Type</th>
                                 <th>Message</th>
@@ -80,6 +81,9 @@
                 $('#notification-table').DataTable({
                     processing: true,
                     serverSide: true,
+                    order: [
+                        [0, 'desc']
+                    ],
                     ajax: {
                         url: '{{ route('notifications-get-all') }}',
                         method: 'GET',
@@ -87,23 +91,34 @@
                             notification_type: $('#notification_type').val(),
                         }
                     },
-                    columns: [
-                        // {data: 'inquiry_detail', name: 'inquiry_detail'},
+                    columns: [{
+                            data: 'id',
+                            name: 'id',
+                            visible: false,
+                            searchable: false // optional: prevent it from being searched
+                        },
                         {
-                            data: 'notification_action_from',
-                            name: 'notification_action_from'
+                            data: 'first_name',
+                            name: 'first_name',
+                            searchable: true
                         },
                         {
                             data: 'notification_type',
-                            name: 'notification_type'
+                            name: 'notification_type',
+                            searchable: true
+
                         },
                         {
                             data: 'message',
-                            name: 'message'
+                            name: 'message',
+                            searchable: true
+
                         },
                         {
                             data: 'notification_date',
-                            name: 'notification_date'
+                            name: 'notification_date',
+                            searchable: true
+
                         },
                         {
                             data: 'actions',

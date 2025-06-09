@@ -18,13 +18,26 @@ class NotificationController extends Controller
     {
         $internalNotifications = InternalNotifications::where('notification_to', auth()->user()->id)
             ->leftJoin('users', 'internal_notifications.notification_from', '=', 'users.id')
-            ->select('internal_notifications.*', 'users.first_name as notification_action_from');
+            ->select('internal_notifications.*', 'users.first_name');
         if ($request->get('notification_type') == 'unread') {
             $internalNotifications->where('internal_notifications.notification_status', false);
         } elseif ($request->get('notification_type') == 'read') {
             $internalNotifications->where('internal_notifications.notification_status', true);
         }
-        $internalNotifications->get();
+
+
+        // ✅ Custom global search
+        if (!empty($request->search['value'])) {
+            $searchTerm = $request->search['value'];
+            $internalNotifications->where(function ($query) use ($searchTerm) {
+                $query->where('internal_notifications.message', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('internal_notifications.notification_type', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('users.first_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhereRaw("DATE_FORMAT(internal_notifications.created_at, '%d-%m-%Y') like ?", ["%$searchTerm%"])
+                    ->orWhereRaw("DATE_FORMAT(internal_notifications.created_at, '%d-%m-%Y %h:%i %p') like ?", ["%$searchTerm%"]);
+            });
+        }
+        // $internalNotifications->get();
         return \Yajra\DataTables\Facades\DataTables::of($internalNotifications)
             ->addColumn('actions', function ($row) {
                 if ($row->notification_status == false) {
@@ -42,7 +55,10 @@ class NotificationController extends Controller
             ->addColumn('notification_date', function ($row) {
                 return date('d-m-Y h:i A', strtotime($row->created_at));
             })
-            ->rawColumns(['actions', 'message','notification_date'])
+            ->rawColumns(['actions', 'message', 'notification_date'])
+            ->filter(function ($query) {
+                // This disables the default search behavior
+            })
             ->make(true);
     }
 
