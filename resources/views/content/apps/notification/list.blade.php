@@ -98,7 +98,7 @@
                             searchable: false // optional: prevent it from being searched
                         },
                         {
-                            data: 'first_name',
+                            data: 'full_name',
                             name: 'first_name',
                             searchable: true
                         },

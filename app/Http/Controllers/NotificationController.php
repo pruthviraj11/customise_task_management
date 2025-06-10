@@ -18,7 +18,7 @@ class NotificationController extends Controller
     {
         $internalNotifications = InternalNotifications::where('notification_to', auth()->user()->id)
             ->leftJoin('users', 'internal_notifications.notification_from', '=', 'users.id')
-            ->select('internal_notifications.*', 'users.first_name');
+            ->select('internal_notifications.*', 'users.first_name','users.last_name');
         if ($request->get('notification_type') == 'unread') {
             $internalNotifications->where('internal_notifications.notification_status', false);
         } elseif ($request->get('notification_type') == 'read') {
@@ -39,6 +39,9 @@ class NotificationController extends Controller
         }
         // $internalNotifications->get();
         return \Yajra\DataTables\Facades\DataTables::of($internalNotifications)
+        ->addColumn('full_name', function ($user) {
+        return $user->first_name . ' ' . $user->last_name;
+    })
             ->addColumn('actions', function ($row) {
                 if ($row->notification_status == false) {
                     $encryptedId = encrypt($row->id);
@@ -55,7 +58,7 @@ class NotificationController extends Controller
             ->addColumn('notification_date', function ($row) {
                 return date('d-m-Y h:i A', strtotime($row->created_at));
             })
-            ->rawColumns(['actions', 'message', 'notification_date'])
+            ->rawColumns(['actions', 'full_name','message', 'notification_date'])
             ->filter(function ($query) {
                 // This disables the default search behavior
             })
