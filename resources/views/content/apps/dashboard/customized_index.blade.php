@@ -783,7 +783,9 @@
             });
         });
     </script>
-
+    <script>
+        window.isSuperAdmin = @json(auth()->user()->getRoleNames()[0] == 'Super Admin');
+    </script>
     <script>
         $(document).ready(function() {
 
@@ -810,7 +812,7 @@
                                 body: function(data, row, column, node) {
                                     // Extract numeric value from HTML links for export
                                     if (typeof data === 'string' && data.includes(
-                                        '<a')) {
+                                            '<a')) {
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
@@ -842,16 +844,16 @@
 
                             // Get the row count to add totals at the bottom
                             var rowCount = api.data().count() +
-                            2; // +1 for header, +1 for 0-based index
+                                2; // +1 for header, +1 for 0-based index
 
                             // Create the totals row XML
                             var totalRowXml = '<row r="' + rowCount + '">';
                             for (var j = 0; j < totals.length; j++) {
                                 var cellRef = String.fromCharCode(65 + j) +
-                                rowCount; // A, B, C, etc.
+                                    rowCount; // A, B, C, etc.
                                 var cellValue = totals[j];
                                 var cellType = (j === 0) ? 'inlineStr' :
-                                'n'; // String for first column, number for others
+                                    'n'; // String for first column, number for others
 
                                 if (j === 0) {
                                     totalRowXml += '<c r="' + cellRef + '" t="' +
@@ -1079,58 +1081,79 @@
                         var totalColumns = api.columns().count();
                         var grandTotal = 0;
 
+                        // Check if current user is Super Admin (you'll need to pass this from your backend)
+                        var isSuperAdmin = window.isSuperAdmin ||
+                        false; // Set this variable from your backend
+
                         for (var i = 1; i < totalColumns; i++) {
                             var columnTotal = api.column(i).data().reduce(function(a, b) {
                                 return a + (parseFloat(b) || 0);
                             }, 0);
 
-                            // Construct the URL dynamically based on the column index or data
-                            var userIds = data.map(function(row) {
-                                return row.user_id;
-                            }).join(',');
+                            var userIds, routeUrl;
 
-                            var status_id =
-                                i; // Assuming each column corresponds to a `status_id`
-                            var typeOrStatusId =
-                                'requestedToUsTasks'; // Replace with your type logic
-                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+                            if (isSuperAdmin) {
+                                // For Super Admin, don't send specific user IDs
+                                userIds = 'all'; // or you can pass a special identifier
+                                var status_id = i;
+                                var typeOrStatusId = 'requestedToUsTasks';
+                                routeUrl = createUrlForSuperAdmin(status_id, typeOrStatusId);
+                            } else {
+                                // For regular users, use the existing logic
+                                userIds = data.map(function(row) {
+                                    return row.user_id;
+                                }).join(',');
+                                var status_id = i;
+                                var typeOrStatusId = 'requestedToUsTasks';
+                                routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+                            }
 
                             // Render the clickable link in the footer
                             $(api.column(i).footer()).html(renderClickableLink(routeUrl,
                                 columnTotal));
-
                             grandTotal += columnTotal;
                         }
 
-
-                        var totalColumnIndex = totalColumns -
-                            1; // Assuming "Total" column is the last column
+                        var totalColumnIndex = totalColumns - 1;
                         var verticalSum = api.column(totalColumnIndex, {
                                 page: 'current'
                             }).data()
                             .reduce(function(a, b) {
-                                return a + (parseFloat(b) || 0); // Sum vertically
+                                return a + (parseFloat(b) || 0);
                             }, 0);
 
-
-                        // Render the grand total in the last column
-                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
-
-                        var grandTotalRouteUrl = createUrl(userIds, 'all',
-                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
+                        var grandTotalRouteUrl;
+                        if (isSuperAdmin) {
+                            grandTotalRouteUrl = createUrlForSuperAdmin('all',
+                                'requestedToUsTasks');
+                        } else {
+                            var userIds = data.map(function(row) {
+                                return row.user_id;
+                            }).join(',');
+                            grandTotalRouteUrl = createUrl(userIds, 'all',
+                            'requestedToUsTasks');
+                        }
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
                             grandTotalRouteUrl, verticalSum));
-
                     }
-
                 });
 
+                // Existing function for regular users
                 function createUrl(userId, status_id, typeOrStatusId) {
                     let routeUrl =
                         '{{ route('tasks.requested_to_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
                     return routeUrl
                         .replace(':user_id', userId)
+                        .replace(':status_id', status_id)
+                        .replace(':type_or_status_id', typeOrStatusId);
+                }
+
+                // New function for Super Admin
+                function createUrlForSuperAdmin(status_id, typeOrStatusId) {
+                    let routeUrl =
+                        '{{ route('tasks.requested_to_us_footer_total', ['user_id' => 'all', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                    return routeUrl
                         .replace(':status_id', status_id)
                         .replace(':type_or_status_id', typeOrStatusId);
                 }
@@ -1164,7 +1187,7 @@
                                 body: function(data, row, column, node) {
                                     // Extract numeric value from HTML links for export
                                     if (typeof data === 'string' && data.includes(
-                                        '<a')) {
+                                            '<a')) {
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
@@ -1206,7 +1229,7 @@
 
                             for (var j = 0; j < totals.length; j++) {
                                 var colLetter = String.fromCharCode(65 +
-                                j); // A, B, C, etc.
+                                    j); // A, B, C, etc.
                                 var cellRef = colLetter + newRowNumber;
                                 var cellValue = totals[j];
 
