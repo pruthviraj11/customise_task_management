@@ -7210,17 +7210,32 @@ class TaskController extends Controller
 
             $html = View::make('emails.task_created', compact('task'))->render();
             $subject = "New Task Created";
+            // foreach ($task->users as $user) {
+
+
+            //     $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+            //     createNotification(
+            //         $user->id,
+            //         $task->id,
+            //         'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+            //         'Created'
+            //     );
+            // }
+
 
             foreach ($task->users as $user) {
+
+                $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $user->id)->first();
                 $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
 
-                createNotification(
-                    $user->id,
+                createNotification($user->id,
                     $task->id,
-                    'New task ' . $task->id . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
+                    'New task ' . $taskAssignee->task_number . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
                     'Created'
                 );
             }
+
 
             // Redirect with success message
             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');

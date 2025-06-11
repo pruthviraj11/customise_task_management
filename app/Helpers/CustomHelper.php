@@ -79,7 +79,6 @@ function createNotification($to = '', $inquiry_id = '',$message, $notification_t
 
         $notification->message = $message;
         $notification->notification_status = false;
-        // dd($notification);
         $notification->save();
 
         return response(['status' => true, 'message' => 'Notification Successful..']);
