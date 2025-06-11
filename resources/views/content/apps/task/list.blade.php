@@ -219,7 +219,12 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contactinfo</th>
                                 <th>Close Date</th>
+                               
                                 <th>Status</th>
+                                 @if ($type == 'assign_by_me')
+                                    <th>Rating</th>
+                                    <th>Feedback</th>
+                                @endif
                                 {{-- <th>Is Pinned</th> --}}
 
                                 {{-- Fields For Excel Starts --}}
@@ -843,7 +848,11 @@
                             order: 'applied'
                         },
                         columns: [23, 2, 3, 4, 5, 6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 16, 17, 18,
-                            19, 20, 21, 29
+                            19, 20, 21, 29,
+                            @if ($type == 'assign_by_me')
+                                30,
+                                31,
+                            @endif
                         ]
                         //Add 1 in columns for pin task column
                     },
@@ -1052,6 +1061,7 @@
                         searchable: true,
                         visible: selectedColumns.includes("22")
                     },
+                  
                     @if ($type == 'mytask')
 
                         {
@@ -1080,6 +1090,20 @@
                             }
                         }
                     },
+
+                    @if ($type == 'assign_by_me')
+{
+    data: 'rating',
+    name: 'rating',
+    searchable: true,
+},
+{
+    data: 'task_feedback',
+    name: 'task_feedback',
+    searchable: true,
+},
+@endif
+
                     {
                         data: 'Created_Date',
                         name: 'Created_Date',
