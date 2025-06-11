@@ -1483,22 +1483,37 @@
                         var totalColumns = api.columns().count();
                         var grandTotal = 0;
 
+                         var isSuperAdmin = window.isSuperAdmin ||
+                        false; // Set this variable from your backend
+
+
                         for (var i = 1; i < totalColumns; i++) {
                             var columnTotal = api.column(i).data().reduce(function(a, b) {
                                 return a + (parseFloat(b) || 0);
                             }, 0);
 
-                            console.log(row);
-                            // Construct the URL dynamically based on the column index or data
-                            var userIds = data.map(function(row) {
-                                return row.user_id;
-                            }).join(',');
+                          
 
-                            var status_id =
-                                i; // Assuming each column corresponds to a `status_id`
-                            var typeOrStatusId =
-                                'requestedToUsTasks'; // Replace with your type logic
-                            var routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+                               var userIds, routeUrl;
+
+                            if (isSuperAdmin) {
+                                // For Super Admin, don't send specific user IDs
+                                userIds = 'all'; // or you can pass a special identifier
+                                var status_id = i;
+                                var typeOrStatusId = 'requestedToUsTasks';
+                                routeUrl = createUrlForSuperAdmin(status_id, typeOrStatusId);
+                            } else {
+                                // For regular users, use the existing logic
+                                userIds = data.map(function(row) {
+                                    return row.user_id;
+                                }).join(',');
+                                var status_id = i;
+                                var typeOrStatusId = 'requestedToUsTasks';
+                                routeUrl = createUrl(userIds, status_id, typeOrStatusId);
+                            }
+
+
+                            // Construct the URL dynamically based on the column index or data
 
                             // Render the clickable link in the footer
                             $(api.column(i).footer()).html(renderClickableLink(routeUrl,
@@ -1507,8 +1522,7 @@
                             grandTotal += columnTotal;
                         }
 
-                        var totalColumnIndex = totalColumns -
-                            1; // Assuming "Total" column is the last column
+                        var totalColumnIndex = totalColumns - 1; // Assuming "Total" column is the last column
                         var verticalSum = api.column(totalColumnIndex, {
                                 page: 'current'
                             }).data()
@@ -1517,18 +1531,48 @@
                             }, 0);
 
 
-                        // Render the grand total in the last column
-                        // $(api.column(totalColumns - 1).footer()).html(grandTotal);
-                        var grandTotalRouteUrl = createUrl(userIds, 'all',
-                            typeOrStatusId); // Pass 'all' or any identifier for the grand total
+                    
+                        // var grandTotalRouteUrl = createUrl(userIds, 'all',
+                        //     typeOrStatusId); 
+
+                               var grandTotalRouteUrl;
+                        if (isSuperAdmin) {
+                            grandTotalRouteUrl = createUrlForSuperAdmin('all',
+                                'requestedToUsTasks');
+                        } else {
+                            var userIds = data.map(function(row) {
+                                return row.user_id;
+                            }).join(',');
+                            grandTotalRouteUrl = createUrl(userIds, 'all',
+                            'requestedToUsTasks');
+                        }
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
                             grandTotalRouteUrl, verticalSum));
                     }
+                    
+
+
 
                 });
 
-                function createUrl(userId, status_id, typeOrStatusId) {
+                // function createUrl(userId, status_id, typeOrStatusId) {
+                //     let routeUrl =
+                //         '{{ route('tasks.requested_by_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                //     return routeUrl
+                //         .replace(':user_id', userId)
+                //         .replace(':status_id', status_id)
+                //         .replace(':type_or_status_id', typeOrStatusId);
+                // }
+
+                // function renderClickableLink(routeUrl, data) {
+                //     return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
+                // }
+
+
+
+
+                  function createUrl(userId, status_id, typeOrStatusId) {
                     let routeUrl =
                         '{{ route('tasks.requested_by_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
                     return routeUrl
@@ -1537,9 +1581,19 @@
                         .replace(':type_or_status_id', typeOrStatusId);
                 }
 
+                // New function for Super Admin
+                function createUrlForSuperAdmin(status_id, typeOrStatusId) {
+                    let routeUrl =
+                        '{{ route('tasks.requested_by_us_footer_total', ['user_id' => 'all', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
+                    return routeUrl
+                        .replace(':status_id', status_id)
+                        .replace(':type_or_status_id', typeOrStatusId);
+                }
+
                 function renderClickableLink(routeUrl, data) {
                     return `<a href="${routeUrl}" class="text-primary">${data || 0}</a>`;
                 }
+
 
 
             });
