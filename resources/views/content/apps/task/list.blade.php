@@ -47,6 +47,16 @@
         padding: 10px;
         text-align: center;
     }
+
+    #starRating .star {
+        font-size: 24px;
+        color: #ccc;
+        cursor: pointer;
+    }
+
+    #starRating .star.selected {
+        color: #ffc107;
+    }
 </style>
 @section('page-style')
     <link rel="stylesheet" type="text/css" href="{{ asset('css/base/plugins/forms/pickers/form-flat-pickr.css') }}">
@@ -265,7 +275,7 @@
     {{-- reassign --}}
 
 
-  {{-- <script>
+    {{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const allUsers = @json($reassign_users);
 
@@ -321,38 +331,154 @@
                 </div>
             </form>
         </div>
-    </div><script>
-    $(document).ready(function () {
-        const allUsers = @json($reassign_users);
+    </div>
 
-        // Delegated event listener for dynamic DataTable buttons
-        $(document).on('click', '.open-reassign-modal', function () {
-            const encryptedTaskId = $(this).data('id');
-            const currentUserId = $(this).data('user-id');
-            const $dropdown = $('#assignTo');
-            const $hiddenInput = $('#modalTaskId');
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog ">
+            <form id="feedbackForm">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="feedbackModalLabel">Submit Feedback</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    {{-- <div class="modal-body">
+                        <input type="hidden" name="task_id" id="feedbackTaskId">
 
-            console.log('Clicked for task:', encryptedTaskId, 'Current user:', currentUserId);
 
-            $hiddenInput.val(encryptedTaskId);
-            $dropdown.html('<option value="">Select User</option>');
 
-            allUsers.forEach(user => {
-                if (user.id != currentUserId) {
-                    $dropdown.append(
-                        $('<option>', {
-                            value: user.id,
-                            text: user.first_name + ' ' + user.last_name + ' (' + user.department_name + ')'
-                        })
-                    );
-                }
+                        <div class="mb-3">
+                            <label class="form-label">Feedback Type</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input feedback-type-radio" type="radio" name="feedback_type"
+                                    id="positiveFeedback" value="positive" checked>
+                                <label class="form-check-label" for="positiveFeedback">Positive</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input feedback-type-radio" type="radio" name="feedback_type"
+                                    id="negativeFeedback" value="negative">
+                                <label class="form-check-label" for="negativeFeedback">Negative</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="ratingSection">
+                            <label class="form-label">Rating</label>
+                            <div id="starRating">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <i class="fa fa-star star" data-value="{{ $i }}"></i>
+                                @endfor
+                            </div>
+                            <input type="hidden" name="rating" id="ratingValue">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Feedback</label>
+                            <textarea name="feedback" class="form-control" id="feedbackText" rows="3"></textarea>
+                        </div>
+
+
+                    </div> --}}
+
+                    <div class="modal-body">
+                        <input type="hidden" name="task_id" id="feedbackTaskId">
+
+                        {{-- Read-Only View Mode --}}
+                        <div id="readonlyFeedback" style="display: none;">
+                            <div class="mb-2 ">
+                                <label class="form-label">Feedback Type:</label>
+                                <p class="form-control-plaintext mb-2" id="readonlyType"></p>
+
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label">Rating:</label>
+                                {{-- <p class="form-control-plaintext" id="readonlyRating"></p> --}}
+                                <div id="readonlyRating" class="form-control-plaintext"></div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label">Feedback:</label>
+                                <p class="form-control-plaintext border p-2 bg-light rounded" id="readonlyText"></p>
+                            </div>
+                        </div>
+
+                        {{-- Editable Form --}}
+                        <div id="editableFeedback">
+                            <div class="mb-3">
+                                <label class="form-label">Feedback Type</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input feedback-type-radio" type="radio"
+                                        name="feedback_type" id="positiveFeedback" value="positive" checked>
+                                    <label class="form-check-label" for="positiveFeedback">Positive</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input feedback-type-radio" type="radio"
+                                        name="feedback_type" id="negativeFeedback" value="negative">
+                                    <label class="form-check-label" for="negativeFeedback">Negative</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="ratingSection">
+                                <label class="form-label">Rating</label>
+                                <div id="starRating">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fa fa-star star" data-value="{{ $i }}"></i>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="rating" id="ratingValue">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Feedback</label>
+                                <textarea name="feedback" class="form-control" id="feedbackText" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" id="submitFeedbackBtn" class="btn btn-success">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function() {
+            const allUsers = @json($reassign_users);
+
+            // Delegated event listener for dynamic DataTable buttons
+            $(document).on('click', '.open-reassign-modal', function() {
+                const encryptedTaskId = $(this).data('id');
+                const currentUserId = $(this).data('user-id');
+                const $dropdown = $('#assignTo');
+                const $hiddenInput = $('#modalTaskId');
+
+                console.log('Clicked for task:', encryptedTaskId, 'Current user:', currentUserId);
+
+                $hiddenInput.val(encryptedTaskId);
+                $dropdown.html('<option value="">Select User</option>');
+
+                allUsers.forEach(user => {
+                    if (user.id != currentUserId) {
+                        $dropdown.append(
+                            $('<option>', {
+                                value: user.id,
+                                text: user.first_name + ' ' + user.last_name + ' (' + user
+                                    .department_name + ')'
+                            })
+                        );
+                    }
+                });
+
+                // Open the modal
+                $('#reassignModal').modal('show');
             });
-
-            // Open the modal
-            $('#reassignModal').modal('show');
         });
-    });
-</script>
+    </script>
 
 
 
@@ -1582,5 +1708,110 @@
         var formAction = '{{ route('app-task-reject', ':taskId') }}';
         formAction = formAction.replace(':taskId', taskId);
         $('#rejectForm').attr('action', formAction);
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+<script>
+    $(document).ready(function() {
+        // Existing feedback button click logic
+        $(document).on('click', '.give-feedback-btn', function(e) {
+            e.preventDefault();
+
+            let taskId = $(this).data('id');
+            let rating = $(this).data('rating');
+            let feedback = $(this).data('feedback');
+            let isGiven = $(this).data('given') == 1;
+
+            $('#feedbackTaskId').val(taskId);
+
+            if (isGiven) {
+                // Show read-only view
+                $('#readonlyFeedback').show();
+                $('#editableFeedback').hide();
+                $('#submitFeedbackBtn').hide();
+
+                $('#readonlyType').text(rating == 0 ? 'Negative' : 'Positive');
+                // $('#readonlyRating').text(rating == 0 ? '0 (Negative)' : rating);
+                if (rating == 0) {
+                    $('#readonlyRating').html('<span class="text-danger">Negative</span>');
+                } else {
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= rating) {
+                            starsHtml += '<i class="fa fa-star text-warning"></i>'; // filled star
+                        } else {
+                            starsHtml += '<i class="fa fa-star text-secondary"></i>'; // empty/gray star
+                        }
+                    }
+                    $('#readonlyRating').html(starsHtml);
+                }
+                $('#readonlyText').text(feedback || 'No feedback given.');
+            } else {
+                // Show editable form
+                $('#readonlyFeedback').hide();
+                $('#editableFeedback').show();
+                $('#submitFeedbackBtn').show();
+
+                // Reset values
+                $('#feedbackText').val('');
+                $('#ratingValue').val('');
+                $('#starRating .star').removeClass('selected');
+                $('#positiveFeedback').prop('checked', true);
+                $('#ratingSection').show();
+            }
+
+            $('#feedbackModal').modal('show');
+        });
+
+        // Star click rating logic
+        $('#starRating .star').on('click', function() {
+            let rating = $(this).data('value');
+            $('#ratingValue').val(rating);
+            $('#starRating .star').removeClass('selected');
+            $('#starRating .star').each(function() {
+                if ($(this).data('value') <= rating) {
+                    $(this).addClass('selected');
+                }
+            });
+        });
+
+        // Toggle rating section based on radio button
+        $('.feedback-type-radio').on('change', function() {
+            if ($('#negativeFeedback').is(':checked')) {
+                $('#ratingSection').hide();
+                $('#ratingValue').val(0);
+                $('#starRating .star').removeClass('selected');
+            } else {
+                $('#ratingSection').show();
+                $('#ratingValue').val('');
+            }
+        });
+
+        // Submit form
+        $('#feedbackForm').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: "{{ route('app-task-feedback-store') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#feedbackModal').modal('hide');
+                    toastr.success('Feedback submitted successfully!', 'Success', {
+                        closeButton: true,
+                        progressBar: true
+                    });
+                },
+                error: function() {
+                    toastr.error(errorMsg, 'Error', {
+                        closeButton: true,
+                        progressBar: true
+                    });
+                }
+            });
+        });
     });
 </script>

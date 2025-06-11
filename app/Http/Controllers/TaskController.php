@@ -6,6 +6,7 @@ use App\Http\Requests\Task\CreateTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\Project;
+use App\Models\TaskFeedback;
 use Cache;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -946,6 +947,7 @@ class TaskController extends Controller
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
+                $feedbackButton = '';
                 if (auth()->user()->id == '1') {
                     if ($row->status == 0) {
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
@@ -964,9 +966,21 @@ class TaskController extends Controller
                 // $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
                 // // Delete Button
                 // $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Delete Task' class='btn-sm btn-danger confirm-delete me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
-    
+                if (in_array($row->task_status, [7, 4]) && $row->created_by == auth()->user()->id) {
+                    $feedbackData = TaskFeedback::where('task_id', $row->id)
+                        ->where('user_id', auth()->id())
+                        ->first();
+                    $feedbackButton = "<a href='#' class='btn-sm btn-primary me-1 give-feedback-btn'
+                                        data-id='$row->id'
+                                        data-rating='" . ($feedbackData->rating ?? '') . "'
+                                        data-feedback='" . htmlspecialchars($feedbackData->feedback ?? '', ENT_QUOTES) . "'
+                                        data-given='" . ($feedbackData ? '1' : '0') . "'
+                                        data-bs-toggle='tooltip' data-bs-placement='top' title='Give Feedback'>
+                                        <i class='ficon' data-feather='star'></i></a>";
+                }
+
                 $viewButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='View Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton;
+                $buttons = $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewButton . " " . $feedbackButton;
                 return "<div class='d-flex justify-content-between'>" . $buttons . "</div>";
             })
             ->addColumn('created_by_username', function ($row): string {
@@ -2751,6 +2765,7 @@ class TaskController extends Controller
                 $updateButton = '';
                 $deleteButton = '';
                 $acceptButton = '';
+                // $feedbackButton = '';
                 if (auth()->user()->id == '1') {
                     if ($row->status == 0) {
                         $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
@@ -2767,7 +2782,18 @@ class TaskController extends Controller
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-
+                // if ($row->created_by == auth()->user()->id) {
+                //     $feedbackData = TaskFeedback::where('task_id', $row->id)
+                //         ->where('user_id', auth()->id())
+                //         ->first();
+                //     $feedbackButton = "<a href='#' class='btn-sm btn-primary me-1 give-feedback-btn'
+                //                         data-id='$row->id'
+                //                         data-rating='" . ($feedbackData->rating ?? '') . "'
+                //                         data-feedback='" . htmlspecialchars($feedbackData->feedback ?? '', ENT_QUOTES) . "'
+                //                         data-given='" . ($feedbackData ? '1' : '0') . "'
+                //                         data-bs-toggle='tooltip' data-bs-placement='top' title='Give Feedback'>
+                //                         <i class='ficon' data-feather='star'></i></a>";
+                // }
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . "</div>";
             })
             ->addColumn('created_by_username', function ($row) {
@@ -7229,7 +7255,8 @@ class TaskController extends Controller
                 $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $user->id)->first();
                 $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
 
-                createNotification($user->id,
+                createNotification(
+                    $user->id,
                     $task->id,
                     'New task ' . $taskAssignee->task_number . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
                     'Created'
@@ -11794,6 +11821,29 @@ class TaskController extends Controller
         }
 
         return [trim($dates[0]), null];
+    }
+
+    public function storeFeedback(Request $request)
+    {
+
+        $existing = TaskFeedback::where('task_id', $request->task_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($existing) {
+            // return redirect()->back()->with('error', 'Feedback already submitted');
+            return response()->json(['message' => 'Feedback already submitted'], 403);
+        }
+
+        TaskFeedback::create([
+            'task_id' => $request->task_id,
+            'user_id' => auth()->id(),
+            'rating' => $request->rating,
+            'feedback' => $request->feedback,
+        ]);
+
+        return response()->json(['message' => 'Feedback saved']);
+        // return redirect()->back()->with('success', 'Feedback submitted successfully!');
     }
 
 }

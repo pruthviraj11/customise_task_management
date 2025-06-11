@@ -447,6 +447,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::post('comments', [TaskController::class, 'storeComments'])->name('comments.store');
     Route::get('sub-departments/{department_id}', [TaskController::class, 'getSubDepartments'])->name('app-sub-departments');
     Route::get('users-by-department/{department_id}', [TaskController::class, 'getUsersByDepartment'])->name('app-users-by-department');
+   Route::post('/task/feedback/store', [TaskController::class, 'storeFeedback'])->name('app-task-feedback-store');
+
     //Task End
 
     //Reports
