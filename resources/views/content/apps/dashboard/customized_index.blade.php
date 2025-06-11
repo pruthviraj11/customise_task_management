@@ -1500,7 +1500,7 @@
                                 // For Super Admin, don't send specific user IDs
                                 userIds = 'all'; // or you can pass a special identifier
                                 var status_id = i;
-                                var typeOrStatusId = 'requestedToUsTasks';
+                                var typeOrStatusId = 'requestedByUsTasks';
                                 routeUrl = createUrlForSuperAdmin(status_id, typeOrStatusId);
                             } else {
                                 // For regular users, use the existing logic
@@ -1508,7 +1508,7 @@
                                     return row.user_id;
                                 }).join(',');
                                 var status_id = i;
-                                var typeOrStatusId = 'requestedToUsTasks';
+                                var typeOrStatusId = 'requestedByUsTasks';
                                 routeUrl = createUrl(userIds, status_id, typeOrStatusId);
                             }
 
@@ -1538,13 +1538,13 @@
                                var grandTotalRouteUrl;
                         if (isSuperAdmin) {
                             grandTotalRouteUrl = createUrlForSuperAdmin('all',
-                                'requestedToUsTasks');
+                                'requestedByUsTasks');
                         } else {
                             var userIds = data.map(function(row) {
                                 return row.user_id;
                             }).join(',');
                             grandTotalRouteUrl = createUrl(userIds, 'all',
-                            'requestedToUsTasks');
+                            'requestedByUsTasks');
                         }
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
