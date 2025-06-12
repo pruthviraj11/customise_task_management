@@ -859,7 +859,7 @@
         @endif
 
         <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 15px;">
-            <p>*** END OF RECEIPT ***</p>
+            <p>*** END OF Task ***</p>
             <p>Thank you for using our Task Management System</p>
         </div>
     </div>
