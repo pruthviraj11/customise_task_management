@@ -38,6 +38,8 @@
                     <div class="card">
                         <div class="card-header">
                             <h4>{{ $page_data['form_title'] }}</h4>
+
+                          
                             <div class="col-md-6">
                                 @if ($taskAss != '')
                                     <a class=" btn-sm btn-primary "> Task # {{ $taskAss->task_id }}</a>
@@ -99,37 +101,35 @@
                                     </span>
                                 </div>
                                 {{-- @if ($taskAss && $taskAss->task && $taskAss->task->attachments->count()) --}}
-                                    <div class="col-6 col-sm-12 mb-1">
-                                        <label class="form-label">Attachments</label>
-                                        <div class="input-group mb-3 w-100">
-                                            <input type="file" class="form-control" id="attachments" name="attachments[]"
-                                                multiple>
-                                            <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
-                                        </div>
-
-                                        <ul id="attachment-list">
-                                            @foreach ($taskAss->task->attachments as $attachment)
-                                                <li id="attachment-{{ $attachment->id }}"
-                                                    class="">
-                                                    <a href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}"
-                                                        target="_blank">
-                                                        {{ basename($attachment->file) }}
-                                                    </a>
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-danger ms-2 delete-attachment"
-                                                        data-id="{{ $attachment->id }}">
-                                                        Delete
-                                                    </button>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-
-                                        <span class="text-danger">
-                                            @error('attachments')
-                                                {{ $message }}
-                                            @enderror
-                                        </span>
+                                <div class="col-6 col-sm-12 mb-1">
+                                    <label class="form-label">Attachments</label>
+                                    <div class="input-group mb-3 w-100">
+                                        <input type="file" class="form-control" id="attachments" name="attachments[]"
+                                            multiple>
+                                        <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
                                     </div>
+
+                                    <ul id="attachment-list">
+                                        @foreach ($taskAss->task->attachments as $attachment)
+                                            <li id="attachment-{{ $attachment->id }}" class="">
+                                                <a href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}"
+                                                    target="_blank">
+                                                    {{ basename($attachment->file) }}
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-danger ms-2 delete-attachment"
+                                                    data-id="{{ $attachment->id }}">
+                                                    Delete
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                    <span class="text-danger">
+                                        @error('attachments')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
 
                                 {{-- @endif --}}
                                 @if ($taskAss != '')
@@ -359,59 +359,62 @@
         });
     </script>
 
-   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const attachmentList = document.getElementById('attachment-list');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const attachmentList = document.getElementById('attachment-list');
 
-        attachmentList.addEventListener('click', function (e) {
-            if (e.target.classList.contains('delete-attachment')) {
-                const attachmentId = e.target.getAttribute('data-id');
+            attachmentList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-attachment')) {
+                    const attachmentId = e.target.getAttribute('data-id');
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You won’t be able to revert this!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        fetch(`{{ route('attachment.destroy', ':id') }}`.replace(':id', attachmentId), {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                            }
-                        })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Failed to delete attachment.');
-                            return response.json();
-                        })
-                        .then(data => {
-                            const li = document.getElementById(`attachment-${attachmentId}`);
-                            if (li) li.remove();
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won’t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`{{ route('attachment.destroy', ':id') }}`.replace(':id',
+                                    attachmentId), {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json',
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) throw new Error(
+                                        'Failed to delete attachment.');
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    const li = document.getElementById(
+                                        `attachment-${attachmentId}`);
+                                    if (li) li.remove();
 
-                            Swal.fire(
-                                'Deleted!',
-                                'The attachment has been deleted.',
-                                'success'
-                            );
-                        })
-                        .catch(error => {
-                            console.error(error);
-                            Swal.fire(
-                                'Error!',
-                                'There was a problem deleting the attachment.',
-                                'error'
-                            );
-                        });
-                    }
-                });
-            }
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'The attachment has been deleted.',
+                                        'success'
+                                    );
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'There was a problem deleting the attachment.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    });
+                }
+            });
         });
-    });
-</script>
+    </script>
 
     <script>
         $(document).on('click', '.remove-user-btn', function(e) {

@@ -53,9 +53,17 @@
                 <div class="card">
                     <div class="card-header">
                         <h4>{{ $page_data['form_title'] }}</h4>
+                         <div class="float-end">
+                            @if ($task != '')
+                                <button type="button" onclick="printTaskReceipt()" class="btn btn-success">
+                                    <i class="feather-icon" data-feather="printer"></i>
+                                    Print/View Task
+                                </button>
+                            @endif
+                        </div>
                         <a href="{{ route('app-task-list') }}" class="col-md-2 btn btn-primary float-end">Task List</a>
                         {{-- <a href="{{ route('check-tasks') }}" class="btn btn-primary">Check and Create Today's Tasks</a> --}}
-
+                       
                         {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
 
                     </div>
@@ -278,7 +286,7 @@
                             </div>
 
 
-{{-- {{dd($task)}} --}}
+                            {{-- {{dd($task)}} --}}
 
 
                             <div class="col-md-3 col-sm-12 mb-1">
@@ -381,7 +389,7 @@
 
                                 <div class="col-12 mt-3" style="max-height: 400px; overflow-y: auto;">
                                     @foreach ($getTaskComments as $comment)
-                                    {{-- {{dd($comment)}} --}}
+                                        {{-- {{dd($comment)}} --}}
                                         @php
                                             // Get the logged-in user ID
                                             $loggedInUserId = auth()->id();
@@ -731,6 +739,131 @@
         </div>
         </div>
     </section>
+
+    <div id="printArea" class="print-area" style="display: none;">
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <h2>TASK RECEIPT</h2>
+            <p>{{ config('app.name', 'Task Management System') }}</p>
+            <p>Generated on: {{ date('d/m/Y H:i:s') }}</p>
+        </div>
+
+        @if ($task != '')
+        <div class="receipt-section">
+            <div class="section-title">TASK INFORMATION</div>
+            
+            <div class="receipt-row">
+                <span>Task ID:</span>
+                <span>#{{ $task->id }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Task Number:</span>
+                <span>{{ $task->task_number ?? 'N/A' }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Title:</span>
+                <span>{{ $task->title }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Subject:</span>
+                <span>{{ $task->subject }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Type:</span>
+                <span>{{ $task->ticket == 1 ? 'Ticket' : 'Task' }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Project:</span>
+                <span>{{ $task->project->project_name ?? 'N/A' }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Priority:</span>
+                <span>{{ $task->priority->displayname ?? 'N/A' }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Status:</span>
+                <span>{{ $task->taskStatus->displayname ?? 'N/A' }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Start Date:</span>
+                <span>{{ \Carbon\Carbon::parse($task->start_date)->format('d/m/Y') }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Due Date:</span>
+                <span>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Created By:</span>
+                <span>{{ $task->creator->first_name }} {{ $task->creator->last_name }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span>Created At:</span>
+                <span>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y H:i') }}</span>
+            </div>
+        </div>
+
+        {{-- <div class="receipt-section">
+            <div class="section-title">ASSIGNED USERS</div>
+            @foreach ($task->users as $user)
+            <div class="receipt-row">
+                <span>{{ $loop->iteration }}.</span>
+                <span>{{ $user->first_name }} {{ $user->last_name }} - {{ $user->department->department_name ?? 'N/A' }}</span>
+            </div>
+            @endforeach
+        </div> --}}
+
+        @if($task->description)
+        <div class="receipt-section">
+            <div class="section-title">DESCRIPTION</div>
+            <div style="padding: 10px; border: 1px solid #ccc; margin: 10px 0;">
+                {{ strip_tags(html_entity_decode($task->description)) }}
+            </div>
+        </div>
+        @endif
+
+        @if($task->attachments->count() > 0)
+        <div class="receipt-section">
+            <div class="section-title">ATTACHMENTS</div>
+            @foreach ($task->attachments as $attachment)
+            <div class="receipt-row">
+                <span>{{ $loop->iteration }}.</span>
+                <span>{{ last(explode('/', $attachment->file)) }}</span>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
+        @if($SubTaskData && count($SubTaskData) > 0)
+        <div class="receipt-section">
+            <div class="section-title">SUB TASKS</div>
+            @foreach ($SubTaskData as $subtask)
+            <div class="receipt-row">
+                <span>{{ $subtask->task_number }}</span>
+                <span>{{ $subtask->user->first_name }} {{ $subtask->user->last_name }} ( {{$subtask->user->department->department_name ?? 'N/A' }} )- {{ $subtask->taskStatus->displayname ?? 'N/A' }}</span>
+            </div>
+            @endforeach
+        </div>
+        @endif
+        
+        @endif
+
+        <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 15px;">
+            <p>*** END OF RECEIPT ***</p>
+            <p>Thank you for using our Task Management System</p>
+        </div>
+    </div>
+</div>
     </form>
 @endsection
 
@@ -750,6 +883,84 @@
     <script src="{{ asset(mix('js/scripts/extensions/ext-component-ratings.js')) }}"></script>
 @endsection
 @section('page-script')
+
+<script>
+function printTaskReceipt() {
+    const printArea = document.getElementById('printArea');
+    printArea.style.display = 'block';
+
+    const printContent = printArea.innerHTML;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Task Receipt</title>
+            <style>
+                body {
+                    font-family: 'Courier New', monospace;
+                    margin: 20px;
+                    line-height: 1.4;
+                }
+                .receipt-container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    border: 2px solid #333;
+                    padding: 20px;
+                }
+                .receipt-header {
+                    text-align: center;
+                    border-bottom: 2px solid #333;
+                    padding-bottom: 15px;
+                    margin-bottom: 20px;
+                }
+                .receipt-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 8px 0;
+                    padding: 3px 0;
+                    border-bottom: 1px dotted #ccc;
+                }
+                .receipt-section {
+                    margin: 20px 0;
+                }
+                .section-title {
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                    text-decoration: underline;
+                }
+                .print-btn {
+                    margin: 10px auto;
+                    display: block;
+                    padding: 10px 20px;
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+                @media print {
+                    .print-btn { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <button class="print-btn" onclick="window.print()">Print Receipt</button>
+            ${printContent}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+    printArea.style.display = 'none';
+}
+
+
+
+</script>
     <script>
         $(document).ready(function() {
             $('#sub_tasks_list').DataTable({
@@ -801,34 +1012,35 @@
         }
     </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const recurringCheckbox = document.getElementById("recurring");
-    const taskStatusSelect = document.getElementById("task_status");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const recurringCheckbox = document.getElementById("recurring");
+            const taskStatusSelect = document.getElementById("task_status");
 
-    function toggleClosedOption() {
-        const closedOption = Array.from(taskStatusSelect.options).find(option => option.text.toLowerCase() === "closed");
+            function toggleClosedOption() {
+                const closedOption = Array.from(taskStatusSelect.options).find(option => option.text
+                .toLowerCase() === "closed");
 
-        if (recurringCheckbox.checked) {
-            if (closedOption) closedOption.remove(); // Remove the "Closed" option
-        } else {
-            // Re-add the "Closed" option if not present
-            if (!closedOption) {
-                const newOption = document.createElement("option");
-                newOption.value = "7"; // Replace with the actual ID of "Closed"
-                newOption.text = "Closed";
-                taskStatusSelect.appendChild(newOption);
+                if (recurringCheckbox.checked) {
+                    if (closedOption) closedOption.remove(); // Remove the "Closed" option
+                } else {
+                    // Re-add the "Closed" option if not present
+                    if (!closedOption) {
+                        const newOption = document.createElement("option");
+                        newOption.value = "7"; // Replace with the actual ID of "Closed"
+                        newOption.text = "Closed";
+                        taskStatusSelect.appendChild(newOption);
+                    }
+                }
             }
-        }
-    }
 
-    // Run on page load
-    toggleClosedOption();
+            // Run on page load
+            toggleClosedOption();
 
-    // Add event listener
-    recurringCheckbox.addEventListener("change", toggleClosedOption);
-});
-</script>
+            // Add event listener
+            recurringCheckbox.addEventListener("change", toggleClosedOption);
+        });
+    </script>
     {{-- <script>
         $(document).ready(function() {
             // Initialize RateYo
