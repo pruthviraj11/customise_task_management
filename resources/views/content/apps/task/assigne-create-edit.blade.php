@@ -38,8 +38,16 @@
                     <div class="card">
                         <div class="card-header">
                             <h4>{{ $page_data['form_title'] }}</h4>
+                            <div class="float-end">
+                                @if ($taskAss && $taskAss->task)
+                                    <div class="float-end mb-1">
+                                        <button type="button" onclick="printTaskDetails()" class="btn btn-success">
+                                            <i class="feather-icon" data-feather="printer"></i> Print/View Task
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
 
-                          
                             <div class="col-md-6">
                                 @if ($taskAss != '')
                                     <a class=" btn-sm btn-primary "> Task # {{ $taskAss->task_id }}</a>
@@ -238,80 +246,93 @@
                 </div>
             </div>
 
-            {{-- <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <h2>Sub tasks</h2>
-                        @if ($SubTaskData == [])
-                            <p>No subtasks found.</p>
-                        @else
-                            <div class="table-responsive">
-                                <table class="table table-bordered text-center mx-auto">
-                                    <thead>
-                                        <tr>
-                                            <th>Task Number</th>
-                                            <th>Assigned by</th>
-                                            <th>Assigned To</th>
-                                            <th>Due Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($SubTaskData as $subtask)
-                                            <tr>
-                                                <td>{{ $subtask->task_number }}</td>
-                                                <td>{{ $subtask->creator->first_name . ' ' . $subtask->creator->last_name }}
-                                                </td>
-                                                <td>{{ $subtask->user->first_name . ' ' . $subtask->user->last_name }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($subtask->task->due_date)->format('d/m/Y') }}
-                                                </td>
-                                                <td>{{ $subtask->taskStatus->displayname }}</td>
-                                                <td>
-                                                    <!-- Button to trigger AJAX request to mark as completed -->
-                                                    <a class="btn btn-success btn-sm mark-completed-btn"
-                                                        data-subtask-id="{{ $subtask->id }}" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="Mark as Completed">
-                                                        <i class="feather-icon" data-feather="check-circle"></i>
-                                                    </a>
-                                                    <!-- Button to reopen the task when status is 7 or 4 -->
-                                                    @if (in_array($subtask->task_status, [7, 4]))
-                                                        <a class="btn btn-warning btn-sm reopen-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Reopen Task">
-                                                            <i class="feather-icon" data-feather="refresh-cw"></i>
-                                                        </a>
-                                                    @endif
-                                                    <!-- Button to remove user from task (only visible to creator) -->
-                                                    @if (Auth::user()->id === $subtask->created_by)
-                                                        <a class="btn btn-danger btn-sm remove-user-btn"
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            data-user-id="{{ $subtask->user->id }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Remove User">
-                                                            <i class="feather-icon" data-feather="user-x"></i>
-                                                        </a>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+            {{-- {{dd($taskAss->user)}} --}}
 
-                                </table>
-                            </div>
+            <div id="printable-task-details" class="print-area" style="display: none;">
+                <div class="receipt-container">
+                    <div class="receipt-header">
+                        <h2>TASK RECEIPT</h2>
+                        <p>{{ config('app.name', 'Task Management System') }}</p>
+                        <p>Generated on: {{ date('d/m/Y H:i:s') }}</p>
                     </div>
+
+                    @if ($taskAss && $taskAss->task)
+                        <div class="receipt-section">
+                            <div class="section-title">TASK INFORMATION</div>
+
+                            <div class="receipt-row">
+                                <span>Task Number:</span>
+                                <span>{{ $taskAss->task_number ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Title:</span>
+                                <span>{{ $taskAss->task->title ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Subject:</span>
+                                <span>{{ $taskAss->task->subject ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Description:</span>
+                                <span>{{ strip_tags($taskAss->task->description ?? 'N/A') }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Start Date:</span>
+                                <span>{{ \Carbon\Carbon::parse($taskAss->task->start_date)->format('d/m/Y') }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>End Date:</span>
+                                <span>{{ \Carbon\Carbon::parse($taskAss->task->due_date)->format('d/m/Y') }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Priority:</span>
+                                <span>{{ $taskAss->task->priority_name ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Project:</span>
+                                <span>{{ $taskAss->task->project_name ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Status:</span>
+                                <span>{{ $taskAss->task->status_name ?? 'N/A' }}</span>
+                            </div>
+
+                            <div class="receipt-row">
+                                <span>Assign To:</span>
+                                <span>{{ $taskAss->user->first_name . " " . $taskAss->user->last_name ?? 'N/A' }}</span>
+                            </div>
+
+
+                            <div class="receipt-row">
+                                <span>Assign By:</span>
+                                <span>{{  $taskAss->creator->first_name . " " . $taskAss->creator->last_name ?? 'N/A' }}</span>
+                            </div>
+                            {{-- $taskAss->creator->first_name --}}
+                        </div>
                     @endif
+
+                    <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 15px;">
+                        <p>*** END OF Task ***</p>
+                        <p>Thank you for using our Task Management System</p>
+                    </div>
                 </div>
             </div>
-        </div> --}}
+
+
 
             </div>
             </div>
         </section>
+
+
     </form>
 @endsection
 
@@ -336,6 +357,79 @@
     <script src="{{ asset(mix('js/scripts/forms/pickers/form-pickers.js')) }}"></script>
 
 
+    <script>
+        function printTaskDetails() {
+            const printArea = document.getElementById('printable-task-details');
+            printArea.style.display = 'block';
+
+            const printContent = printArea.innerHTML;
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+            printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Task Receipt</title>
+                <style>
+                    body {
+                        font-family: 'Courier New', monospace;
+                        margin: 20px;
+                        line-height: 1.4;
+                    }
+                    .receipt-container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        border: 2px solid #333;
+                        padding: 20px;
+                    }
+                    .receipt-header {
+                        text-align: center;
+                        border-bottom: 2px solid #333;
+                        padding-bottom: 15px;
+                        margin-bottom: 20px;
+                    }
+                    .receipt-row {
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 8px 0;
+                        padding: 3px 0;
+                        border-bottom: 1px dotted #ccc;
+                    }
+                    .receipt-section {
+                        margin: 20px 0;
+                    }
+                    .section-title {
+                        font-weight: bold;
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                        text-decoration: underline;
+                    }
+                    .print-btn {
+                        margin: 10px auto;
+                        display: block;
+                        padding: 10px 20px;
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        font-size: 16px;
+                        cursor: pointer;
+                    }
+                    @media print {
+                        .print-btn { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <button class="print-btn" onclick="window.print()">Print Receipt</button>
+                ${printContent}
+            </body>
+            </html>
+        `);
+
+            printWindow.document.close();
+            printArea.style.display = 'none';
+        }
+    </script>
 
 
     <script>

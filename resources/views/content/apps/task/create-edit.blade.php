@@ -196,6 +196,7 @@
 
 
 
+        
 
 
                             {{-- <div class="col-md-3 col-sm-12 mb-1 position-relative">
@@ -759,7 +760,7 @@
             
             <div class="receipt-row">
                 <span>Task Number:</span>
-                <span>{{ $task->task_number ?? 'N/A' }}</span>
+                <span>{{ $task->TaskNumber ?? 'N/A' }}</span>
             </div>
             
             <div class="receipt-row">
@@ -781,10 +782,9 @@
                 <span>Project:</span>
                 <span>{{ $task->project->project_name ?? 'N/A' }}</span>
             </div>
-            
             <div class="receipt-row">
                 <span>Priority:</span>
-                <span>{{ $task->priority->displayname ?? 'N/A' }}</span>
+                <span>{{ $task->priority_name ?? 'N/A' }}</span>
             </div>
             
             <div class="receipt-row">
