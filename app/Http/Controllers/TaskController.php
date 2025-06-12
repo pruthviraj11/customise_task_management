@@ -822,9 +822,9 @@ class TaskController extends Controller
         $userId = auth()->user()->id;
 
         // Fetch tasks assigned to the user but created by the authenticated user
-        $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject','task_feedback.rating','task_feedback.feedback')
+        $tasks = TaskAssignee::with(['task', 'creator', 'department_data', 'sub_department_data'])->select('task_assignees.*', 'tasks.title', 'tasks.description', 'tasks.subject', 'task_feedback.rating', 'task_feedback.feedback')
             ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id')
-            ->leftJoin('task_feedback','task_assignees.id','task_feedback.task_id')
+            ->leftJoin('task_feedback', 'task_assignees.id', 'task_feedback.task_id')
             // ->whereNotIn('task_assignees.task_status', ['4', '7'])
             ->where('task_assignees.created_by', $userId)
             ->whereIn('task_assignees.task_id', function ($subquery) {
@@ -1073,16 +1073,16 @@ class TaskController extends Controller
             ->addColumn('creator_phone', function ($row) {
                 return ($row->creator && $row->creator->phone_no) ? $row->creator->phone_no : '0';
             })
-             ->addColumn('rating', function ($row) {
+            ->addColumn('rating', function ($row) {
                 return $row->rating ?? "-";
             })
-             ->addColumn('task_feedback', function ($row) {
+            ->addColumn('task_feedback', function ($row) {
                 return $row->feedback ?? "-";
             })
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username','rating','task_feedback', 'pin_task'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'rating', 'task_feedback', 'pin_task'])
             ->make(true);
     }
 
@@ -2411,7 +2411,7 @@ class TaskController extends Controller
     }
 
 
-        public function getAll_todaysdueTask(Request $request)
+    public function getAll_todaysdueTask(Request $request)
     {
         $userId = Auth()->user()->id;
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
@@ -2444,15 +2444,15 @@ class TaskController extends Controller
                 });
 
 
-                //   $tasksData = TaskAssignee::where('user_id', $user_id)
-                // // ->where('created_by', $user_id)
-                // ->whereNotIn('task_status', [4, 7])
-                // ->where('status', '1')
-                // ->whereDate('due_date', '=', $cdate)
-                // ->whereIn('task_id', function ($subquery) {
-                //     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-                // })
-                // ->get();
+            //   $tasksData = TaskAssignee::where('user_id', $user_id)
+            // // ->where('created_by', $user_id)
+            // ->whereNotIn('task_status', [4, 7])
+            // ->where('status', '1')
+            // ->whereDate('due_date', '=', $cdate)
+            // ->whereIn('task_id', function ($subquery) {
+            //     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            // })
+            // ->get();
         }
 
         $tasks = $query;
@@ -4076,8 +4076,6 @@ class TaskController extends Controller
 
         return DataTables::of($tasks)->addColumn('actions', function ($row) {
 
-
-
             $encryptedId = encrypt($row->task->id);
             $encryptedId_sub_task = encrypt($row->id);
             // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
@@ -4586,7 +4584,10 @@ class TaskController extends Controller
                 $deleteButton = '';
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
-                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+    
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
+
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
@@ -6053,7 +6054,9 @@ class TaskController extends Controller
                 $acceptButton = '';
 
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
-                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
+                    $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
+
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 } elseif ($row->user_id == auth()->user()->id || $row->created_by == auth()->user()->id) {
                     $updateButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task' class='btn-sm btn-warning me-1' href='" . route('app-task-edit', $encryptedId) . "' target='_blank'><i class='ficon' data-feather='edit'></i></a>";
@@ -8309,7 +8312,7 @@ class TaskController extends Controller
             // Send notification to all selected users about the update
             foreach ($userIds as $userId) {
                 $user = User::find($userId);
-                       $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $userId)->first();
+                $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $userId)->first();
 
                 $taskViewUrl = route('app-task-view', encrypt($task->id));
 

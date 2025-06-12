@@ -1590,14 +1590,14 @@
                         },
                         success: function(response) {
                             // Success message after task is accepted
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Accepted!',
-                                text: 'Your task has been accepted.',
-                                customClass: {
-                                    confirmButton: 'btn btn-success'
-                                }
-                            }).then(function() {
+                            // Swal.fire({
+                            //     icon: 'success',
+                            //     title: 'Accepted!',
+                            //     text: 'Your task has been accepted.',
+                            //     customClass: {
+                            //         confirmButton: 'btn btn-success'
+                            //     }
+                            // }).then(function() {
                                 // Show the second SweetAlert for comment decision
                                 Swal.fire({
                                     title: 'Do you want to add a comment now or later?',
@@ -1631,7 +1631,7 @@
                                         });
                                     }
                                 });
-                            });
+                            // });
                         },
                         error: function() {
                             Swal.fire({
