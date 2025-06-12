@@ -420,7 +420,7 @@
                 </style>
             </head>
             <body>
-                <button class="print-btn" onclick="window.print()">Print Receipt</button>
+                <button class="print-btn" onclick="window.print()">Print Task</button>
                 ${printContent}
             </body>
             </html>
