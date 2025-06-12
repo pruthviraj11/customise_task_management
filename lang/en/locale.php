@@ -39,6 +39,7 @@ return [
     "Follow Up Action Status" => "Follow Up Action Status",
     "Inquiry Requests" => 'Inquiry Requests',
     "Due Date Past" => 'Due Date Past',
+    "Today's Due Task" => "Today's Due Task",
     "Pending Task" => 'Pending Task',
     "Completed Task" => 'Completed Task',
     "OverAll Task" => 'OverAll Task',

@@ -52,6 +52,17 @@
                 }
             ]
         },
+         {
+            "url": "app/task/todays_due_task",
+            "name": "Today's Due Task",
+            "icon": "calendar",
+            "slug": "app-task-todays_due_task",
+            "class": "custom-red",
+            "permission": [
+                "task-list",
+                "task-create"
+            ]
+        },
         {
             "url": "app/task/list",
             "name": "Task List",
@@ -142,6 +153,7 @@
                 "task-create"
             ]
         },
+        
         {
             "url": "app/task/pending_task",
             "name": "Pending Task",

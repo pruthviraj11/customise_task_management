@@ -422,6 +422,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll/main', [TaskController::class, 'getAll_main'])->name('app-task-get-main');
     Route::get('task/getAll/recurring_main', [TaskController::class, 'getAll_recurring_main'])->name('app-task-get-recurring_main');
     Route::get('task/getAll/due_date_past', [TaskController::class, 'getAll_dueDatePast'])->name('app-task-get-due_date_past');
+    Route::get('task/getAll/todays_due_task', [TaskController::class, 'getAll_todaysdueTask'])->name('app-task-get-todays_due_task');
+
     Route::get('task/getAll/pending_task', [TaskController::class, 'getAll_pendingTask'])->name('app-task-get-pending_task');
     Route::get('task/getAll/completed_task', [TaskController::class, 'getAll_completedTask'])->name('app-task-get-completed_task');
     Route::get('task/getAll/overall_task', [TaskController::class, 'getAll_overallTask'])->name('app-task-get-overall_task');
@@ -465,6 +467,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/main', [TaskController::class, 'index'])->name('app-task-main');
     Route::get('task/recurring_main', [TaskController::class, 'index'])->name('app-task-recurring_main');
     Route::get('task/due_date_past', [TaskController::class, 'index'])->name('app-task-due_date_past');
+    Route::get('task/todays_due_task', [TaskController::class, 'index'])->name('app-task-todays_due_task');
+
     Route::get('task/pending_task', [TaskController::class, 'index'])->name('app-task-pending_task');
     Route::get('task/completed_task', [TaskController::class, 'index'])->name('app-task-completed_task');
     Route::get('task/overall_task', [TaskController::class, 'index'])->name('app-task-overall_task');
