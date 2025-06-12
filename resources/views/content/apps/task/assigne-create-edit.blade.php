@@ -251,7 +251,7 @@
             <div id="printable-task-details" class="print-area" style="display: none;">
                 <div class="receipt-container">
                     <div class="receipt-header">
-                        <h2>TASK RECEIPT</h2>
+                        <h2>TASK</h2>
                         <p>{{ config('app.name', 'Task Management System') }}</p>
                         <p>Generated on: {{ date('d/m/Y H:i:s') }}</p>
                     </div>
