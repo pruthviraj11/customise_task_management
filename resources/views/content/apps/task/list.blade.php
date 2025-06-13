@@ -519,34 +519,18 @@
         </div>
     </div> --}}
     <!-- users list ends -->
-    @php
-        // $selectedColumns = json_decode(auth()->user()->selected_fields, true);
+  @php
+    $selectedColumnsRaw = auth()->user()->selected_fields;
+    $selectedColumns = is_string($selectedColumnsRaw) ? json_decode($selectedColumnsRaw, true) : [];
 
-        // if (empty($selectedColumns)) {
+    if (empty($selectedColumns)) {
         $selectedColumns = [
-            '0',
-            '3',
-            '4',
-            '5',
-            '7',
-            '8',
-            '9',
-            '10',
-            '11',
-            '12',
-            '13',
-            '14',
-            '15',
-            '16',
-            '17',
-            '18',
-            '19',
-            '20',
-            '21',
-            '22',
+            "0", "3", "4", "5", "7", "8", "9", "10", "11",
+            "12", "13", "14", "15", "16", "17", "18", "19",
+            "20", "21", "22"
         ];
-        // }
-    @endphp
+    }
+@endphp
 @endsection
 
 @section('vendor-script')

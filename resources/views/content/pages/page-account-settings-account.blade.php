@@ -144,29 +144,62 @@
                                         <div class="row">
                                             {{-- @php
                                                 $selectedColumns = json_decode(auth()->user()->selected_fields, true); // Get the selected columns array
-                                            @endphp --}}
-                                            {{-- <div class="list-group-item col">
+                                           
+                                           @endphp --}}
+
+                                            @php
+                                                $selectedColumnsRaw = auth()->user()->selected_fields;
+                                                $selectedColumns = is_string($selectedColumnsRaw)
+                                                    ? json_decode($selectedColumnsRaw, true)
+                                                    : [];
+
+                                                if (empty($selectedColumns)) {
+                                                    $selectedColumns = [
+                                                        '0',
+                                                        '3',
+                                                        '4',
+                                                        '5',
+                                                        '7',
+                                                        '8',
+                                                        '9',
+                                                        '10',
+                                                        '11',
+                                                        '12',
+                                                        '13',
+                                                        '14',
+                                                        '15',
+                                                        '16',
+                                                        '17',
+                                                        '18',
+                                                        '19',
+                                                        '20',
+                                                        '21',
+                                                        '22',
+                                                    ];
+                                                }
+                                            @endphp
+                                            <div class="list-group-item col">
                                                 <input type="checkbox" class="column-toggle" data-column="0"
                                                     @if (is_null($selectedColumns) || (is_array($selectedColumns) && in_array(0, $selectedColumns))) checked @endif>
                                                 Actions
-                                            </div> --}}
+                                            </div>
 
-
-                                            {{-- @if ($type == 'mytask')
+                                            {{-- 
+                                            @if ($type == 'mytask')
                                                 <div class="list-group-item col">
                                                     <input type="checkbox" class="column-toggle" data-column="1" checked>
                                                     Pin Task
                                                 </div>
-                                            @endif --}}
+                                            @endif  --}}
 
-                                            {{-- <div class="list-group-item col">
-                                        <input type="checkbox" class="column-toggle" data-column="2" checked>
-                                        Task ID
-                                    </div> --}}
+                                            <div class="list-group-item col">
+                                                <input type="checkbox" class="column-toggle" data-column="2" checked>
+                                                Task ID
+                                            </div>
 
                                             {{-- Code for Haystack option to select fields code Starts --}}
 
-                                            {{-- <div class="list-group-item col">
+                                            <div class="list-group-item col">
                                                 <input type="checkbox" class="column-toggle" data-column="3"
                                                     @if (in_array(3, $selectedColumns)) checked @endif>
                                                 Task Number
@@ -261,16 +294,18 @@
                                                 <input type="checkbox" class="column-toggle" data-column="22"
                                                     @if (in_array(22, $selectedColumns)) checked @endif>
                                                 Close Date
-                                            </div> --}}
+                                            </div>
 
                                             {{-- Code for Haystack option to select fields code Ends --}}
 
                                             {{-- @if ($type == 'mytask')
-                                        <div class="list-group-item col">
-                                            <input type="checkbox" class="column-toggle" data-column="23"  @if (in_array(23, $selectedColumns)) checked @endif>
-                                            Is Pinned
-                                        </div>
-                                    @endif --}}
+                                                <div class="list-group-item col">
+                                                    <input type="checkbox" class="column-toggle" data-column="23"
+                                                        @if (in_array(23, $selectedColumns)) checked @endif>
+                                                    Is Pinned
+                                                </div>
+                                            @endif --}}
+
                                         </div>
                                     </div>
                                 </div>

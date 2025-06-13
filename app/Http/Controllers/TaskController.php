@@ -11653,11 +11653,15 @@ class TaskController extends Controller
         foreach ($userIds as $userId) {
             $user = User::find($userId);
 
+            
+                $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $user->id)->first();
+                // $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
             // Send notification to the user
             createNotification(
                 $user->id,
                 $task->id,
-                'New task ' . $task->id . ' assigned to you.',
+                'New task ' . $taskAssignee->task_number . ' assigned to you.',
                 'Created'
             );
         }

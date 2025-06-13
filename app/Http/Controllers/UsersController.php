@@ -211,6 +211,13 @@ class UsersController extends Controller
     public function store(CreateUserRequest $request)
     {
         try {
+         $defaultSelectedColumns = [
+    "0", "3", "4", "5", "7", "8", "9", "10", "11",
+    "12", "13", "14", "15", "16", "17", "18", "19",
+    "20", "21", "22"
+];
+
+            $userData['selected_fields'] = json_encode($defaultSelectedColumns);
             $userData['username'] = $request->get('username');
             $userData['first_name'] = $request->get('first_name');
             $userData['last_name'] = $request->get('last_name');
@@ -331,11 +338,8 @@ class UsersController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-            $selectedColumns = explode(',', $request->input('selected_columns'));
-            // dd($selectedColumns);
-
-            // $userData['username'] = $request->get('username');
-            $userData['selected_fields'] = json_encode($selectedColumns);
+          $selectedColumns = explode(',', $request->input('selected_columns'));
+$userData['selected_fields'] = json_encode($selectedColumns);
             $userData['first_name'] = $request->get('first_name');
             $userData['last_name'] = $request->get('last_name');
             $userData['location_id'] = $request->get('location_id');
