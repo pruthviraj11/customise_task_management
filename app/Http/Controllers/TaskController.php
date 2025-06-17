@@ -11920,20 +11920,19 @@ class TaskController extends Controller
 
     }
 
+// this is proper working code 
+    // public function add_selected_fields()
+    // {
+    //     $selectedFields = json_encode(["0", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"]);
+    //     User::whereNull('deleted_at')->chunk(100, function ($users) use ($selectedFields) {
+    //         foreach ($users as $user) {
+    //             $user->selected_fields = $selectedFields;
+    //             $user->save();
+    //         }
+    //     });
 
-    public function add_selected_fields()
-    {
-        $selectedFields = json_encode(["0", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"]);
-// dd($selectedFields);
-        User::whereNull('deleted_at')->chunk(100, function ($users) use ($selectedFields) {
-            foreach ($users as $user) {
-                $user->selected_fields = $selectedFields;
-                $user->save();
-            }
-        });
-
-        return 'All users updated successfully.';
-    }
+    //     return 'All users updated successfully.';
+    // }
 
     //Manual Function Ends
 
