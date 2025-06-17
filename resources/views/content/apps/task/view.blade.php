@@ -58,7 +58,7 @@
                             </div>
                             <div class="col-md-6  d-md-block d-flex col-sm-12 ">
                                 @if ($task != '')
-                                    <a class=" btn-sm btn-primary me-1"> Task # {{ $task->id }}</a>
+                                    <a class=" btn-sm btn-primary me-1"> Task # {{ $task->TaskId }}</a>
                                     <a class=" btn-sm btn-primary me-1"> Task Created By {{ $task->creator->first_name }}
                                         {{ $task->creator->last_name }}</a>
                                 @endif

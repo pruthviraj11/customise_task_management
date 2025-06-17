@@ -103,7 +103,7 @@
                                 <th>User Name</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Date of birth</th>
+                                <th>Date of Joining</th>
                                 <th>First Name</th>
                                 <th>Phone No</th>
                                 <th>Role</th>

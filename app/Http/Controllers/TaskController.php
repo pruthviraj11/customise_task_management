@@ -279,7 +279,6 @@ class TaskController extends Controller
 
 
             } else {
-
                 $taskAssigne = $this->taskService->gettask($id);
                 $task = $this->taskService->gettaskAssigne($id);
                 // Fetch the base query.
