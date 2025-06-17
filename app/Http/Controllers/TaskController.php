@@ -11653,9 +11653,9 @@ class TaskController extends Controller
         foreach ($userIds as $userId) {
             $user = User::find($userId);
 
-            
-                $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $user->id)->first();
-                // $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
+
+            $taskAssignee = TaskAssignee::where('task_id', $task->id)->where('user_id', $user->id)->first();
+            // $taskViewUrl = route('app-task-view', ['encrypted_id' => encrypt($task->id)]); // Encrypt the task ID
 
             // Send notification to the user
             createNotification(
@@ -11920,6 +11920,20 @@ class TaskController extends Controller
 
     }
 
+
+    public function add_selected_fields()
+    {
+        $selectedFields = json_encode(["0", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"]);
+// dd($selectedFields);
+        User::whereNull('deleted_at')->chunk(100, function ($users) use ($selectedFields) {
+            foreach ($users as $user) {
+                $user->selected_fields = $selectedFields;
+                $user->save();
+            }
+        });
+
+        return 'All users updated successfully.';
+    }
 
     //Manual Function Ends
 

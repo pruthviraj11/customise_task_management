@@ -141,9 +141,10 @@
                                     </div>
                                 </div>
                             </div>
+                            {{-- instead of date of birth changed it to date of Joining --}}
                             <div class="col-md-6 col-sm-12 mb-1">
                                 <label class="form-label" for="dob">
-                                    Date of Birth </label>
+                                    Date of Joining </label>
                                 <input type="date" name="dob" id="dob" class="form-control"
                                     value="{{ old('dob') ?? ($user != '' ? $user->dob : '') }}">
                                 <span class="text-danger">

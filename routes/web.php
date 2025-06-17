@@ -386,6 +386,8 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('add_completed_date', [TaskController::class, 'add_completed_date'])->name('app-add_completed_date');
     Route::get('add_close_date', [TaskController::class, 'add_close_date'])->name('app-add_close_date');
     Route::get('add_due_date', [TaskController::class, 'add_due_date'])->name('app-add_due_date');
+    Route::get('add_selected_fields', [TaskController::class, 'add_selected_fields'])->name('app-add_selected_fields');
+
 
 
 
