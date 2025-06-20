@@ -834,32 +834,6 @@ class TaskController extends Controller
             });
 
 
-
-        // if ($request->has('search') && $request->get('search')['value']) {
-        //     $search = $request->get('search')['value'];
-
-        //     $tasks->where(function ($query) use ($search) {
-        //         $query->where('tasks.title', 'LIKE', "%{$search}%")
-        //             ->orWhere('tasks.description', 'LIKE', "%{$search}%")
-        //             ->orWhere('tasks.subject', 'LIKE', "%{$search}%")
-        //             ->orWhere('task_assignees.task_number', 'LIKE', "%{$search}%")
-        //             ->orWhere('task_assignees.remark', 'LIKE', "%{$search}%")
-        //             ->orWhereHas('creator', function ($creatorQuery) use ($search) {
-        //                 $creatorQuery->where('first_name', 'LIKE', "%{$search}%")
-        //                     ->orWhere('last_name', 'LIKE', "%{$search}%");
-        //             })
-        //             ->orWhereHas('department_data', function ($departmentQuery) use ($search) {
-        //                 $departmentQuery->where('department_name', 'LIKE', "%{$search}%");
-        //             })
-        //             ->orWhereHas('sub_department_data', function ($subDepartmentQuery) use ($search) {
-        //                 $subDepartmentQuery->where('sub_department_name', 'LIKE', "%{$search}%");
-        //             });
-        //     });
-        // }
-
-        // dd($tasks->get());
-
-
         if (!empty($request->search['value'])) {
             $searchTerm = $request->search['value'];
 
@@ -1879,7 +1853,7 @@ class TaskController extends Controller
             })
             ->addColumn('Task_assign_to', function ($row) {
                 // return $row->user_id && $row->user ? $row->user->first_name . " " . $row->user->last_name : "-";
-    
+
                 $data = TaskAssignee::where('task_id', $row->id)->get();
                 // Get the user names as a comma-separated string
                 $userNames = $data->map(function ($assignee) {
@@ -4584,7 +4558,7 @@ class TaskController extends Controller
                 $acceptButton = '';
                 if ($row->status == 0 && $row->user_id == auth()->user()->id) {
                     // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
-    
+
                     $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
@@ -11919,7 +11893,7 @@ class TaskController extends Controller
 
     }
 
-// this is proper working code 
+// this is proper working code
     // public function add_selected_fields()
     // {
     //     $selectedFields = json_encode(["0", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"]);
@@ -11955,7 +11929,7 @@ class TaskController extends Controller
 
         if ($assignees = $request->input('assignees')) {
             $tasks->whereHas('user', function ($q) use ($assignees) {
-                $q->whereIn('user_id', $assignees);
+                $q->whereIn('task_assignees.user_id', $assignees);
             });
         }
 
