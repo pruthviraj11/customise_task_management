@@ -136,6 +136,56 @@
                                     @enderror
                                 </span>
                             </div>
+
+                            <!-- Outlook Integration Fields -->
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="outlook_client_id">Outlook Client ID</label>
+                                <input type="text" id="outlook_client_id" class="form-control"
+                                    name="outlook_client_id"
+                                    value="{{ old('outlook_client_id', $data->outlook_client_id ?? '') }}">
+                                <span class="text-danger">
+                                    @error('outlook_client_id')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="outlook_client_secret">Outlook Client Secret</label>
+                                <input type="text" id="outlook_client_secret" class="form-control"
+                                    name="outlook_client_secret"
+                                    value="{{ old('outlook_client_secret', $data->outlook_client_secret ?? '') }}">
+                                <span class="text-danger">
+                                    @error('outlook_client_secret')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="outlook_redirect_url">Outlook Redirect URL</label>
+                                <input type="url" id="outlook_redirect_url" class="form-control"
+                                    name="outlook_redirect_url"
+                                    value="{{ old('outlook_redirect_url', $data->outlook_redirect_url ?? '') }}">
+                                <span class="text-danger">
+                                    @error('outlook_redirect_url')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
+                            <div class="col-md-6 col-sm-12 mb-1">
+                                <label class="form-label" for="outlook_tenant_id">Outlook Tenant ID</label>
+                                <input type="text" id="outlook_tenant_id" class="form-control"
+                                    name="outlook_tenant_id"
+                                    value="{{ old('outlook_tenant_id', $data->outlook_tenant_id ?? '') }}">
+                                <span class="text-danger">
+                                    @error('outlook_tenant_id')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
                             <input type="hidden" id="selectedColumns" name="selected_columns" value="">
 
                             <div class="card">
@@ -144,7 +194,7 @@
                                         <div class="row">
                                             {{-- @php
                                                 $selectedColumns = json_decode(auth()->user()->selected_fields, true); // Get the selected columns array
-                                           
+
                                            @endphp --}}
 
                                             @php
@@ -184,7 +234,7 @@
                                                 Actions
                                             </div>
 
-                                            {{-- 
+                                            {{--
                                             @if ($type == 'mytask')
                                                 <div class="list-group-item col">
                                                     <input type="checkbox" class="column-toggle" data-column="1" checked>

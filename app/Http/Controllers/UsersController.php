@@ -122,8 +122,8 @@ class UsersController extends Controller
     {
         // $users = $this->userService->getAllUser();
         $users = User::query()
-        ->leftJoin('locations', 'users.location_id', '=', 'locations.id')
-        ->select('users.*', 'locations.location_name as location_name');
+            ->leftJoin('locations', 'users.location_id', '=', 'locations.id')
+            ->select('users.*', 'locations.location_name as location_name');
         // dd($users->username());
         // $users = $this->userService->getAllUser();
 
@@ -199,7 +199,7 @@ class UsersController extends Controller
         $roles = $this->roleService->getAllRoles();
         $locations = Location::where('status', 'on')->get();
         $data['reports_to'] = User::all();
-        return view('.content.apps.user.create-edit', compact('page_data', 'user', 'userslist', 'roles', 'data', 'profile_img', 'departments', 'Subdepartments','locations'));
+        return view('.content.apps.user.create-edit', compact('page_data', 'user', 'userslist', 'roles', 'data', 'profile_img', 'departments', 'Subdepartments', 'locations'));
     }
 
     /**
@@ -211,11 +211,28 @@ class UsersController extends Controller
     public function store(CreateUserRequest $request)
     {
         try {
-         $defaultSelectedColumns = [
-    "0", "3", "4", "5", "7", "8", "9", "10", "11",
-    "12", "13", "14", "15", "16", "17", "18", "19",
-    "20", "21", "22"
-];
+            $defaultSelectedColumns = [
+                "0",
+                "3",
+                "4",
+                "5",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22"
+            ];
 
             $userData['selected_fields'] = json_encode($defaultSelectedColumns);
             $userData['username'] = $request->get('username');
@@ -316,10 +333,10 @@ class UsersController extends Controller
             $user->role = $user->getRoleNames()[0] ?? '';
             $associatedSubDepartmentId = $user->subDepartment->id ?? null;
             // dd($user);
-        $locations = Location::where('status', 'on')->get();
+            $locations = Location::where('status', 'on')->get();
 
             $data['reports_to'] = User::all();
-            return view('/content/apps/user/create-edit', compact('page_data', 'user', 'data', 'roles', 'userslist', 'Subdepartments', 'departments', 'associatedSubDepartmentId','locations'));
+            return view('/content/apps/user/create-edit', compact('page_data', 'user', 'data', 'roles', 'userslist', 'Subdepartments', 'departments', 'associatedSubDepartmentId', 'locations'));
         } catch (\Exception $error) {
             // dd($error->getMessage());
             return redirect()->route("app-users-list")->with('error', 'Error while editing User');
@@ -337,14 +354,21 @@ class UsersController extends Controller
     public function updateProfile(UpdateUserProfileRequest $request, $encrypted_id)
     {
         try {
+            // dd($request->all());
             $id = decrypt($encrypted_id);
-          $selectedColumns = explode(',', $request->input('selected_columns'));
-$userData['selected_fields'] = json_encode($selectedColumns);
+            $selectedColumns = explode(',', $request->input('selected_columns'));
+            $userData['selected_fields'] = json_encode($selectedColumns);
             $userData['first_name'] = $request->get('first_name');
             $userData['last_name'] = $request->get('last_name');
             $userData['location_id'] = $request->get('location_id');
             $userData['email'] = $request->get('email');
             $userData['phone_no'] = $request->get('phone_no');
+
+            $userData['outlook_client_id'] = $request->get('outlook_client_id');
+            $userData['outlook_client_secret'] = $request->get('outlook_client_secret');
+            $userData['outlook_redirect_url'] = $request->get('outlook_redirect_url');
+            $userData['outlook_tenant_id'] = $request->get('outlook_tenant_id');
+
             if ($request->hasFile('profile_img')) {
                 $imagePath = $request->file('profile_img')->store('profile_img', 'public');
                 $userData['profile_img'] = $imagePath;
@@ -373,7 +397,7 @@ $userData['selected_fields'] = json_encode($selectedColumns);
     public function update(UpdateUserRequest $request, $encrypted_id)
     {
         try {
-        // dd($request->all());
+            // dd($request->all());
 
             $id = decrypt($encrypted_id);
             $userData['username'] = $request->get('username');

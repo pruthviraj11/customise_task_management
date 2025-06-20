@@ -44,7 +44,14 @@ class User extends Authenticatable
         'Grad',
         'updated_at',
         'selected_fields',
-        'location_id'
+        'location_id',
+        'outlook_client_id',
+        'outlook_client_secret',
+        'outlook_redirect_url',
+        'outlook_tenant_id',
+        'outlook_access_token',
+        'outlook_refresh_token',
+        'outlook_token_expires'
         // Add other fields as necessary
     ];
     public $incrementing = false;
@@ -54,7 +61,7 @@ class User extends Authenticatable
         'selected_fields' => 'array',
         'email_verified_at' => 'datetime',
     ];
-    
+
     protected $attributes = [
         'selected_fields' => '[]',
     ];
