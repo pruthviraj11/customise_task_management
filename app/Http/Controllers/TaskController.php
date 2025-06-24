@@ -7350,9 +7350,7 @@ class TaskController extends Controller
                 $prevStartDate = $taskStartDate;
             }
 
-            if (!$response) {
-                return back()->with('error', 'Task saved, but failed to sync with Outlook.');
-            }
+
 
             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
         } else {
@@ -11611,8 +11609,11 @@ class TaskController extends Controller
                     'accepted_date' => $accepted_at,
                     'created_at' => now(),
                 ]);
-                   $outlookService = new OutlookService();
-            $response = $outlookService->createEvent($user, $taskData);
+                $outlookService = new OutlookService();
+                $response = $outlookService->createEvent($user, $taskData);
+                if (!$response) {
+                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+                }
             }
 
             // Update the last task number for the task
