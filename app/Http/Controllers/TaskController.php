@@ -7508,8 +7508,8 @@ class TaskController extends Controller
                     'Created'
                 );
 
-                $outlookService = new OutlookService();
-                $response = $outlookService->createEvent($user, $task);
+                // $outlookService = new OutlookService();
+                // $response = $outlookService->createEvent($user, $task);
                 // if (!$response) {
                 //     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
                 // }
@@ -11609,8 +11609,8 @@ class TaskController extends Controller
                     'accepted_date' => $accepted_at,
                     'created_at' => now(),
                 ]);
-                $outlookService = new OutlookService();
-                $response = $outlookService->createEvent($user, $taskData);
+                // $outlookService = new OutlookService();
+                // $response = $outlookService->createEvent($user, $taskData);
                 // if (!$response) {
                 //     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
                 // }
