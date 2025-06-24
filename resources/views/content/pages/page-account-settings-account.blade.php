@@ -228,7 +228,7 @@
                                                     ];
                                                 }
                                             @endphp
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="0"
                                                     @if (is_null($selectedColumns) || (is_array($selectedColumns) && in_array(0, $selectedColumns))) checked @endif>
                                                 Actions
@@ -236,111 +236,111 @@
 
                                             {{--
                                             @if ($type == 'mytask')
-                                                <div class="list-group-item col">
+                                                <div class="list-group-item col-2 border">
                                                     <input type="checkbox" class="column-toggle" data-column="1" checked>
                                                     Pin Task
                                                 </div>
                                             @endif  --}}
 
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="2" checked>
                                                 Task ID
                                             </div>
 
                                             {{-- Code for Haystack option to select fields code Starts --}}
 
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="3"
                                                     @if (in_array(3, $selectedColumns)) checked @endif>
                                                 Task Number
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="4"
                                                     @if (in_array(4, $selectedColumns)) checked @endif>
                                                 Task/Ticket
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="5"
                                                     @if (in_array(5, $selectedColumns)) checked @endif>
                                                 Title
                                             </div>
 
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="7"
                                                     @if (in_array(7, $selectedColumns)) checked @endif>
                                                 Subject
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="8"
                                                     @if (in_array(8, $selectedColumns)) checked @endif>
                                                 Assign By
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="9"
                                                     @if (in_array(9, $selectedColumns)) checked @endif>
                                                 Assigned To
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="10"
                                                     @if (in_array(10, $selectedColumns)) checked @endif>
                                                 Status
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="11"
                                                     @if (in_array(11, $selectedColumns)) checked @endif>
                                                 Created Date
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="12"
                                                     @if (in_array(12, $selectedColumns)) checked @endif>
                                                 Start Date
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="13"
                                                     @if (in_array(13, $selectedColumns)) checked @endif>
                                                 Due Date
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="14"
                                                     @if (in_array(14, $selectedColumns)) checked @endif>
                                                 Completed Date
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="15"
                                                     @if (in_array(15, $selectedColumns)) checked @endif>
                                                 Accepted Date
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="16"
                                                     @if (in_array(16, $selectedColumns)) checked @endif>
                                                 Project
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="17"
                                                     @if (in_array(17, $selectedColumns)) checked @endif>
                                                 Department
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="18"
                                                     @if (in_array(18, $selectedColumns)) checked @endif>
                                                 Sub Department
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="19"
                                                     @if (in_array(19, $selectedColumns)) checked @endif>
                                                 Owner Department
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="20"
                                                     @if (in_array(20, $selectedColumns)) checked @endif>
                                                 Owner Sub Department
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="21"
                                                     @if (in_array(21, $selectedColumns)) checked @endif>
                                                 Owner Contact Info
                                             </div>
-                                            <div class="list-group-item col">
+                                            <div class="list-group-item col-2 border">
                                                 <input type="checkbox" class="column-toggle" data-column="22"
                                                     @if (in_array(22, $selectedColumns)) checked @endif>
                                                 Close Date
@@ -349,7 +349,7 @@
                                             {{-- Code for Haystack option to select fields code Ends --}}
 
                                             {{-- @if ($type == 'mytask')
-                                                <div class="list-group-item col">
+                                                <div class="list-group-item col-2 border">
                                                     <input type="checkbox" class="column-toggle" data-column="23"
                                                         @if (in_array(23, $selectedColumns)) checked @endif>
                                                     Is Pinned
