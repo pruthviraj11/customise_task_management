@@ -5,7 +5,7 @@
         <span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy;
             <script>
                 document.write(new Date().getFullYear())
-            </script><a class="ms-25" href="https://www.decentinfoways.com" target="_blank">Decent</a>,
+            </script><a class="ms-25" href="https://www.raoconsultants.com/" target="_blank">Rao Consultants </a>,
             <span class="d-none d-sm-inline-block">All rights Reserved</span>
         </span>
         <span class="float-md-end d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
