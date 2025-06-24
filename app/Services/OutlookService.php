@@ -47,7 +47,7 @@ class OutlookService
         $graph->setAccessToken($token);
 
         $event = [
-            'subject' => $task['title'],
+            'subject' => $task['title'] . ' (' . $task['id'] . ') ',
            'body' => [
         'contentType' => 'HTML',
         'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' .encrypt( $task['id'])) . '">View Task in System</a>',
