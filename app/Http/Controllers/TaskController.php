@@ -7,6 +7,7 @@ use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\TaskFeedback;
+use App\Services\OutlookService;
 use Cache;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -21,6 +22,7 @@ use App\Models\RecursiveTaskAttachment;
 use App\Models\TaskAttachment;
 use App\Models\RecurringTask;
 use App\Models\TaskAssignee;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\RoleService;
 use App\Services\TaskService;
@@ -7347,6 +7349,11 @@ class TaskController extends Controller
                 // Set the previous start date for the next loop iteration
                 $prevStartDate = $taskStartDate;
             }
+            $outlookService = new OutlookService();
+            $response = $outlookService->createEvent($user, $taskData);
+            if (!$response) {
+                return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+            }
 
             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
         } else {
@@ -7505,6 +7512,13 @@ class TaskController extends Controller
                 );
             }
 
+            $outlookService = new OutlookService();
+            $response = $outlookService->createEvent($user, $task);
+            // dd($response);
+
+            if (!$response) {
+                return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+            }
 
             // Redirect with success message
             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
@@ -11893,7 +11907,7 @@ class TaskController extends Controller
 
     }
 
-// this is proper working code
+    // this is proper working code
     // public function add_selected_fields()
     // {
     //     $selectedFields = json_encode(["0", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"]);

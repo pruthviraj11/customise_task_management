@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\OutlookController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectStatusController;
@@ -76,6 +77,13 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 
+
+///////////// Route For Outlook Starts ///////////////////////
+Route::middleware('auth')->group(function () {
+    Route::get('/connect/outlook', [OutlookController::class, 'redirectToMicrosoft'])->name('outlook.connect');
+    Route::get('/callback/outlook', [OutlookController::class, 'handleMicrosoftCallback'])->name('outlook.callback');
+});
+//////////// Route For Outlook Ends //////////////////////////
 
 
 Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {

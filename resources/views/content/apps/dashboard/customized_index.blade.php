@@ -108,6 +108,8 @@
 
 
         <div class="card-header">
+               <a href="{{ route('outlook.connect') }}" class="btn btn-primary">Connect to Outlook</a>
+
             <div>
                 <h1>Dynamic Report</h1>
             </div>
@@ -1492,7 +1494,7 @@
                                 return a + (parseFloat(b) || 0);
                             }, 0);
 
-                          
+
 
                                var userIds, routeUrl;
 
@@ -1531,9 +1533,9 @@
                             }, 0);
 
 
-                    
+
                         // var grandTotalRouteUrl = createUrl(userIds, 'all',
-                        //     typeOrStatusId); 
+                        //     typeOrStatusId);
 
                                var grandTotalRouteUrl;
                         if (isSuperAdmin) {
@@ -1550,7 +1552,7 @@
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
                             grandTotalRouteUrl, verticalSum));
                     }
-                    
+
 
 
 
