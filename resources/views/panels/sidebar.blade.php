@@ -8,7 +8,7 @@
             <li class="nav-item me-auto">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <span class="brand-logo">
-                        <img src="{{ asset('images/ico/logo_fav.png') }}" alt="">
+                        <img src="{{ asset('images/ico/rao_logo.png') }}" alt="" style="min-width: 165px">
                     </span>
                     <h2 class="brand-text mb-0 text-white">{{ env('APP_NAME') }}</h2>
 
