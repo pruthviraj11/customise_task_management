@@ -7510,9 +7510,9 @@ class TaskController extends Controller
 
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $task);
-                if (!$response) {
-                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
-                }
+                // if (!$response) {
+                //     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+                // }
             }
 
             // dd($response);
@@ -11611,9 +11611,9 @@ class TaskController extends Controller
                 ]);
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $taskData);
-                if (!$response) {
-                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
-                }
+                // if (!$response) {
+                //     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+                // }
             }
 
             // Update the last task number for the task
