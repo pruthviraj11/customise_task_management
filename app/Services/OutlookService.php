@@ -42,23 +42,28 @@ class OutlookService
         $token = $this->getAccessToken($user);
         if (!$token) return null;
 
+        // dd($task);
         $graph = new Graph();
         $graph->setAccessToken($token);
+
         $event = [
             'subject' => $task['title'],
-            'body' => [
-                'contentType' => 'HTML',
-                'content' => $task['description'] ?? '',
-            ],
+           'body' => [
+        'contentType' => 'HTML',
+        'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' .encrypt( $task['id'])) . '">View Task in System</a>',
+    ],
             'start' => [
-                'dateTime' => Carbon::parse($task['start_date'])->format('Y-m-d\TH:i:s'),
+                'dateTime' => Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
                 'timeZone' => 'Asia/Kolkata',
             ],
             'end' => [
-                'dateTime' => Carbon::parse($task['due_date'])->format('Y-m-d\TH:i:s'),
+                'dateTime' =>Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
                 'timeZone' => 'Asia/Kolkata',
             ],
         ];
+
+
+        // dd($event);
         return $graph->createRequest('POST', '/me/events')
             ->attachBody($event)
             ->execute();

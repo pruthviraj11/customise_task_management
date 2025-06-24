@@ -7349,8 +7349,7 @@ class TaskController extends Controller
                 // Set the previous start date for the next loop iteration
                 $prevStartDate = $taskStartDate;
             }
-            $outlookService = new OutlookService();
-            $response = $outlookService->createEvent($user, $taskData);
+
             if (!$response) {
                 return back()->with('error', 'Task saved, but failed to sync with Outlook.');
             }
@@ -7510,15 +7509,16 @@ class TaskController extends Controller
                     'New task ' . $taskAssignee->task_number . ' assigned to you.<br> <a class="btn-sm btn-success me-1 mt-1" href="' . $taskViewUrl . '">View Task</a>',
                     'Created'
                 );
+
+                $outlookService = new OutlookService();
+                $response = $outlookService->createEvent($user, $task);
+                if (!$response) {
+                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+                }
             }
 
-            $outlookService = new OutlookService();
-            $response = $outlookService->createEvent($user, $task);
             // dd($response);
 
-            if (!$response) {
-                return back()->with('error', 'Task saved, but failed to sync with Outlook.');
-            }
 
             // Redirect with success message
             return redirect()->route("app-task-list")->with('success', 'Task Added Successfully');
@@ -11611,6 +11611,8 @@ class TaskController extends Controller
                     'accepted_date' => $accepted_at,
                     'created_at' => now(),
                 ]);
+            //        $outlookService = new OutlookService();
+            // $response = $outlookService->createEvent($user, $taskData);
             }
 
             // Update the last task number for the task
