@@ -11611,8 +11611,8 @@ class TaskController extends Controller
                     'accepted_date' => $accepted_at,
                     'created_at' => now(),
                 ]);
-            //        $outlookService = new OutlookService();
-            // $response = $outlookService->createEvent($user, $taskData);
+                   $outlookService = new OutlookService();
+            $response = $outlookService->createEvent($user, $taskData);
             }
 
             // Update the last task number for the task
