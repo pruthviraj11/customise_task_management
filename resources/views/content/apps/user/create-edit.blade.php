@@ -370,6 +370,39 @@
                             </div>
 
 
+                            <div class="col-md-12 col-sm-12 mb-1">
+                                <label class="form-label d-block" for="company">Company</label>
+
+                                @php
+                                    $selectedCompany = old('company') ?? ($user != '' ? $user->company : 'Rao');
+                                @endphp
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="company" id="company_rao"
+                                        value="Rao" {{ $selectedCompany == 'Rao' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="company_rao">Rao</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="company" id="company_hue"
+                                        value="HUE" {{ $selectedCompany == 'HUE' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="company_hue">HUE</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="company" id="company_gp"
+                                        value="Green Panther" {{ $selectedCompany == 'Green Panther' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="company_gp">Green Panther</label>
+                                </div>
+
+                                <span class="text-danger">
+                                    @error('company')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+
+
                         </div>
 
                         <div class="col-12">

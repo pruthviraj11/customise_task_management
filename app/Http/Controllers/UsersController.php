@@ -258,6 +258,8 @@ class UsersController extends Controller
             $userData['can_remove_tax'] = $request->get('can_remove_tax') == 'on' ? true : false;
             $userData['can_delete_package'] = $request->get('can_delete_package') == 'on' ? true : false;
             $userData['status'] = $request->get('status') == 'on' ? true : false;
+            $userData['company'] = $request->get('company');
+
             $userData['created_by'] = Auth::id();
 
             if ($request->hasFile('profile_img')) {
@@ -397,7 +399,6 @@ class UsersController extends Controller
     public function update(UpdateUserRequest $request, $encrypted_id)
     {
         try {
-            // dd($request->all());
 
             $id = decrypt($encrypted_id);
             $userData['username'] = $request->get('username');
@@ -424,6 +425,8 @@ class UsersController extends Controller
             $userData['can_remove_tax'] = $request->get('can_remove_tax') == 'on' ? true : false;
             $userData['can_delete_package'] = $request->get('can_delete_package') == 'on' ? true : false;
             $userData['status'] = $request->get('status') == 'on' ? true : false;
+            $userData['company'] = $request->get('company');
+
             $userData['created_by'] = Auth::id();
 
             if ($request->hasFile('profile_img')) {

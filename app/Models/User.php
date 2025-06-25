@@ -51,7 +51,8 @@ class User extends Authenticatable
         'outlook_tenant_id',
         'outlook_access_token',
         'outlook_refresh_token',
-        'outlook_token_expires'
+        'outlook_token_expires',
+        'company'
         // Add other fields as necessary
     ];
     public $incrementing = false;
