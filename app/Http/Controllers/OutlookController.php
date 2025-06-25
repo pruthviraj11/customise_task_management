@@ -15,7 +15,6 @@ class OutlookController extends Controller
         $clientId = env("OUTLOOK_CLIENT_ID_{$company}");
         $redirectUri = env("OUTLOOK_REDIRECT_URL");
         $tenantId = env("OUTLOOK_TENANT_ID_{$company}");
-
         $query = http_build_query([
             'client_id' => $clientId,
             'response_type' => 'code',
@@ -26,7 +25,8 @@ class OutlookController extends Controller
             'scope' => 'offline_access Calendars.ReadWrite',
             'state' => '12345',
         ]);
-        return redirect("https://login.microsoftonline.com/{$user->outlook_tenant_id}/oauth2/v2.0/authorize?$query");
+
+        return redirect("https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/authorize?$query");
     }
 
     // public function handleMicrosoftCallback(Request $request)

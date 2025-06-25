@@ -7508,11 +7508,11 @@ class TaskController extends Controller
                     'Created'
                 );
 
-                $outlookService = new OutlookService();
-                $response = $outlookService->createEvent($user, $task);
-                if (!$response) {
-                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
-                }
+                // $outlookService = new OutlookService();
+                // $response = $outlookService->createEvent($user, $task);
+                // if (!$response) {
+                //     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+                // }
             }
 
             // dd($response);
