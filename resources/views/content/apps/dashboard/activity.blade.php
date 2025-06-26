@@ -157,21 +157,64 @@
                                                                         : null;
 
                                                                     // Fetching old and new sub-department names directly
-                                                                    $oldSubDepartmentName = isset(
-                                                                        $old['sub_department_id'],
-                                                                    )
+                                                                    $oldSubDepartmentName = isset($old['subdepartment'])
                                                                         ? \App\Models\SubDepartment::find(
-                                                                                $old['sub_department_id'],
+                                                                                $old['subdepartment'],
                                                                             )->sub_department_name ?? null
                                                                         : null;
                                                                     $newSubDepartmentName = isset(
-                                                                        $attributes['sub_department_id'],
+                                                                        $attributes['subdepartment'],
                                                                     )
                                                                         ? \App\Models\SubDepartment::find(
-                                                                                $attributes['sub_department_id'],
+                                                                                $attributes['subdepartment'],
                                                                             )->sub_department_name ?? null
                                                                         : null;
 
+                                                                    $oldReportToUser = isset($old['report_to'])
+                                                                        ? \App\Models\User::find($old['report_to'])
+                                                                        : null;
+                                                                    $newReportToUser = isset($attributes['report_to'])
+                                                                        ? \App\Models\User::find(
+                                                                            $attributes['report_to'],
+                                                                        )
+                                                                        : null;
+
+                                                                    $oldReportToName = $oldReportToUser
+                                                                        ? $oldReportToUser->first_name .
+                                                                            ' ' .
+                                                                            $oldReportToUser->last_name
+                                                                        : null;
+                                                                    $newReportToName = $newReportToUser
+                                                                        ? $newReportToUser->first_name .
+                                                                            ' ' .
+                                                                            $newReportToUser->last_name
+                                                                        : null;
+
+                                                                    $oldStatusLabel = isset($old['status'])
+                                                                        ? match ((int) $old['status']) {
+                                                                            0 => 'Not Accepted',
+                                                                            1 => 'Accepted',
+                                                                            2 => 'Rejected',
+                                                                            default => 'Unknown',
+                                                                        }
+                                                                        : null;
+
+                                                                    $newStatusLabel = isset($attributes['status'])
+                                                                        ? match ((int) $attributes['status']) {
+                                                                            0 => 'Not Accepted',
+                                                                            1 => 'Accepted',
+                                                                            2 => 'Rejected',
+                                                                            default => 'Unknown',
+                                                                        }
+                                                                        : null;
+
+                                                                    $createdAtFormatted = isset(
+                                                                        $activityLog->created_at,
+                                                                    )
+                                                                        ? \Carbon\Carbon::parse(
+                                                                            $activityLog->created_at,
+                                                                        )->format('d F Y, h:i A')
+                                                                        : null;
                                                                 @endphp
                                                                 <div class="col-6">
                                                                     <li
@@ -191,8 +234,14 @@
                                                                                         {{ $oldTaskStatusName }}
                                                                                     @elseif($key === 'department_id')
                                                                                         {{ $oldDepartmentName }}
-                                                                                    @elseif($key === 'sub_department_id')
+                                                                                    @elseif($key === 'subdepartment')
                                                                                         {{ $oldSubDepartmentName }}
+                                                                                    @elseif($key === 'report_to')
+                                                                                        {{ $oldReportToName }}
+                                                                                    @elseif($key === 'status')
+                                                                                        {{ $oldStatusLabel }}
+                                                                                    @elseif($key === 'created_at')
+                                                                                        {{ $createdAtFormatted }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
@@ -221,8 +270,14 @@
                                                                                         {{ $newTaskStatusName }}
                                                                                     @elseif($key === 'department_id')
                                                                                         {{ $newDepartmentName }}
-                                                                                    @elseif($key === 'sub_department_id')
+                                                                                    @elseif($key === 'subdepartment')
                                                                                         {{ $newSubDepartmentName }}
+                                                                                    @elseif($key === 'report_to')
+                                                                                        {{ $newReportToName }}
+                                                                                    @elseif($key === 'status')
+                                                                                        {{ $newStatusLabel }}
+                                                                                    @elseif($key === 'created_at')
+                                                                                        {{ $createdAtFormatted }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
@@ -345,17 +400,17 @@
             });
         });
     </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const isRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
-        const url = new URL(window.location.href);
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const isRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
+            const url = new URL(window.location.href);
 
-        if (isRefresh && url.searchParams.has('page')) {
-            url.searchParams.delete('page');
-            window.location.replace(url.toString());
-        }
-    });
-</script>
+            if (isRefresh && url.searchParams.has('page')) {
+                url.searchParams.delete('page');
+                window.location.replace(url.toString());
+            }
+        });
+    </script>
 
 
 
