@@ -4,11 +4,9 @@
         @foreach ($activityLogs as $activityLog)
             @if ($activityLog)
                 <li class="timeline-item">
-                    <span
-                        class="timeline-point timeline-point-success timeline-point-indicator"></span>
+                    <span class="timeline-point timeline-point-success timeline-point-indicator"></span>
                     <div class="timeline-event">
-                        <div
-                            class="d-flex justify-content-between flex-sm-row flex-column mb-sm-0 mb-1">
+                        <div class="d-flex justify-content-between flex-sm-row flex-column mb-sm-0 mb-1">
                             <h6>
                                 @if ($activityLog->subject_type == 'App\Models\Task')
                                     Task id is: {{ $activityLog->subject_id }},
@@ -19,9 +17,7 @@
                         </div>
                         @php
                             $properties = json_decode($activityLog->properties, true);
-                            $attributes = isset($properties['attributes'])
-                                ? $properties['attributes']
-                                : [];
+                            $attributes = isset($properties['attributes']) ? $properties['attributes'] : [];
                             $causerId = $activityLog->causer_id;
                             $user = \App\Models\User::find($causerId); // Assuming User model namespace is App\Models\User
                         @endphp
@@ -30,8 +26,8 @@
                                 <div class="avatar">
                                     @if ($user->profile_img)
                                         @if ($user->profile_img = '')
-                                            <img src="{{ Storage::url($user->profile_img) }}"
-                                                alt="avatar" height="38" width="38">
+                                            <img src="{{ Storage::url($user->profile_img) }}" alt="avatar"
+                                                height="38" width="38">
                                         @endif
                                     @endif
                                 </div>
@@ -43,10 +39,8 @@
                             </div>
                             <div class="col-6">
                                 <p class="mb-50">Click below to see details.</p>
-                                <button class="btn btn-outline-primary btn-sm" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapseExample{{ $activityLog->id }}"
-                                    aria-expanded="false"
+                                <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseExample{{ $activityLog->id }}" aria-expanded="false"
                                     aria-controls="collapseExample{{ $activityLog->id }}">
                                     Show Report
                                 </button>
@@ -58,93 +52,104 @@
                                 <div class="row">
                                     @if ($activityLog->event === 'updated')
                                         @php
-                                            $properties = json_decode(
-                                                $activityLog->properties,
-                                                true,
-                                            );
+                                            $properties = json_decode($activityLog->properties, true);
 
-                                            $old = isset($properties['old'])
-                                                ? $properties['old']
-                                                : [];
+                                            $old = isset($properties['old']) ? $properties['old'] : [];
                                             $attributes = isset($properties['attributes'])
                                                 ? $properties['attributes']
                                                 : [];
 
                                             // Fetching old and new project names directly
                                             $oldProjectName = isset($old['project_id'])
-                                                ? \App\Models\Project::find($old['project_id'])
-                                                        ->project_name ?? null
+                                                ? \App\Models\Project::find($old['project_id'])->project_name ?? null
                                                 : null;
                                             $newProjectName = isset($attributes['project_id'])
-                                                ? \App\Models\Project::find(
-                                                        $attributes['project_id'],
-                                                    )->project_name ?? null
+                                                ? \App\Models\Project::find($attributes['project_id'])->project_name ??
+                                                    null
                                                 : null;
 
                                             // Fetching old and new priority names directly
                                             $oldPriorityName = isset($old['priority_id'])
-                                                ? \App\Models\Priority::find(
-                                                        $old['priority_id'],
-                                                    )->priority_name ?? null
+                                                ? \App\Models\Priority::find($old['priority_id'])->priority_name ?? null
                                                 : null;
                                             $newPriorityName = isset($attributes['priority_id'])
-                                                ? \App\Models\Priority::find(
-                                                        $attributes['priority_id'],
-                                                    )->priority_name ?? null
+                                                ? \App\Models\Priority::find($attributes['priority_id'])
+                                                        ->priority_name ?? null
                                                 : null;
 
                                             // Fetching old and new task status directly
                                             $oldTaskStatusName = isset($old['task_status'])
-                                                ? \App\Models\Status::find($old['task_status'])
-                                                        ->status_name ?? null
+                                                ? \App\Models\Status::find($old['task_status'])->status_name ?? null
                                                 : null;
-                                            $newTaskStatusName = isset(
-                                                $attributes['task_status'],
-                                            )
-                                                ? \App\Models\Status::find(
-                                                        $attributes['task_status'],
-                                                    )->status_name ?? null
+                                            $newTaskStatusName = isset($attributes['task_status'])
+                                                ? \App\Models\Status::find($attributes['task_status'])->status_name ??
+                                                    null
                                                 : null;
 
                                             // Fetching old and new department names directly
                                             $oldDepartmentName = isset($old['department_id'])
-                                                ? \App\Models\Department::find(
-                                                        $old['department_id'],
-                                                    )->department_name ?? null
+                                                ? \App\Models\Department::find($old['department_id'])
+                                                        ->department_name ?? null
                                                 : null;
-                                            $newDepartmentName = isset(
-                                                $attributes['department_id'],
-                                            )
-                                                ? \App\Models\Department::find(
-                                                        $attributes['department_id'],
-                                                    )->department_name ?? null
+                                            $newDepartmentName = isset($attributes['department_id'])
+                                                ? \App\Models\Department::find($attributes['department_id'])
+                                                        ->department_name ?? null
                                                 : null;
 
                                             // Fetching old and new sub-department names directly
-                                            $oldSubDepartmentName = isset(
-                                                $old['sub_department_id'],
-                                            )
-                                                ? \App\Models\SubDepartment::find(
-                                                        $old['sub_department_id'],
-                                                    )->sub_department_name ?? null
+                                            $oldSubDepartmentName = isset($old['subdepartment'])
+                                                ? \App\Models\SubDepartment::find($old['subdepartment'])
+                                                        ->sub_department_name ?? null
                                                 : null;
-                                            $newSubDepartmentName = isset(
-                                                $attributes['sub_department_id'],
-                                            )
-                                                ? \App\Models\SubDepartment::find(
-                                                        $attributes['sub_department_id'],
-                                                    )->sub_department_name ?? null
+                                            $newSubDepartmentName = isset($attributes['subdepartment'])
+                                                ? \App\Models\SubDepartment::find($attributes['subdepartment'])
+                                                        ->sub_department_name ?? null
                                                 : null;
 
+                                            $oldReportToUser = isset($old['report_to'])
+                                                ? \App\Models\User::find($old['report_to'])
+                                                : null;
+                                            $newReportToUser = isset($attributes['report_to'])
+                                                ? \App\Models\User::find($attributes['report_to'])
+                                                : null;
+
+                                            $oldReportToName = $oldReportToUser
+                                                ? $oldReportToUser->first_name . ' ' . $oldReportToUser->last_name
+                                                : null;
+                                            $newReportToName = $newReportToUser
+                                                ? $newReportToUser->first_name . ' ' . $newReportToUser->last_name
+                                                : null;
+
+                                            $oldStatusLabel = isset($old['status'])
+                                                ? match ((int) $old['status']) {
+                                                    0 => 'Not Accepted',
+                                                    1 => 'Accepted',
+                                                    2 => 'Rejected',
+                                                    default => 'Unknown',
+                                                }
+                                                : null;
+
+                                            $newStatusLabel = isset($attributes['status'])
+                                                ? match ((int) $attributes['status']) {
+                                                    0 => 'Not Accepted',
+                                                    1 => 'Accepted',
+                                                    2 => 'Rejected',
+                                                    default => 'Unknown',
+                                                }
+                                                : null;
+
+                                            $createdAtFormatted = isset($activityLog->created_at)
+                                                ? \Carbon\Carbon::parse($activityLog->created_at)->format(
+                                                    'd F Y, h:i A',
+                                                )
+                                                : null;
                                         @endphp
                                         <div class="col-6">
-                                            <li
-                                                class="list-group-item d-flex justify-content-between flex-wrap">
+                                            <li class="list-group-item d-flex justify-content-between flex-wrap">
                                                 <span>Old Data:</span>
                                             </li>
                                             @foreach ($old as $key => $value)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between flex-wrap">
+                                                <li class="list-group-item d-flex justify-content-between flex-wrap">
                                                     <span>{{ ucfirst(str_replace('_', ' ', str_replace('id', ' ', $key))) }}:
                                                         <span class="fw-bold">
                                                             @if ($key == 'project_id')
@@ -155,8 +160,14 @@
                                                                 {{ $oldTaskStatusName }}
                                                             @elseif($key === 'department_id')
                                                                 {{ $oldDepartmentName }}
-                                                            @elseif($key === 'sub_department_id')
+                                                            @elseif($key === 'subdepartment')
                                                                 {{ $oldSubDepartmentName }}
+                                                            @elseif($key === 'report_to')
+                                                                {{ $oldReportToName }}
+                                                            @elseif($key === 'status')
+                                                                {{ $oldStatusLabel }}
+                                                            @elseif($key === 'created_at')
+                                                                {{ $createdAtFormatted }}
                                                             @else
                                                                 {{ $value }}
                                                             @endif
@@ -167,13 +178,11 @@
                                         </div>
 
                                         <div class="col-6">
-                                            <li
-                                                class="list-group-item d-flex justify-content-between flex-wrap">
+                                            <li class="list-group-item d-flex justify-content-between flex-wrap">
                                                 <span>New Data:</span>
                                             </li>
                                             @foreach ($attributes as $key => $value)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between flex-wrap">
+                                                <li class="list-group-item d-flex justify-content-between flex-wrap">
                                                     <span>{{ ucfirst(str_replace('_id', '_', str_replace('_', ' ', $key))) }}:
 
                                                         <span class="fw-bold">
@@ -185,8 +194,14 @@
                                                                 {{ $newTaskStatusName }}
                                                             @elseif($key === 'department_id')
                                                                 {{ $newDepartmentName }}
-                                                            @elseif($key === 'sub_department_id')
+                                                            @elseif($key === 'subdepartment')
                                                                 {{ $newSubDepartmentName }}
+                                                            @elseif($key === 'report_to')
+                                                                {{ $newReportToName }}
+                                                            @elseif($key === 'status')
+                                                                {{ $newStatusLabel }}
+                                                            @elseif($key === 'created_at')
+                                                                {{ $createdAtFormatted }}
                                                             @else
                                                                 {{ $value }}
                                                             @endif
@@ -197,24 +212,19 @@
                                         </div>
                                     @else
                                         @php
-                                            $properties = json_decode(
-                                                $activityLog->properties,
-                                                true,
-                                            );
+                                            $properties = json_decode($activityLog->properties, true);
                                             $attributes = isset($properties['attributes'])
                                                 ? $properties['attributes']
                                                 : [];
 
                                             // Fetching new project name directly
                                             $projectName = isset($attributes['project_id'])
-                                                ? \App\Models\Project::find(
-                                                        $attributes['project_id'],
-                                                    )->project_name ?? null
+                                                ? \App\Models\Project::find($attributes['project_id'])->project_name ??
+                                                    null
                                                 : null;
                                         @endphp
                                         @foreach ($attributes as $key => $value)
-                                            <li
-                                                class="list-group-item d-flex justify-content-between flex-wrap">
+                                            <li class="list-group-item d-flex justify-content-between flex-wrap">
                                                 <span>{{ ucfirst(str_replace('_id', ' ', $key)) }}:
                                                     <span class="fw-bold">
                                                         @if ($key === 'project_id')
@@ -238,8 +248,8 @@
             @endif
         @endforeach
     </ul>
-    <div class="pagination-wrapper mt-2 d-flex justify-content-center">
+    {{-- <div class="pagination-wrapper mt-2 d-flex justify-content-center">
         {{ $activityLogs->links('pagination::bootstrap-4') }}
-    </div>
+    </div> --}}
 
 </div>
