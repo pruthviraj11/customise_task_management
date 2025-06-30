@@ -1078,8 +1078,9 @@
                         data: 'status',
                         name: 'status',
                         searchable: true,
-                        visible: selectedColumns.includes(
-                            "23"), // Checks if "23" is in the selectedColumns array
+                        visible:true,
+                        // selectedColumns.includes(
+                        //     "23"), // Checks if "23" is in the selectedColumns array
                         render: function(data, type, row) {
                             // Conditionally return the appropriate label based on the status value
                             switch (data) {
