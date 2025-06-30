@@ -68,7 +68,7 @@ class Task extends Model
                 'due_date',
                 'accepted_date',
                 'completed_date',
-                'closed'
+                'closed_date'
             ])
             ->logOnlyDirty();
     }
