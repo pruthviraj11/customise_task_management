@@ -219,9 +219,9 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contactinfo</th>
                                 <th>Close Date</th>
-                               
+
                                 <th>Status</th>
-                                 @if ($type == 'assign_by_me')
+                                @if ($type == 'assign_by_me')
                                     <th>Rating</th>
                                     <th>Feedback</th>
                                 @endif
@@ -519,18 +519,35 @@
         </div>
     </div> --}}
     <!-- users list ends -->
-  @php
-    $selectedColumnsRaw = auth()->user()->selected_fields;
-    $selectedColumns = is_string($selectedColumnsRaw) ? json_decode($selectedColumnsRaw, true) : [];
+    @php
+        $selectedColumnsRaw = auth()->user()->selected_fields;
+        $selectedColumns = is_string($selectedColumnsRaw) ? json_decode($selectedColumnsRaw, true) : [];
 
-    if (empty($selectedColumns)) {
-        $selectedColumns = [
-            "0", "3", "4", "5", "7", "8", "9", "10", "11",
-            "12", "13", "14", "15", "16", "17", "18", "19",
-            "20", "21", "22"
-        ];
-    }
-@endphp
+        if (empty($selectedColumns)) {
+            $selectedColumns = [
+                '0',
+                '3',
+                '4',
+                '5',
+                '7',
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+            ];
+        }
+    @endphp
 @endsection
 
 @section('vendor-script')
@@ -624,7 +641,7 @@
             @elseif ($type === 'due_date_past') {
                     ajaxUrl = "{{ route('app-task-get-due_date_past') }}";
                 }
-                 @elseif ($type === 'todays_due_task') {
+            @elseif ($type === 'todays_due_task') {
                     ajaxUrl = "{{ route('app-task-get-todays_due_task') }}";
                 }
             @elseif ($type === 'pending_task') {
@@ -1048,7 +1065,7 @@
                         searchable: true,
                         visible: selectedColumns.includes("22")
                     },
-                  
+
                     @if ($type == 'mytask')
 
                         {
@@ -1079,17 +1096,16 @@
                     },
 
                     @if ($type == 'assign_by_me')
-{
-    data: 'rating',
-    name: 'rating',
-    searchable: true,
-},
-{
-    data: 'task_feedback',
-    name: 'task_feedback',
-    searchable: true,
-},
-@endif
+                        {
+                            data: 'rating',
+                            name: 'rating',
+                            searchable: true,
+                        }, {
+                            data: 'task_feedback',
+                            name: 'task_feedback',
+                            searchable: true,
+                        },
+                    @endif
 
                     {
                         data: 'Created_Date',
@@ -1582,39 +1598,44 @@
                             //         confirmButton: 'btn btn-success'
                             //     }
                             // }).then(function() {
-                                // Show the second SweetAlert for comment decision
-                                Swal.fire({
-                                    title: 'Do you want to add a comment now or later?',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Add Now',
-                                    cancelButtonText: 'Add Later',
-                                    customClass: {
-                                        confirmButton: 'btn btn-primary',
-                                        cancelButton: 'btn btn-outline-danger ms-1'
-                                    },
-                                    buttonsStyling: false
-                                }).then(function(result) {
-                                    if (result.value) {
-                                        // If 'Add Now' is chosen, redirect to the update task page
-                                        window.location.href =
-                                            "{{ route('app-task-edit', ':id') }}"
-                                            .replace(':id', id);
-                                    } else if (result.dismiss === Swal
-                                        .DismissReason.cancel) {
-                                        // If 'Add Later' is chosen, do nothing or handle accordingly
-                                        Swal.fire({
-                                            title: 'You can add a comment later.',
-                                            text: 'The task will remain accepted.',
-                                            icon: 'info',
-                                            customClass: {
-                                                confirmButton: 'btn btn-info'
-                                            }
-                                        }).then(function() {
-                                            // Refresh the page after the message is shown
-                                            location.reload();
-                                        });
-                                    }
-                                });
+                            // Show the second SweetAlert for comment decision
+                            Swal.fire({
+                                title: 'Do you want to add a comment now or later?',
+                                showCancelButton: true,
+                                confirmButtonText: 'Add Now',
+                                cancelButtonText: 'Add Later',
+                                customClass: {
+                                    confirmButton: 'btn btn-primary',
+                                    cancelButton: 'btn btn-outline-danger ms-1'
+                                },
+                                buttonsStyling: false
+                            }).then(function(result) {
+                                if (result.value) {
+                                    // If 'Add Now' is chosen, redirect to the update task page
+                                    window.location.href =
+                                        "{{ route('app-task-edit', ':id') }}"
+                                        .replace(':id', id);
+                                } else {
+                                    // Refresh the page after the message is shown
+                                        location.reload();
+                                }
+
+                                // if (result.dismiss === Swal
+                                //     .DismissReason.cancel) {
+                                //     // If 'Add Later' is chosen, do nothing or handle accordingly
+                                //     Swal.fire({
+                                //         title: 'You can add a comment later.',
+                                //         text: 'The task will remain accepted.',
+                                //         icon: 'info',
+                                //         customClass: {
+                                //             confirmButton: 'btn btn-info'
+                                //         }
+                                //     }).then(function() {
+                                //         // Refresh the page after the message is shown
+                                //         location.reload();
+                                //     });
+                                // }
+                            });
                             // });
                         },
                         error: function() {
