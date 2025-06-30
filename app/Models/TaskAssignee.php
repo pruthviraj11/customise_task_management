@@ -62,6 +62,7 @@ class TaskAssignee extends Model
                 'status',
                 'remark',
                 'close_by',
+                'due_date',
                 'completed_by',
                 'completed_date',
                 'close_date',
