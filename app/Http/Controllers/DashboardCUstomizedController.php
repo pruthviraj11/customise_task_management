@@ -512,7 +512,7 @@ class DashboardCUstomizedController extends Controller
 
                 $due_tasks = TaskAssignee::where('user_id', $user->id)
                     // ->where('created_by', $user->id)
-                    ->whereNotIn('task_status', [4, 7])
+                    ->whereNotIn('task_status', [4, 7, 6])
                     ->where('status', '1')
 
                     ->whereDate('due_date', '<', $cdate)
@@ -683,7 +683,7 @@ class DashboardCUstomizedController extends Controller
 
                 $CountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
-                    ->whereNotIn('task_status', [4, 7])
+                    ->whereNotIn('task_status', [4, 7, 6])
                     ->where('status', 1)
 
                     ->whereDate('due_date', '<', $cdate)
