@@ -68,7 +68,8 @@ class TaskAssignee extends Model
                 'reopen_date',
                 'reopen_by',
                 'accepted_by',
-                'accepted_date'
+                'accepted_date',
+                'task_status'
             ])
             ->logOnlyDirty();
     }
