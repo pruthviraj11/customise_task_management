@@ -242,7 +242,7 @@
                                 {{-- Fields For Excel Ends --}}
 
                                 <th>Assign To Status</th>
-                                <th>Assign To Report to</th>
+                                <th>Assign To ReportIng</th>
 
 
 
