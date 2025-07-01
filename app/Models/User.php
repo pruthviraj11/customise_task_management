@@ -73,7 +73,7 @@ class User extends Authenticatable
     {
         return LogOptions::defaults()->useLogName('user')
             ->logOnly(['id'])
-            ->logOnly(['first_name', 'last_name', 'email', 'department_id', 'subdepartment', 'phone_no', 'email_verified_at', 'country', 'remember_token', 'created_at', 'username', 'dob', 'address', 'branch', 'form_group', 'report_to', 'authorization', 'can_export_excel', 'can_print_reports', 'can_remove_tax', 'is_online', 'can_delete_package', 'status', 'deleted_at', 'created_by', 'deleted_by', 'profile_img'])
+            ->logOnly(['first_name', 'last_name', 'email', 'department_id', 'subdepartment', 'phone_no', 'email_verified_at', 'country', 'remember_token', 'created_at', 'username', 'dob', 'address', 'branch', 'report_to', 'status', 'deleted_at', 'created_by', 'deleted_by', 'profile_img'])
             // ->logOnlyDirty();
         ;
     }
@@ -122,5 +122,10 @@ class User extends Authenticatable
     public function subordinates()
     {
         return $this->hasMany(User::class, 'report_to');
+    }
+
+    public function reportToUser()
+    {
+        return $this->belongsTo(User::class, 'report_to');
     }
 }

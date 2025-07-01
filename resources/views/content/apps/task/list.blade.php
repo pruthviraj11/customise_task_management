@@ -219,8 +219,13 @@
                                 <th>Owner Sub Department</th>
                                 <th>Owner Contactinfo</th>
                                 <th>Close Date</th>
+                                @if ($type == 'mytask')
+                                    <th>Is Pinned</th>
+                                @endif
+
 
                                 <th>Status</th>
+
                                 @if ($type == 'assign_by_me')
                                     <th>Rating</th>
                                     <th>Feedback</th>
@@ -235,6 +240,9 @@
                                 <th>Accepted task Date</th>
                                 <th>Close Date</th>
                                 {{-- Fields For Excel Ends --}}
+
+                                <th>Assign To Status</th>
+                                <th>Assign To Report to</th>
 
 
 
@@ -1066,19 +1074,24 @@
                         visible: selectedColumns.includes("22")
                     },
 
-                    @if ($type == 'mytask')
 
+
+                    @if ($type == 'mytask')
                         {
                             data: 'is_pinned',
                             name: 'is_pinned',
                             visible: false,
                             searchable: false,
+                            export: false
                         },
-                    @endif {
+                    @endif
+
+
+                    {
                         data: 'status',
                         name: 'status',
                         searchable: true,
-                        visible:true,
+                        visible: true,
                         // selectedColumns.includes(
                         //     "23"), // Checks if "23" is in the selectedColumns array
                         render: function(data, type, row) {
@@ -1095,6 +1108,7 @@
                             }
                         }
                     },
+
 
                     @if ($type == 'assign_by_me')
                         {
@@ -1234,6 +1248,19 @@
                             return '';
                         }
                     },
+  {
+                        data: 'assign_to_status',
+                        name: 'assign_to_status',
+                        searchable: true,
+                        visible: true,
+                    },
+                    {
+                        data: 'assign_to_report_to',
+                        name: 'assign_to_report_to',
+                        searchable: true,
+                        visible: true,
+                    },
+
                 ],
 
                 drawCallback: function() {
@@ -1618,7 +1645,7 @@
                                         .replace(':id', id);
                                 } else {
                                     // Refresh the page after the message is shown
-                                        location.reload();
+                                    location.reload();
                                 }
 
                                 // if (result.dismiss === Swal
