@@ -70,7 +70,9 @@ class TaskAssignee extends Model
                 'reopen_by',
                 'accepted_by',
                 'accepted_date',
-                'task_status'
+                'task_status',
+                'department',
+                'sub_department'
             ])
             ->logOnlyDirty();
     }
