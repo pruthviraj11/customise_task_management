@@ -215,6 +215,32 @@
                                                                             $activityLog->created_at,
                                                                         )->format('d F Y, h:i A')
                                                                         : null;
+
+                                                                    $oldCompletedByName =
+                                                                        isset($old['completed_by']) &&
+                                                                        \App\Models\User::find($old['completed_by'])
+                                                                            ? \App\Models\User::find(
+                                                                                    $old['completed_by'],
+                                                                                )->first_name .
+                                                                                ' ' .
+                                                                                \App\Models\User::find(
+                                                                                    $old['completed_by'],
+                                                                                )->last_name
+                                                                            : null;
+
+                                                                    $newCompletedByName =
+                                                                        isset($attributes['completed_by']) &&
+                                                                        \App\Models\User::find(
+                                                                            $attributes['completed_by'],
+                                                                        )
+                                                                            ? \App\Models\User::find(
+                                                                                    $attributes['completed_by'],
+                                                                                )->first_name .
+                                                                                ' ' .
+                                                                                \App\Models\User::find(
+                                                                                    $attributes['completed_by'],
+                                                                                )->last_name
+                                                                            : null;
                                                                 @endphp
                                                                 <div class="col-6">
                                                                     <li
@@ -242,6 +268,8 @@
                                                                                         {{ $oldStatusLabel }}
                                                                                     @elseif($key === 'created_at')
                                                                                         {{ $createdAtFormatted }}
+                                                                                    @elseif($key === 'completed_by')
+                                                                                        {{ $oldCompletedByName }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
@@ -278,6 +306,8 @@
                                                                                         {{ $newStatusLabel }}
                                                                                     @elseif($key === 'created_at')
                                                                                         {{ $createdAtFormatted }}
+                                                                                    @elseif($key === 'completed_by')
+                                                                                        {{ $newCompletedByName }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
