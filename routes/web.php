@@ -538,7 +538,7 @@ Route::group(['prefix' => 'app', 'middleware' => 'auth'], function () {
     Route::get('task/getAll_accepted_by_me', [TaskController::class, 'getAll_accepted_by_me'])->name('app-task-getAll_accepted_by_me-get');
 
     Route::get('task/assign_by_me', [TaskController::class, 'index'])->name('app-task-get-assign_by_me');
-    Route::get('task/getAll_assign_by_me', [TaskController::class, 'getAll_assign_by_me'])->name('app-task-getAll_assign_by_me-get');
+    Route::post('task/getAll_assign_by_me', [TaskController::class, 'getAll_assign_by_me'])->name('app-task-getAll_assign_by_me-get');
 
     Route::get('task/requested_me', [TaskController::class, 'index'])->name('app-task-get-requested_me');
     Route::get('task/getAll_requested_me', [TaskController::class, 'getAll_requested_me'])->name('app-task-getAll_requested_me-get');

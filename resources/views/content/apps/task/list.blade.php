@@ -241,9 +241,7 @@
                                 <th>Close Date</th>
                                 {{-- Fields For Excel Ends --}}
                                 <th>Assign To Status</th>
-                                @if ($type != 'assign_by_me')
-                                    <th>Assign To ReportIng</th>
-                                @endif
+                                <th>Assign To ReportIng</th>
 
 
 
@@ -629,6 +627,7 @@
 
             var type = @json($type);
             var selectedColumns = @json($selectedColumns);
+            var method_type = 'GET';
             // alert(selectedColumns.includes("0"));
 
             @if ($type === 'accepted')
@@ -676,6 +675,7 @@
                 }
             @elseif ($type == 'assign_by_me') {
                     ajaxUrl = "{{ route('app-task-getAll_assign_by_me-get') }}";
+                    method_type = 'POST';
                 }
             @elseif ($type == 'requested_me') {
                     ajaxUrl = "{{ route('app-task-getAll_requested_me-get') }}";
@@ -887,7 +887,9 @@
 
                 ajax: {
                     url: ajaxUrl,
+                    method: method_type,
                     data: function(d) {
+                          d._token = '{{ csrf_token() }}';
                         d.department = $('#filter-department').val();
                         d.assignees = $('#filter-assignee').val();
                         d.dt_date = $('#dt_date').val();
@@ -1254,16 +1256,12 @@
                         name: 'assign_to_status',
                         searchable: true,
                         visible: true,
+                    }, {
+                        data: 'assign_to_report_to',
+                        name: 'assign_to_report_to',
+                        searchable: true,
+                        visible: true,
                     },
-                    @if ($type != 'assign_by_me')
-
-                        {
-                            data: 'assign_to_report_to',
-                            name: 'assign_to_report_to',
-                            searchable: true,
-                            visible: true,
-                        },
-                    @endif
 
                 ],
 
