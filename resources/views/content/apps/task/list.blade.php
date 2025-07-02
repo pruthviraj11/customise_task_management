@@ -240,8 +240,10 @@
                                 <th>Accepted task Date</th>
                                 <th>Close Date</th>
                                 {{-- Fields For Excel Ends --}}
-                                    <th>Assign To Status</th>
+                                <th>Assign To Status</th>
+                                @if ($type != 'assign_by_me')
                                     <th>Assign To ReportIng</th>
+                                @endif
 
 
 
@@ -1247,17 +1249,21 @@
                             return '';
                         }
                     },
+                    {
+                        data: 'assign_to_status',
+                        name: 'assign_to_status',
+                        searchable: true,
+                        visible: true,
+                    },
+                    @if ($type != 'assign_by_me')
+
                         {
-                            data: 'assign_to_status',
-                            name: 'assign_to_status',
-                            searchable: true,
-                            visible: true,
-                        }, {
                             data: 'assign_to_report_to',
                             name: 'assign_to_report_to',
                             searchable: true,
                             visible: true,
                         },
+                    @endif
 
                 ],
 
