@@ -241,6 +241,32 @@
                                                                                     $attributes['completed_by'],
                                                                                 )->last_name
                                                                             : null;
+
+                                                                    $oldAcceptedByName =
+                                                                        isset($old['accepted_by']) &&
+                                                                        \App\Models\User::find($old['accepted_by'])
+                                                                            ? \App\Models\User::find(
+                                                                                    $old['accepted_by'],
+                                                                                )->first_name .
+                                                                                ' ' .
+                                                                                \App\Models\User::find(
+                                                                                    $old['accepted_by'],
+                                                                                )->last_name
+                                                                            : null;
+
+                                                                    $newAcceptedByName =
+                                                                        isset($attributes['accepted_by']) &&
+                                                                        \App\Models\User::find(
+                                                                            $attributes['accepted_by'],
+                                                                        )
+                                                                            ? \App\Models\User::find(
+                                                                                    $attributes['accepted_by'],
+                                                                                )->first_name .
+                                                                                ' ' .
+                                                                                \App\Models\User::find(
+                                                                                    $attributes['accepted_by'],
+                                                                                )->last_name
+                                                                            : null;
                                                                 @endphp
                                                                 <div class="col-6">
                                                                     <li
@@ -270,6 +296,8 @@
                                                                                         {{ $createdAtFormatted }}
                                                                                     @elseif($key === 'completed_by')
                                                                                         {{ $oldCompletedByName }}
+                                                                                    @elseif($key === 'accepted_by')
+                                                                                        {{ $oldAcceptedByName }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
@@ -308,6 +336,8 @@
                                                                                         {{ $createdAtFormatted }}
                                                                                     @elseif($key === 'completed_by')
                                                                                         {{ $newCompletedByName }}
+                                                                                    @elseif($key === 'accepted_by')
+                                                                                        {{ $newAcceptedByName }}
                                                                                     @else
                                                                                         {{ $value }}
                                                                                     @endif
