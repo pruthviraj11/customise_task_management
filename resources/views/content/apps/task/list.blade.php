@@ -862,12 +862,16 @@
                         },
                         columns: [23, 2, 3, 4, 5, 6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 16, 17, 18,
                             19, 20, 21, 29,
-                             @if ($type == 'assign_by_me')
+                            @if ($type == 'assign_by_me')
                                 30,
                                 31,
-                                32, 33  // Added assign_to_status and assign_to_report_to columns for assign_by_me
+                                32,
+                                33 // Added assign_to_status and assign_to_report_to columns for assign_by_me
+                            @elseif ($type == 'mytask')
+                                30, 31, 32
                             @else
-                                30, 31  // Added assign_to_status and assign_to_report_to columns for other types
+                                30,
+                                31 // Added assign_to_status and assign_to_report_to columns for other types
                             @endif
                         ]
                         //Add 1 in columns for pin task column
@@ -892,7 +896,7 @@
                     url: ajaxUrl,
                     method: method_type,
                     data: function(d) {
-                          d._token = '{{ csrf_token() }}';
+                        d._token = '{{ csrf_token() }}';
                         d.department = $('#filter-department').val();
                         d.assignees = $('#filter-assignee').val();
                         d.dt_date = $('#dt_date').val();
@@ -1259,13 +1263,13 @@
                         name: 'assign_to_status',
                         searchable: true,
                         visible: true,
-                        export:true,
+                        export: true,
                     }, {
                         data: 'assign_to_report_to',
                         name: 'assign_to_report_to',
                         searchable: true,
                         visible: true,
-                        export:true,
+                        export: true,
 
                     },
                 ],
