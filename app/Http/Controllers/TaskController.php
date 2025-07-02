@@ -2175,7 +2175,6 @@ class TaskController extends Controller
 
     public function getAll_dueDatePast(Request $request)
     {
-        // dd('Hii');
         $userId = Auth()->user()->id;
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
@@ -2186,14 +2185,14 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7'])->where('task_assignees.due_date', '<', today())
+            $query->whereNotIn('task_assignees.task_status', ['4', '7','6'])->where('task_assignees.due_date', '<', today())
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         } else {
             // User-specific task filters
             $query->where('task_assignees.status', 1)->where('task_assignees.due_date', '<', today())
-                ->whereNotIn('task_assignees.task_status', ['4', '7'])
+                ->whereNotIn('task_assignees.task_status', ['4', '7','6'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2442,14 +2441,14 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
+            $query->whereNotIn('task_assignees.task_status', ['4', '7','6'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         } else {
             // User-specific task filters
             $query->where('task_assignees.status', 1)->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
-                ->whereNotIn('task_assignees.task_status', ['4', '7'])
+                ->whereNotIn('task_assignees.task_status', ['4', '7', '6'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
