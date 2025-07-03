@@ -2443,6 +2443,7 @@ class TaskController extends Controller
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereNotIn('task_assignees.task_status', ['4', '7', '6'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
+            ->where('task_assignees.status','!=', 2)
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
