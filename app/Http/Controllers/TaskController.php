@@ -2185,14 +2185,15 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7','6'])->where('task_assignees.due_date', '<', today())
+            $query->whereNotIn('task_assignees.task_status', ['4', '7', '6'])->where('task_assignees.due_date', '<', today())
+                ->where('task_assignees.status', '!=', '2')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
         } else {
             // User-specific task filters
             $query->where('task_assignees.status', 1)->where('task_assignees.due_date', '<', today())
-                ->whereNotIn('task_assignees.task_status', ['4', '7','6'])
+                ->whereNotIn('task_assignees.task_status', ['4', '7', '6'])
                 ->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
                         ->whereHas('user', function ($q) {
@@ -2441,7 +2442,7 @@ class TaskController extends Controller
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
-            $query->whereNotIn('task_assignees.task_status', ['4', '7','6'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
+            $query->whereNotIn('task_assignees.task_status', ['4', '7', '6'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
@@ -4067,7 +4068,7 @@ class TaskController extends Controller
                 return '-';
             })
 
-              ->addColumn('assign_to_status', function ($row) {
+            ->addColumn('assign_to_status', function ($row) {
                 if ($row->creator && isset($row->creator->status)) {
                     return $row->creator->status == 1 ? 'Active' : 'Inactive';
                 }
@@ -4078,7 +4079,7 @@ class TaskController extends Controller
                     ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
                     : '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task','assign_to_status','assign_to_report_to'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
             ->make(true);
     }
 
@@ -9729,7 +9730,7 @@ class TaskController extends Controller
             ->addColumn('pin_task', function ($row) {
                 return '-';
             })
-              ->addColumn('assign_to_status', function ($row) {
+            ->addColumn('assign_to_status', function ($row) {
                 if ($row->creator && isset($row->creator->status)) {
                     return $row->creator->status == 1 ? 'Active' : 'Inactive';
                 }
@@ -9740,7 +9741,7 @@ class TaskController extends Controller
                     ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
                     : '-';
             })
-            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task','assign_to_status','assign_to_report_to'])
+            ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
             ->make(true);
     }
     public function getAll_admin_req()
