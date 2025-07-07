@@ -1058,14 +1058,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'rating', 'task_feedback', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -1922,14 +1922,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -2156,14 +2156,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -2414,14 +2414,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -2682,14 +2682,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -2936,14 +2936,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -3190,14 +3190,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -3501,14 +3501,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -3761,14 +3761,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -4070,14 +4070,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -4325,14 +4325,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -4615,14 +4615,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -4776,14 +4776,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -4911,14 +4911,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5056,14 +5056,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5251,14 +5251,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5405,14 +5405,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5554,14 +5554,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5700,14 +5700,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -5848,14 +5848,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -6000,14 +6000,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
 
@@ -6329,14 +6329,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -6667,14 +6667,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'assign_to_status', 'assign_to_report_to'])
@@ -9732,14 +9732,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -10712,14 +10712,14 @@ class TaskController extends Controller
             })
 
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
@@ -11608,14 +11608,14 @@ class TaskController extends Controller
                 return '-';
             })
             ->addColumn('assign_to_status', function ($row) {
-                if ($row->creator && isset($row->creator->status)) {
-                    return $row->creator->status == 1 ? 'Active' : 'Inactive';
+                if ($row->user && isset($row->user->status)) {
+                    return $row->user->status == 1 ? 'Active' : 'Inactive';
                 }
                 return '-';
             })
             ->addColumn('assign_to_report_to', function ($row) {
-                return $row->creator && $row->creator->reportToUser
-                    ? $row->creator->reportToUser->first_name . ' ' . $row->creator->reportToUser->last_name
+                return $row->user && $row->user->reportToUser
+                    ? $row->user->reportToUser->first_name . ' ' . $row->user->reportToUser->last_name
                     : '-';
             })
             ->rawColumns(['actions', 'title', 'creator_phone', 'creator_sub_department', 'creator_department', 'sub_department', 'department', 'project', 'accepted_date', 'completed_date', 'close_date', 'due_date', 'start_date', 'status', 'Task_assign_to', 'subject', 'description', 'Task_Ticket', 'created_by_username', 'pin_task', 'assign_to_status', 'assign_to_report_to'])
