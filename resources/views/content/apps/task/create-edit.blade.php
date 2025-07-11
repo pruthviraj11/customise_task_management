@@ -48,12 +48,13 @@
 
     @endphp
     <section id="multiple-column-form">
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>{{ $page_data['form_title'] }}</h4>
-                         <div class="float-end">
+                        <div class="float-end">
                             @if ($task != '')
                                 <button type="button" onclick="printTaskReceipt()" class="btn btn-success">
                                     <i class="feather-icon" data-feather="printer"></i>
@@ -63,7 +64,7 @@
                         </div>
                         <a href="{{ route('app-task-list') }}" class="col-md-2 btn btn-primary float-end">Task List</a>
                         {{-- <a href="{{ route('check-tasks') }}" class="btn btn-primary">Check and Create Today's Tasks</a> --}}
-                       
+
                         {{-- <h4 class="card-title">{{$page_data['form_title']}}</h4> --}}
 
                     </div>
@@ -196,7 +197,7 @@
 
 
 
-        
+
 
 
                             {{-- <div class="col-md-3 col-sm-12 mb-1 position-relative">
@@ -316,7 +317,13 @@
                                     <input type="file" class="form-control" id="attachments" name="attachments[]"
                                         @if ($isCreator == false) disabled @endif multiple>
                                     <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
+
                                 </div>
+                                   <!-- Note (tight spacing) -->
+    <small class="text-muted d-block mt-1">* Each file should be less than 100MB.</small>
+
+    <!-- JS validation error -->
+    <div id="attachments-error" class="text-danger mt-1"></div>
                                 @if ($task)
                                     <ul>
                                         @foreach ($task->attachments as $attachment)
@@ -742,78 +749,78 @@
     </section>
 
     <div id="printArea" class="print-area" style="display: none;">
-    <div class="receipt-container">
-        <div class="receipt-header">
-            <h2>TASK</h2>
-            <p>{{ config('app.name', 'Task Management System') }}</p>
-            <p>Generated on: {{ date('d/m/Y H:i:s') }}</p>
-        </div>
+        <div class="receipt-container">
+            <div class="receipt-header">
+                <h2>TASK</h2>
+                <p>{{ config('app.name', 'Task Management System') }}</p>
+                <p>Generated on: {{ date('d/m/Y H:i:s') }}</p>
+            </div>
 
-        @if ($task != '')
-        <div class="receipt-section">
-            <div class="section-title">TASK INFORMATION</div>
-            
-            <div class="receipt-row">
-                <span>Task ID:</span>
-                <span>#{{ $task->id }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Task Number:</span>
-                <span>{{ $task->TaskNumber ?? 'N/A' }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Title:</span>
-                <span>{{ $task->title }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Subject:</span>
-                <span>{{ $task->subject }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Type:</span>
-                <span>{{ $task->ticket == 1 ? 'Ticket' : 'Task' }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Project:</span>
-                <span>{{ $task->project->project_name ?? 'N/A' }}</span>
-            </div>
-            <div class="receipt-row">
-                <span>Priority:</span>
-                <span>{{ $task->priority_name ?? 'N/A' }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Status:</span>
-                <span>{{ $task->taskStatus->displayname ?? 'N/A' }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Start Date:</span>
-                <span>{{ \Carbon\Carbon::parse($task->start_date)->format('d/m/Y') }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Due Date:</span>
-                <span>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Created By:</span>
-                <span>{{ $task->creator->first_name }} {{ $task->creator->last_name }}</span>
-            </div>
-            
-            <div class="receipt-row">
-                <span>Created At:</span>
-                <span>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y H:i') }}</span>
-            </div>
-        </div>
+            @if ($task != '')
+                <div class="receipt-section">
+                    <div class="section-title">TASK INFORMATION</div>
 
-        {{-- <div class="receipt-section">
+                    <div class="receipt-row">
+                        <span>Task ID:</span>
+                        <span>#{{ $task->id }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Task Number:</span>
+                        <span>{{ $task->TaskNumber ?? 'N/A' }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Title:</span>
+                        <span>{{ $task->title }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Subject:</span>
+                        <span>{{ $task->subject }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Type:</span>
+                        <span>{{ $task->ticket == 1 ? 'Ticket' : 'Task' }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Project:</span>
+                        <span>{{ $task->project->project_name ?? 'N/A' }}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Priority:</span>
+                        <span>{{ $task->priority_name ?? 'N/A' }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Status:</span>
+                        <span>{{ $task->taskStatus->displayname ?? 'N/A' }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Start Date:</span>
+                        <span>{{ \Carbon\Carbon::parse($task->start_date)->format('d/m/Y') }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Due Date:</span>
+                        <span>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Created By:</span>
+                        <span>{{ $task->creator->first_name }} {{ $task->creator->last_name }}</span>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span>Created At:</span>
+                        <span>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y H:i') }}</span>
+                    </div>
+                </div>
+
+                {{-- <div class="receipt-section">
             <div class="section-title">ASSIGNED USERS</div>
             @foreach ($task->users as $user)
             <div class="receipt-row">
@@ -823,47 +830,49 @@
             @endforeach
         </div> --}}
 
-        @if($task->description)
-        <div class="receipt-section">
-            <div class="section-title">DESCRIPTION</div>
-            <div style="padding: 10px; border: 1px solid #ccc; margin: 10px 0;">
-                {{ strip_tags(html_entity_decode($task->description)) }}
-            </div>
-        </div>
-        @endif
+                @if ($task->description)
+                    <div class="receipt-section">
+                        <div class="section-title">DESCRIPTION</div>
+                        <div style="padding: 10px; border: 1px solid #ccc; margin: 10px 0;">
+                            {{ strip_tags(html_entity_decode($task->description)) }}
+                        </div>
+                    </div>
+                @endif
 
-        @if($task->attachments->count() > 0)
-        <div class="receipt-section">
-            <div class="section-title">ATTACHMENTS</div>
-            @foreach ($task->attachments as $attachment)
-            <div class="receipt-row">
-                <span>{{ $loop->iteration }}.</span>
-                <span>{{ last(explode('/', $attachment->file)) }}</span>
-            </div>
-            @endforeach
-        </div>
-        @endif
+                @if ($task->attachments->count() > 0)
+                    <div class="receipt-section">
+                        <div class="section-title">ATTACHMENTS</div>
+                        @foreach ($task->attachments as $attachment)
+                            <div class="receipt-row">
+                                <span>{{ $loop->iteration }}.</span>
+                                <span>{{ last(explode('/', $attachment->file)) }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
-        @if($SubTaskData && count($SubTaskData) > 0)
-        <div class="receipt-section">
-            <div class="section-title">SUB TASKS</div>
-            @foreach ($SubTaskData as $subtask)
-            <div class="receipt-row">
-                <span>{{ $subtask->task_number }}</span>
-                <span>{{ $subtask->user->first_name }} {{ $subtask->user->last_name }} ( {{$subtask->user->department->department_name ?? 'N/A' }} )- {{ $subtask->taskStatus->displayname ?? 'N/A' }}</span>
-            </div>
-            @endforeach
-        </div>
-        @endif
-        
-        @endif
+                @if ($SubTaskData && count($SubTaskData) > 0)
+                    <div class="receipt-section">
+                        <div class="section-title">SUB TASKS</div>
+                        @foreach ($SubTaskData as $subtask)
+                            <div class="receipt-row">
+                                <span>{{ $subtask->task_number }}</span>
+                                <span>{{ $subtask->user->first_name }} {{ $subtask->user->last_name }} (
+                                    {{ $subtask->user->department->department_name ?? 'N/A' }} )-
+                                    {{ $subtask->taskStatus->displayname ?? 'N/A' }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
-        <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 15px;">
-            <p>*** END OF Task ***</p>
-            <p>Thank you for using our Task Management System</p>
+            @endif
+
+            <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 15px;">
+                <p>*** END OF Task ***</p>
+                <p>Thank you for using our Task Management System</p>
+            </div>
         </div>
     </div>
-</div>
     </form>
 @endsection
 
@@ -883,17 +892,32 @@
     <script src="{{ asset(mix('js/scripts/extensions/ext-component-ratings.js')) }}"></script>
 @endsection
 @section('page-script')
+    <script>
+        document.getElementById('attachments').addEventListener('change', function() {
+            const files = this.files;
+            const maxSize = 100 * 1024 * 1024; // 100MB
+            const errorContainer = document.getElementById('attachments-error');
+            errorContainer.textContent = ''; // Clear previous errors
 
-<script>
-function printTaskReceipt() {
-    const printArea = document.getElementById('printArea');
-    printArea.style.display = 'block';
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > maxSize) {
+                    errorContainer.textContent = `File "${files[i].name}" exceeds the 100MB size limit.`;
+                    this.value = ''; // Clear the input
+                    break;
+                }
+            }
+        });
+    </script>
+    <script>
+        function printTaskReceipt() {
+            const printArea = document.getElementById('printArea');
+            printArea.style.display = 'block';
 
-    const printContent = printArea.innerHTML;
+            const printContent = printArea.innerHTML;
 
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
 
-    printWindow.document.write(`
+            printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -954,13 +978,10 @@ function printTaskReceipt() {
         </html>
     `);
 
-    printWindow.document.close();
-    printArea.style.display = 'none';
-}
-
-
-
-</script>
+            printWindow.document.close();
+            printArea.style.display = 'none';
+        }
+    </script>
     <script>
         $(document).ready(function() {
             $('#sub_tasks_list').DataTable({
@@ -1019,7 +1040,7 @@ function printTaskReceipt() {
 
             function toggleClosedOption() {
                 const closedOption = Array.from(taskStatusSelect.options).find(option => option.text
-                .toLowerCase() === "closed");
+                    .toLowerCase() === "closed");
 
                 if (recurringCheckbox.checked) {
                     if (closedOption) closedOption.remove(); // Remove the "Closed" option

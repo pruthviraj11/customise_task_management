@@ -24,8 +24,9 @@ class CreateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-//            'status_name' => 'required|unique:status,status_name,NULL,id,deleted_at,NULL',
+            //            'status_name' => 'required|unique:status,status_name,NULL,id,deleted_at,NULL',
 //            'displayname' => 'required|unique:status,displayname,NULL,id,deleted_at,NULL',
+            'attachments.*' => 'file|max:102400', // 102400 KB = 100 MB
         ];
     }
 }

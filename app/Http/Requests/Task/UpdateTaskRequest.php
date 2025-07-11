@@ -34,6 +34,8 @@ class UpdateTaskRequest extends FormRequest
 //                'required',
 //                Rule::unique('status', 'displayname')->ignore($decryptedId)->whereNull('deleted_at'),
 //            ],
+
+ 'attachments.*' => 'file|max:102400', // 102400 KB = 100 MB
         ];
     }
 }
