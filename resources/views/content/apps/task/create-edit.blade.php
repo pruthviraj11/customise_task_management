@@ -319,11 +319,11 @@
                                     <label class="input-group-text btn btn-info" for="attachments">+ Choose</label>
 
                                 </div>
-                                   <!-- Note (tight spacing) -->
-    <small class="text-muted d-block mt-1">* Each file should be less than 100MB.</small>
+                                <!-- Note (tight spacing) -->
+                                <small class="text-muted d-block mt-1">* Attachment file should be less than 100MB.</small>
 
-    <!-- JS validation error -->
-    <div id="attachments-error" class="text-danger mt-1"></div>
+                                <!-- JS validation error -->
+                                <div id="attachments-error" class="text-danger mt-1"></div>
                                 @if ($task)
                                     <ul>
                                         @foreach ($task->attachments as $attachment)
