@@ -3665,7 +3665,7 @@ class TaskController extends Controller
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                if ($row->status == 0 && $row->created_by == auth()->user()->id) {
+                if ($row->status == 0 ) {
                     $reassignButton = "<a href='javascript:void(0)' data-bs-toggle='modal' data-bs-target='#reassignModal' data-user-id='$row->user_id' data-id='$encryptedId_sub_task' class='btn-sm btn-primary me-1 open-reassign-modal' title='Reassign Task'><i class='ficon' data-feather='refresh-cw'></i></a>";
                 }
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . " " . $reassignButton . "</div>";
