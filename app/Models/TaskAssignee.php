@@ -47,7 +47,8 @@ class TaskAssignee extends Model
         'rating',
         'is_pinned',
         'pinned_by',
-        'old_user_id'
+        'old_user_id',
+        'outlook_event_id'
     ];
     protected $guarded = [];
 

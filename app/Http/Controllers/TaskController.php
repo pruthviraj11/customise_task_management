@@ -2443,7 +2443,7 @@ class TaskController extends Controller
         if ($loggedInUser->hasRole('Super Admin')) {
             // Admin fetches tasks by their statuses
             $query->whereNotIn('task_assignees.task_status', ['4', '7', '6'])->where('task_assignees.due_date', '=', Carbon::today()->toDateString())
-            ->where('task_assignees.status','!=', 2)
+                ->where('task_assignees.status', '!=', 2)
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 });
@@ -3665,7 +3665,7 @@ class TaskController extends Controller
                     $deleteButton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='delete Task' class='btn-sm btn-danger me-1 confirm-delete' data-idos='$encryptedId_sub_task' id='confirm-color' href='" . route('app-task-destroy', $encryptedId_sub_task) . "'><i class='ficon' data-feather='trash-2'></i></a>";
                 }
                 $viewbutton = "<a data-bs-toggle='tooltip' data-bs-placement='top' title='view Task' class='btn-sm btn-info btn-sm me-1' data-idos='$encryptedId' id='confirm-color' href='" . route('app-task-view', $encryptedId) . "'><i class='ficon' data-feather='eye'></i></a>";
-                if ($row->status == 0 ) {
+                if ($row->status == 0) {
                     $reassignButton = "<a href='javascript:void(0)' data-bs-toggle='modal' data-bs-target='#reassignModal' data-user-id='$row->user_id' data-id='$encryptedId_sub_task' class='btn-sm btn-primary me-1 open-reassign-modal' title='Reassign Task'><i class='ficon' data-feather='refresh-cw'></i></a>";
                 }
                 return "<div class='d-flex justify-content-between'>" . $updateButton . " " . $acceptButton . " " . $deleteButton . " " . $viewbutton . " " . $reassignButton . "</div>";
@@ -7756,7 +7756,11 @@ class TaskController extends Controller
 
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $task);
-                if (!$response) {
+
+                if ($response && isset($response['id'])) {
+                    $taskAssignee->outlook_event_id = $response['id'];
+                    $taskAssignee->save();
+                } else {
                     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
                 }
             }
@@ -8552,6 +8556,19 @@ class TaskController extends Controller
 
                 // Send notification for task update
                 createNotification($user->id, $task->id, $updateMessage, 'Updated');
+
+
+
+                if ($taskAssignee && $taskAssignee->outlook_event_id) {
+                    $task->outlook_event_id = $taskAssignee->outlook_event_id; // Attach to task for updateEvent method
+
+                    $outlookService = new OutlookService();
+                    $response = $outlookService->updateEvent($user, $task);
+
+                    if (!$response) {
+                        return back()->with('error', 'Task updated, but failed to update Outlook event.');
+                    }
+                }
             }
 
 
