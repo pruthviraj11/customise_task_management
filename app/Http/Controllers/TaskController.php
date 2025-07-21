@@ -7756,11 +7756,7 @@ class TaskController extends Controller
 
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $task);
-
-                if ($response && isset($response['id'])) {
-                    $taskAssignee->outlook_event_id = $response['id'];
-                    $taskAssignee->save();
-                } else {
+                if (!$response) {
                     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
                 }
             }
@@ -8557,18 +8553,11 @@ class TaskController extends Controller
                 // Send notification for task update
                 createNotification($user->id, $task->id, $updateMessage, 'Updated');
 
-
-
-                if ($taskAssignee && $taskAssignee->outlook_event_id) {
-                    $task->outlook_event_id = $taskAssignee->outlook_event_id; // Attach to task for updateEvent method
-
-                    $outlookService = new OutlookService();
-                    $response = $outlookService->updateEvent($user, $task);
-
-                    if (!$response) {
-                        return back()->with('error', 'Task updated, but failed to update Outlook event.');
-                    }
-                }
+                // $outlookService = new OutlookService();
+                // $response = $outlookService->updateEvent($user, $task);
+                // if (!$response) {
+                //     return back()->with('error', 'Task Updated, but failed to sync with Outlook.');
+                // }
             }
 
 
