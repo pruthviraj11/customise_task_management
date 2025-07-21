@@ -7758,12 +7758,13 @@ class TaskController extends Controller
                 $response = $outlookService->createEvent($user, $task);
 
                 if ($response) {
-                    $data = $response->getDecodedBody(); // Get JSON-decoded array
-                    if (isset($data['id'])) {
-                        $taskAssignee->outlook_event_id = $data['id'];
+                    $body = json_decode($response->getBody()->getContents(), true);
+
+                    if (isset($body['id'])) {
+                        $taskAssignee->outlook_event_id = $body['id'];
                         $taskAssignee->save();
                     } else {
-                        return back()->with('error', 'Task saved, but Outlook response did not contain event ID.');
+                        return back()->with('error', 'Task saved, but Outlook response missing event ID.');
                     }
                 } else {
                     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
