@@ -84,102 +84,105 @@ class OutlookService
 
         return null;
     }
-public function createEvent($user, $task)
-{
-    $token = $this->getAccessToken($user);
-    if (!$token) return null;
-
-    $graph = new Graph();
-    $graph->setAccessToken($token);
-
-    $event = [
-        'subject' => $task['title'] . ' (' . $task['id'] . ')',
-        'body' => [
-            'contentType' => 'HTML',
-            'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
-        ],
-        'start' => [
-            'dateTime' => \Carbon\Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
-            'timeZone' => 'Asia/Kolkata',
-        ],
-        'end' => [
-            'dateTime' => \Carbon\Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
-            'timeZone' => 'Asia/Kolkata',
-        ],
-    ];
-
-    $response = $graph->createRequest('POST', '/me/events')
-        ->attachBody($event)
-        ->execute();
-
-    // ⚠️ Just return the raw response object
-    return $response;
-}
-
 
 
     // public function createEvent($user, $task)
     // {
+    //     // dd($user,$task,'Hii');
     //     $token = $this->getAccessToken($user);
-    //     if (!$token)
-    //         return null;
+    //     if (!$token) return null;
 
+    //     // dd($task);
     //     $graph = new Graph();
     //     $graph->setAccessToken($token);
 
     //     $event = [
-    //         'subject' => $task['title'] . ' (' . $task['id'] . ')',
-    //         'body' => [
-    //             'contentType' => 'HTML',
-    //             'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
-    //         ],
+    //         'subject' => $task['title'] . ' (' . $task['id'] . ') ',
+    //        'body' => [
+    //     'contentType' => 'HTML',
+    //     'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' .encrypt( $task['id'])) . '">View Task in System</a>',
+    // ],
     //         'start' => [
     //             'dateTime' => Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
     //             'timeZone' => 'Asia/Kolkata',
     //         ],
     //         'end' => [
-    //             'dateTime' => Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
+    //             'dateTime' =>Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
     //             'timeZone' => 'Asia/Kolkata',
     //         ],
     //     ];
 
+
+    //     // dd($event);
     //     return $graph->createRequest('POST', '/me/events')
     //         ->attachBody($event)
     //         ->execute();
     // }
 
-  public function updateEvent($user, $task)
-{
-    $token = $this->getAccessToken($user);
-    if (!$token) return null;
+    public function createEvent($user, $task)
+    {
+        $token = $this->getAccessToken($user);
+        if (!$token)
+            return null;
 
-    $graph = new Graph();
-    $graph->setAccessToken($token);
+        $graph = new Graph();
+        $graph->setAccessToken($token);
 
-    $event = [
-        'subject' => $task['title'] . ' (' . $task['id'] . ')',
-        'body' => [
-            'contentType' => 'HTML',
-            'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
-        ],
-        'start' => [
-            'dateTime' => \Carbon\Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
-            'timeZone' => 'Asia/Kolkata',
-        ],
-        'end' => [
-            'dateTime' => \Carbon\Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
-            'timeZone' => 'Asia/Kolkata',
-        ],
-    ];
+        $event = [
+            'subject' => $task['title'] . ' (' . $task['id'] . ')',
+            'body' => [
+                'contentType' => 'HTML',
+                'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
+            ],
+            'start' => [
+                'dateTime' => Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
+                'timeZone' => 'Asia/Kolkata',
+            ],
+            'end' => [
+                'dateTime' => Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
+                'timeZone' => 'Asia/Kolkata',
+            ],
+        ];
 
-    try {
-        return $graph->createRequest('PATCH', '/me/events/' . $task->outlook_event_id)
+        return $graph->createRequest('POST', '/me/events')
             ->attachBody($event)
             ->execute();
-    } catch (\Exception $e) {
-        \Log::error("Failed to update Outlook event for task ID {$task->id}: " . $e->getMessage());
-        return null;
     }
-}
+
+    public function updateEvent($user, $task)
+    {
+        $token = $this->getAccessToken($user);
+        if (!$token)
+            return null;
+
+
+        $graph = new Graph();
+        $graph->setAccessToken($token);
+
+        $event = [
+            'subject' => $task['title'] . ' (' . $task['id'] . ')',
+            'body' => [
+                'contentType' => 'HTML',
+                'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
+            ],
+            'start' => [
+                'dateTime' => Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
+                'timeZone' => 'Asia/Kolkata',
+            ],
+            'end' => [
+                'dateTime' => Carbon::parse($task['due_date'] . ' 19:00:00')->format('Y-m-d\TH:i:s'),
+                'timeZone' => 'Asia/Kolkata',
+            ],
+        ];
+
+        try {
+            return $graph->createRequest('PATCH', '/me/events/' . $task['outlook_event_id'])
+                ->attachBody($event)
+                ->execute();
+        } catch (\Exception $e) {
+            \Log::error("Failed to update Outlook event for task ID {$task['id']}: " . $e->getMessage());
+            return null;
+        }
+    }
 
 }

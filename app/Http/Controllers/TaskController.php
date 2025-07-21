@@ -7756,10 +7756,7 @@ class TaskController extends Controller
 
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $task);
-                if ($response && isset($response['id'])) {
-                    $taskAssignee->outlook_event_id = $response['id'];
-                    $taskAssignee->save();
-                } else {
+                if (!$response) {
                     return back()->with('error', 'Task saved, but failed to sync with Outlook.');
                 }
             }
