@@ -84,7 +84,6 @@ class OutlookService
 
         return null;
     }
-
 public function createEvent($user, $task)
 {
     $token = $this->getAccessToken($user);
@@ -113,10 +112,8 @@ public function createEvent($user, $task)
         ->attachBody($event)
         ->execute();
 
-    // Convert to array (correctly) from response stream
-    $bodyStream = $response->getBody(); // Psr\Http\Message\StreamInterface
-    $bodyContents = $bodyStream->getContents(); // JSON string
-    return json_decode($bodyContents, true); // array
+    // ⚠️ Just return the raw response object
+    return $response;
 }
 
 
