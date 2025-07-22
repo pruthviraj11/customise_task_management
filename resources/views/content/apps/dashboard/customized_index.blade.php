@@ -108,8 +108,13 @@
 
 
         <div class="card-header">
-               <a href="{{ route('outlook.connect') }}" class="btn btn-primary">Connect to Outlook</a>
+            {{-- <a href="{{ route('outlook.connect') }}" class="btn btn-primary">Connect To Outlook</a> --}}
 
+            @if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires))
+                <span class="text-success">Outlook Connected</span>
+            @else
+                <a href="{{ route('outlook.connect') }}" class="btn btn-primary">Connect To Outlook</a>
+            @endif
             <div>
                 <h1>Dynamic Report</h1>
             </div>
@@ -1085,7 +1090,7 @@
 
                         // Check if current user is Super Admin (you'll need to pass this from your backend)
                         var isSuperAdmin = window.isSuperAdmin ||
-                        false; // Set this variable from your backend
+                            false; // Set this variable from your backend
 
                         for (var i = 1; i < totalColumns; i++) {
                             var columnTotal = api.column(i).data().reduce(function(a, b) {
@@ -1133,7 +1138,7 @@
                                 return row.user_id;
                             }).join(',');
                             grandTotalRouteUrl = createUrl(userIds, 'all',
-                            'requestedToUsTasks');
+                                'requestedToUsTasks');
                         }
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
@@ -1485,8 +1490,8 @@
                         var totalColumns = api.columns().count();
                         var grandTotal = 0;
 
-                         var isSuperAdmin = window.isSuperAdmin ||
-                        false; // Set this variable from your backend
+                        var isSuperAdmin = window.isSuperAdmin ||
+                            false; // Set this variable from your backend
 
 
                         for (var i = 1; i < totalColumns; i++) {
@@ -1496,7 +1501,7 @@
 
 
 
-                               var userIds, routeUrl;
+                            var userIds, routeUrl;
 
                             if (isSuperAdmin) {
                                 // For Super Admin, don't send specific user IDs
@@ -1524,7 +1529,8 @@
                             grandTotal += columnTotal;
                         }
 
-                        var totalColumnIndex = totalColumns - 1; // Assuming "Total" column is the last column
+                        var totalColumnIndex = totalColumns -
+                        1; // Assuming "Total" column is the last column
                         var verticalSum = api.column(totalColumnIndex, {
                                 page: 'current'
                             }).data()
@@ -1537,7 +1543,7 @@
                         // var grandTotalRouteUrl = createUrl(userIds, 'all',
                         //     typeOrStatusId);
 
-                               var grandTotalRouteUrl;
+                        var grandTotalRouteUrl;
                         if (isSuperAdmin) {
                             grandTotalRouteUrl = createUrlForSuperAdmin('all',
                                 'requestedByUsTasks');
@@ -1546,7 +1552,7 @@
                                 return row.user_id;
                             }).join(',');
                             grandTotalRouteUrl = createUrl(userIds, 'all',
-                            'requestedByUsTasks');
+                                'requestedByUsTasks');
                         }
 
                         $(api.column(totalColumns - 1).footer()).html(renderClickableLink(
@@ -1574,7 +1580,7 @@
 
 
 
-                  function createUrl(userId, status_id, typeOrStatusId) {
+                function createUrl(userId, status_id, typeOrStatusId) {
                     let routeUrl =
                         '{{ route('tasks.requested_by_us_footer_total', ['user_id' => ':user_id', 'status_id' => ':status_id', 'type' => ':type_or_status_id']) }}';
                     return routeUrl
