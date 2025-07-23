@@ -128,17 +128,13 @@ class OutlookService
         $graph = new Graph();
         $graph->setAccessToken($token);
 
-        $taskIdEncrypted = encrypt($task['id']);
-        $isAccepted = $task['status'] === 1; // Adjust based on your actual status field/value
-        $taskUrl = $isAccepted
-            ? url('/app/task/view/' . $taskIdEncrypted)
-            : url('/app/task/requested/' . $taskIdEncrypted);
+
 
         $event = [
             'subject' => $task['title'] . ' (' . $task['id'] . ')',
             'body' => [
                 'contentType' => 'HTML',
-                'content' => ($task['description'] ?? '') . '<br><br><a href="' . $taskUrl . '">View Task in System</a>',
+                'content' => ($task['description'] ?? '') . '<br><br><a href="' . url('/app/task/view/' . encrypt($task['id'])) . '">View Task in System</a>',
             ],
             'start' => [
                 'dateTime' => Carbon::parse($task['start_date'] . ' 10:00:00')->format('Y-m-d\TH:i:s'),
