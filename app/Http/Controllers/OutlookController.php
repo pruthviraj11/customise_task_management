@@ -82,7 +82,7 @@ class OutlookController extends Controller
         // Request access token
         $response = Http::asForm()->post("https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token", [
             'client_id' => $clientId,
-            'client_secret' => $clientSecret,
+            // 'client_secret' => $clientSecret,
             'code' => $request->code,
             'redirect_uri' => $redirectUri,
             'grant_type' => 'authorization_code',
