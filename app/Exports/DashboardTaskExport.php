@@ -24,6 +24,7 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
             ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id')
             ->leftJoin('status', 'task_assignees.task_status', '=', 'status.id')
+            ->leftJoin('users as report_to_user', 'assignee.report_to', '=', 'report_to_user.id')
             ->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })
@@ -59,7 +60,10 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
                 'owner_sub_department.sub_department_name as owner_sub_department_name',
                 'assignee.phone_no as owner_contact_info',
                 'task_assignees.close_date as task_assignees_close_date',
-                'tasks.close_date as tasks_close_date'
+                'tasks.close_date as tasks_close_date',
+                'assignee.status as assign_to_status',
+                'report_to_user.first_name as report_to_first_name',
+                'report_to_user.last_name as report_to_last_name'
             )
             ->get();
     }
@@ -88,7 +92,9 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             'Owner Department',
             'Owner Sub Department',
             'Owner Contact Info',
-            'Close Date'
+            'Close Date',
+            'Assign To Status',
+            'Assign To Reporting'
         ];
     }
 
@@ -121,7 +127,9 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             $row->owner_sub_department_name,
             !empty($row->owner_contact_info) ? $row->owner_contact_info : '0',
             // $this->formatDate($row->task_assignees_close_date)
-            $this->formatDate($this->getCloseDate($row))
+            $this->formatDate($this->getCloseDate($row)),
+            $this->mapUserStatus($row->assign_to_status),
+            $this->mapReportTo($row->report_to_first_name, $row->report_to_last_name)
 
         ];
     }
@@ -189,5 +197,21 @@ class DashboardTaskExport implements FromCollection, WithHeadings, WithMapping, 
             'O' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Accepted Task Date
             'V' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Close Date
         ];
+    }
+
+    private function mapUserStatus($status)
+    {
+        if (!isset($status)) {
+            return '-';
+        }
+        return $status == 1 ? 'Active' : 'Inactive';
+    }
+
+    private function mapReportTo($firstName, $lastName)
+    {
+        if (!empty($firstName) || !empty($lastName)) {
+            return trim("$firstName $lastName");
+        }
+        return '-';
     }
 }
