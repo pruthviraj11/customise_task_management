@@ -823,7 +823,6 @@
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
-                                    // return $('<div>').html(data).text();
                                     return data;
                                 }
                             }
@@ -1199,9 +1198,7 @@
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
-                                    // return $('<div>').html(data).text();
                                     return data;
-
                                 }
                             }
                         },
@@ -1533,7 +1530,7 @@
                         }
 
                         var totalColumnIndex = totalColumns -
-                            1; // Assuming "Total" column is the last column
+                        1; // Assuming "Total" column is the last column
                         var verticalSum = api.column(totalColumnIndex, {
                                 page: 'current'
                             }).data()
