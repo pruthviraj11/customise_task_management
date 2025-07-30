@@ -823,7 +823,8 @@
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
-                                    return data;
+                                    // return data;
+                                    return $('<div>').html(data).text();
                                 }
                             }
                         },
@@ -1198,7 +1199,8 @@
                                         var match = data.match(/>([^<]+)</);
                                         return match ? match[1] : data;
                                     }
-                                    return data;
+                                    // return data;
+                                    return $('<div>').html(data).text();
                                 }
                             }
                         },
