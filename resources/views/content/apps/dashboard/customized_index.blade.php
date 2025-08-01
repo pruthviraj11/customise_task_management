@@ -113,7 +113,9 @@
             @if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires))
                 <span class="text-success">Outlook Connected</span>
             @else
+            
                 <a href="{{ route('outlook.connect') }}" class="btn btn-primary">Connect To Outlook</a>
+
             @endif
             <div>
                 <h1>Dynamic Report</h1>

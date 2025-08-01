@@ -25,6 +25,8 @@ class OutlookController extends Controller
             'scope' => 'offline_access Calendars.ReadWrite',
             'state' => '12345',
         ]);
+        // $URL='https://login.microsoftonline.com/'.$tenantId.'/oauth2/v2.0/authorize?'.$query;
+        // dd($URL);
 
         return redirect("https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/authorize?$query");
     }
@@ -98,13 +100,14 @@ class OutlookController extends Controller
                 'outlook_token_expires' => now()->addSeconds($data['expires_in'] ?? 3600),
             ]);
 
+ $taskController = new TaskController();
+    $result = $taskController->outlook_sync();
             return redirect()->route('app-task-list')->with('success', 'Outlook connected successfully!');
         } else {
             \Log::error('Outlook OAuth Token Error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
-
             return redirect()->route('app-task-list')->with('error', 'Outlook connection failed. Please try again.');
         }
     }

@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
 use App\Exports\TotalTasksExport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Illuminate\Support\Facades\Redirect;
 use App\Imports\TaskUpdateImport;
 
 class TaskController extends Controller
@@ -72,6 +72,15 @@ class TaskController extends Controller
         // dd('Welcome');
         // $data = $this->todaysDueTasks();
         $today = Carbon::today()->toDateString();
+        $user_new_id = Auth::user()->id;
+        if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires)) {
+
+        } else {
+            $taskAssignee_count = TaskAssignee::where('is_outlook_sync', 0)->where('user_id', $user_new_id)->count();
+            if ($taskAssignee_count > 0) {
+                $this->outlook_sync();
+            }
+        }
 
         // Get all recurring tasks where start_date is today
         $tasksToCreate_count = RecurringTask::whereDate('start_date', $today)
@@ -7757,7 +7766,14 @@ class TaskController extends Controller
                 $outlookService = new OutlookService();
                 $response = $outlookService->createEvent($user, $task);
                 if (!$response) {
-                    return back()->with('error', 'Task saved, but failed to sync with Outlook.');
+
+                    TaskAssignee::where('task_id', $task->id)
+                        ->where('user_id', $user->id)
+                        ->update([
+                            'is_outlook_sync' => false,
+                        ]);
+
+                    return back()->with('success', 'Task saved, but failed to sync with Outlook.');
                 }
             }
 
@@ -12408,6 +12424,31 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Feedback saved']);
         // return redirect()->back()->with('success', 'Feedback submitted successfully!');
+    }
+
+
+    public function outlook_sync()
+    {
+        $userId = auth()->user()->id;
+        // route('outlook.connect');
+
+
+        $taskAssignee = TaskAssignee::where('is_outlook_sync', 0)->where('user_id', $userId)->get();
+        foreach ($taskAssignee as $assignee) {
+            $task = $assignee->task; // Adjust based on your relationship name
+            $user = $assignee->user; // Adjust based on your relationship name
+
+            $outlookService = new OutlookService();
+            $response = $outlookService->createEvent($user, $task);
+            // Update fields based on sync outcome
+            $assignee->update([
+                'is_outlook_sync' => $response ? true : false,
+                'outlook_sync_changed_at' => $response ? now() : null,
+            ]);
+
+        }
+
+
     }
 
 }
