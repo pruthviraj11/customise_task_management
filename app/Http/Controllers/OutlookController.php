@@ -101,8 +101,8 @@ class OutlookController extends Controller
                 'outlook_token_expires' => now()->addSeconds($data['expires_in'] ?? 3600),
             ]);
 
-$taskController = app(TaskController::class);
-$taskController->outlook_sync();
+            $taskController = app(TaskController::class);
+            $taskController->outlook_sync();
             return redirect()->route('app-task-list')->with('success', 'Outlook connected successfully!');
         } else {
             \Log::error('Outlook OAuth Token Error', [

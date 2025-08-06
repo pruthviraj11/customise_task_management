@@ -274,7 +274,6 @@ class TaskController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-
             $task = $this->taskService->gettask($id);
             if ($task && $task->creator->id == auth()->user()->id) {
                 $creator = 1;
@@ -296,7 +295,6 @@ class TaskController extends Controller
                 // ->select('task_assignees.*', 'tasks.title','tasks.subject','tasks.project_id','tasks.priority_id','tasks.start_date') // Select fields from both tables.
                 // ->leftJoin('tasks', 'tasks.id', '=', 'task_assignees.task_id') // Join tasks table.
                 // ->first();
-
                 $getTaskComments = Comments::where('task_id', $task->id)
                     ->whereHas('creator', function ($query) {
                         $query->whereNull('deleted_at');
@@ -322,6 +320,8 @@ class TaskController extends Controller
             $associatedSubDepartmentId = $task->subDepartment->id ?? null;
             $user = auth()->user();
             $hasAcceptedTask = false;
+            // dd($taskAssigne);
+            // $subTaskId = TaskAssignee::where('id',$taskAssigne)->get();
             if ($user) {
                 $hasAcceptedTask = $task->isAcceptedByUser($user->id);
             }
@@ -4170,6 +4170,7 @@ class TaskController extends Controller
 
             $encryptedId = encrypt($row->task->id);
             $encryptedId_sub_task = encrypt($row->id);
+            // dd(decrypt($encryptedId));
             // $acceptButton = "<a class='btn-sm btn-success btn-sm me-1'  data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task' href='" . route('app-task-accept', $encryptedId) . "'><i class='ficon' data-feather='check-circle'></i></a>";
             $acceptButton = "<a class='btn-sm btn-success btn-sm me-1 accept-task' data-id='$encryptedId' data-bs-toggle='tooltip' data-bs-placement='top' title='Accept Task'><i class='ficon' data-feather='check-circle'></i></a>";
 

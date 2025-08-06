@@ -62,6 +62,7 @@
                                     <a class=" btn-sm btn-primary me-1"> Task Created By {{ $task->creator->first_name }}
                                         {{ $task->creator->last_name }}</a>
                                 @endif
+
                                 @if ($hasAcceptedTask)
                                     @if ($task->created_by == auth()->user()->id)
                                         @php $encrypted_id = encrypt($task->id) @endphp
@@ -69,11 +70,23 @@
                                         @php $encrypted_id = encrypt($task->task_id) @endphp
                                     @endif
                                     {{-- Button to edit the task if accepted --}}
-                                    <a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task'
-                                        class='btn-sm btn-warning me-1' href="{{ route('app-task-edit', $encrypted_id) }}"
-                                        target='_blank'>
-                                        <i class='ficon' data-feather='edit'></i>
-                                    </a>
+                                    {{-- {{dd( $task->assignees[0]->status )}} --}}
+                                    @if ((isset($task->status) && $task->status == 1 ) || (isset($task->assignees[0]) && $task->assignees[0]->status != 0))
+                                        <a data-bs-toggle='tooltip' data-bs-placement='top' title='Update Task'
+                                            class='btn-sm btn-warning me-1'
+                                            href="{{ route('app-task-edit', $encrypted_id) }}" target='_blank'>
+                                            <i class='ficon' data-feather='edit'></i>
+                                        </a>
+                                    @elseif (isset($task->status) && $task->status == 0)
+                                        {{-- encrypt($task->task_id) --}}
+                                        {{-- <a class="btn btn-success btn-sm">hii</a> --}}
+                                        <a class='btn-sm btn-success btn-sm me-1 accept-task' data-bs-toggle='tooltip'
+                                            data-bs-placement='top' title='Accept Task'
+                                            href="{{ route('app-task-accept', encrypt($task->task_id)) }}
+                                         "><i
+                                                class='ficon' data-feather='check-circle'></i></a>
+                                    @endif
+
                                 @else
                                     {{-- Button to go back to task list if not accepted --}}
                                     <a data-bs-toggle='tooltip' data-bs-placement='top' title='Go to Task List'
@@ -302,8 +315,7 @@
                                 @if ($taskAssigne)
                                     <ul>
                                         @foreach ($taskAssigne->attachments as $attachment)
-                                            <li><a target="_blank"
-                                                    {{-- href="{{ Storage::url('app/' . $attachment->file) }}">{{ last(explode('/', $attachment->file)) }}</a> --}}
+                                            <li><a target="_blank" {{-- href="{{ Storage::url('app/' . $attachment->file) }}">{{ last(explode('/', $attachment->file)) }}</a> --}}
                                                     href="{{ route('attachment.download', ['attachmentId' => $attachment->id]) }}">{{ last(explode('/', $attachment->file)) }}</a>
 
                                             </li>
