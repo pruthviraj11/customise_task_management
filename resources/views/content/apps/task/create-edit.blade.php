@@ -1560,9 +1560,9 @@
                     },
                     error: function(xhr, status, error) {
                         Swal.fire(
-                            'Error!',
-                            'There was an issue saving the changes.',
-                            'error'
+                            'Warning!',
+                            'Please add a comment to save the subtask ',
+                            'warning'
                         );
                     }
                 });
