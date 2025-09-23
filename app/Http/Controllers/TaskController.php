@@ -8708,6 +8708,7 @@ class TaskController extends Controller
                 'number_of_days' => $newNumberOfTime,  // Updated number_of_time
                 'recurring_type' => $request->get('recurring_type'),
                 'updated_by' => auth()->user()->id,
+                'task_assignes' => implode(',', $request->input('user_id', [])), // Update assigned users
             ];
 
             // Handle user assignees
