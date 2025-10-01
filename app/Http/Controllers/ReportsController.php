@@ -657,7 +657,10 @@ class ReportsController extends Controller
         $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
             ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
             ->whereNotIn('task_status', [4, 7, 6])
+            ->where('status', 1)
             ->count(); // Get the count of overdue tasks
+
+
 
         // Calculate pace rate: (pending - overdue) / pending
         $paceRate = 0; // Default to 0 to avoid division by zero
@@ -673,6 +676,7 @@ class ReportsController extends Controller
         } else {
             // User-specific task filters
             $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
+
         }
 
         // Return the view with the required variables
