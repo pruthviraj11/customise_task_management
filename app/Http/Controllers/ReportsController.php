@@ -650,7 +650,11 @@ class ReportsController extends Controller
         // dd($hierarchyUserIds,$userId);
         // Pending tasks count
         $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
-            ->whereNotIn('task_status', [4, 7, 6])
+            ->whereIn('task_status', [1, 3, 5, 6])
+            ->where('status', 1)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->count(); // Get the count of pending tasks
 
         // Overdue tasks count
@@ -698,11 +702,20 @@ class ReportsController extends Controller
         // Admin fetches tasks by their statuses
         $loggedInUser = auth()->user();
         if ($loggedInUser->hasRole('Super Admin')) {
-            $query->whereNull('deleted_at')->orderBy('created_at', 'desc');
+            $query->whereNull('deleted_at')
+                ->where('status', 1)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
+                ->orderBy('created_at', 'desc');
         } else {
             // User-specific task filters
             $query->whereIn('user_id', $hierarchyUserIds)
                 ->whereNull('deleted_at')
+                ->where('status', 1)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->orderBy('created_at', 'desc');
         }
 
@@ -720,7 +733,11 @@ class ReportsController extends Controller
         }
         // Pending tasks count
         $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
-            ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->whereIn('task_status', [1, 3, 5, 6]) // Exclude completed/archived tasks
+            ->where('status', 1)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->when($request->has('project_ids'), function ($q) use ($request) {
                 $q->whereHas('task', function ($q) use ($request) {
                     $q->whereIn('project_id', $request->project_ids); // Filter by project IDs
@@ -728,10 +745,23 @@ class ReportsController extends Controller
             })
             ->count();
 
+        //  TaskAssignee::where('user_id', $user_id)
+        //                 ->whereNotIn('task_status', [4, 7, 6])
+        //                 ->whereDate('due_date', '<', $cdate)
+        //                 ->where('status', 1)
+        //                 ->whereIn('task_id', function ($subquery) {
+        //                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+        //                 })
+        //                 ->get();
+
         // Overdue tasks count
         $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
             ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
             ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
+            ->where('status', 1)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->when($request->has('project_ids'), function ($q) use ($request) {
                 $q->whereHas('task', function ($q) use ($request) {
                     $q->whereIn('project_id', $request->project_ids); // Filter by project IDs
