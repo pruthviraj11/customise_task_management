@@ -834,7 +834,11 @@ class ReportsController extends Controller
                 ->when($hierarchyUserIds, function ($q) use ($hierarchyUserIds) {
                     $q->whereIn('user_id', $hierarchyUserIds);
                 })
-                ->whereNotIn('task_status', [4, 7, 6]) // exclude completed/archived
+                ->whereIn('task_status', [1, 3, 5, 6])
+                ->where('status', 1)
+                ->whereIn('task_id', function ($subquery) {
+                    $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+                })
                 ->when(!empty($projectIds), function ($q) use ($projectIds) {
                     $q->whereHas('task', function ($q) use ($projectIds) {
                         $q->whereIn('project_id', $projectIds);
@@ -846,6 +850,10 @@ class ReportsController extends Controller
 
         $overdueTasksCount = $buildQuery()
             ->whereDate('due_date', '<', now()->subDay())
+            ->where('status', 1)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->count();
 
         $paceRate = $pendingTasksCount > 0 ? ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount : 0;
