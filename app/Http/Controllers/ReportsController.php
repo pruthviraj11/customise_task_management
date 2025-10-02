@@ -658,10 +658,14 @@ class ReportsController extends Controller
             ->count(); // Get the count of pending tasks
 
         // Overdue tasks count
+        $cdate = date("Y-m-d");
         $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
-            ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
             ->whereNotIn('task_status', [4, 7, 6])
+            ->whereDate('due_date', '<', $cdate) // Due date is older than yesterday
             ->where('status', 1)
+            ->whereIn('task_id', function ($subquery) {
+                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+            })
             ->count(); // Get the count of overdue tasks
 
 
@@ -745,18 +749,12 @@ class ReportsController extends Controller
             })
             ->count();
 
-        //  TaskAssignee::where('user_id', $user_id)
-        //                 ->whereNotIn('task_status', [4, 7, 6])
-        //                 ->whereDate('due_date', '<', $cdate)
-        //                 ->where('status', 1)
-        //                 ->whereIn('task_id', function ($subquery) {
-        //                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-        //                 })
-        //                 ->get();
 
+
+        $cdate = date("Y-m-d");
         // Overdue tasks count
         $overdueTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
-            ->whereDate('due_date', '<', now()->subDay()) // Due date is older than yesterday
+            ->whereDate('due_date', '<', $cdate) // Due date is older than yesterday
             ->whereNotIn('task_status', [4, 7, 6]) // Exclude completed/archived tasks
             ->where('status', 1)
             ->whereIn('task_id', function ($subquery) {
@@ -848,8 +846,9 @@ class ReportsController extends Controller
 
         $pendingTasksCount = $buildQuery()->count();
 
+         $cdate = date("Y-m-d");
         $overdueTasksCount = $buildQuery()
-            ->whereDate('due_date', '<', now()->subDay())
+            ->whereDate('due_date', '<', $cdate)
             ->where('status', 1)
             ->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
