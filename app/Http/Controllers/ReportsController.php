@@ -645,7 +645,8 @@ class ReportsController extends Controller
             $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser)); // Merge logged-in user and their subordinates
             $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
         } else {
-            $hierarchyUserIds = User::where('status', 1)->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
+            $hierarchyUserIds = User::pluck('id')->toArray(); // Get array of all user IDs in hierarchy
+            // dd($hierarchyUserIds);
         }
         // dd($hierarchyUserIds,$userId);
         // Pending tasks count
@@ -699,9 +700,13 @@ class ReportsController extends Controller
 
         ini_set('memory_limit', '2048M'); // Retain memory limit increase, but we'll use chunking to minimize memory usage
 
-        $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
-        $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
-
+        if ($userId != 1) {
+            $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+            $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+        } else {
+            $hierarchyUserIds = User::pluck('id')->toArray(); // Get array of all user IDs in hierarchy
+            // dd($hierarchyUserIds);
+        }
         $query = TaskAssignee::query();
         // Admin fetches tasks by their statuses
         $loggedInUser = auth()->user();
@@ -846,7 +851,7 @@ class ReportsController extends Controller
 
         $pendingTasksCount = $buildQuery()->count();
 
-         $cdate = date("Y-m-d");
+        $cdate = date("Y-m-d");
         $overdueTasksCount = $buildQuery()
             ->whereDate('due_date', '<', $cdate)
             ->where('status', 1)
