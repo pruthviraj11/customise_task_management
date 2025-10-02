@@ -817,27 +817,87 @@ class ReportsController extends Controller
             ->rawColumns(['title', 'Task_number', 'description', 'subject', 'created_by_username', 'Task_assign_to', 'status', 'start_date', 'due_date', 'project', 'department'])
             ->make(true);
     }
+    // public function getTaskCounts(Request $request)
+    // {
+    //     $userId = auth()->id();
+    //     $projectIds = $request->input('project_ids', []);
+    //     $loggedInUser = auth()->user();
+
+    //     if ($userId != 1) {
+    //         $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
+    //         $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
+    //     } else {
+    //         // Admin: don't filter by assignee user_id (null means "no filter")
+    //         $hierarchyUserIds = User::pluck('id')->toArray();
+    //     }
+
+    //     // Build base query in a closure so we can reuse it safely
+    //     $buildQuery = function () use ($hierarchyUserIds, $projectIds) {
+    //         return TaskAssignee::query()
+    //             ->when($hierarchyUserIds, function ($q) use ($hierarchyUserIds) {
+    //                 $q->whereIn('user_id', $hierarchyUserIds);
+    //             })
+    //             ->whereIn('task_status', [1, 3, 5, 6])
+    //             ->where('status', 1)
+    //             ->whereIn('task_id', function ($subquery) {
+    //                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+    //             })
+    //             ->when(!empty($projectIds), function ($q) use ($projectIds) {
+    //                 $q->whereHas('task', function ($q) use ($projectIds) {
+    //                     $q->whereIn('project_id', $projectIds);
+    //                 });
+    //             });
+    //     };
+
+    //     $pendingTasksCount = $buildQuery()->count();
+
+    //     $cdate = date("Y-m-d");
+    //     $overdueTasksCount = $buildQuery()
+    //         ->whereDate('due_date', '<', $cdate)
+    //         ->where('status', 1)
+    //         ->whereIn('task_id', function ($subquery) {
+    //             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
+    //         })
+    //         ->count();
+
+    //     $paceRate = $pendingTasksCount > 0 ? ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount : 0;
+
+    //     return response()->json([
+    //         'pendingTasksCount' => $pendingTasksCount,
+    //         'overdueTasksCount' => $overdueTasksCount,
+    //         'paceRate' => number_format($paceRate * 100, 2)
+    //     ]);
+    // }
+
+
+
     public function getTaskCounts(Request $request)
     {
         $userId = auth()->id();
         $projectIds = $request->input('project_ids', []);
         $loggedInUser = auth()->user();
 
+        // Collect users in hierarchy (or all if admin)
         if ($userId != 1) {
             $hierarchyUsers = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
             $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
         } else {
-            // Admin: don't filter by assignee user_id (null means "no filter")
-            $hierarchyUserIds = null;
+            $hierarchyUserIds = User::pluck('id')->toArray();
         }
 
-        // Build base query in a closure so we can reuse it safely
-        $buildQuery = function () use ($hierarchyUserIds, $projectIds) {
+        /**
+         * Reusable query builder
+         * @param array|null $statusFilter   => list of statuses to include
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        $buildQuery = function (?array $statusFilter = null) use ($hierarchyUserIds, $projectIds) {
             return TaskAssignee::query()
                 ->when($hierarchyUserIds, function ($q) use ($hierarchyUserIds) {
                     $q->whereIn('user_id', $hierarchyUserIds);
                 })
-                ->whereIn('task_status', [1, 3, 5, 6])
+                ->when($statusFilter, function ($q) use ($statusFilter) {
+                    $q->whereIn('task_status', $statusFilter);
+                })
                 ->where('status', 1)
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -849,18 +909,23 @@ class ReportsController extends Controller
                 });
         };
 
-        $pendingTasksCount = $buildQuery()->count();
+        // Define your status rules
+        $pendingStatuses = [1, 3, 5, 6];   // active/open type statuses
+        $notCompletedStatuses = [1, 2, 3, 5]; // all except completed(4), cancelled(6), archived(7)
 
-        $cdate = date("Y-m-d");
-        $overdueTasksCount = $buildQuery()
+        // Pending count
+        $pendingTasksCount = $buildQuery($pendingStatuses)->count();
+
+        // Overdue count
+        $cdate = now()->toDateString();
+        $overdueTasksCount = $buildQuery($notCompletedStatuses)
             ->whereDate('due_date', '<', $cdate)
-            ->where('status', 1)
-            ->whereIn('task_id', function ($subquery) {
-                $subquery->select('id')->from('tasks')->whereNull('deleted_at');
-            })
             ->count();
 
-        $paceRate = $pendingTasksCount > 0 ? ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount : 0;
+        // Pace rate
+        $paceRate = $pendingTasksCount > 0
+            ? ($pendingTasksCount - $overdueTasksCount) / $pendingTasksCount
+            : 0;
 
         return response()->json([
             'pendingTasksCount' => $pendingTasksCount,
