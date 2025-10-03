@@ -781,6 +781,37 @@ class ReportsController extends Controller
         $tasks = $query;
 
         return DataTables::of($tasks)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->search['value'] != '') {
+                    $search = $request->search['value'];
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('task_assignees.task_number', 'like', "%{$search}%")
+                            ->orWhereHas('task', function ($t) use ($search) {
+                                $t->where('title', 'like', "%{$search}%")
+                                    ->orWhere('description', 'like', "%{$search}%")
+                                    ->orWhere('subject', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('user', function ($u) use ($search) {
+                                $u->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('creator', function ($c) use ($search) {
+                                $c->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('taskStatus', function ($s) use ($search) {
+                                $s->where('status_name', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('task.project', function ($p) use ($search) {
+                                $p->where('project_name', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('department_data', function ($d) use ($search) {
+                                $d->where('department_name', 'like', "%{$search}%");
+                            });
+                    });
+                }
+            })
             ->addColumn('Task_number', function ($row) {
                 return $row->task_number ?? "-";
             })
@@ -802,7 +833,7 @@ class ReportsController extends Controller
             // ->addColumn('status', function ($row) {
             //     return ($row->task && $row->task->task_status) ? $row->task->taskStatus->status_name : "-";
             // })
-             ->addColumn('status', function ($row) {
+            ->addColumn('status', function ($row) {
                 return ($row->task_status) ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('start_date', function ($row) {
