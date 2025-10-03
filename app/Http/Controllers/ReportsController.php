@@ -799,8 +799,11 @@ class ReportsController extends Controller
             ->addColumn('Task_assign_to', function ($row) {
                 return $row->user ? $row->user->first_name . " " . $row->user->last_name : "ABC";
             })
-            ->addColumn('status', function ($row) {
-                return ($row->task && $row->task->task_status) ? $row->task->taskStatus->status_name : "-";
+            // ->addColumn('status', function ($row) {
+            //     return ($row->task && $row->task->task_status) ? $row->task->taskStatus->status_name : "-";
+            // })
+             ->addColumn('status', function ($row) {
+                return ($row->task_status) ? $row->taskStatus->status_name : "-";
             })
             ->addColumn('start_date', function ($row) {
                 return ($row->task && $row->task->start_date) ? \Carbon\Carbon::parse($row->task->start_date)->format('d/m/Y') : '-';
