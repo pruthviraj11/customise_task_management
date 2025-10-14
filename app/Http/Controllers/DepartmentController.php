@@ -8,14 +8,10 @@ use App\Models\Department;
 use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DepartmentsImport;
-
 use App\Services\RoleService;
 use App\Services\DepartmentService;
 use Spatie\Permission\Models\Permission;
-
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -82,14 +78,12 @@ class DepartmentController extends Controller
     public function store(CreateDepartmentRequest $request)
     {
         try {
-
             $departmentData['description'] = $request->get('description');
             $departmentData['department_name'] = $request->get('department_name');
             $departmentData['hod'] = $request->get('hod');
             $departmentData['created_by'] = auth()->user()->id;
             $departmentData['status'] = $request->get('status');
             $department = $this->departmentService->create($departmentData);
-
 
             if (!empty($department)) {
                 return redirect()->route("app-department-list")->with('success', 'Department Added Successfully');
@@ -113,7 +107,6 @@ class DepartmentController extends Controller
             $departmentslist = $this->departmentService->getAllDepartment();
             $data['department'] = Department::all();
 
-
             return view('.content.apps.department.create-edit', compact('page_data', 'department', 'data', 'departmentslist', 'users'));
         } catch (\Exception $error) {
             // dd($error->getMessage());
@@ -133,7 +126,6 @@ class DepartmentController extends Controller
             $departmentData['status'] = $request->get('status') ? "on" : "off";
 
             $updated = $this->departmentService->updateDepartment($id, $departmentData);
-
 
             if (!empty($updated)) {
                 return redirect()->route("app-department-list")->with('success', 'Department Updated Successfully');

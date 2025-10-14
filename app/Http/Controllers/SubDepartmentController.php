@@ -6,15 +6,10 @@ use App\Http\Requests\SubDepartment\CreateSubDepartmentRequest;
 use App\Http\Requests\SubDepartment\UpdateSubDepartmentRequest;
 use App\Models\SubDepartment;
 use App\Models\Department;
-
-
 use App\Services\RoleService;
 use App\Services\SubDepartmentService;
 use Spatie\Permission\Models\Permission;
-
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class SubDepartmentController extends Controller
@@ -49,12 +44,9 @@ class SubDepartmentController extends Controller
     public function getAll()
     {
         $sub_departments = $this->sub_departmentService->getAllSubDepartment()->with('department')->get();
-        // dd($sub_departments-);
         return DataTables::of($sub_departments)->addColumn('actions', function ($row) {
-            // dd($row->department->department_name);
             $encryptedId = encrypt($row->id);
             $updateButton = "<a class='btn btn-warning  '  href='" . route('app-sub_department-edit', $encryptedId) . "'><i class='ficon' data-feather='edit'></i></a>";
-
             $deleteButton = "<a class='btn btn-danger confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-sub_department-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
             return $updateButton . " " . $deleteButton;
@@ -89,9 +81,7 @@ class SubDepartmentController extends Controller
             $sub_departmentData['created_by'] = auth()->user()->id;
             $sub_departmentData['status'] = $request->get('status');
             $sub_departmentData['department_id'] = $request->get('department_id');
-
             $sub_department = $this->sub_departmentService->create($sub_departmentData);
-
 
             if (!empty($sub_department)) {
                 return redirect()->route("app-sub_department-list")->with('success', 'SubDepartment Added Successfully');
@@ -110,11 +100,9 @@ class SubDepartmentController extends Controller
             $sub_department = $this->sub_departmentService->getSubDepartment($id);
             $page_data['page_title'] = "SubDepartment";
             $page_data['form_title'] = "Edit SubDepartment";
-
             $sub_departmentslist = $this->sub_departmentService->getAllSubDepartment();
             $data['sub_department'] = SubDepartment::all();
             $departments = Department::where('status', 'on')->get();
-
 
             return view('.content.apps.sub_department.create-edit', compact('page_data', 'departments', 'sub_department', 'data', 'sub_departmentslist'));
         } catch (\Exception $error) {
@@ -132,9 +120,7 @@ class SubDepartmentController extends Controller
             $sub_departmentData['department_id'] = $request->get('department_id');
             $sub_departmentData['updated_by'] = auth()->user()->id;
             $sub_departmentData['status'] = $request->get('status') ? "on" : "off";
-
             $updated = $this->sub_departmentService->updateSubDepartment($id, $sub_departmentData);
-
 
             if (!empty($updated)) {
                 return redirect()->route("app-sub_department-list")->with('success', 'SubDepartment Updated Successfully');

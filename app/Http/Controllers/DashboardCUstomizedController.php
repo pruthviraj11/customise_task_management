@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-
 use App\Exports\DashboardTaskExport;
 use App\Models\TaskAssignee;
 use App\Models\TaskAttachment;
@@ -17,7 +15,6 @@ use App\Models\Status;
 use App\Models\User;
 use App\Models\Department;
 use Maatwebsite\Excel\Facades\Excel;
-
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,14 +22,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-
 use Illuminate\Http\Request;
 
 class DashboardCUstomizedController extends Controller
 {
     public function index()
     {
-
         $userId = auth()->user()->id;
         $usersWithG7 = User::where('Grad', operator: 'G7')->get();
         $user = auth()->user();
@@ -57,7 +52,6 @@ class DashboardCUstomizedController extends Controller
             ->count();
 
         // parth changes as per requrment
-
         $task_count['scope_defined'] = Task::where('task_status', 3)
             ->whereHas('assignees', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -90,7 +84,6 @@ class DashboardCUstomizedController extends Controller
                 // ->where('status', 1);
             })
             ->count();
-        // dd($task_count);
         $total['req_task'] = '';
         $total['acc_task'] = '';
         $total['rej_task'] = '';
@@ -106,7 +99,6 @@ class DashboardCUstomizedController extends Controller
         if (auth()->user()->id == 1 || $user->hasrole('Super Admin')) {
             $total['deleted'] = Task::onlyTrashed()->count();
 
-            // $onlySoftDeleted = Model::onlyTrashed()->get();
             $total['req_task'] = Task::whereHas('assignees', function ($query) {
                 $query->where('status', 0);
             })->whereNot('task_status', 7)->count();
@@ -121,23 +113,21 @@ class DashboardCUstomizedController extends Controller
 
             $task_count['conceptualization'] = Task::where('task_status', '1')->count();
 
-
             $task_count['due_date_past'] = Task::where('task_status', '!=', '7')
                 ->where('due_date', '<', Carbon::today())
                 ->where(function ($query) {
-                    $query->whereNull('completed_date') // Consider tasks not completed yet
-                        ->orWhere('completed_date', '>', DB::raw('due_date')); // Or completed date is greater than due date
+                    $query->whereNull('completed_date')
+                        ->orWhere('completed_date', '>', DB::raw('due_date'));
                 })
                 ->count();
-            // parth changes as per requrment
 
+            // parth changes as per requrment
             $task_count['scope_defined'] = Task::where('task_status', '3')->count();
             $task_count['completed'] = Task::where('task_status', '4')->count();
             $task_count['in_execution'] = Task::where('task_status', '5')->count();
             $task_count['hold'] = Task::where('task_status', '6')->count();
             $task_count['close'] = Task::where('task_status', '7')->count();
             $total['total_task'] = $task_count['conceptualization'] + $task_count['close'] + $task_count['scope_defined'] + $task_count['completed'] + $task_count['in_execution'] + $task_count['hold'];
-            // dd($task_count, $total);
             $statuses = Status::where('status', "on")->get();
             $departments = Department::where('status', 'on')->get();
 
@@ -153,50 +143,12 @@ class DashboardCUstomizedController extends Controller
             foreach ($taskCounts as $count) {
                 $taskCountMatrix[$count->task_status][$count->department_id] = $count->total;
             }
-
-
         }
 
-        // function getHierarchy($userId, &$allUsers, &$addedUserIds)
-        // {
-        //     $reportingUsers = User::where('report_to', $userId)->get();
-        //     foreach ($reportingUsers as $user) {
-        //         if (!in_array($user->id, $addedUserIds)) {
-        //             $allUsers[$user->id] = $user;
-        //             $addedUserIds[] = $user->id;
-        //             getHierarchy($user->id, $allUsers, $addedUserIds);
-        //         }
-        //     }
-        // }
-
-        // $allUsers = [];
-        // $addedUserIds = [$userId];
-        // getHierarchy($userId, $allUsers, $addedUserIds);
-
-        // $query = Task::query();
-        // $query->where(function ($query) use ($addedUserIds, $userId) {
-        //     $query->whereIn('created_by', $addedUserIds)
-        //         ->where('created_by', '!=', $userId)
-        //         ->orWhereHas('assignees', function ($q) use ($addedUserIds, $userId) {
-        //             $q->whereIn('user_id', $addedUserIds)
-        //                 ->where('user_id', '!=', $userId);
-        //         });
-        // });
-
-        // $teamTasks = $query->count();
-
-
-        // $allActivityLogs = collect();
-
-
-
-
-        //  $MeAndTeam = $this->getTotalTaskCount();
         $MeAndTeam = 00;
         $teamTasks = 00;
 
         $statusinfos = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
-
 
         $total_task_count = TaskAssignee::leftJoin('tasks', 'tasks.id', 'task_assignees.task_id')
             ->whereIn('task_id', function ($subquery) {
@@ -206,7 +158,6 @@ class DashboardCUstomizedController extends Controller
             // ->where('task_assignees.status',1)
             ->count();
 
-        // dd('heare');
         return view('content.apps.dashboard.customized_index', compact('MeAndTeam', 'teamTasks', 'usersWithG7', 'data', 'total', 'statuses', 'departments', 'taskCountMatrix', 'deleted_task', 'task_count', 'statusinfos', 'total_task_count'));
     }
 
@@ -236,11 +187,7 @@ class DashboardCUstomizedController extends Controller
 
         // Extracting all user IDs from the $allUsers array
         $userIds = array_keys($allUsers);
-
-        // Adding the root user ID to the list of user IDs
         $userIds[] = $userId;
-
-
 
         $allActivityLogs = collect();
 
@@ -261,7 +208,6 @@ class DashboardCUstomizedController extends Controller
     }
     public function my_task()
     {
-
         return view('content.apps.dashboard.index');
     }
     public function getTaskData()
@@ -300,10 +246,8 @@ class DashboardCUstomizedController extends Controller
         return response()->json(['data' => $data]);
     }
 
-
     public function getUserStatusData()
     {
-        // Get all users with email
         $users = User::whereNotNull('email')->get();
 
         // Get distinct task statuses
@@ -320,9 +264,6 @@ class DashboardCUstomizedController extends Controller
             ->groupBy('task_assignees.user_id', 'tasks.task_status')
             ->get();
 
-        // Restructure data for easier access in the view
-        // dd($taskCounts);
-
         foreach ($users as $user) {
             $array = [
                 'user_name' => $user->first_name . ' ' . $user->last_name,
@@ -337,11 +278,9 @@ class DashboardCUstomizedController extends Controller
                     ? ($user->reportsTo->first_name . ' ' . $user->reportsTo->last_name ?? '-')
                     : '-',
             ];
-            // $user->subdepartment = $user->department_id;
-            // $user->save();
+
             $total = 0;
             foreach ($status as $s) {
-
                 $array[\Str::slug($s->status_name, '_')] = Task::where('task_status', $s->id)
                     ->whereHas('assignees', function ($query) use ($user) {
                         $query->where('user_id', $user->id);
@@ -353,10 +292,8 @@ class DashboardCUstomizedController extends Controller
             array_push($table_data, $array);
         }
 
-
         return response()->json(['data' => $table_data]);
     }
-
 
     public function getUserStatusData_hierarchy()
     {
@@ -404,20 +341,6 @@ class DashboardCUstomizedController extends Controller
         return $userId;
     }
 
-
-    // function requestedBymeTasks($userId)
-    // {
-    //     $users = DB::table('task_assignees')
-    //         ->join('users', 'task_assignees.user_id', '=', 'users.id')
-    //         ->select('task_assignees.*', 'users.first_name as first_name', 'users.last_name as last_name')
-    //         ->where('task_assignees.user_id', '=', $userId)
-    //         ->get();
-
-    //     return $users;
-    // }
-
-
-
     public function getAllSubordinates($user)
     {
         $subordinates = $user->subordinates;
@@ -430,9 +353,6 @@ class DashboardCUstomizedController extends Controller
         return $subordinates;
     }
 
-
-
-
     /*----------  Requested to me flow ----------*/
     public function getRequestedToMeTaskInfo()
     {
@@ -443,7 +363,6 @@ class DashboardCUstomizedController extends Controller
         } else {
             $users = User::all();
         }
-        // dd($users);
 
         //$status = Status::where('status', 'on')->get();
         $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
@@ -461,8 +380,6 @@ class DashboardCUstomizedController extends Controller
                 'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
 
-
-
             $totalAssign = TaskAssignee::where('user_id', $user->id)->where('status', '0')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -478,10 +395,7 @@ class DashboardCUstomizedController extends Controller
 
             $cdate = date("Y-m-d");
 
-
             foreach ($status as $i => $s) {
-
-
                 $CountTaskStatus = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
                     ->where('status', '1')
@@ -514,13 +428,11 @@ class DashboardCUstomizedController extends Controller
                     // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7, 6])
                     ->where('status', '1')
-
                     ->whereDate('due_date', '<', $cdate)
                     ->whereIn('task_id', function ($subquery) {
                         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                     })
                     ->count();
-
 
                 // $due_tasks = TaskAssignee::where('user_id', $userId)
                 //     ->where('created_by', $user->id)
@@ -562,7 +474,6 @@ class DashboardCUstomizedController extends Controller
 
                 $array['today_dues'] = $TodayCountDueTask;
 
-
                 /*--------------  Total Finished Tasks -----*/
                 if (in_array($s->id, $complete_close)) {
                     $CountFinishedTask = TaskAssignee::where('user_id', $user->id)
@@ -575,31 +486,23 @@ class DashboardCUstomizedController extends Controller
                         ->count();
                     $finish_total += $CountFinishedTask;
                 }
-
             }
             $array['pending_tasks'] = $pending_total;
             $array['finish_tasks'] = $finish_total;
             $array['total'] = $pending_total + $finish_total;
             $CountRejectedTask = TaskAssignee::where('user_id', $user->id)
-                // ->where('task_status', $taskStatusId) // Make sure $taskStatusId is correctly assigned
                 ->where('status', '2')
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })
                 ->count();
 
-
             $array['rejected_tasks'] = $CountRejectedTask;
             $array['overall_total'] = $pending_total + $finish_total + $totalAssign + $CountRejectedTask;
-
             array_push($table_data, $array);
         }
         return response()->json(['data' => $table_data]);
-
     }
-
-
-
 
     /*------- Rquested By me Flow--------------*/
     public function getRequestedByMeTaskInfo()
@@ -631,7 +534,6 @@ class DashboardCUstomizedController extends Controller
                 'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
 
-
             $totalAssign = TaskAssignee::where('user_id', '!=', $user->id)->where('status', '0')->where('created_by', $user->id)
                 ->whereNotIn('task_status', [4, 7])
                 ->whereIn('task_id', function ($subquery) {
@@ -648,9 +550,7 @@ class DashboardCUstomizedController extends Controller
 
             $cdate = date("Y-m-d");
 
-
             foreach ($status as $i => $s) {
-
                 $CountTaskStatus = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('task_status', $s->id)
                     ->where('created_by', $user->id)
@@ -665,13 +565,11 @@ class DashboardCUstomizedController extends Controller
                 $array['status_id'] = $s->id;
 
                 /*------  Total PendingTask Detais -----*/
-
                 if (in_array($s->id, $matchIds)) {
                     $CountPendingTask = TaskAssignee::where('user_id', '!=', $user->id)
                         ->where('task_status', $s->id)
                         ->where('created_by', $user->id)
                         ->where('status', 1)
-
                         ->whereIn('task_id', function ($subquery) {
                             $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                         })
@@ -680,12 +578,10 @@ class DashboardCUstomizedController extends Controller
                 }
 
                 /*---------------  Total Dues Tasks ------*/
-
                 $CountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7, 6])
                     ->where('status', 1)
-
                     ->whereDate('due_date', '<', $cdate)
                     ->whereIn('task_id', function ($subquery) {
                         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -706,18 +602,15 @@ class DashboardCUstomizedController extends Controller
                 $array['over_dues'] = $CountDueTask;
 
                 /*--------------- Total Today's Due ------*/
-
                 $TodayCountDueTask = TaskAssignee::where('user_id', '!=', $user->id)
                     ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7, 6])
                     ->where('status', 1)
-
                     ->whereDate('due_date', '=', $cdate)
                     ->whereIn('task_id', function ($subquery) {
                         $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                     })
                     ->count();
-
 
                 // $today_tasks = TaskAssignee::where('user_id', $user->id)
                 //     ->where('created_by', $userId)
@@ -744,19 +637,16 @@ class DashboardCUstomizedController extends Controller
                         ->count();
                     $finish_total += $CountFinishedTask;
                 }
-
             }
 
             $array['pending_tasks'] = $pending_total;
             $array['finish_tasks'] = $finish_total;
             $array['total'] = $pending_total + $finish_total;
 
-
             $CountRejectedTask = TaskAssignee::where('user_id', '!=', $user->id)->where('status', '2')->where('created_by', $user->id)
                 ->whereIn('task_id', function ($subquery) {
                     $subquery->select('id')->from('tasks')->whereNull('deleted_at');
                 })->count();
-
 
             $overallTaskTotal = $pending_total + $finish_total + $CountRejectedTask + $totalAssign;
 
@@ -767,13 +657,9 @@ class DashboardCUstomizedController extends Controller
         }
 
         return response()->json(['data' => $table_data]);
-
     }
 
-
-
     /*----------  Total Task Info -------*/
-
     public function getTotalTaskInfo()
     {
         $loggedInUser = auth()->user();
@@ -781,15 +667,13 @@ class DashboardCUstomizedController extends Controller
 
         $users = collect([$loggedInUser])->merge($this->getAllSubordinates($loggedInUser));
 
-
-        //$status = Status::where('status', 'on')->get();
         $status = Status::where('status', "on")->orderBy('order_by', 'ASC')->get();
 
         $table_data = [];
 
         foreach ($users as $user) {
             $userStatus = $user->status;
-            $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
+            $statusLabel = $userStatus == 0 ? 'inactive' : '';
 
             // Only append parentheses if the user is inactive
             $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
@@ -798,7 +682,6 @@ class DashboardCUstomizedController extends Controller
                 'user_id' => encrypt($user->id),
                 'user_name' => $user->first_name . ' ' . $user->last_name . $statusText, // Append the styled status label
             ];
-
 
             $RequestToUs = TaskAssignee::where('user_id', $userId)->where('status', '0')->where('created_by', $user->id)->count();
 
@@ -814,17 +697,13 @@ class DashboardCUstomizedController extends Controller
 
             $cdate = date("Y-m-d");
 
-
             foreach ($status as $i => $s) {
-
-
                 $CountRequestUs = TaskAssignee::where('user_id', $user->id)
                     ->where('task_status', $s->id)
                     // ->where('created_by', $user->id)
                     ->count();
 
                 $CountRequestTo = TaskAssignee::where('user_id', $user->id)
-
                     ->where('task_status', $s->id)
                     ->where('created_by', $userId)
                     ->count();
@@ -832,16 +711,12 @@ class DashboardCUstomizedController extends Controller
                 $array[\Str::slug($s->status_name, '_')] = $CountRequestUs + $CountRequestTo;
                 $array['status_id'] = $s->id;
 
-
-
                 /*------  Total PendingTask Detais -----*/
-
                 if (in_array($s->id, $matchIds)) {
                     $CountRequestToPendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
                         // ->where('created_by', $user->id)
                         ->count();
-
 
                     $CountRequestByMePendingTask = TaskAssignee::where('user_id', $user->id)
                         ->where('task_status', $s->id)
@@ -865,21 +740,14 @@ class DashboardCUstomizedController extends Controller
                     ->whereDate('due_date', '<', $cdate)
                     ->count();
 
-
-
-
                 $array['over_dues'] = $CountRequestToTask + $CountRequestByMeTask;
 
-
                 /*--------------- Total Today's Due ------*/
-
-
                 $TodayCountRequestToDueTask = TaskAssignee::where('user_id', $user->id)
                     // ->where('created_by', $user->id)
                     ->whereNotIn('task_status', [4, 7])
                     ->whereDate('due_date', '=', $cdate)
                     ->count();
-
 
                 $today_requested_me_tasks = TaskAssignee::where('user_id', $user->id)
                     ->where('created_by', $userId)
@@ -887,9 +755,7 @@ class DashboardCUstomizedController extends Controller
                     ->whereDate('due_date', '=', $cdate)
                     ->count();
 
-
                 $array['today_dues'] = $TodayCountRequestToDueTask + $today_requested_me_tasks;
-
 
                 /*--------------  Total Finished Tasks -----*/
                 if (in_array($s->id, $complete_close)) {
@@ -904,7 +770,6 @@ class DashboardCUstomizedController extends Controller
                         ->count();
                     $finish_total += $CountRequestToFinishedTask + $CountRequestByMeFinishedTask;
                 }
-
             }
 
             $array['pending_tasks'] = $pending_total;
@@ -915,12 +780,7 @@ class DashboardCUstomizedController extends Controller
         }
 
         return response()->json(['data' => $table_data]);
-
     }
-
-
-
-
 
     public function getTotalTaskCount()
     {
@@ -990,19 +850,6 @@ class DashboardCUstomizedController extends Controller
         return $totalTaskCount;
     }
 
-    // Recursive function to get hierarchical users
-    // private function getHierarchy($userId, &$allUsers, &$addedUserIds)
-    // {
-    //     $reportingUsers = User::where('report_to', $userId)->get();
-    //     foreach ($reportingUsers as $user) {
-    //         if (!in_array($user->id, $addedUserIds)) {
-    //             $allUsers[$user->id] = $user;
-    //             $addedUserIds[] = $user->id;
-    //             $this->getHierarchy($user->id, $allUsers, $addedUserIds);
-    //         }
-    //     }
-    // }
-
     // Function to get hierarchical users
     public function getHierarchy($userId, &$allUsers, &$addedUserIds)
     {
@@ -1016,7 +863,6 @@ class DashboardCUstomizedController extends Controller
         }
     }
 
-
     public function getTaskCounts(Request $request)
     {
         $userId = auth()->user()->id;
@@ -1026,13 +872,13 @@ class DashboardCUstomizedController extends Controller
                 $query->where('tasks.created_by', $userId)
                     ->Where('task_assignees.user_id', $userId);
             })
-            ->where('task_assignees.status', '!=', 2) // Exclude status 2
+            ->where('task_assignees.status', '!=', 2)
             ->count();
 
         // Get tasks accepted by the user but not created by them, with status 1, excluding tasks with a specific condition
         $taccepted_by_me_count = Task::whereHas('assignees', function ($query) use ($userId) {
             $query->where('user_id', $userId)
-                ->where('status', '1'); // Only count status 1 tasks
+                ->where('status', '1');
         })
             ->where('created_by', '!=', $userId) // Exclude tasks created by the user
             ->count();
@@ -1051,7 +897,6 @@ class DashboardCUstomizedController extends Controller
             ->where('tasks.created_by', '!=', $userId)
             ->where('tasks.task_status', '!=', 7) // Exclude tasks with status 7
             ->count();
-
 
         $userId = auth()->user()->id;
 
@@ -1096,19 +941,17 @@ class DashboardCUstomizedController extends Controller
 
         $total_task_count = $all_tasks->count();
 
-
-
         $my_task = Task::where('created_by', $userId)
             ->whereHas('assignees', function ($query) use ($userId) {
                 $query->where('user_id', $userId)
                     ->where('status', '!=', 2);
             })
             ->withCount('assignees')
-            ->having('assignees_count', '=', 1) // Ensure only one assignee
+            ->having('assignees_count', '=', 1)
             ->with([
                 'attachments',
                 'assignees' => function ($query) {
-                    $query->select('task_id', 'status', 'remark'); // Customize as needed
+                    $query->select('task_id', 'status', 'remark');
                 },
                 'creator',
                 'taskStatus',
@@ -1118,33 +961,12 @@ class DashboardCUstomizedController extends Controller
                 'comments'
             ])->count();
 
-
-        // $taccepted_by_me = Task::whereHas('assignees', function ($query) use ($userId) {
-        //     $query->where('user_id', $userId)->where('status', '1');
-        // })
-        //     ->whereNotIn('created_by', [$userId])
-        //     ->count();
-
-        // $assign_by_me = Task::where('created_by', $userId)
-        //     ->whereDoesntHave('assignees', function ($query) use ($userId) {
-        //         $query->where('user_id', $userId);
-        //     })
-        //     ->count();
-
-        // $requested_me = Task::leftJoin('task_assignees', 'tasks.id', '=', 'task_assignees.task_id')
-        //     ->where('task_assignees.user_id', $userId)
-        //     ->where('task_assignees.status', 0)
-        //     ->where('tasks.created_by', '!=', $userId)
-        //     ->whereNot('tasks.task_status', 7)
-        //     ->count();
-        // $total_task = $my_task + $taccepted_by_me + $assign_by_me + $requested_me;
         return response()->json([
             'my_task' => $my_task,
             'taccepted_by_me' => $taccepted_by_me_count,
             'assign_by_me' => $assign_by_me_count,
             'requested_me' => $requested_me_count,
             'total_task' => $total_task_count,
-            // 'teamTasks'=>$teamTasks,
         ]);
     }
 
@@ -1204,9 +1026,6 @@ class DashboardCUstomizedController extends Controller
             'deleted' => Task::onlyTrashed()
                 ->where('created_by', $userId)
                 ->count(),
-
-            // 'deleted' => DB::table('tasks')->whereNotNull('deleted_at')->where('deleted_by', $userId)->count()
-
         ];
 
         // If the user is a Super Admin or has user ID 1, include soft-deleted tasks
@@ -1217,8 +1036,8 @@ class DashboardCUstomizedController extends Controller
             $task_count['due_date_past'] = Task::where('task_status', '!=', '7')
                 ->where('due_date', '<', Carbon::today())
                 ->where(function ($query) {
-                    $query->whereNull('completed_date') // Consider tasks not completed yet
-                        ->orWhere('completed_date', '>', DB::raw('due_date')); // Or completed date is greater than due date
+                    $query->whereNull('completed_date')
+                        ->orWhere('completed_date', '>', DB::raw('due_date'));
                 })
                 ->count();
             $task_count['scope_defined'] = Task::where('task_status', '3')->count();
@@ -1227,26 +1046,20 @@ class DashboardCUstomizedController extends Controller
             $task_count['hold'] = Task::where('task_status', '6')->count();
             $task_count['close'] = Task::where('task_status', '7')->count();
             $total['total_task'] = $task_count['conceptualization'] + $task_count['close'] + $task_count['scope_defined'] + $task_count['completed'] + $task_count['in_execution'] + $task_count['hold'];
-            // $task_count['deleted'] = DB::table('tasks')->whereNotNull('deleted_by')->count();
             $task_count['deleted'] = Task::onlyTrashed()->count();
-
-
         }
 
-        // Return task counts as a JSON response
         return response()->json(['task_count' => $task_count]);
     }
 
     public function getTotalTaskCountAjax()
     {
         $totalTaskCount = $this->getTotalTaskCount();
-
         return response()->json(['total_task_count' => $totalTaskCount]);
     }
     public function upload_task()
     {
         return view('content.apps.dashboard.upload');
-
     }
     // public function team_task()
     // {
@@ -1262,7 +1075,6 @@ class DashboardCUstomizedController extends Controller
     //             }
     //         }
     //     }
-
 
     //     $allUsers = [];
 
@@ -1724,7 +1536,6 @@ class DashboardCUstomizedController extends Controller
 
                     $row[] = $rowTotal;
                     $grandTotal += $rowTotal;
-
                     $collection->push($row);
                 }
 
@@ -1763,13 +1574,6 @@ class DashboardCUstomizedController extends Controller
         }, 'custom_report_' . date('Y-m-d') . '.xlsx');
     }
 
-    /**
-     * Helper method to get field value from task object
-     *
-     * @param object $task
-     * @param string $field
-     * @return mixed
-     */
     private function getFieldValue($task, $field)
     {
         switch ($field) {
@@ -1833,7 +1637,6 @@ class DashboardCUstomizedController extends Controller
 
     public function previewDynamicReport(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'row_field' => 'required|string',
             'column_field' => 'required|string',
@@ -1849,7 +1652,6 @@ class DashboardCUstomizedController extends Controller
         $rowField = $request->row_field;
         $columnField = $request->column_field;
 
-        // Get field display names for column headers
         $fieldDisplayNames = [
             'task_id' => 'Task ID',
             'Task_number' => 'Task Number',
@@ -1879,7 +1681,6 @@ class DashboardCUstomizedController extends Controller
         // Get the logged-in user
         $loggedInUser = auth()->user();
 
-        // Base query similar to getAll_overallTask method
         $tasks = TaskAssignee::with([
             'task',
             'creator',
@@ -1911,7 +1712,6 @@ class DashboardCUstomizedController extends Controller
                 });
         }
 
-        // Apply filters from request
         if ($request->filled('department')) {
             $tasks->where('department', $request->department);
         }
@@ -1939,7 +1739,6 @@ class DashboardCUstomizedController extends Controller
             }
         }
 
-        // Join necessary tables
         $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
             ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
             ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
@@ -1950,7 +1749,6 @@ class DashboardCUstomizedController extends Controller
             ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
             ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id');
 
-        // Select all necessary fields
         $tasks = $tasks->select(
             'task_assignees.*',
             'tasks.title',
@@ -1978,10 +1776,8 @@ class DashboardCUstomizedController extends Controller
             'tasks.TaskNumber as Task_number'
         );
 
-        // Execute the query
         $data = $tasks->get();
 
-        // Process data for the report (summary view)
         // Group by row field and column field
         $processedData = [];
         $columnValues = [];
@@ -2099,7 +1895,6 @@ class DashboardCUstomizedController extends Controller
                 });
         }
 
-        // Apply filters from request
         if ($request->filled('department')) {
             $tasks->where('department', $request->department);
         }
@@ -2127,7 +1922,6 @@ class DashboardCUstomizedController extends Controller
             }
         }
 
-        // Join necessary tables
         $tasks = $tasks->leftJoin('tasks', 'task_assignees.task_id', '=', 'tasks.id')
             ->leftJoin('users as assigner', 'assigner.id', '=', 'task_assignees.created_by')
             ->leftJoin('users as assignee', 'assignee.id', '=', 'task_assignees.user_id')
@@ -2138,7 +1932,6 @@ class DashboardCUstomizedController extends Controller
             ->leftJoin('departments as owner_department', 'assigner.department_id', '=', 'owner_department.id')
             ->leftJoin('sub_departments as owner_sub_department', 'assigner.subdepartment', '=', 'owner_sub_department.id');
 
-        // Select all necessary fields
         $tasks = $tasks->select(
             'task_assignees.*',
             'tasks.title',
@@ -2166,10 +1959,8 @@ class DashboardCUstomizedController extends Controller
             'tasks.TaskNumber as Task_number'
         );
 
-        // Execute the query
         $data = $tasks->get();
 
-        // Pass data to the list view
         return view('dynamic-report-list', compact('data', 'fieldDisplayNames', 'rowField', 'columnField', 'request'));
     }
 
@@ -2189,13 +1980,12 @@ class DashboardCUstomizedController extends Controller
             case 'close_date':
                 return 'tasks.close_date';
             default:
-                return 'tasks.created_at'; // Default to created_at
+                return 'tasks.created_at';
         }
     }
 
     public function destroy($id)
     {
-        // dd($id);
         $attachment = TaskAttachment::findOrFail($id);
 
         // Optionally: delete file from storage

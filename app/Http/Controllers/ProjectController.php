@@ -8,14 +8,10 @@ use App\Models\Project;
 use App\Models\User;
 use App\Models\ProjectStatus;
 use App\Models\UserProject;
-
-
 use App\Services\RoleService;
 use App\Services\ProjectService;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -50,7 +46,6 @@ class ProjectController extends Controller
     public function getAll()
     {
         $projects = $this->projectService->getAllProject();
-
         return DataTables::of($projects)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             $updateButton = "<a class='btn btn-warning  '  href='" . route('app-project-edit', $encryptedId) . "'><i class='ficon' data-feather='edit'></i></a>";
@@ -79,7 +74,6 @@ class ProjectController extends Controller
     public function store(CreateProjectRequest $request)
     {
         try {
-
             $projectData['description'] = $request->get('description');
             $projectData['prifix'] = $request->get('prifix');
             $projectData['color'] = $request->get('color');
@@ -114,11 +108,9 @@ class ProjectController extends Controller
             $page_data['page_title'] = "Project";
             $page_data['form_title'] = "Edit Project";
 
-
             $projectslist = $this->projectService->getAllProject();
             $data['project'] = Project::all();
             $departments = User::where('status', 'on')->get();
-
 
             return view('.content.apps.project.create-edit', compact('page_data', 'departments', 'users', 'projectStatuses', 'project', 'data', 'projectslist'));
         } catch (\Exception $error) {

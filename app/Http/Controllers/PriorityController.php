@@ -5,15 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Priority\CreatePriorityRequest;
 use App\Http\Requests\Priority\UpdatePriorityRequest;
 use App\Models\Priority;
-
-
 use App\Services\RoleService;
 use App\Services\PriorityService;
 use Spatie\Permission\Models\Permission;
-
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class PriorityController extends Controller
@@ -36,21 +31,16 @@ class PriorityController extends Controller
 
     }
 
-
     public function index()
     {
         $data['total_department'] = Priority::count();
         $data['department'] = Priority::get();
-        // dd($data);
-
-
         return view('content.apps.priority.list', compact('data'));
     }
 
     public function getAll()
     {
         $priority = $this->priorityService->getAllpriority();
-
         return DataTables::of($priority)->addColumn('actions', function ($row) {
             $encryptedId = encrypt($row->id);
             // Update Button
@@ -70,14 +60,11 @@ class PriorityController extends Controller
         $department = '';
         $departmentslist = $this->priorityService->getAllpriority();
         $data['department'] = Priority::all();
-        // $data['parent'] = Priority::with('parent')->whereNull('parent_id')->get();
-        // $selectedparentDepartment = '';
         return view('.content.apps.priority.create-edit', compact('page_data', 'department', 'departmentslist', 'data'));
     }
 
     public function store(CreatePriorityRequest $request)
     {
-        // dd($request->all());
         try {
 
             $PriorityData['displayname'] = $request->get('displayname');
@@ -85,7 +72,6 @@ class PriorityController extends Controller
             $PriorityData['created_by'] = auth()->user()->id;
             $PriorityData['status'] = $request->get('status');
             $department = $this->priorityService->create($PriorityData);
-
 
             if (!empty($department)) {
                 return redirect()->route("app-priority-list")->with('success', 'Priority Added Successfully');
@@ -109,7 +95,6 @@ class PriorityController extends Controller
             $departmentslist = $this->priorityService->getAllpriority();
             $data['department'] = Priority::all();
 
-
             return view('.content.apps.priority.create-edit', compact('page_data', 'department', 'data', 'departmentslist'));
         } catch (\Exception $error) {
             // dd($error->getMessage());
@@ -126,9 +111,7 @@ class PriorityController extends Controller
             $PriorityData['priority_name'] = $request->get('priority_name');
             $PriorityData['updated_by'] = auth()->user()->id;
             $PriorityData['status'] = $request->get('status') ? "on" : "off";
-
             $updated = $this->priorityService->updatepriority($id, $PriorityData);
-
 
             //            $role = Role::find($request->get('role'));
 //            $updated->assignRole($role);

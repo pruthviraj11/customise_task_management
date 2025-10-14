@@ -31,14 +31,12 @@
         height: 600px;
         /* Set a specific height for the scrollable area */
         overflow-y: auto;
-        /* Allow vertical scrolling */
         margin-top: 20px;
     }
 
     #tasks-table thead th {
         position: sticky;
         top: 0;
-        /* Ensure the same background as the table header */
         z-index: 10;
     }
 
@@ -76,14 +74,12 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Task list</h4>
-
             </div>
             <div class="card-body border-bottom">
                 <div class="card-datatable table-responsive pt-0">
 
                     @if ($type !== 'deleted' && $type !== 'dynamic_report')
                         <!-- Filter Inputs -->
-                        {{-- <input type="text" id="filter-title" placeholder="Filter by Title"> --}}
                         <div class="row mb-2">
                             <div class="mb-1 col-3">
                                 <label class="form-label" for="filter-status">Task Or Ticket</label>
@@ -106,8 +102,6 @@
                                     <option value="">ALL</option>
                                 </select>
                             </div>
-
-
                             <div class="mb-1 col-3 ">
                                 <label class="form-label" for="filter-created-by">Filter by Created
                                     By</label>
@@ -148,7 +142,6 @@
                                 <input type="hidden" class="form-control dt-date end_date dt-input"
                                     name="value_from_end_date" data-column="5" data-column-index="4" />
                             </div>
-
                             <div class="mb-1 col-3">
                                 <label class="form-label" for="accepted_task_date">Accepted Task Date</label>
                                 <input type="text" class="form-control dt-date flatpickr-range dt-input"
@@ -170,8 +163,6 @@
                                     </select>
                                 </div>
                             @endif
-                            {{-- <input type="date" id="filter-start-date" class="col  form-control"
-                                placeholder="Filter by Start Date"> --}}
                             <div class="col-md-12 text-end">
                                 <button id="apply-filters" class="mt-2 col btn btn-primary">Apply Filters</button>
                             </div>
@@ -181,11 +172,9 @@
                         <a href="{{ route('app-task-add') }}" class=" justify-content-center btn btn-warning"> <i
                                 data-feather="plus-circle" class="font-medium-4"></i> Add Task
                         </a>
-
                         @if ($type != 'requested' && $type != 'my_and_team' && $type != 'deleted')
                             <a href="{{ route('app-task-cardView', $type) }}" class="btn btn-info">Card View</a>
                         @endif
-                        {{-- <a href="{{ route('export-tasks') }}" class="btn btn-success">Export</a> --}}
                         @if (auth()->user()->hasRole('Super Admin') && $type == 'list')
                             <a href="{{ route('export-total-tasks') }}" class="btn btn-success">Export</a>
                         @endif
@@ -195,7 +184,6 @@
                     <table class="user-list-table table table-responsive" id="tasks-table">
                         <thead>
                             <tr class="">
-
                                 <th>Actions</th>
                                 <th>Pin Task</th>
                                 <th>Task</th>
@@ -222,10 +210,7 @@
                                 @if ($type == 'mytask')
                                     <th>Is Pinned</th>
                                 @endif
-
-
                                 <th>Status</th>
-
                                 @if ($type == 'assign_by_me')
                                     <th>Rating</th>
                                     <th>Feedback</th>
@@ -242,17 +227,12 @@
                                 {{-- Fields For Excel Ends --}}
                                 <th>Assign To Status</th>
                                 <th>Assign To ReportIng</th>
-
-
-
                             </tr>
                         </thead>
                     </table>
                 </div>
             </div>
         </div>
-
-
         <!-- list and filter end -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
@@ -267,13 +247,10 @@
                             </button>
                         </div>
                         <div class="modal-body">
-
-
                             <div class="form-group">
                                 <label for="message-text" class="col-form-label">Message:</label>
                                 <textarea name="remark" class="form-control" id="message-text"></textarea>
                             </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -285,8 +262,6 @@
         </div>
     </section>
     {{-- reassign --}}
-
-
     {{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const allUsers = @json($reassign_users);
@@ -315,8 +290,6 @@
         });
     });
 </script> --}}
-
-
     <!-- Reassign Modal -->
     <div class="modal fade" id="reassignModal" tabindex="-1" aria-labelledby="reassignModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -357,9 +330,6 @@
                     </div>
                     {{-- <div class="modal-body">
                         <input type="hidden" name="task_id" id="feedbackTaskId">
-
-
-
                         <div class="mb-3">
                             <label class="form-label">Feedback Type</label><br>
                             <div class="form-check form-check-inline">
@@ -388,8 +358,6 @@
                             <label class="form-label">Feedback</label>
                             <textarea name="feedback" class="form-control" id="feedbackText" rows="3"></textarea>
                         </div>
-
-
                     </div> --}}
 
                     <div class="modal-body">
@@ -400,15 +368,11 @@
                             <div class="mb-2 ">
                                 <label class="form-label">Feedback Type:</label>
                                 <p class="form-control-plaintext mb-2" id="readonlyType"></p>
-
                             </div>
-
                             <div class="mb-2">
                                 <label class="form-label">Rating:</label>
-                                {{-- <p class="form-control-plaintext" id="readonlyRating"></p> --}}
                                 <div id="readonlyRating" class="form-control-plaintext"></div>
                             </div>
-
                             <div class="mb-2">
                                 <label class="form-label">Feedback:</label>
                                 <p class="form-control-plaintext border p-2 bg-light rounded" id="readonlyText"></p>
@@ -430,7 +394,6 @@
                                     <label class="form-check-label" for="negativeFeedback">Negative</label>
                                 </div>
                             </div>
-
                             <div class="mb-3" id="ratingSection">
                                 <label class="form-label">Rating</label>
                                 <div id="starRating">
@@ -440,14 +403,12 @@
                                 </div>
                                 <input type="hidden" name="rating" id="ratingValue">
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label">Feedback</label>
                                 <textarea name="feedback" class="form-control" id="feedbackText" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button type="submit" id="submitFeedbackBtn" class="btn btn-success">Submit</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -457,18 +418,15 @@
         </div>
     </div>
 
-
     <script>
         $(document).ready(function() {
             const allUsers = @json($reassign_users);
-
             // Delegated event listener for dynamic DataTable buttons
             $(document).on('click', '.open-reassign-modal', function() {
                 const encryptedTaskId = $(this).data('id');
                 const currentUserId = $(this).data('user-id');
                 const $dropdown = $('#assignTo');
                 const $hiddenInput = $('#modalTaskId');
-
                 console.log('Clicked for task:', encryptedTaskId, 'Current user:', currentUserId);
 
                 $hiddenInput.val(encryptedTaskId);
@@ -485,17 +443,13 @@
                         );
                     }
                 });
-
                 // Open the modal
                 $('#reassignModal').modal('show');
             });
         });
     </script>
 
-
-
     {{-- reassign --}}
-
     {{-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -509,13 +463,10 @@
                         </button>
                     </div>
                     <div class="modal-body">
-
-
                         <div class="form-group">
                             <label for="message-text" class="col-form-label">Message:</label>
                             <textarea name="remark" class="form-control" id="message-text"></textarea>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -560,7 +511,6 @@
 @section('vendor-script')
     {{-- Vendor js files --}}
     <script src="{{ asset(mix('vendors/js/pickers/flatpickr/flatpickr.min.js')) }}"></script>
-
     <script src="{{ asset(mix('vendors/js/forms/select/select2.full.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/tables/datatable/jquery.dataTables.min.js')) }}"></script>
     <script src="{{ asset(mix('vendors/js/tables/datatable/dataTables.bootstrap5.min.js')) }}"></script>
@@ -581,7 +531,6 @@
 
 @section('page-script')
     <script src="{{ asset(mix('js/scripts/forms/form-select2.js')) }}"></script>
-
     <script>
         // Datepicker for advanced filter
         var separator = ' - ',
@@ -597,7 +546,6 @@
             opens: $('html').attr('data-textdirection') === 'rtl' ? 'left' : 'right'
         };
 
-        //
         if (rangePickr.length) {
             rangePickr.flatpickr({
                 mode: 'range',
@@ -624,7 +572,6 @@
     </script>
     <script>
         $(document).ready(function() {
-
             var type = @json($type);
             var selectedColumns = @json($selectedColumns);
             var method_type = 'GET';
@@ -909,7 +856,6 @@
                         d.created_by = $('#filter-created-by').val();
                         d.start_date = $('#filter-start-date').val();
                         d.task_type = $('#task_type').val();
-
                     }
                 },
                 searching: true,
@@ -964,14 +910,12 @@
                         name: 'Task_number',
                         searchable: true,
                         visible: selectedColumns.includes("3")
-
                     },
                     {
                         data: 'Task_Ticket',
                         name: 'Task_Ticket',
                         searchable: true,
                         visible: selectedColumns.includes("4")
-
                     },
                     {
                         data: 'title',
@@ -1014,7 +958,6 @@
                         name: 'Created_Date',
                         searchable: true,
                         visible: selectedColumns.includes("11")
-
                     },
 
                     {
@@ -1298,7 +1241,6 @@
                     data.length = dt.page.info().recordsTotal; // Fetch all records
 
                     dt.one('preDraw', function(e, settings) {
-                        // Perform export
                         if (button.hasClass('buttons-excel')) {
                             $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button,
                                 config);
@@ -1309,7 +1251,6 @@
                             $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
                                 config);
                         }
-
                         // Restore previous pagination
                         settings._iDisplayStart = oldStart;
                         setTimeout(function() {
@@ -1320,64 +1261,11 @@
 
                 dt.ajax.reload(); // Do not remove this, ensures export is performed after full data load
             }
-
-
-
             // Apply Filters
             $('#apply-filters').on('click', function() {
                 table.draw();
             });
         });
-
-        // 03-03-2025
-        // function newexportaction(e, dt, button, config) {
-        //     var self = this;
-        //     var oldStart = dt.settings()[0]._iDisplayStart;
-        //     dt.one('preXhr', function(e, s, data) {
-        //         // Just this once, load all data from the server...
-        //         data.start = 0;
-        //         data.length = 2147483647;
-        //         dt.one('preDraw', function(e, settings) {
-        //             // Call the original action function
-        //             if (button[0].className.indexOf('buttons-copy') >= 0) {
-        //                 $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button,
-        //                     config);
-        //             } else if (button[0].className.indexOf('buttons-excel') >= 0) {
-        //                 $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
-        //                     $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt,
-        //                         button, config) :
-        //                     $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt,
-        //                         button, config);
-        //             } else if (button[0].className.indexOf('buttons-csv') >= 0) {
-        //                 $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
-        //                     $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button,
-        //                         config) :
-        //                     $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button,
-        //                         config);
-        //             } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
-        //                 $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
-        //                     $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button,
-        //                         config) :
-        //                     $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button,
-        //                         config);
-        //             } else if (button[0].className.indexOf('buttons-print') >= 0) {
-        //                 $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
-        //             }
-        //             dt.one('preXhr', function(e, s, data) {
-        //                 settings._iDisplayStart = oldStart;
-        //                 data.start = oldStart;
-        //             });
-        //             // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
-        //             setTimeout(dt.ajax.reload, 0);
-        //             // Prevent rendering of the full data to the DOM
-        //             return false;
-        //         });
-        //     });
-        //     // Requery the server with the new one-time export settings
-        //     dt.ajax.reload();
-        // }
-        // 03-03-2025
-
 
         $(document).ready(function() {
             // Fetch status options and populate the dropdown
@@ -1452,14 +1340,11 @@
 
         });
 
-
-
         $(document).on("click", ".pin-task-icon", function(e) {
             e.preventDefault();
 
             var taskId = $(this).data("task-id"); // Retrieve the task ID from the clicked icon
             var isPinned = $(this).css('color') === 'rgb(255, 0, 0)';
-
             // Show SweetAlert confirmation dialog
             Swal.fire({
                 title: 'Are you sure?',
@@ -1563,8 +1448,6 @@
             });
         });
 
-
-
         $(document).on("click", ".confirm-recurring_destroy", function(e) {
             e.preventDefault();
             var id = $(this).data("idos");
@@ -1628,15 +1511,6 @@
                             _token: "{{ csrf_token() }}"
                         },
                         success: function(response) {
-                            // Success message after task is accepted
-                            // Swal.fire({
-                            //     icon: 'success',
-                            //     title: 'Accepted!',
-                            //     text: 'Your task has been accepted.',
-                            //     customClass: {
-                            //         confirmButton: 'btn btn-success'
-                            //     }
-                            // }).then(function() {
                             // Show the second SweetAlert for comment decision
                             Swal.fire({
                                 title: 'Do you want to add a comment now or later?',
@@ -1659,23 +1533,7 @@
                                     location.reload();
                                 }
 
-                                // if (result.dismiss === Swal
-                                //     .DismissReason.cancel) {
-                                //     // If 'Add Later' is chosen, do nothing or handle accordingly
-                                //     Swal.fire({
-                                //         title: 'You can add a comment later.',
-                                //         text: 'The task will remain accepted.',
-                                //         icon: 'info',
-                                //         customClass: {
-                                //             confirmButton: 'btn btn-info'
-                                //         }
-                                //     }).then(function() {
-                                //         // Refresh the page after the message is shown
-                                //         location.reload();
-                                //     });
-                                // }
                             });
-                            // });
                         },
                         error: function() {
                             Swal.fire({
@@ -1701,7 +1559,6 @@
                 }
             });
         });
-
 
         $(document).on("click", ".confirm-retrieve", function(e) {
             e.preventDefault();
@@ -1783,8 +1640,6 @@
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
 <script>
     $(document).ready(function() {
         // Existing feedback button click logic

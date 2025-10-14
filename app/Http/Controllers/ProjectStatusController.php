@@ -5,15 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProjectStatus\CreateProjectStatusRequest;
 use App\Http\Requests\ProjectStatus\UpdateProjectStatusRequest;
 use App\Models\ProjectStatus;
-
-
 use App\Services\RoleService;
 use App\Services\ProjectStatusService;
 use Spatie\Permission\Models\Permission;
-
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class ProjectStatusController extends Controller
@@ -41,9 +36,6 @@ class ProjectStatusController extends Controller
     {
         $data['total_department'] = ProjectStatus::count();
         $data['department'] = ProjectStatus::get();
-        // dd($data);
-
-
         return view('content.apps.ProjectStatus.list', compact('data'));
     }
 
@@ -55,7 +47,6 @@ class ProjectStatusController extends Controller
             $encryptedId = encrypt($row->id);
             // Update Button
             $updateButton = "<a class='btn btn-warning  '  href='" . route('app-project-status-edit', $encryptedId) . "'><i class='ficon' data-feather='edit'></i></a>";
-
             // Delete Button
             $deleteButton = "<a class='btn btn-danger confirm-delete' data-idos='$encryptedId' id='confirm-color' href='" . route('app-project-status-destroy', $encryptedId) . "'><i class='ficon' data-feather='trash-2'></i></a>";
 
@@ -70,22 +61,18 @@ class ProjectStatusController extends Controller
         $department = '';
         $departmentslist = $this->projectStatusService->getAllProjectStatus();
         $data['department'] = ProjectStatus::all();
-        // $data['parent'] = ProjectStatus::with('parent')->whereNull('parent_id')->get();
-        // $selectedparentDepartment = '';
+
         return view('.content.apps.ProjectStatus.create-edit', compact('page_data', 'department', 'departmentslist', 'data'));
     }
 
     public function store(CreateProjectStatusRequest $request)
     {
-        // dd($request->all());
         try {
-
             $departmentData['displayname'] = $request->get('displayname');
             $departmentData['project_status_name'] = $request->get('project_status_name');
             $departmentData['created_by'] = auth()->user()->id;
             $departmentData['status'] = $request->get('status');
             $department = $this->projectStatusService->create($departmentData);
-
 
             if (!empty($department)) {
                 return redirect()->route("app-project-status-list")->with('success', 'Project Status Added Successfully');
@@ -109,7 +96,6 @@ class ProjectStatusController extends Controller
             $departmentslist = $this->projectStatusService->getAllProjectStatus();
             $data['department'] = ProjectStatus::all();
 
-
             return view('.content.apps.ProjectStatus.create-edit', compact('page_data', 'department', 'data', 'departmentslist'));
         } catch (\Exception $error) {
             // dd($error->getMessage());
@@ -121,17 +107,12 @@ class ProjectStatusController extends Controller
     {
         try {
             $id = decrypt($encrypted_id);
-
             $departmentData['displayname'] = $request->get('displayname');
             $departmentData['project_status_name'] = $request->get('project_status_name');
             $departmentData['updated_by'] = auth()->user()->id;
             $departmentData['status'] = $request->get('status') ? "on" : "off";
-
             $updated = $this->projectStatusService->updateProjectStatus($id, $departmentData);
 
-
-            //            $role = Role::find($request->get('role'));
-//            $updated->assignRole($role);
             if (!empty($updated)) {
                 return redirect()->route("app-project-status-list")->with('success', 'Project Status Updated Successfully');
             } else {
@@ -157,4 +138,3 @@ class ProjectStatusController extends Controller
         }
     }
 }
-

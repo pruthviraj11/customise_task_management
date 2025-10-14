@@ -13,7 +13,6 @@ class TaskImportController extends Controller
         $request->validate([
             'file' => 'required|mimes:xls,xlsx',
         ]);
-
         Excel::import(new TasksImport, $request->file('file'));
 
         return redirect()->back()->with('success', 'Tasks imported successfully.');

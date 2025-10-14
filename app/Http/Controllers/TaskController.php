@@ -4858,7 +4858,6 @@ class TaskController extends Controller
         }
         return DataTables::of($tasks)
             ->addColumn('actions', function ($row) {
-                // dd($row);
                 $encryptedId_sub_task = encrypt($row->id);
                 $encryptedId = encrypt($row->task_id);
                 // $satusData = TaskAssignee::where('')
@@ -6721,7 +6720,6 @@ class TaskController extends Controller
                                 $taskDueDate = $taskStartDate->copy()->addWeek()->subDay(); // Due date is 1 week later
                             } else {
                                 $taskStartDate = $prevStartDate->addWeek(); // Increment by 1 week for each sub-task
-                                // dd($taskStartDate);
                                 // $taskStartDate->addDay(1);
 
                                 $taskDueDate = $taskStartDate->copy()->addWeek()->subDay(); // Due date is 1 week after the start date
@@ -8748,7 +8746,6 @@ class TaskController extends Controller
     //             $q->where('is_recursive', $taskTypeFilter);
     //         });
     //     }
-    //     // dd($request->input('task_type'),$query->get());
     //     // Get the tasks in paginated chunks if necessary, or just all if you want to return everything
     //     $tasks = $query;
 
@@ -8785,7 +8782,6 @@ class TaskController extends Controller
     //                 'tasks.close_date'
     //             );
 
-    //         // dd($tasks->get());
     //     }
     //     return DataTables::of($tasks)
 
@@ -9551,10 +9547,8 @@ class TaskController extends Controller
     {
         try {
             $departmentOptions = Department::all();
-            // dd($departmentOptions);
             return response()->json($departmentOptions);
         } catch (\Exception $e) {
-            // Handle exceptions
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }

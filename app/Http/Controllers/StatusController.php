@@ -5,15 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Status\CreateStatusRequest;
 use App\Http\Requests\Status\UpdateStatusRequest;
 use App\Models\Status;
-
-
 use App\Services\RoleService;
 use App\Services\StatusService;
 use Spatie\Permission\Models\Permission;
-
 use Yajra\DataTables\Facades\DataTables;
-
-
 use Illuminate\Http\Request;
 
 class StatusController extends Controller

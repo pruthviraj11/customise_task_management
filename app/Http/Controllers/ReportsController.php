@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
@@ -18,17 +16,13 @@ use App\Models\TaskAssignee;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
-
 use Illuminate\Http\Request;
 
 class ReportsController extends Controller
 {
 
-
     public function index()
     {
-        // $userId = auth()->user()->id;
         $usersWithG7 = User::where('Grad', operator: 'G7')->get();
         $user = auth()->user();
         $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
@@ -48,7 +42,6 @@ class ReportsController extends Controller
             $userStatus = $user->status;
             $statusLabel = $userStatus == 0 ? 'inactive' : ''; // Label only for inactive users
             $statusText = $statusLabel ? ' <span style="color:red; font-weight:bold; font-size:small;">(' . $statusLabel . ')</span>' : '';
-
 
             $departmentName = $user->department->department_name ?? 'No Department';
 
@@ -71,7 +64,6 @@ class ReportsController extends Controller
             })->where('status', 1)
                 ->whereDate('created_at', today())
                 ->count();
-            // dd($tasksAddedToday);
             $tasksCompletedToday = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
             })->where('status', 1)
@@ -85,7 +77,6 @@ class ReportsController extends Controller
                 })->where('status', 1)
                 // ->whereIn('task_status', [4,7])
                 ->count();
-            // dd($taskReportDate);
 
             $totalPendingTask = TaskAssignee::where('user_id', $user->id)->whereIn('task_id', function ($subquery) {
                 $subquery->select('id')->from('tasks')->whereNull('deleted_at');
@@ -140,7 +131,6 @@ class ReportsController extends Controller
                 ->whereIn('task_status', [1, 3, 5])
                 ->count();
 
-
             // Add the user data to the table_data array
             $table_data[] = [
                 'user_name' => $user->first_name . ' ' . $user->last_name . ' (' . $departmentName . ')' . $statusText,
@@ -159,20 +149,13 @@ class ReportsController extends Controller
             ];
         }
 
-        // dd('heare');
         return view('content.apps.reports.reports_index', compact('usersWithG7', 'table_data'));
     }
-
-
-
 
     public function getG7Data(Request $request)
     {
         // Fetch users with G7 flag and active status
         $usersWithG7 = User::where('Grad', operator: 'G7')->get();
-        // dd($usersWithG7);
-        // Fetch inactive users with G7 flag
-        // $InactiveusersWithG7 = User::where('Grad', operator: 'G7')->where('status', 0)->get();
 
         $cdate = date("Y-m-d");
 
@@ -414,8 +397,6 @@ class ReportsController extends Controller
                     })
                     ->count();
 
-
-
                 // Task Added Today
                 $task_added_reporting_date[$user->id] += TaskAssignee::where('user_id', $subUser->id)
                     ->whereNull('task_assignees.deleted_at')
@@ -481,9 +462,6 @@ class ReportsController extends Controller
         });
 
         //Data of Particular member and their team ends
-
-
-
         // Prepare totals
         $totals = [
             'name' => 'Total',
@@ -502,29 +480,19 @@ class ReportsController extends Controller
             'in_execution' => array_sum($inExecutionCounts),
         ];
 
-
         // Push total row
         $data->push($totals);
-
-
         return DataTables::of($data)->make(true);
     }
-
-
 
     public function reportsweek()
     {
         // Get the previous week's start (Monday) and end (Sunday)
         $startOfLastWeek = now()->startOfWeek()->subWeek(); // Last Monday
         $endOfLastWeek = now()->endOfWeek()->subWeek(); // Last Sunday
-
-
-
         $startOfDuringWeek = now()->startOfWeek(); // Last Monday
         $endOfDuringWeek = now()->endOfWeek(); // Last Sunday
-        // dd($startOfDuringWeek,$endOfDuringWeek);
 
-        // $userId = auth()->user()->id;
         $usersWithG7 = User::where('Grad', 'G7')->get();
         $user = auth()->user();
         $deleted_task = DB::table('tasks')->whereNotNull('deleted_at')->count();
@@ -634,7 +602,6 @@ class ReportsController extends Controller
         return $subordinates;
     }
 
-
     public function masters_report()
     {
         $userId = Auth()->user()->id;
@@ -646,9 +613,7 @@ class ReportsController extends Controller
             $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray(); // Get array of all user IDs in hierarchy
         } else {
             $hierarchyUserIds = User::pluck('id')->toArray(); // Get array of all user IDs in hierarchy
-            // dd($hierarchyUserIds);
         }
-        // dd($hierarchyUserIds,$userId);
         // Pending tasks count
         $pendingTasksCount = TaskAssignee::whereIn('user_id', $hierarchyUserIds)
             ->whereIn('task_status', [1, 3, 5, 6])
@@ -669,8 +634,6 @@ class ReportsController extends Controller
             })
             ->count(); // Get the count of overdue tasks
 
-
-
         // Calculate pace rate: (pending - overdue) / pending
         $paceRate = 0; // Default to 0 to avoid division by zero
         if ($pendingTasksCount > 0) {
@@ -685,13 +648,11 @@ class ReportsController extends Controller
         } else {
             // User-specific task filters
             $query->whereIn('user_id', $hierarchyUserIds)->whereNull('deleted_at');
-
         }
 
         // Return the view with the required variables
         return view('content.apps.reports.master_report_list', compact('projectOptions', 'pendingTasksCount', 'overdueTasksCount', 'paceRate', 'statusOptions'));
     }
-
 
     public function masters_reportgetAll(Request $request)
     {
@@ -705,7 +666,6 @@ class ReportsController extends Controller
             $hierarchyUserIds = $hierarchyUsers->pluck('id')->toArray();
         } else {
             $hierarchyUserIds = User::pluck('id')->toArray(); // Get array of all user IDs in hierarchy
-            // dd($hierarchyUserIds);
         }
         $query = TaskAssignee::query();
         // Admin fetches tasks by their statuses
@@ -727,7 +687,6 @@ class ReportsController extends Controller
                 })
                 ->orderBy('created_at', 'desc');
         }
-
 
         // Apply project filter if provided
         if ($request->has('project_ids') && !empty($request->project_ids)) {
@@ -753,8 +712,6 @@ class ReportsController extends Controller
                 });
             })
             ->count();
-
-
 
         $cdate = date("Y-m-d");
         // Overdue tasks count
