@@ -207,11 +207,11 @@
 
 @yield('js_load')
 
-<script>
+{{-- <script>
     function deleteConfirm() {
         if (confirm("Are you sure to delete data?")) {
             return true;
         }
         return false;
     }
-</script>
+</script> --}}

@@ -1619,14 +1619,14 @@
 
 @yield('js_load')
 
-<script>
+{{-- <script>
     function deleteConfirm() {
         if (confirm("Are you sure to delete data?")) {
             return true;
         }
         return false;
     }
-</script>
+</script> --}}
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
