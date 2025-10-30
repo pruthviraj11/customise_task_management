@@ -71,12 +71,29 @@ class TaskController extends Controller
     {
         $today = Carbon::today()->toDateString();
         $user_new_id = Auth::user()->id;
-        if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires)) {
+        // if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires)) {
 
-        } else {
-            $taskAssignee_count = TaskAssignee::where('is_outlook_sync', 0)->where('user_id', $user_new_id)->count();
-            if ($taskAssignee_count > 0) {
-                $this->outlook_sync();
+        // } else {
+        //     $taskAssignee_count = TaskAssignee::where('is_outlook_sync', 0)->where('user_id', $user_new_id)->count();
+        //     if ($taskAssignee_count > 0) {
+        //         $this->outlook_sync();
+        //     }
+        // }
+        if (!session()->has('outlook_sync_checked')) {
+
+            session(['outlook_sync_checked' => true]);
+
+            if (Auth::user()->outlook_access_token && now()->lt(Auth::user()->outlook_token_expires)) {
+                // token valid, do nothing
+            } else {
+                // dd('Hii');
+                $taskAssigneeCount = TaskAssignee::where('is_outlook_sync', 0)
+                    ->where('user_id', Auth::id())
+                    ->count();
+
+                if ($taskAssigneeCount > 0) {
+                    $this->outlook_sync();
+                }
             }
         }
 
